@@ -45,3 +45,12 @@ Console.WriteLine(pf(p).Cast<IFormattable>().ToString("#,0", null));
 //Console.Write($"{input.ReadByte():x2} ");
 //using var deflate = new DeflateStream(input, CompressionMode.Decompress);
 //deflate.ReadAllBytes().Each(output.WriteByte);
+
+var fontdir = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts");
+var fonts = Directory.GetFiles(fontdir, "*.*", SearchOption.AllDirectories)
+    .Where(x => Path.GetExtension(x).In(".TTF", ".TTC"))
+    .Select(x => Path.GetExtension(x) == ".TTF" ? [TrueTypeFont.Load(x)] : TrueTypeFont.LoadCollection(x))
+    .Flatten()
+    .ToArray();
+
+fonts.Each(x => Console.WriteLine(x.Name));
