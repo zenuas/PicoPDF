@@ -50,6 +50,7 @@ public class TrueTypeFont : PdfObject, IFont
             .Select(_ => TableRecord.ReadFrom(stream))
             .ToDictionary(x => x.TableTag, x => x);
 
+        var head = FontHeaderTable.ReadFrom(new MemoryStream(stream.ReadPositionBytes(tables["head"].Offset, (int)tables["head"].Length)));
         var namerecs = NameRecord.ReadFrom(stream, tables["name"]);
         var namev = (ushort nameid) => opt.PlatformIDOrder
             .Select(x => namerecs.FindFirstOrNullValue(y => y.NameRecord.PlatformID == x && y.NameRecord.NameID == nameid)?.Name)

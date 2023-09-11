@@ -18,6 +18,12 @@ public static class Streams
         return size == readed ? buffer : buffer.Take(readed).ToArray();
     }
 
+    public static byte[] ReadPositionBytes(this Stream self, long pos, int size)
+    {
+        self.Position = pos;
+        return self.ReadBytes(size);
+    }
+
     public static IEnumerable<byte> ReadAllBytes(this Stream self, int buffer_size = 1024)
     {
         var buffer = new byte[buffer_size];

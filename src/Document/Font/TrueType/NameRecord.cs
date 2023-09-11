@@ -27,8 +27,7 @@ public struct NameRecord
 
     public static (string Name, NameRecord NameRecord)[] ReadFrom(Stream stream, TableRecord rec)
     {
-        stream.Position = rec.Offset;
-        var bytes = stream.ReadBytes((int)rec.Length);
+        var bytes = stream.ReadPositionBytes(rec.Offset, (int)rec.Length);
         var buffer = new MemoryStream(bytes);
         var nametable = NameTable.ReadFrom(buffer);
         return Enumerable.Range(0, nametable.Count)
