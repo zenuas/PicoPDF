@@ -3,7 +3,6 @@ using PicoPDF.Document;
 using PicoPDF.Document.Color;
 using PicoPDF.Document.Font;
 using PicoPDF.Section.Element;
-using System.IO.Compression;
 using System.Text;
 
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
