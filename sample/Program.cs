@@ -47,9 +47,12 @@ Console.WriteLine(pf(p).Cast<IFormattable>().ToString("#,0", null));
 
 var fontdir = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts");
 var fonts = Directory.GetFiles(fontdir, "*.*", SearchOption.AllDirectories)
-    .Where(x => Path.GetExtension(x).In(".TTF", ".TTC"))
-    .Select(x => Path.GetExtension(x) == ".TTF" ? [TrueTypeFont.Load(x)] : TrueTypeFont.LoadCollection(x))
+    .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
+    .Where(x => x.Extension.In(".TTF", ".TTC"))
+    .Select(x => x.Extension == ".TTF" ? [TrueTypeFont.Load(x.Path)] : TrueTypeFont.LoadCollection(x.Path))
     .Flatten()
     .ToArray();
 
-fonts.Each(x => Console.WriteLine(x.Name));
+fonts
+    .Order((a, b) => a.Name.CompareTo(b.Name))
+    .Each(x => Console.WriteLine(x.Name));
