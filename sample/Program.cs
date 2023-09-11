@@ -33,7 +33,7 @@ page1.DrawFillRectangle(50, 525, size * 10 / 2, 10, red, cyan);
 
 var page2 = doc.NewPage(PageSize.A4).Contents;
 page2.DrawString("Hello World2", 100, 50, 20, cif_sjis);
-doc.Save("a.pdf");
+doc.Save("@a.pdf");
 
 var p = new BindElement() { X = 12345, Y = 2, Bind = "a", Format = "b" };
 var pf = Expressions.GetProperty<BindElement, object>("X");
