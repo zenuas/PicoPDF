@@ -23,12 +23,22 @@ public class TrueTypeFont : PdfObject, IFont
         return Load(stream, opt ?? new());
     }
 
-    public static IEnumerable<TrueTypeFont> LoadCollection(string path, LoadOption? opt = null)
+    public static TrueTypeFont[] LoadCollection(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
-        var head = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4));
-        if (head != 0x74746366) throw new InvalidOperationException();
-        yield break;
+        return LoadCollection(stream, opt ?? new());
+    }
+
+    public static TrueTypeFont[] LoadCollection(Stream stream, LoadOption opt)
+    {
+        var header = TTCHeader.ReadFrom(stream);
+        if (header.TTCTag != "ttcf") throw new InvalidOperationException();
+
+        return Enumerable.Range(0, (int)header.NumberOfFonts)
+            .Select(_ => BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)))
+            .ToArray()
+            .Select(x => { stream.Position = x; return Load(stream, opt); })
+            .ToArray();
     }
 
     public static TrueTypeFont Load(Stream stream, LoadOption opt)
