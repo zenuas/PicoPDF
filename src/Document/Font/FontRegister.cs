@@ -3,19 +3,24 @@ using PicoPDF.Document.Font.TrueType;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace PicoPDF.Document.Font;
 
-public class TrueTypeFont : PdfObject, IFont
+public class FontRegister
 {
-    public required string Name { get; init; }
-    public required string Style { get; init; }
-    public required string FontFamily { get; init; }
-    public required Encoding TextEncoding { get; init; }
+    public Dictionary<string, TrueTypeFont> Fonts { get; init; } = new();
+
+    public void RegistDirectory(string path)
+    {
+        Directory.GetFiles(path, "*.*", SearchOption.AllDirectories)
+            .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
+            .Where(x => x.Extension.In(".TTF", ".TTC"))
+            .Select(x => x.Extension == ".TTF" ? [Load(x.Path)] : LoadCollection(x.Path))
+            .Flatten()
+            .Each(x => Fonts.TryAdd(x.PostScriptName, x));
+    }
 
     public static TrueTypeFont Load(string path, LoadOption? opt = null)
     {
@@ -50,25 +55,19 @@ public class TrueTypeFont : PdfObject, IFont
             .Select(_ => TableRecord.ReadFrom(stream))
             .ToDictionary(x => x.TableTag, x => x);
 
-        var head = FontHeaderTable.ReadFrom(new MemoryStream(stream.ReadPositionBytes(tables["head"].Offset, (int)tables["head"].Length)));
         var namerecs = NameRecord.ReadFrom(stream, tables["name"]);
         var namev = (ushort nameid) => opt.PlatformIDOrder
             .Select(x => namerecs.FindFirstOrNullValue(y => y.NameRecord.PlatformID == x && y.NameRecord.NameID == nameid)?.Name)
             .Where(x => x is { })
             .FirstOrDefault();
-        Debug.Assert(namev(4) is { });
 
         return new TrueTypeFont()
         {
-            Name = namev(6) ?? "",
-            Style = namev(2) ?? "",
             FontFamily = namev(1) ?? "",
-            TextEncoding = Encoding.ASCII,
+            Style = namev(2) ?? "",
+            FullFontName = namev(4) ?? "",
+            PostScriptName = namev(6) ?? "",
+            FontHeader = FontHeaderTable.ReadFrom(new MemoryStream(stream.ReadPositionBytes(tables["head"].Offset, (int)tables["head"].Length))),
         };
-    }
-
-    public IEnumerable<byte> CreateTextShowingOperator(string s)
-    {
-        return TextEncoding.GetBytes(s);
     }
 }

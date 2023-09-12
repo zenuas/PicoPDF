@@ -8,10 +8,12 @@ using System.Text;
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
 var doc = new Document();
+doc.FontRegister.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
+
 var stdtype1 = doc.AddFont("stdtype1", StandardType1Fonts.TimesRoman, Encoding.GetEncoding(932));
 var type1 = doc.AddFont("type1", "Ryumin-Light", "WinAnsiEncoding", Encoding.GetEncoding(932));
 var cif_sjis = doc.AddFont("cif_sjis", "HeiseiMin-W3", CMap._90msp_RKSJ_H, Encoding.GetEncoding(932));
-var cif_utf16 = doc.AddFont("cif_utf16", "MS-Gothic", CMap.UniJIS_UTF16_H, Encoding.BigEndianUnicode);
+var cif_utf16 = doc.AddFont("cif_utf16", "Meiryo-Bold", CMap.UniJIS_UTF16_H, Encoding.BigEndianUnicode);
 var gray = new DeviceGray() { Gray = 0.5 };
 var red = new DeviceRGB() { R = 1.0, G = 0.0, B = 0.0 };
 var cyan = new DeviceCMYK() { C = 1.0, M = 0.0, Y = 0.0, K = 0.0 };
@@ -45,14 +47,6 @@ Console.WriteLine(pf(p).Cast<IFormattable>().ToString("#,0", null));
 //using var deflate = new DeflateStream(input, CompressionMode.Decompress);
 //deflate.ReadAllBytes().Each(output.WriteByte);
 
-var fontdir = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts");
-var fonts = Directory.GetFiles(fontdir, "*.*", SearchOption.AllDirectories)
-    .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
-    .Where(x => x.Extension.In(".TTF", ".TTC"))
-    .Select(x => x.Extension == ".TTF" ? [TrueTypeFont.Load(x.Path)] : TrueTypeFont.LoadCollection(x.Path))
-    .Flatten()
-    .ToArray();
-
-fonts
-    .Order((a, b) => a.Name.CompareTo(b.Name))
-    .Each(x => Console.WriteLine(x.Name));
+doc.FontRegister.Fonts.Values
+    .Order((a, b) => a.PostScriptName.CompareTo(b.PostScriptName))
+    .Each(x => Console.WriteLine($"{x.PostScriptName},{x.Style},{x.FullFontName},{x.FontFamily}"));
