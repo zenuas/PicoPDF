@@ -47,6 +47,6 @@ Console.WriteLine(pf(p).Cast<IFormattable>().ToString("#,0", null));
 //using var deflate = new DeflateStream(input, CompressionMode.Decompress);
 //deflate.ReadAllBytes().Each(output.WriteByte);
 
-doc.FontRegister.Fonts.Values
-    .Order((a, b) => a.PostScriptName.CompareTo(b.PostScriptName))
-    .Each(x => Console.WriteLine($"{x.PostScriptName},{x.Style},{x.FullFontName},{x.FontFamily}"));
+//doc.FontRegister.Fonts.Values
+//    .Order((a, b) => a.PostScriptName.CompareTo(b.PostScriptName))
+//    .Each(x => Console.WriteLine($"{x.PostScriptName},{x.Style},{x.FullFontName},{x.FontFamily}"));

@@ -25,16 +25,16 @@ public class FontRegister
     public static TrueTypeFont Load(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
-        return Load(stream, opt ?? new());
+        return Load(path, stream, 0, opt ?? new());
     }
 
     public static TrueTypeFont[] LoadCollection(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
-        return LoadCollection(stream, opt ?? new());
+        return LoadCollection(path, stream, opt ?? new());
     }
 
-    public static TrueTypeFont[] LoadCollection(Stream stream, LoadOption opt)
+    public static TrueTypeFont[] LoadCollection(string path, Stream stream, LoadOption opt)
     {
         var header = TTCHeader.ReadFrom(stream);
         if (header.TTCTag != "ttcf") throw new InvalidOperationException();
@@ -42,12 +42,13 @@ public class FontRegister
         return Enumerable.Range(0, (int)header.NumberOfFonts)
             .Select(_ => BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)))
             .ToArray()
-            .Select(x => { stream.Position = x; return Load(stream, opt); })
+            .Select(x => Load(path, stream, x, opt))
             .ToArray();
     }
 
-    public static TrueTypeFont Load(Stream stream, LoadOption opt)
+    public static TrueTypeFont Load(string path, Stream stream, long pos, LoadOption opt)
     {
+        stream.Position = pos;
         var header = OffsetTable.ReadFrom(stream);
         if (header.Version != 0x00010000 && header.Version != 0x4F54544F) throw new InvalidOperationException();
 
@@ -67,7 +68,34 @@ public class FontRegister
             Style = namev(2) ?? "",
             FullFontName = namev(4) ?? "",
             PostScriptName = namev(6) ?? "",
-            FontHeader = FontHeaderTable.ReadFrom(new MemoryStream(stream.ReadPositionBytes(tables["head"].Offset, (int)tables["head"].Length))),
+            Path = path,
+            Position = pos,
+            TableRecords = tables,
         };
+    }
+
+    public TrueTypeFont? GetOrNull(string name)
+    {
+        var font = Fonts.GetValueOrDefault(name);
+        if (font is null || font.Loaded) return font;
+
+        DelayLoad(font);
+        return font;
+    }
+
+    public static void DelayLoad(TrueTypeFont font)
+    {
+        using var stream = File.OpenRead(font.Path);
+        stream.Position = font.Position;
+        font.FontHeader = FontHeaderTable.ReadFrom(new MemoryStream(stream.ReadPositionBytes(font.TableRecords["head"].Offset, (int)font.TableRecords["head"].Length)));
+
+        var cmap = font.TableRecords["cmap"];
+        var encodings = EncodingRecord.ReadFrom(stream, cmap);
+        var encoding =
+            encodings.FindFirstOrNullValue(x => x.PlatformID == 0 && x.EncodingID == 3) ??
+            encodings.FindFirstOrNullValue(x => x.PlatformID == 3 && x.EncodingID == 1);
+        if (encoding.HasValue) font.CMap4 = CMapFormat4.ReadFrom(stream, cmap, encoding.Value);
+
+        font.Loaded = true;
     }
 }

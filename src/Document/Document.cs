@@ -54,7 +54,7 @@ public class Document
 
     public CIDFont AddFont(string name, string basefont, CMap cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
-        if (FontRegister.Fonts.GetOrDefault(basefont) is { } ttf) return AddFont(name, ttf, cmap, enc, flags);
+        if (FontRegister.GetOrNull(basefont) is { } ttf) return AddFont(name, ttf, cmap, enc, flags);
 
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var font = new CIDFont() { Name = name, BaseFont = $"{basefont}-{cidsysinfo.Name}", Encoding = cidsysinfo.Name, TextEncoding = enc };
