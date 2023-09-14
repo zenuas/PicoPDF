@@ -1,5 +1,7 @@
 ﻿using Extensions;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PicoPDF.Document.Font.TrueType;
 
@@ -30,5 +32,15 @@ public class TrueTypeFont
 
         var gindex = (idrange / 2) + c - start - (CMap4.SegCountX2 / 2) + seg;
         return (CMap4.GlyphIdArray[gindex] + CMap4.IdDelta[seg]) & 0xFFFF;
+    }
+
+    public int MeasureString(string s) => s.Select(MeasureChar).Sum();
+
+    public int MeasureChar(char c) => MeasureGID(CharToGID(c));
+
+    public int MeasureGID(int gid)
+    {
+        var width = HorizontalMetrics.Metrics[Math.Min(gid, HorizontalHeader.NumberOfHMetrics - 1)].AdvanceWidth;
+        return FontHeader.UnitsPerEm == 1000 ? width : width * 1000 / FontHeader.UnitsPerEm;
     }
 }

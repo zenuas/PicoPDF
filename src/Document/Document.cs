@@ -54,8 +54,6 @@ public class Document
 
     public CIDFont AddFont(string name, string basefont, CMap cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
-        if (FontRegister.GetOrNull(basefont) is { } ttf) return AddFont(name, ttf, cmap, enc, flags);
-
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var font = new CIDFont() { Name = name, BaseFont = $"{basefont}-{cidsysinfo.Name}", Encoding = cidsysinfo.Name, TextEncoding = enc };
         ResourcesFont.Add(name, font);
@@ -70,15 +68,20 @@ public class Document
         return font;
     }
 
-    public CIDFont AddFont(string name, TrueTypeFont ttf, CMap cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public CIDTrueTypeFont AddFont(string name, TrueTypeFont ttf, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
+        var cmap = CMap.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary() { Subtype = "CIDFontType2 ", BaseFont = ttf.PostScriptName };
-        var font = new CIDFont() { Name = name, BaseFont = ttf.PostScriptName, Encoding = cidsysinfo.Name, TextEncoding = enc, FontDictionary = fontdict };
+        var font = new CIDTrueTypeFont() { Name = name, Font = ttf, Encoding = cidsysinfo.Name, FontDictionary = fontdict };
         ResourcesFont.Add(name, font);
         PdfObjects.Add(font);
 
-        font.Widths.Clear();
+        font.FontDictionary.W = new ElementStringArray(
+                Lists.RangeTo(' ', '~')
+                    .Select(x => (Char: x, GID: ttf.CharToGID(x)))
+                    .Select(x => $"{x.GID}[{ttf.MeasureGID(x.GID)}] %{x.Char}\n")
+            );
         font.FontDictionary.CIDSystemInfo.Dictionary["Registry"] = $"({cidsysinfo.Registry})";
         font.FontDictionary.CIDSystemInfo.Dictionary["Ordering"] = $"({cidsysinfo.Ordering})";
         font.FontDictionary.CIDSystemInfo.Dictionary["Supplement"] = cidsysinfo.Supplement;

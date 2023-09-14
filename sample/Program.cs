@@ -13,7 +13,7 @@ doc.FontRegister.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%Syste
 var stdtype1 = doc.AddFont("stdtype1", StandardType1Fonts.TimesRoman, Encoding.GetEncoding(932));
 var type1 = doc.AddFont("type1", "Ryumin-Light", "WinAnsiEncoding", Encoding.GetEncoding(932));
 var cif_sjis = doc.AddFont("cif_sjis", "HeiseiMin-W3", CMap._90msp_RKSJ_H, Encoding.GetEncoding(932));
-var cif_utf16 = doc.AddFont("cif_utf16", "Meiryo-Bold", CMap.UniJIS_UTF16_H, Encoding.BigEndianUnicode);
+var cif_utf16 = doc.AddFont("cif_utf16", doc.FontRegister.GetOrNull("Meiryo-Bold")!);
 var gray = new DeviceGray() { Gray = 0.5 };
 var red = new DeviceRGB() { R = 1.0, G = 0.0, B = 0.0 };
 var cyan = new DeviceCMYK() { C = 1.0, M = 0.0, Y = 0.0, K = 0.0 };
@@ -23,10 +23,11 @@ var size = 30;
 page1.DrawString($"Hello World(StandardType1/{stdtype1.Font.GetAttributeOrDefault<FontNameAttribute>()!.Name})", 50, 100, size, stdtype1, cyan);
 page1.DrawString($"Hello World(Type1/{type1.BaseFont})", 50, 200, size, type1, red);
 page1.DrawString($"ハローワールド(CIF/Type0/{cif_sjis.BaseFont})", 50, 300, size, cif_sjis);
-page1.DrawString($"ハローワールド(CIF/Type0/{cif_utf16.BaseFont})", 50, 400, size, cif_utf16);
+page1.DrawString($"ハローワールド(CIF/TrueTypeFont/{cif_utf16.Font.PostScriptName})", 50, 400, size, cif_utf16);
 page1.DrawString($"{DateTime.Now:G}", 50, 500, size, type1, gray);
-page1.DrawLine(50, 400, 50 + (size * 40 / 2), 400, red);
-page1.DrawRectangle(50, 400 - size + 5, size * 40 / 2, size, cyan);
+var width = cif_utf16.Font.MeasureString($"ハローワールド(CIF/TrueTypeFont/{cif_utf16.Font.PostScriptName})") * size / 1000;
+page1.DrawLine(50, 400, 50 + width, 400, red);
+page1.DrawRectangle(50, 400 - size + 5, width, size, cyan);
 page1.DrawLine(50, 502, 50 + (size * 10 / 2), 502, cyan);
 page1.DrawLine(50, 502, 50, 502 - size);
 page1.DrawRectangle(50, 505, size * 10 / 2, 10, red);
@@ -50,3 +51,4 @@ Console.WriteLine(pf(p).Cast<IFormattable>().ToString("#,0", null));
 //doc.FontRegister.Fonts.Values
 //    .Order((a, b) => a.PostScriptName.CompareTo(b.PostScriptName))
 //    .Each(x => Console.WriteLine($"{x.PostScriptName},{x.Style},{x.FullFontName},{x.FontFamily}"));
+Lists.RangeTo('@', '~').Each(x => Console.WriteLine($"{x} = {cif_utf16.Font.MeasureChar(x)}"));
