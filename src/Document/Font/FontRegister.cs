@@ -86,8 +86,12 @@ public class FontRegister
     public static void DelayLoad(TrueTypeFont font)
     {
         using var stream = File.OpenRead(font.Path);
-        stream.Position = font.Position;
-        font.FontHeader = FontHeaderTable.ReadFrom(new MemoryStream(stream.ReadPositionBytes(font.TableRecords["head"].Offset, (int)font.TableRecords["head"].Length)));
+
+        stream.Position = font.TableRecords["head"].Offset;
+        font.FontHeader = FontHeaderTable.ReadFrom(stream);
+
+        stream.Position = font.TableRecords["maxp"].Offset;
+        font.MaximumProfile = MaximumProfile.ReadFrom(stream);
 
         var cmap = font.TableRecords["cmap"];
         var encodings = EncodingRecord.ReadFrom(stream, cmap);
@@ -95,6 +99,12 @@ public class FontRegister
             encodings.FindFirstOrNullValue(x => x.PlatformID == 0 && x.EncodingID == 3) ??
             encodings.FindFirstOrNullValue(x => x.PlatformID == 3 && x.EncodingID == 1);
         if (encoding.HasValue) font.CMap4 = CMapFormat4.ReadFrom(stream, cmap, encoding.Value);
+
+        stream.Position = font.TableRecords["hhea"].Offset;
+        font.HorizontalHeader = HorizontalHeaderTable.ReadFrom(stream);
+
+        stream.Position = font.TableRecords["hmtx"].Offset;
+        font.HorizontalMetrics = HorizontalMetricsTable.ReadFrom(stream, font.HorizontalHeader.NumberOfHMetrics, font.MaximumProfile.NumberOfGlyphs);
 
         font.Loaded = true;
     }

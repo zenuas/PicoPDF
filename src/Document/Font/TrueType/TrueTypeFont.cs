@@ -14,7 +14,10 @@ public class TrueTypeFont
     public required long Position { get; init; }
     public required Dictionary<string, TableRecord> TableRecords { get; init; }
     public FontHeaderTable FontHeader { get; set; }
+    public MaximumProfile MaximumProfile { get; set; }
     public CMapFormat4 CMap4 { get; set; }
+    public HorizontalHeaderTable HorizontalHeader { get; set; }
+    public HorizontalMetricsTable HorizontalMetrics { get; set; }
 
     public int CharToGID(char c)
     {
