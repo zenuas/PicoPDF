@@ -36,7 +36,7 @@ public class FontRegister
 
     public static TrueTypeFont[] LoadCollection(string path, Stream stream, LoadOption opt)
     {
-        var header = TTCHeader.ReadFrom(stream);
+        var header = TrueTypeCollectionHeader.ReadFrom(stream);
         if (header.TTCTag != "ttcf") throw new InvalidOperationException();
 
         return Enumerable.Range(0, (int)header.NumberOfFonts)

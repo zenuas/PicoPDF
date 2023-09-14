@@ -5,14 +5,14 @@ using System.Text;
 
 namespace PicoPDF.Document.Font.TrueType;
 
-public struct TTCHeader
+public struct TrueTypeCollectionHeader
 {
     public string TTCTag;
     public ushort MajorVersion;
     public ushort MinorVersion;
     public uint NumberOfFonts;
 
-    public static TTCHeader ReadFrom(Stream stream) => new()
+    public static TrueTypeCollectionHeader ReadFrom(Stream stream) => new()
     {
         TTCTag = Encoding.ASCII.GetString(stream.ReadBytes(4)),
         MajorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
