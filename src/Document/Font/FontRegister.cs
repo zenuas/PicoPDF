@@ -1,5 +1,5 @@
 ﻿using Extensions;
-using PicoPDF.Document.Font.TrueType;
+using PicoPDF.TrueType;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace PicoPDF.Document.Font;
 
 public class FontRegister
 {
-    public Dictionary<string, TrueTypeFont> Fonts { get; init; } = new();
+    public Dictionary<string, TrueTypeFontInfo> Fonts { get; init; } = new();
 
     public void RegistDirectory(string path)
     {
@@ -22,19 +22,19 @@ public class FontRegister
             .Each(x => Fonts.TryAdd(x.PostScriptName, x));
     }
 
-    public static TrueTypeFont Load(string path, LoadOption? opt = null)
+    public static TrueTypeFontInfo Load(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
         return Load(path, stream, 0, opt ?? new());
     }
 
-    public static TrueTypeFont[] LoadCollection(string path, LoadOption? opt = null)
+    public static TrueTypeFontInfo[] LoadCollection(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
         return LoadCollection(path, stream, opt ?? new());
     }
 
-    public static TrueTypeFont[] LoadCollection(string path, Stream stream, LoadOption opt)
+    public static TrueTypeFontInfo[] LoadCollection(string path, Stream stream, LoadOption opt)
     {
         var header = TrueTypeCollectionHeader.ReadFrom(stream);
         if (header.TTCTag != "ttcf") throw new InvalidOperationException();
@@ -46,7 +46,7 @@ public class FontRegister
             .ToArray();
     }
 
-    public static TrueTypeFont Load(string path, Stream stream, long pos, LoadOption opt)
+    public static TrueTypeFontInfo Load(string path, Stream stream, long pos, LoadOption opt)
     {
         stream.Position = pos;
         var header = OffsetTable.ReadFrom(stream);
@@ -62,7 +62,7 @@ public class FontRegister
             .Where(x => x is { })
             .FirstOrDefault();
 
-        return new TrueTypeFont()
+        return new TrueTypeFontInfo()
         {
             FontFamily = namev(1) ?? "",
             Style = namev(2) ?? "",
@@ -74,7 +74,7 @@ public class FontRegister
         };
     }
 
-    public TrueTypeFont? GetOrNull(string name)
+    public TrueTypeFontInfo? GetOrNull(string name)
     {
         var font = Fonts.GetValueOrDefault(name);
         if (font is null || font.Loaded) return font;
@@ -83,7 +83,7 @@ public class FontRegister
         return font;
     }
 
-    public static void DelayLoad(TrueTypeFont font)
+    public static void DelayLoad(TrueTypeFontInfo font)
     {
         using var stream = File.OpenRead(font.Path);
 

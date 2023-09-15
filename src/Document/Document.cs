@@ -1,7 +1,7 @@
 ﻿using Extensions;
 using PicoPDF.Document.Element;
 using PicoPDF.Document.Font;
-using PicoPDF.Document.Font.TrueType;
+using PicoPDF.TrueType;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -68,12 +68,12 @@ public class Document
         return font;
     }
 
-    public CIDTrueTypeFont AddFont(string name, TrueTypeFont ttf, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public TrueTypeFont AddFont(string name, TrueTypeFontInfo ttf, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
         var cmap = CMap.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary() { Subtype = "CIDFontType2 ", BaseFont = ttf.PostScriptName };
-        var font = new CIDTrueTypeFont() { Name = name, Font = ttf, Encoding = cidsysinfo.Name, FontDictionary = fontdict };
+        var font = new TrueTypeFont() { Name = name, Font = ttf, Encoding = cidsysinfo.Name, FontDictionary = fontdict };
         ResourcesFont.Add(name, font);
         PdfObjects.Add(font);
 

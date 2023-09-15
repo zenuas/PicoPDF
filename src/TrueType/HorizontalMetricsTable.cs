@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 
-namespace PicoPDF.Document.Font.TrueType;
+namespace PicoPDF.TrueType;
 
 public struct HorizontalMetricsTable
 {

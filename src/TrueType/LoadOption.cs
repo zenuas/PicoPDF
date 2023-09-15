@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Document.Font.TrueType;
+﻿namespace PicoPDF.TrueType;
 
 public class LoadOption
 {

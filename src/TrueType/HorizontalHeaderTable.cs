@@ -2,7 +2,7 @@
 using System.Buffers.Binary;
 using System.IO;
 
-namespace PicoPDF.Document.Font.TrueType;
+namespace PicoPDF.TrueType;
 
 public struct HorizontalHeaderTable
 {

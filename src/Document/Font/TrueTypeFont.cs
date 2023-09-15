@@ -1,15 +1,15 @@
 ﻿using Extensions;
 using PicoPDF.Document.Element;
-using PicoPDF.Document.Font.TrueType;
+using PicoPDF.TrueType;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PicoPDF.Document.Font;
 
-public class CIDTrueTypeFont : PdfObject, IFont
+public class TrueTypeFont : PdfObject, IFont
 {
     public required string Name { get; init; }
-    public required TrueTypeFont Font { get; init; }
+    public required TrueTypeFontInfo Font { get; init; }
     public required string Encoding { get; init; }
     public CIDFontDictionary FontDictionary { get; init; } = new();
 

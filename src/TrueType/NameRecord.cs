@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace PicoPDF.Document.Font.TrueType;
+namespace PicoPDF.TrueType;
 
 public struct NameRecord
 {
