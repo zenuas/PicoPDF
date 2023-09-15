@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace PicoPDF.Section;
 
-public class HeaderSection : ISection
+public class HeaderSection : ISection, IHeaderSection
 {
     public ViewModes ViewMode_ = ViewModes.Header | ViewModes.First;
 

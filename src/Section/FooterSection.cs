@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace PicoPDF.Section;
 
-public class FooterSection : ISection
+public class FooterSection : ISection, IFooterSection
 {
     public ViewModes ViewMode_ = ViewModes.Footer | ViewModes.Last;
 
