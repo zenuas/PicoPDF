@@ -4,7 +4,7 @@ using System.IO;
 
 namespace PicoPDF.TrueType;
 
-public struct MaximumProfile
+public struct MaximumProfileTable
 {
     public int Version;
     public ushort NumberOfGlyphs;
@@ -22,9 +22,9 @@ public struct MaximumProfile
     public ushort MaxComponentElements;
     public ushort MaxComponentDepth;
 
-    public static MaximumProfile ReadFrom(Stream stream)
+    public static MaximumProfileTable ReadFrom(Stream stream)
     {
-        var maxp = new MaximumProfile()
+        var maxp = new MaximumProfileTable()
         {
             Version = BinaryPrimitives.ReadInt32BigEndian(stream.ReadBytes(4)),
             NumberOfGlyphs = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),

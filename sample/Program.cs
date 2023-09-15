@@ -25,9 +25,9 @@ page1.DrawString($"Hello World(Type1/{type1.BaseFont})", 50, 200, size, type1, r
 page1.DrawString($"ハローワールド(CIF/Type0/{cif_sjis.BaseFont})", 50, 300, size, cif_sjis);
 page1.DrawString($"ハローワールド(CIF/TrueTypeFont/{cif_utf16.Font.PostScriptName})", 50, 400, size, cif_utf16);
 page1.DrawString($"{DateTime.Now:G}", 50, 500, size, type1, gray);
-var width = cif_utf16.Font.MeasureString($"ハローワールド(CIF/TrueTypeFont/{cif_utf16.Font.PostScriptName})") * size / 1000;
-page1.DrawLine(50, 400, 50 + width, 400, red);
-page1.DrawRectangle(50, 400 - size + 5, width, size, cyan);
+var box = cif_utf16.MeasureStringBox($"ハローワールド(CIF/TrueTypeFont/{cif_utf16.Font.PostScriptName})");
+page1.DrawLine(50, 400, 50 + (int)(box.Width * size), 400, red);
+page1.DrawRectangle(50, 400 + (int)(box.Top * size), (int)(box.Width * size), (int)(box.Height * size), cyan);
 page1.DrawLine(50, 502, 50 + (size * 10 / 2), 502, cyan);
 page1.DrawLine(50, 502, 50, 502 - size);
 page1.DrawRectangle(50, 505, size * 10 / 2, 10, red);

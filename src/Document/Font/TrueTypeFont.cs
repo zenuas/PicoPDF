@@ -1,4 +1,5 @@
 ﻿using Extensions;
+using PicoPDF.Document.Drawing;
 using PicoPDF.Document.Element;
 using PicoPDF.TrueType;
 using System.Collections.Generic;
@@ -22,6 +23,14 @@ public class TrueTypeFont : PdfObject, IFont
         _ = Elements.TryAdd("Encoding", $"/{Encoding}");
         _ = Elements.TryAdd("DescendantFonts", new ElementIndirectArray(FontDictionary));
     }
+
+    public Position MeasureStringBox(string s) => new()
+    {
+        Left = 0,
+        Top = (double)(-Font.OS2.STypoAscender) / Font.FontHeader.UnitsPerEm,
+        Right = (double)Font.MeasureString(s) / 1000,
+        Bottom = (double)(-Font.OS2.STypoDescender) / Font.FontHeader.UnitsPerEm,
+    };
 
     public IEnumerable<byte> CreateTextShowingOperator(string s)
     {

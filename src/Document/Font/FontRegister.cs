@@ -91,7 +91,10 @@ public class FontRegister
         font.FontHeader = FontHeaderTable.ReadFrom(stream);
 
         stream.Position = font.TableRecords["maxp"].Offset;
-        font.MaximumProfile = MaximumProfile.ReadFrom(stream);
+        font.MaximumProfile = MaximumProfileTable.ReadFrom(stream);
+
+        stream.Position = font.TableRecords["OS/2"].Offset;
+        font.OS2 = OS2Table.ReadFrom(stream);
 
         var cmap = font.TableRecords["cmap"];
         var encodings = EncodingRecord.ReadFrom(stream, cmap);
