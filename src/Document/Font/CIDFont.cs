@@ -127,7 +127,7 @@ public class CIDFont : PdfObject, IFont
     public IEnumerable<byte> CreateTextShowingOperator(string s)
     {
         return SplitWidth(s, Widths)
-            .Select(x => (TextEncoding ?? System.Text.Encoding.ASCII)
+            .Select(x => TextEncoding
                 .GetBytes(x.Text)
                 .Select<byte, byte[]>(x => x.In(EscapeBytes) ? [EscapeCharByte, x] : [x])
                 .Flatten()

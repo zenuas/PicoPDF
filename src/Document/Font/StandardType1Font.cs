@@ -23,7 +23,7 @@ public class StandardType1Font : PdfObject, IFont
 
     public IEnumerable<byte> CreateTextShowingOperator(string s)
     {
-        return (TextEncoding ?? Encoding.ASCII)
+        return TextEncoding
             .GetBytes(s)
             .Select<byte, byte[]>(x => x.In(EscapeBytes) ? [EscapeCharByte, x] : [x])
             .Flatten()
