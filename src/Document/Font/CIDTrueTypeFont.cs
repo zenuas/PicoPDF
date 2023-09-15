@@ -3,7 +3,6 @@ using PicoPDF.Document.Element;
 using PicoPDF.Document.Font.TrueType;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PicoPDF.Document.Font;
 
@@ -13,7 +12,6 @@ public class CIDTrueTypeFont : PdfObject, IFont
     public required TrueTypeFont Font { get; init; }
     public required string Encoding { get; init; }
     public CIDFontDictionary FontDictionary { get; init; } = new();
-    public Encoding TextEncoding { get; init; } = System.Text.Encoding.ASCII;
 
     public override void DoExport()
     {
