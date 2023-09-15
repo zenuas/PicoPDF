@@ -11,7 +11,7 @@ var doc = new Document();
 doc.FontRegister.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
 
 var stdtype1 = doc.AddFont("stdtype1", StandardType1Fonts.TimesRoman, Encoding.GetEncoding(932));
-var type1 = doc.AddFont("type1", "Ryumin-Light", "WinAnsiEncoding", Encoding.GetEncoding(932));
+var type1 = doc.AddFont("type1", "Ryumin-Light", Type1Encoding.WinAnsiEncoding, Encoding.GetEncoding(932));
 var cif_sjis = doc.AddFont("cif_sjis", "HeiseiMin-W3", CMap._90msp_RKSJ_H, Encoding.GetEncoding(932));
 var cif_utf16 = doc.AddFont("cif_utf16", doc.FontRegister.GetOrNull("Meiryo-Bold")!);
 var gray = new DeviceGray() { Gray = 0.5 };

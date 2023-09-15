@@ -90,9 +90,9 @@ public class Document
         return font;
     }
 
-    public Type1Font AddFont(string name, string basefont, string encoding, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public Type1Font AddFont(string name, string basefont, Type1Encoding encoding, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
-        var font = new Type1Font() { Name = name, BaseFont = basefont, Encoding = encoding, TextEncoding = enc };
+        var font = new Type1Font() { Name = name, BaseFont = basefont, Encoding = encoding.ToString(), TextEncoding = enc };
         ResourcesFont.Add(name, font);
         PdfObjects.Add(font);
 
