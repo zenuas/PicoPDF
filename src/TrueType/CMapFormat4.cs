@@ -36,7 +36,7 @@ public struct CMapFormat4
         };
 
         var seg_count = cmap4.SegCountX2 / 2;
-        var glyph_count = (cmap4.Length - (16 + 8 * seg_count)) / 2;
+        var glyph_count = (cmap4.Length - (16 + (8 * seg_count))) / 2;
 
         cmap4.EndCode = Lists.RangeTo(0, seg_count - 1).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray();
         cmap4.ReservedPad = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));

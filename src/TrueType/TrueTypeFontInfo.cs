@@ -28,10 +28,10 @@ public class TrueTypeFontInfo
         if (c < start) return 0;
 
         var idrange = CMap4.IdRangeOffsets[seg];
-        if (idrange == 0) return c + CMap4.IdDelta[seg] & 0xFFFF;
+        if (idrange == 0) return (c + CMap4.IdDelta[seg]) & 0xFFFF;
 
-        var gindex = idrange / 2 + c - start - CMap4.SegCountX2 / 2 + seg;
-        return CMap4.GlyphIdArray[gindex] + CMap4.IdDelta[seg] & 0xFFFF;
+        var gindex = (idrange / 2) + c - start - (CMap4.SegCountX2 / 2) + seg;
+        return (CMap4.GlyphIdArray[gindex] + CMap4.IdDelta[seg]) & 0xFFFF;
     }
 
     public int MeasureString(string s) => s.Select(MeasureChar).Sum();
