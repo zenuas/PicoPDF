@@ -2,6 +2,7 @@
 using PicoPDF.Document;
 using PicoPDF.Document.Color;
 using PicoPDF.Document.Font;
+using PicoPDF.Section;
 using PicoPDF.Section.Element;
 using System.Text;
 
@@ -48,3 +49,4 @@ Console.WriteLine(pf(p).Cast<IFormattable>().ToString("#,0", null));
 //doc.FontRegister.Fonts.Values
 //    .Order((a, b) => a.PostScriptName.CompareTo(b.PostScriptName))
 //    .Each(x => Console.WriteLine($"{x.PostScriptName},{x.Style},{x.FullFontName},{x.FontFamily}"));
+var section = SectionLoader.Load("test-case/01.json");

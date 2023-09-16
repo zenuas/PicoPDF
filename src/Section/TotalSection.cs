@@ -8,7 +8,8 @@ public class TotalSection : ISection, IFooterSection
 {
     public ViewModes ViewMode_ = ViewModes.Footer | ViewModes.Last;
 
-    public required int Height { get; set; }
+    public required string Name { get; init; }
+    public required int Height { get; init; }
     public ViewModes ViewMode { get => ViewMode_; init => ViewMode_ = value == (ViewModes.Total | ViewModes.Last) || value == (ViewModes.Total | ViewModes.Every) ? value : throw new ArgumentException(); }
     public List<IElement> Elements { get; init; } = new();
 }

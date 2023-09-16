@@ -6,7 +6,8 @@ namespace PicoPDF.Section;
 
 public class DetailSection : ISection, ISubSection
 {
-    public required int Height { get; set; }
+    public required string Name { get; init; }
+    public required int Height { get; init; }
     public ViewModes ViewMode { get => ViewModes.Detail; init => _ = value == ViewModes.Detail ? value : throw new ArgumentException(); }
     public List<IElement> Elements { get; init; } = new();
 }
