@@ -2,6 +2,8 @@
 
 public enum ViewModes
 {
+    None = 0x0000,
+
     MODES = 0x00FF,
     Every = 0x0001,
     First = 0x0002,

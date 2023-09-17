@@ -1,0 +1,36 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	
+	"Header": "PageHeader",
+	"Detail": {
+			"BreakKey": "Tiiki",
+			"Header": "Header",
+			"Detail": "Detail",
+			"Footer": "Total"
+		},
+	"Footer": "PageFooter",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "Elements": [
+			{"Type": "TextElement", "Text": "PageHeader", "X": 10, "Y": 10}
+		]},
+		{"Type": "HeaderSection", "Name": "Header", "Height": 50, "Elements": [
+			{"Type": "TextElement", "Text": "Header", "X": 10,  "Y": 10},
+			{"Type": "BindElement", "Bind": "Tiiki",  "X": 100, "Y": 10}
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 15, "Elements": [
+			{"Type": "TextElement", "Text": "Detail",      "X": 10,  "Y": 0},
+			{"Type": "BindElement", "Bind": "Todouhuken",  "X": 100, "Y": 0},
+			{"Type": "BindElement", "Bind": "Sikutyouson", "X": 150, "Y": 0},
+			{"Type": "BindElement", "Bind": "Number",      "X": 250, "Y": 0}
+		]},
+		{"Type": "TotalSection", "Name": "Total", "Height": 50, "Elements": [
+			{"Type": "TextElement", "Text": "TiikiTotal", "X": 10,  "Y": 10},
+			{"Type": "BindElement", "Bind": "Number",     "X": 100, "Y": 10}
+		]},
+		{"Type": "FooterSection", "Name": "PageFooter", "Height": 50, "Elements": [
+			{"Type": "TextElement", "Text": "PageFooter", "X": 10, "Y": 10}
+		]}
+	]
+}
