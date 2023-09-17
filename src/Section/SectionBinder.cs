@@ -41,7 +41,7 @@ public static class SectionBinder
                         .SkipWhileOrEveryPage(x => x.BreakKey != "" && prevkey[x.BreakKey] != keyset[x.BreakKey])
                         .Reverse()
                         .Select(x => new SectionModel() { Top = (height -= x.Section.Height), Height = x.Section.Height, Elements = BindElements(x.Section.Elements, prevdata!, mapper).ToList() }));
-                    pages.Add(new() { Size = page.Size, Orientation = page.Orientation, Models = models.ToList() });
+                    pages.Add(new() { Size = page.Size, Orientation = page.Orientation, DefaultFont = page.DefaultFont, Models = models.ToList() });
                     models.Clear();
 
                     var top = 0;
@@ -67,7 +67,7 @@ public static class SectionBinder
         models.AddRange(footers
             .Reverse()
             .Select(x => new SectionModel() { Top = (lastpage -= x.Section.Height), Height = x.Section.Height, Elements = BindElements(x.Section.Elements, prevdata!, mapper).ToList() }));
-        pages.Add(new() { Size = page.Size, Orientation = page.Orientation, Models = models.ToList() });
+        pages.Add(new() { Size = page.Size, Orientation = page.Orientation, DefaultFont = page.DefaultFont, Models = models.ToList() });
 
         return pages.ToArray();
     }
@@ -79,11 +79,25 @@ public static class SectionBinder
         switch (element)
         {
             case TextElement x:
-                return new TextModel() { X = x.X, Y = x.Y, Text = x.Text };
+                return new TextModel()
+                {
+                    X = x.X,
+                    Y = x.Y,
+                    Text = x.Text,
+                    Font = x.Font,
+                    Size = x.Size,
+                };
 
             case BindElement x:
                 var o = mapper[x.Bind](data);
-                return new TextModel() { X = x.X, Y = x.Y, Text = (x.Format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(x.Format, null)) ?? "" };
+                return new TextModel()
+                {
+                    X = x.X,
+                    Y = x.Y,
+                    Text = (x.Format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(x.Format, null)) ?? "",
+                    Font = x.Font,
+                    Size = x.Size,
+                };
         }
         throw new Exception();
     }

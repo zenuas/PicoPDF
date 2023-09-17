@@ -24,6 +24,7 @@ public static class SectionLoader
         {
             Size = Enum.Parse<PageSize>(json["Size"]!.ToString()),
             Orientation = Enum.Parse<Orientation>(json["Orientation"]!.ToString()),
+            DefaultFont = json["DefaultFont"]!.ToString(),
             Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
             Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
             SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
@@ -71,10 +72,25 @@ public static class SectionLoader
         switch (json["Type"]!.ToString())
         {
             case "TextElement":
-                return new TextElement() { X = posx, Y = posy, Text = json["Text"]!.ToString() };
+                return new TextElement()
+                {
+                    X = posx,
+                    Y = posy,
+                    Text = json["Text"]!.ToString(),
+                    Font = json["Font"]?.ToString() ?? "",
+                    Size = (int)json["Size"]!.AsValue(),
+                };
 
             case "BindElement":
-                return new BindElement() { X = posx, Y = posy, Bind = json["Bind"]!.ToString(), Format = json["Format"]?.ToString() ?? "" };
+                return new BindElement()
+                {
+                    X = posx,
+                    Y = posy,
+                    Bind = json["Bind"]!.ToString(),
+                    Format = json["Format"]?.ToString() ?? "",
+                    Font = json["Font"]?.ToString() ?? "",
+                    Size = (int)json["Size"]!.AsValue(),
+                };
         }
         throw new Exception();
     }
