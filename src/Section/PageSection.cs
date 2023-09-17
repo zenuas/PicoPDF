@@ -2,7 +2,7 @@
 
 namespace PicoPDF.Section;
 
-public class PageSection
+public class PageSection : IParentSection
 {
     public required PageSize Size { get; init; }
     public required Orientation Orientation { get; init; }

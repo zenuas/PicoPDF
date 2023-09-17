@@ -92,6 +92,18 @@ public static class SectionLoader
                     Font = json["Font"]?.ToString() ?? "",
                     Size = (int)json["Size"]!.AsValue(),
                 };
+
+            case "SummaryElement":
+                return new SummaryElement()
+                {
+                    X = posx,
+                    Y = posy,
+                    Bind = json["Bind"]!.ToString(),
+                    Format = json["Format"]?.ToString() ?? "",
+                    Font = json["Font"]?.ToString() ?? "",
+                    Size = (int)json["Size"]!.AsValue(),
+                    SummaryType = json["SummaryType"] is { } v ? Enum.Parse<SummaryType>(v.ToString()) : SummaryType.Summary,
+                };
         }
         throw new Exception();
     }

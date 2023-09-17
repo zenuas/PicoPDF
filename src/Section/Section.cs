@@ -1,6 +1,6 @@
 ﻿namespace PicoPDF.Section;
 
-public class Section : ISubSection
+public class Section : ISubSection, IParentSection
 {
     public string BreakKey { get; init; } = "";
     public IHeaderSection? Header { get; init; } = null;
