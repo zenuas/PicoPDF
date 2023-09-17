@@ -12,4 +12,5 @@ public class TotalSection : ISection, IFooterSection
     public required int Height { get; init; }
     public ViewModes ViewMode { get => ViewMode_; init => ViewMode_ = value == (ViewModes.Total | ViewModes.Last) || value == (ViewModes.Total | ViewModes.Every) ? value : throw new ArgumentException(); }
     public List<ISectionElement> Elements { get; init; } = new();
+    public required bool PageBreak { get; init; }
 }

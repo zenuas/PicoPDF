@@ -48,6 +48,7 @@ public static class SectionLoader
         var name = json["Name"]!.ToString();
         var height = (int)json["Height"]!.AsValue();
         var viewmode = json["ViewMode"] is { } v ? Enum.Parse<ViewModes>(v.ToString()) : ViewModes.Every;
+        var pagebreak = json["PageBreak"]?.AsValue();
         switch (json["Type"]!.ToString())
         {
             case "HeaderSection":
@@ -57,10 +58,10 @@ public static class SectionLoader
                 return new DetailSection() { Name = name, Height = height, Elements = elements };
 
             case "TotalSection":
-                return new TotalSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Total, Elements = elements };
+                return new TotalSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Total, Elements = elements, PageBreak = pagebreak is { } p1 && (bool)p1 };
 
             case "FooterSection":
-                return new FooterSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Footer, Elements = elements };
+                return new FooterSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Footer, Elements = elements, PageBreak = pagebreak is { } p2 && (bool)p2 };
         }
         throw new Exception();
     }
