@@ -11,5 +11,5 @@ public class HeaderSection : ISection, IHeaderSection
     public required string Name { get; init; }
     public required int Height { get; init; }
     public ViewModes ViewMode { get => ViewMode_; init => ViewMode_ = value == (ViewModes.Header | ViewModes.First) || value == (ViewModes.Header | ViewModes.Every) ? value : throw new ArgumentException(); }
-    public List<IElement> Elements { get; init; } = new();
+    public List<ISectionElement> Elements { get; init; } = new();
 }

@@ -1,4 +1,5 @@
 ﻿using Extensions;
+using PicoPDF.Document;
 using PicoPDF.Section.Element;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,9 @@ using System.Text.Json.Nodes;
 
 namespace PicoPDF.Section;
 
-public class SectionLoader
+public static class SectionLoader
 {
-    public static Section Load(string path)
+    public static PageSection Load(string path)
     {
         var json = JsonNode.Parse(File.ReadAllText(path))!;
 
@@ -19,15 +20,25 @@ public class SectionLoader
             .Select(x => LoadSubSection(x!))
             .ToDictionary(x => x.Name, x => x);
 
-        return LoadSection(json["Page"]!, sections);
+        return new PageSection()
+        {
+            Size = Enum.Parse<PageSize>(json["Size"]!.ToString()),
+            Orientation = Enum.Parse<Orientation>(json["Orientation"]!.ToString()),
+            Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
+            Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
+            SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
+        };
     }
+
     public static Section LoadSection(JsonNode json, Dictionary<string, ISection> sections)
     {
-        var header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null;
-        var footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null;
-        var detail = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>();
-
-        return new Section() { SubSection = detail, Header = header, Footer = footer };
+        return new Section()
+        {
+            BreakKey = json["BreakKey"]?.ToString() ?? "",
+            Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
+            Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
+            SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
+        };
     }
 
     public static ISection LoadSubSection(JsonNode json)
@@ -52,7 +63,7 @@ public class SectionLoader
         throw new Exception();
     }
 
-    public static IElement LoadElement(JsonNode json)
+    public static ISectionElement LoadElement(JsonNode json)
     {
         var posx = (int)json["X"]!.AsValue();
         var posy = (int)json["Y"]!.AsValue();

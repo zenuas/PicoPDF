@@ -1,6 +1,6 @@
-﻿namespace PicoPDF.Section.Element;
+﻿namespace PicoPDF.Model.Element;
 
-public class TextElement : ISectionElement
+public class TextModel : IModelElement
 {
     public required int X { get; init; }
     public required int Y { get; init; }

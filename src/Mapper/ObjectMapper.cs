@@ -1,14 +1,15 @@
-﻿namespace PicoPDF.Mapper;
+﻿using Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-public class ObjectMapper
+namespace PicoPDF.Mapper;
+
+public static class ObjectMapper
 {
-    /*
-     * ISection.Elements からBindElementを取得する
-     * BindElement.Name でTからFetchできるものを集めたFunc<T,R>の配列を得る
-     * 1セクションごとに (string BindName, string Format, Func<T, object> Fetch)[] にまとめる
-     * 
-     * BindElementを取得する所はSection名前空間で解決すべき問題だし
-     * Fetchを集める所だけをObjectMapperで切り出すべきか？
-     * 不要ではないか？
-     */
+    public static Dictionary<string, Func<T, object>> CreateGetMapper<T>() => typeof(T)
+        .GetProperties()
+        .Select(x => (x.Name, Method: x.GetGetMethod()!))
+        .Where(x => x.Method.GetParameters().Length == 0)
+        .ToDictionary(x => x.Name, x => Expressions.GetMethod<T, object>(x.Method));
 }
