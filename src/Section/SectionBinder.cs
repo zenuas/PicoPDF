@@ -1,6 +1,5 @@
 ﻿using Extensions;
 using PicoPDF.Document;
-using PicoPDF.Mapper;
 using PicoPDF.Model;
 using PicoPDF.Model.Element;
 using PicoPDF.Section.Element;
@@ -24,42 +23,8 @@ public static class SectionBinder
         var pages = new List<PageModel>();
         var models = new List<SectionModel>();
 
-        var mapper = ObjectMapper.CreateGetMapper<T>();
-        var summaries = TraversSummaryElement([], page);
-        var summarypool = new Dictionary<string, dynamic>();
-        var summaryaction = new List<Action<T>>();
-        summaries.Each(sr =>
-        {
-            var key = sr.BreakKeys.Join(".");
-            var bind = sr.SummaryElement.Bind;
-            var sumkey = $"${key}:{bind}";
-            var countkey = $"${key}#";
-            switch (sr.SummaryElement.SummaryType)
-            {
-                case SummaryType.Summary:
-                    countkey = "";
-                    break;
-
-                case SummaryType.Count:
-                    sumkey = "";
-                    break;
-
-                case SummaryType.Average:
-                    break;
-            }
-            if (sumkey != "" && summarypool.TryAdd(sumkey, 0))
-            {
-                mapper.Add(sumkey, _ => summarypool[sumkey]);
-                summaryaction.Add(x => summarypool[sumkey] += (dynamic)mapper[bind](x));
-            }
-            if (countkey != "" && summarypool.TryAdd(countkey, 0))
-            {
-                mapper.Add(countkey, _ => summarypool[countkey]);
-                summaryaction.Add(x => summarypool[countkey]++);
-            }
-            if (sumkey != "") sr.SummaryElement.Bind = sumkey;
-            if (countkey != "") sr.SummaryElement.CountBind = countkey;
-        });
+        var bind = new BindSummaryMapper<T>();
+        bind.CreatePool(page);
 
         var keys = headers.Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
         Dictionary<string, object>? prevkey = null;
@@ -68,7 +33,7 @@ public static class SectionBinder
 
         foreach (var data in datas)
         {
-            var keyset = keys.ToDictionary(x => x, x => mapper[x](data));
+            var keyset = keys.ToDictionary(x => x, x => bind.Mapper[x](data));
             if (prevkey is null || !keys.All(x => prevkey[x].Equals(keyset[x])))
             {
                 if (prevkey is { })
@@ -79,8 +44,8 @@ public static class SectionBinder
                         .ToArray();
                     var pagebreak = breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak);
 
-                    if (pagebreak && page.Footer is ISection pagefooter) models.Add(SectionToModel(pagefooter, pos, BindElements(pagefooter.Elements, prevdata!, mapper)));
-                    models.AddRange(breakfooter.Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, prevdata!, mapper))));
+                    if (pagebreak && page.Footer is ISection pagefooter) models.Add(SectionToModel(pagefooter, pos, BindElements(pagefooter.Elements, prevdata!, bind)));
+                    models.AddRange(breakfooter.Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, prevdata!, bind))));
 
                     if (pagebreak)
                     {
@@ -88,40 +53,38 @@ public static class SectionBinder
                         models.Clear();
                     }
 
-                    var nobreak = keys.TakeWhile(x => prevkey[x].Equals(keyset[x])).Join(".");
-                    var sumkey_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
-                    summarypool.Keys.Where(x => x.StartsWith(sumkey_prefix)).Each(x => summarypool[x] = 0);
-                    summaryaction.Each(x => x(data));
+                    bind.Clear(keys.TakeWhile(x => prevkey[x].Equals(keyset[x])).ToArray());
+                    bind.DataBind(data);
 
                     if (pagebreak)
                     {
                         pos.Top = 0;
                         pos.Bottom = pageheight;
-                        if (page.Header is ISection pageheader) models.Add(SectionToModel(pageheader, pos, BindElements(pageheader.Elements, prevdata!, mapper)));
+                        if (page.Header is ISection pageheader) models.Add(SectionToModel(pageheader, pos, BindElements(pageheader.Elements, prevdata!, bind)));
                     }
 
                     models.AddRange(headers
                         .SkipWhileOrEveryPage(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
-                        .Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, data, mapper))));
+                        .Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, data, bind))));
                 }
                 else
                 {
-                    summaryaction.Each(x => x(data));
-                    if (page.Header is ISection pageheader) models.Add(SectionToModel(pageheader, pos, BindElements(pageheader.Elements, prevdata!, mapper)));
-                    models.AddRange(headers.Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, data, mapper))));
+                    bind.DataBind(data);
+                    if (page.Header is ISection pageheader) models.Add(SectionToModel(pageheader, pos, BindElements(pageheader.Elements, prevdata!, bind)));
+                    models.AddRange(headers.Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, data, bind))));
                 }
                 prevkey = keyset;
             }
             else
             {
-                summaryaction.Each(x => x(data));
+                bind.DataBind(data);
             }
-            models.Add(SectionToModel(detail, pos, BindElements(detail.Elements, data, mapper)));
+            models.Add(SectionToModel(detail, pos, BindElements(detail.Elements, data, bind)));
             prevdata = data;
         }
 
-        if (page.Footer is ISection lastfooter) models.Add(SectionToModel(lastfooter, pos, BindElements(lastfooter.Elements, prevdata!, mapper)));
-        models.AddRange(footers.Reverse().Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, prevdata!, mapper))));
+        if (page.Footer is ISection lastfooter) models.Add(SectionToModel(lastfooter, pos, BindElements(lastfooter.Elements, prevdata!, bind)));
+        models.AddRange(footers.Reverse().Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, prevdata!, bind))));
         pages.Add(ModelsToPage(page, models));
 
         return pages.ToArray();
@@ -143,9 +106,9 @@ public static class SectionBinder
         Models = models.ToList(),
     };
 
-    public static IEnumerable<IModelElement> BindElements<T>(List<ISectionElement> elements, T data, Dictionary<string, Func<T, object>> mapper) => elements.Select(x => BindElement(x, data, mapper));
+    public static IEnumerable<IModelElement> BindElements<T>(List<ISectionElement> elements, T data, BindSummaryMapper<T> bind) => elements.Select(x => BindElement(x, data, bind));
 
-    public static IModelElement BindElement<T>(ISectionElement element, T data, Dictionary<string, Func<T, object>> mapper)
+    public static IModelElement BindElement<T>(ISectionElement element, T data, BindSummaryMapper<T> bind)
     {
         switch (element)
         {
@@ -161,7 +124,7 @@ public static class SectionBinder
 
             case BindElement x:
                 {
-                    var o = mapper[x.Bind](data);
+                    var o = bind.Mapper[x.Bind](data);
                     return new TextModel()
                     {
                         X = x.X,
@@ -174,21 +137,7 @@ public static class SectionBinder
 
             case SummaryElement x:
                 {
-                    object? o = null;
-                    switch (x.SummaryType)
-                    {
-                        case SummaryType.Summary:
-                            o = mapper[x.Bind](data);
-                            break;
-
-                        case SummaryType.Count:
-                            o = (int)mapper[x.CountBind](data);
-                            break;
-
-                        case SummaryType.Average:
-                            o = (dynamic)mapper[x.Bind](data) / (dynamic)mapper[x.CountBind](data);
-                            break;
-                    }
+                    var o = bind.GetSummary(x, data);
                     return new TextModel()
                     {
                         X = x.X,
@@ -214,18 +163,4 @@ public static class SectionBinder
             }
         }
     }
-
-    public static List<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IParentSection section)
-    {
-        if (section is Section x && x.BreakKey != "") keys = keys.Append(x.BreakKey).ToArray();
-
-        var results = new List<(string[] BreakKeys, SummaryElement SummaryElement)>();
-        if (section.Header is ISection header) results.AddRange(TraversSummaryElement(keys, header.Elements));
-        if (section.SubSection is ISection detail) results.AddRange(TraversSummaryElement(keys, detail.Elements));
-        if (section.SubSection is IParentSection subsection) results.AddRange(TraversSummaryElement(keys, subsection));
-        if (section.Footer is ISection footer) results.AddRange(TraversSummaryElement(keys, footer.Elements));
-        return results;
-    }
-
-    public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, List<ISectionElement> elements) => elements.OfType<SummaryElement>().Select(x => (keys, x));
 }
