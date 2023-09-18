@@ -92,9 +92,8 @@ public static class SectionBinder
 
     public static SectionModel SectionToModel(ISection section, TopBottom pos, IEnumerable<IModelElement> elements) => new()
     {
-        Name = section.Name,
+        Section = section,
         Top = (section.ViewMode & ViewModes.POSITION) == ViewModes.Footer ? (pos.Bottom -= section.Height) : (pos.Top += section.Height) - section.Height,
-        Height = section.Height,
         Elements = elements.ToList(),
     };
 
