@@ -37,7 +37,11 @@
 		]},
 		{"Type": "TotalSection", "Name": "Total", "Height": 30, "ViewMode": "Last", "PageBreak": true, "Elements": [
 			{"Type": "TextElement",    "Text": "TiikiTotal", "Size": 10, "X": 10,  "Y": 10},
-			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 250, "Y": 10, "Format": "#,0"}
+			{"Type": "TextElement",    "Text": "/",          "Size": 10, "X": 190, "Y": 10},
+			{"Type": "TextElement",    "Text": "=",          "Size": 10, "X": 240, "Y": 10},
+			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 100, "Y": 10, "Format": "#,0", "SummaryType": "Summary"},
+			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 200, "Y": 10, "Format": "#,0", "SummaryType": "Count"},
+			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 250, "Y": 10, "Format": "#,0", "SummaryType": "Average"}
 		]},
 		{"Type": "TotalSection", "Name": "Total2", "Height": 30, "Elements": [
 			{"Type": "TextElement",    "Text": "TodouhukenTotal", "Size": 10, "X": 10,  "Y": 10},

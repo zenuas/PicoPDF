@@ -33,18 +33,32 @@ public static class SectionBinder
             var key = sr.BreakKeys.Join(".");
             var bind = sr.SummaryElement.Bind;
             var sumkey = $"${key}:{bind}";
-            var countkey = $"#{key}:";
-            if (summarypool.TryAdd(sumkey, 0))
+            var countkey = $"${key}#";
+            switch (sr.SummaryElement.SummaryType)
+            {
+                case SummaryType.Summary:
+                    countkey = "";
+                    break;
+
+                case SummaryType.Count:
+                    sumkey = "";
+                    break;
+
+                case SummaryType.Average:
+                    break;
+            }
+            if (sumkey != "" && summarypool.TryAdd(sumkey, 0))
             {
                 mapper.Add(sumkey, _ => summarypool[sumkey]);
                 summaryaction.Add(x => summarypool[sumkey] += (dynamic)mapper[bind](x));
             }
-            if (summarypool.TryAdd(countkey, 0))
+            if (countkey != "" && summarypool.TryAdd(countkey, 0))
             {
                 mapper.Add(countkey, _ => summarypool[countkey]);
                 summaryaction.Add(x => summarypool[countkey]++);
             }
-            sr.SummaryElement.Bind = sumkey;
+            if (sumkey != "") sr.SummaryElement.Bind = sumkey;
+            if (countkey != "") sr.SummaryElement.CountBind = countkey;
         });
 
         var keys = headers.Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
@@ -97,8 +111,7 @@ public static class SectionBinder
 
                     var nobreak = keys.TakeWhile(x => prevkey[x].Equals(keyset[x])).Join(".");
                     var sumkey_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
-                    var countkey_prefix = $"#{(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
-                    summarypool.Keys.Where(x => x.StartsWith(sumkey_prefix) || x.StartsWith(countkey_prefix)).Each(x => summarypool[x] = 0);
+                    summarypool.Keys.Where(x => x.StartsWith(sumkey_prefix)).Each(x => summarypool[x] = 0);
                     summaryaction.Each(x => x(data));
 
                     if (pagebreak)
@@ -226,7 +239,21 @@ public static class SectionBinder
 
             case SummaryElement x:
                 {
-                    var o = mapper[x.Bind](data);
+                    object? o = null;
+                    switch (x.SummaryType)
+                    {
+                        case SummaryType.Summary:
+                            o = mapper[x.Bind](data);
+                            break;
+
+                        case SummaryType.Count:
+                            o = (int)mapper[x.CountBind](data);
+                            break;
+
+                        case SummaryType.Average:
+                            o = (dynamic)mapper[x.Bind](data) / (dynamic)mapper[x.CountBind](data);
+                            break;
+                    }
                     return new TextModel()
                     {
                         X = x.X,

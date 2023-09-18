@@ -4,7 +4,5 @@ public enum SummaryType
 {
     Summary,
     Count,
-    Minimum,
-    Maximum,
     Average,
 }
