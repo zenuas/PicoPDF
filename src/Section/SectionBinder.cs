@@ -179,6 +179,14 @@ public static class SectionBinder
         {
             var top = models.Last().Top + models.Last().Height;
             var bottom = pageheight;
+            if (page.Footer is ISection pagefooter) models.Add(
+                new()
+                {
+                    Name = pagefooter.Name,
+                    Top = (pagefooter.ViewMode & ViewModes.POSITION) == ViewModes.Footer ? (bottom -= pagefooter.Height) : (top += pagefooter.Height) - pagefooter.Height,
+                    Height = pagefooter.Height,
+                    Elements = BindElements(pagefooter.Elements, prevdata!, mapper).ToList(),
+                });
             models.AddRange(footers
                 .Reverse()
                 .Select(x => new SectionModel()
@@ -188,14 +196,6 @@ public static class SectionBinder
                     Height = x.Section.Height,
                     Elements = BindElements(x.Section.Elements, prevdata!, mapper).ToList(),
                 }));
-            if (page.Footer is ISection pagefooter) models.Add(
-                new()
-                {
-                    Name = pagefooter.Name,
-                    Top = (pagefooter.ViewMode & ViewModes.POSITION) == ViewModes.Footer ? (bottom -= pagefooter.Height) : (top += pagefooter.Height) - pagefooter.Height,
-                    Height = pagefooter.Height,
-                    Elements = BindElements(pagefooter.Elements, prevdata!, mapper).ToList(),
-                });
             pages.Add(new()
             {
                 Size = page.Size,
