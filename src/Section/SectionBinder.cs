@@ -64,6 +64,7 @@ public static class SectionBinder
         var keys = headers.Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
         Dictionary<string, object>? prevkey = null;
         T? prevdata = default;
+        var pos = new TopBottom() { Bottom = pageheight };
 
         foreach (var data in datas)
         {
@@ -78,24 +79,8 @@ public static class SectionBinder
                         .ToArray();
                     var pagebreak = breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak);
 
-                    var top = models.Last().Top + models.Last().Height;
-                    var bottom = pageheight;
-                    if (pagebreak && page.Footer is ISection pagefooter) models.Add(
-                        new()
-                        {
-                            Name = pagefooter.Name,
-                            Top = (pagefooter.ViewMode & ViewModes.POSITION) == ViewModes.Footer ? (bottom -= pagefooter.Height) : (top += pagefooter.Height) - pagefooter.Height,
-                            Height = pagefooter.Height,
-                            Elements = BindElements(pagefooter.Elements, prevdata!, mapper).ToList(),
-                        });
-                    models.AddRange(breakfooter
-                        .Select(x => new SectionModel()
-                        {
-                            Name = x.Section.Name,
-                            Top = (x.Section.ViewMode & ViewModes.POSITION) == ViewModes.Footer ? (bottom -= x.Section.Height) : (top += x.Section.Height) - x.Section.Height,
-                            Height = x.Section.Height,
-                            Elements = BindElements(x.Section.Elements, prevdata!, mapper).ToList(),
-                        }));
+                    if (pagebreak && page.Footer is ISection pagefooter) models.Add(SectionToModel(pagefooter, pos, BindElements(pagefooter.Elements, prevdata!, mapper)));
+                    models.AddRange(breakfooter.Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, prevdata!, mapper))));
 
                     if (pagebreak)
                     {
@@ -116,47 +101,20 @@ public static class SectionBinder
 
                     if (pagebreak)
                     {
-                        top = 0;
-                        if (page.Header is ISection pageheader) models.Add(
-                            new()
-                            {
-                                Name = pageheader.Name,
-                                Top = (top += pageheader.Height) - pageheader.Height,
-                                Height = pageheader.Height,
-                                Elements = BindElements(pageheader.Elements, prevdata!, mapper).ToList(),
-                            });
+                        pos.Top = 0;
+                        pos.Bottom = pageheight;
+                        if (page.Header is ISection pageheader) models.Add(SectionToModel(pageheader, pos, BindElements(pageheader.Elements, prevdata!, mapper)));
                     }
 
                     models.AddRange(headers
                         .SkipWhileOrEveryPage(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
-                        .Select(x => new SectionModel()
-                        {
-                            Name = x.Section.Name,
-                            Top = (top += x.Section.Height) - x.Section.Height,
-                            Height = x.Section.Height,
-                            Elements = BindElements(x.Section.Elements, data, mapper).ToList(),
-                        }));
+                        .Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, data, mapper))));
                 }
                 else
                 {
                     summaryaction.Each(x => x(data));
-                    var top = 0;
-                    if (page.Header is ISection pageheader) models.Add(
-                        new()
-                        {
-                            Name = pageheader.Name,
-                            Top = (top += pageheader.Height) - pageheader.Height,
-                            Height = pageheader.Height,
-                            Elements = BindElements(pageheader.Elements, prevdata!, mapper).ToList(),
-                        });
-                    models.AddRange(headers
-                        .Select(x => new SectionModel()
-                        {
-                            Name = x.Section.Name,
-                            Top = (top += x.Section.Height) - x.Section.Height,
-                            Height = x.Section.Height,
-                            Elements = BindElements(x.Section.Elements, data, mapper).ToList(),
-                        }));
+                    if (page.Header is ISection pageheader) models.Add(SectionToModel(pageheader, pos, BindElements(pageheader.Elements, prevdata!, mapper)));
+                    models.AddRange(headers.Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, data, mapper))));
                 }
                 prevkey = keyset;
             }
@@ -164,49 +122,30 @@ public static class SectionBinder
             {
                 summaryaction.Each(x => x(data));
             }
-            var last = models.Last();
-            models.Add(new()
-            {
-                Name = detail.Name,
-                Top = (last?.Top ?? 0) + (last?.Height ?? 0),
-                Height = detail.Height,
-                Elements = BindElements(detail.Elements, data, mapper).ToList(),
-            });
-
+            models.Add(SectionToModel(detail, pos, BindElements(detail.Elements, data, mapper)));
             prevdata = data;
         }
 
+        if (page.Footer is ISection lastfooter) models.Add(SectionToModel(lastfooter, pos, BindElements(lastfooter.Elements, prevdata!, mapper)));
+        models.AddRange(footers.Reverse().Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, prevdata!, mapper))));
+        pages.Add(new()
         {
-            var top = models.Last().Top + models.Last().Height;
-            var bottom = pageheight;
-            if (page.Footer is ISection pagefooter) models.Add(
-                new()
-                {
-                    Name = pagefooter.Name,
-                    Top = (pagefooter.ViewMode & ViewModes.POSITION) == ViewModes.Footer ? (bottom -= pagefooter.Height) : (top += pagefooter.Height) - pagefooter.Height,
-                    Height = pagefooter.Height,
-                    Elements = BindElements(pagefooter.Elements, prevdata!, mapper).ToList(),
-                });
-            models.AddRange(footers
-                .Reverse()
-                .Select(x => new SectionModel()
-                {
-                    Name = x.Section.Name,
-                    Top = (x.Section.ViewMode & ViewModes.POSITION) == ViewModes.Footer ? (bottom -= x.Section.Height) : (top += x.Section.Height) - x.Section.Height,
-                    Height = x.Section.Height,
-                    Elements = BindElements(x.Section.Elements, prevdata!, mapper).ToList(),
-                }));
-            pages.Add(new()
-            {
-                Size = page.Size,
-                Orientation = page.Orientation,
-                DefaultFont = page.DefaultFont,
-                Models = models.ToList(),
-            });
-        }
+            Size = page.Size,
+            Orientation = page.Orientation,
+            DefaultFont = page.DefaultFont,
+            Models = models.ToList(),
+        });
 
         return pages.ToArray();
     }
+
+    public static SectionModel SectionToModel(ISection section, TopBottom pos, IEnumerable<IModelElement> elements) => new()
+    {
+        Name = section.Name,
+        Top = (section.ViewMode & ViewModes.POSITION) == ViewModes.Footer ? (pos.Bottom -= section.Height) : (pos.Top += section.Height) - section.Height,
+        Height = section.Height,
+        Elements = elements.ToList(),
+    };
 
     public static IEnumerable<IModelElement> BindElements<T>(List<ISectionElement> elements, T data, Dictionary<string, Func<T, object>> mapper) => elements.Select(x => BindElement(x, data, mapper));
 
