@@ -148,7 +148,7 @@ public static class SectionBinder
                     };
                 }
         }
-        throw new Exception();
+        throw new();
     }
 
     public static IEnumerable<(string BreakKey, ISection Section)> SkipWhileOrEveryPage(this IEnumerable<(string BreakKey, ISection Section)> self, Func<(string BreakKey, ISection Section), bool> f)

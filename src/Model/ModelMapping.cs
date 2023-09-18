@@ -46,6 +46,6 @@ public static class ModelMapping
                 page.Contents.DrawString(x.Text, posx, posy, x.Size, fontget(x.Font));
                 return;
         }
-        throw new Exception();
+        throw new();
     }
 }

@@ -63,7 +63,7 @@ public static class SectionLoader
             case "FooterSection":
                 return new FooterSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Footer, Elements = elements, PageBreak = pagebreak is { } p2 && (bool)p2 };
         }
-        throw new Exception();
+        throw new();
     }
 
     public static ISectionElement LoadElement(JsonNode json)
@@ -105,6 +105,6 @@ public static class SectionLoader
                     SummaryType = json["SummaryType"] is { } v ? Enum.Parse<SummaryType>(v.ToString()) : SummaryType.Summary,
                 };
         }
-        throw new Exception();
+        throw new();
     }
 }
