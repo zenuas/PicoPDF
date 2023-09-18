@@ -84,13 +84,7 @@ public static class SectionBinder
 
                     if (pagebreak)
                     {
-                        pages.Add(new()
-                        {
-                            Size = page.Size,
-                            Orientation = page.Orientation,
-                            DefaultFont = page.DefaultFont,
-                            Models = models.ToList()
-                        });
+                        pages.Add(ModelsToPage(page, models));
                         models.Clear();
                     }
 
@@ -128,13 +122,7 @@ public static class SectionBinder
 
         if (page.Footer is ISection lastfooter) models.Add(SectionToModel(lastfooter, pos, BindElements(lastfooter.Elements, prevdata!, mapper)));
         models.AddRange(footers.Reverse().Select(x => SectionToModel(x.Section, pos, BindElements(x.Section.Elements, prevdata!, mapper))));
-        pages.Add(new()
-        {
-            Size = page.Size,
-            Orientation = page.Orientation,
-            DefaultFont = page.DefaultFont,
-            Models = models.ToList(),
-        });
+        pages.Add(ModelsToPage(page, models));
 
         return pages.ToArray();
     }
@@ -145,6 +133,14 @@ public static class SectionBinder
         Top = (section.ViewMode & ViewModes.POSITION) == ViewModes.Footer ? (pos.Bottom -= section.Height) : (pos.Top += section.Height) - section.Height,
         Height = section.Height,
         Elements = elements.ToList(),
+    };
+
+    public static PageModel ModelsToPage(PageSection page, List<SectionModel> models) => new()
+    {
+        Size = page.Size,
+        Orientation = page.Orientation,
+        DefaultFont = page.DefaultFont,
+        Models = models.ToList(),
     };
 
     public static IEnumerable<IModelElement> BindElements<T>(List<ISectionElement> elements, T data, Dictionary<string, Func<T, object>> mapper) => elements.Select(x => BindElement(x, data, mapper));
