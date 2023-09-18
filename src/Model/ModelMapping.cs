@@ -31,8 +31,7 @@ public static class ModelMapping
 
     public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, List<SectionModel> models)
     {
-        var top = 0;
-        models.Each(x => Mapping(page, fontget, x, (top += x.Height) - x.Height));
+        models.Each(x => Mapping(page, fontget, x, x.Top));
     }
 
     public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, SectionModel model, int top) => model.Elements.Each(x => Mapping(page, fontget, x, top));
