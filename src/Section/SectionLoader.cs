@@ -31,16 +31,13 @@ public static class SectionLoader
         };
     }
 
-    public static Section LoadSection(JsonNode json, Dictionary<string, ISection> sections)
+    public static Section LoadSection(JsonNode json, Dictionary<string, ISection> sections) => new Section()
     {
-        return new Section()
-        {
-            BreakKey = json["BreakKey"]?.ToString() ?? "",
-            Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
-            Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
-            SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
-        };
-    }
+        BreakKey = json["BreakKey"]?.ToString() ?? "",
+        Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
+        Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
+        SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
+    };
 
     public static ISection LoadSubSection(JsonNode json)
     {
