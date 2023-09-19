@@ -66,7 +66,7 @@ public static class SectionBinder
                     {
                         pos.Top = 0;
                         pos.Bottom = pageheight_minus_everypagefooter;
-                        if (page.Header is ISection pageheader) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
+                        if (page.Header is ISection pageheader && pageheader.ViewMode == ViewModes.Every) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
                     }
 
                     models.AddRange(headers
