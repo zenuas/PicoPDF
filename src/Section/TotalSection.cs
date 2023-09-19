@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace PicoPDF.Section;
 
-public class TotalSection : ISection, IFooterSection
+public class TotalSection : ISection, IFooterSection, IHeaderFooter
 {
     public ViewModes ViewMode_ = ViewModes.Footer | ViewModes.Last;
 
@@ -13,4 +13,5 @@ public class TotalSection : ISection, IFooterSection
     public ViewModes ViewMode { get => ViewMode_; init => ViewMode_ = value == (ViewModes.Total | ViewModes.Last) || value == (ViewModes.Total | ViewModes.Every) ? value : throw new ArgumentException(); }
     public List<ISectionElement> Elements { get; init; } = new();
     public required bool PageBreak { get; init; }
+    public bool DetailInclude { get; init; } = true;
 }

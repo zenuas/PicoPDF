@@ -45,20 +45,21 @@ public static class SectionLoader
         var name = json["Name"]!.ToString();
         var height = (int)json["Height"]!.AsValue();
         var viewmode = json["ViewMode"] is { } v ? Enum.Parse<ViewModes>(v.ToString()) : ViewModes.Every;
-        var pagebreak = json["PageBreak"]?.AsValue();
+        var pagebreak = json["PageBreak"]?.AsValue() is { } pb ? (bool)pb : false;
+        var detailinclude = json["DetailInclude"]?.AsValue() is { } di ? (bool)di : true;
         switch (json["Type"]!.ToString())
         {
             case "HeaderSection":
-                return new HeaderSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Header, Elements = elements };
+                return new HeaderSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Header, Elements = elements, DetailInclude = detailinclude };
 
             case "DetailSection":
                 return new DetailSection() { Name = name, Height = height, Elements = elements };
 
             case "TotalSection":
-                return new TotalSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Total, Elements = elements, PageBreak = pagebreak is { } p1 && (bool)p1 };
+                return new TotalSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Total, Elements = elements, PageBreak = pagebreak, DetailInclude = detailinclude };
 
             case "FooterSection":
-                return new FooterSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Footer, Elements = elements, PageBreak = pagebreak is { } p2 && (bool)p2 };
+                return new FooterSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Footer, Elements = elements, PageBreak = pagebreak, DetailInclude = detailinclude };
         }
         throw new();
     }
