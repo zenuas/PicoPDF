@@ -51,10 +51,10 @@ public static class SectionBinder
                         models.Add(SectionToModel(pagefooter, pos, prevdata!, bind));
                     }
                     models.AddRange(breakfooter.Select(x => SectionToModel(x.Section, pos, prevdata!, bind)));
-                    if (pagebreak && page.Footer is TotalSection pagetotal && pagetotal.ViewMode == ViewModes.Every) models.Add(SectionToModel(pagetotal, pos, prevdata!, bind));
 
                     if (pagebreak)
                     {
+                        if (page.Footer is TotalSection pagetotal && pagetotal.ViewMode == ViewModes.Every) models.Add(SectionToModel(pagetotal, pos, prevdata!, bind));
                         pages.Add(ModelsToPage(page, models));
                         models.Clear();
                     }
