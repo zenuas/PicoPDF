@@ -1,7 +1,7 @@
 ﻿using Extensions;
-using PicoPDF.Document;
-using PicoPDF.Document.Font;
 using PicoPDF.Model.Element;
+using PicoPDF.Pdf;
+using PicoPDF.Pdf.Font;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace PicoPDF.Model;
 
 public static class ModelMapping
 {
-    public static void Mapping(Document.Document doc, PageModel[] pages)
+    public static void Mapping(Document doc, PageModel[] pages)
     {
         var fontcache = new Dictionary<string, TrueTypeFont>();
         TrueTypeFont fontget(string name)

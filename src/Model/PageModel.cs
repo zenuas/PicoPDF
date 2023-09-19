@@ -1,4 +1,4 @@
-﻿using PicoPDF.Document;
+﻿using PicoPDF.Pdf;
 using System.Collections.Generic;
 
 namespace PicoPDF.Model;

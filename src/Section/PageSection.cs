@@ -1,4 +1,4 @@
-﻿using PicoPDF.Document;
+﻿using PicoPDF.Pdf;
 
 namespace PicoPDF.Section;
 

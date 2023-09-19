@@ -1,5 +1,5 @@
-﻿using PicoPDF.Document;
-using PicoPDF.Model;
+﻿using PicoPDF.Model;
+using PicoPDF.Pdf;
 using PicoPDF.Sample;
 using PicoPDF.Section;
 using System.Text;

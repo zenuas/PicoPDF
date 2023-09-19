@@ -1,5 +1,5 @@
 ﻿using Extensions;
-using PicoPDF.Document;
+using PicoPDF.Pdf;
 using PicoPDF.Section.Element;
 using System;
 using System.Collections.Generic;
