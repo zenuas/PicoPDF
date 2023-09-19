@@ -50,16 +50,16 @@ public static class SectionLoader
         switch (json["Type"]!.ToString())
         {
             case "HeaderSection":
-                return new HeaderSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Header, Elements = elements, DetailInclude = detailinclude };
+                return new HeaderSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, DetailInclude = detailinclude };
 
             case "DetailSection":
                 return new DetailSection() { Name = name, Height = height, Elements = elements };
 
             case "TotalSection":
-                return new TotalSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Total, Elements = elements, PageBreak = pagebreak, DetailInclude = detailinclude };
+                return new TotalSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak, DetailInclude = detailinclude };
 
             case "FooterSection":
-                return new FooterSection() { Name = name, Height = height, ViewMode = viewmode | ViewModes.Footer, Elements = elements, PageBreak = pagebreak, DetailInclude = detailinclude };
+                return new FooterSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak, DetailInclude = detailinclude };
         }
         throw new();
     }

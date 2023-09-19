@@ -29,7 +29,8 @@ public static class SectionBinder
         var keys = headers.Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
         Dictionary<string, object>? prevkey = null;
         T? prevdata = default;
-        var pos = new TopBottom() { Bottom = pageheight };
+        var pageheight_minus_everypagefooter = pageheight - (page.Footer is FooterSection everyfooter && everyfooter.ViewMode == ViewModes.Every ? everyfooter.Height : 0);
+        var pos = new TopBottom() { Bottom = pageheight_minus_everypagefooter };
 
         foreach (var data in datas)
         {
@@ -44,8 +45,13 @@ public static class SectionBinder
                         .ToArray();
                     var pagebreak = breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak);
 
-                    if (pagebreak && page.Footer is ISection pagefooter) models.Add(SectionToModel(pagefooter, pos, prevdata!, bind));
+                    if (pagebreak && page.Footer is FooterSection pagefooter && pagefooter.ViewMode == ViewModes.Every)
+                    {
+                        pos.Bottom = pageheight;
+                        models.Add(SectionToModel(pagefooter, pos, prevdata!, bind));
+                    }
                     models.AddRange(breakfooter.Select(x => SectionToModel(x.Section, pos, prevdata!, bind)));
+                    if (pagebreak && page.Footer is TotalSection pagetotal && pagetotal.ViewMode == ViewModes.Every) models.Add(SectionToModel(pagetotal, pos, prevdata!, bind));
 
                     if (pagebreak)
                     {
@@ -59,7 +65,7 @@ public static class SectionBinder
                     if (pagebreak)
                     {
                         pos.Top = 0;
-                        pos.Bottom = pageheight;
+                        pos.Bottom = pageheight_minus_everypagefooter;
                         if (page.Header is ISection pageheader) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
                     }
 
@@ -83,8 +89,13 @@ public static class SectionBinder
             prevdata = data;
         }
 
-        if (page.Footer is ISection lastfooter) models.Add(SectionToModel(lastfooter, pos, prevdata!, bind));
+        if (page.Footer is FooterSection lastfooter)
+        {
+            pos.Bottom = pageheight;
+            models.Add(SectionToModel(lastfooter, pos, prevdata!, bind));
+        }
         models.AddRange(footers.Reverse().Select(x => SectionToModel(x.Section, pos, prevdata!, bind)));
+        if (page.Footer is TotalSection lasttotal) models.Add(SectionToModel(lasttotal, pos, prevdata!, bind));
         pages.Add(ModelsToPage(page, models));
 
         return pages.ToArray();
@@ -93,7 +104,7 @@ public static class SectionBinder
     public static SectionModel SectionToModel<T>(ISection section, TopBottom pos, T data, BindSummaryMapper<T> bind) => new()
     {
         Section = section,
-        Top = (section.ViewMode & ViewModes.POSITION) == ViewModes.Footer ? (pos.Bottom -= section.Height) : (pos.Top += section.Height) - section.Height,
+        Top = section is FooterSection ? (pos.Bottom -= section.Height) : (pos.Top += section.Height) - section.Height,
         Elements = BindElements(section.Elements, data, bind).ToList(),
     };
 
@@ -156,7 +167,7 @@ public static class SectionBinder
         foreach (var x in self)
         {
             if (!found && f(x)) found = true;
-            if (found || (x.Section.ViewMode & ViewModes.MODES) == ViewModes.Every)
+            if (found || x.Section.ViewMode == ViewModes.Every)
             {
                 yield return x;
             }
