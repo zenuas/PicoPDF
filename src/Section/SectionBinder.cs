@@ -66,12 +66,18 @@ public static class SectionBinder
                     {
                         pos.Top = 0;
                         pos.Bottom = pageheight_minus_everypagefooter;
-                        if (page.Header is ISection pageheader && pageheader.ViewMode == ViewModes.Every) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
-                    }
+                        if (page.Header is ISection pageheader && (pageheader.ViewMode == ViewModes.Every || pageheader.ViewMode == ViewModes.PageFirst)) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
 
-                    models.AddRange(headers
-                        .SkipWhileOrEveryPage(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
-                        .Select(x => SectionToModel(x.Section, pos, data, bind)));
+                        models.AddRange(headers
+                            .SkipWhileOrPageFirst(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
+                            .Select(x => SectionToModel(x.Section, pos, data, bind)));
+                    }
+                    else
+                    {
+                        models.AddRange(headers
+                            .SkipWhileOrEveryPage(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
+                            .Select(x => SectionToModel(x.Section, pos, data, bind)));
+                    }
                 }
                 else
                 {
@@ -103,10 +109,10 @@ public static class SectionBinder
 
                 pos.Top = 0;
                 pos.Bottom = pageheight_minus_everypagefooter;
-                if (page.Header is ISection pageheader && pageheader.ViewMode == ViewModes.Every) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
+                if (page.Header is ISection pageheader && (pageheader.ViewMode == ViewModes.Every || pageheader.ViewMode == ViewModes.PageFirst)) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
 
                 models.AddRange(headers
-                    .SkipWhileOrEveryPage(_ => false)
+                    .SkipWhileOrPageFirst(_ => false)
                     .Select(x => SectionToModel(x.Section, pos, data, bind)));
             }
             models.Add(SectionToModel(detail, pos, data, bind));
@@ -183,6 +189,19 @@ public static class SectionBinder
                 }
         }
         throw new();
+    }
+
+    public static IEnumerable<(string BreakKey, ISection Section)> SkipWhileOrPageFirst(this IEnumerable<(string BreakKey, ISection Section)> self, Func<(string BreakKey, ISection Section), bool> f)
+    {
+        var found = false;
+        foreach (var x in self)
+        {
+            if (!found && f(x)) found = true;
+            if (found || x.Section.ViewMode == ViewModes.Every || x.Section.ViewMode == ViewModes.PageFirst)
+            {
+                yield return x;
+            }
+        }
     }
 
     public static IEnumerable<(string BreakKey, ISection Section)> SkipWhileOrEveryPage(this IEnumerable<(string BreakKey, ISection Section)> self, Func<(string BreakKey, ISection Section), bool> f)
