@@ -85,6 +85,30 @@ public static class SectionBinder
             {
                 bind.DataBind(data);
             }
+
+            if (pos.Height < detail.Height)
+            {
+                if (page.Footer is FooterSection pagefooter && pagefooter.ViewMode == ViewModes.Every)
+                {
+                    pos.Bottom = pageheight;
+                    models.Add(SectionToModel(pagefooter, pos, prevdata!, bind));
+                }
+                models.AddRange(footers
+                    .SkipWhileOrEveryPage(_ => false)
+                    .Reverse()
+                    .Select(x => SectionToModel(x.Section, pos, prevdata!, bind)));
+
+                pages.Add(ModelsToPage(page, models));
+                models.Clear();
+
+                pos.Top = 0;
+                pos.Bottom = pageheight_minus_everypagefooter;
+                if (page.Header is ISection pageheader && pageheader.ViewMode == ViewModes.Every) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
+
+                models.AddRange(headers
+                    .SkipWhileOrEveryPage(_ => false)
+                    .Select(x => SectionToModel(x.Section, pos, data, bind)));
+            }
             models.Add(SectionToModel(detail, pos, data, bind));
             prevdata = data;
         }
