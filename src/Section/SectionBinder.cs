@@ -18,7 +18,7 @@ public static class SectionBinder
             .Travers(x => x is Section s ? [s.SubSection] : [])
             .ToArray();
         var detail = sections.OfType<DetailSection>().First();
-        var headers = sections.OfType<Section>().Where(x => x.Header is { }).Select(x => (x.BreakKey, Section: (ISection)x.Header!)).ToArray();
+        var headers = sections.OfType<Section>().Where(x => x.Header is { }).Select(x => (x.BreakKey, Section: (ISection)x.Header!)).PrependIf(page.Header).ToArray();
         var footers = sections.OfType<Section>().Where(x => x.Footer is { }).Select(x => (x.BreakKey, Section: (ISection)x.Footer!)).ToArray();
         var pages = new List<PageModel>();
         var models = new List<SectionModel>();
@@ -66,7 +66,6 @@ public static class SectionBinder
                     {
                         pos.Top = 0;
                         pos.Bottom = pageheight_minus_everypagefooter;
-                        if (page.Header is ISection pageheader && (pageheader.ViewMode == ViewModes.Every || pageheader.ViewMode == ViewModes.PageFirst)) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
 
                         models.AddRange(headers
                             .SkipWhileOrPageFirst(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
@@ -82,7 +81,6 @@ public static class SectionBinder
                 else
                 {
                     bind.DataBind(data);
-                    if (page.Header is ISection pageheader) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
                     models.AddRange(headers.Select(x => SectionToModel(x.Section, pos, data, bind)));
                 }
                 prevkey = keyset;
@@ -109,7 +107,6 @@ public static class SectionBinder
 
                 pos.Top = 0;
                 pos.Bottom = pageheight_minus_everypagefooter;
-                if (page.Header is ISection pageheader && (pageheader.ViewMode == ViewModes.Every || pageheader.ViewMode == ViewModes.PageFirst)) models.Add(SectionToModel(pageheader, pos, prevdata!, bind));
 
                 models.AddRange(headers
                     .SkipWhileOrPageFirst(_ => false)
@@ -224,5 +221,11 @@ public static class SectionBinder
             .Where(x => x.Section is TotalSection)
             .Reverse()
             .Concat(footer.Where(x => x.Section is FooterSection));
+    }
+
+    public static IEnumerable<(string BreakKey, ISection Section)> PrependIf(this IEnumerable<(string BreakKey, ISection Section)> self, IHeaderSection? header)
+    {
+        if (header is ISection section) return self.Prepend(("", section));
+        return self;
     }
 }

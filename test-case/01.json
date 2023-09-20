@@ -18,7 +18,7 @@
 	"Footer": "PageFooter",
 	
 	"Sections": [
-		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "Elements": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
 			{"Type": "TextElement", "Text": "PageHeader", "Size": 30, "X": 10, "Y": 30}
 		]},
 		{"Type": "HeaderSection", "Name": "Header", "Height": 20, "ViewMode": "First", "Elements": [
