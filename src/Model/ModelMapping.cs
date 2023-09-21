@@ -20,12 +20,6 @@ public static class ModelMapping
             fontcache.Add(name, x);
             return x;
         }
-        fontcache.Add("", pages
-            .Select(x => x.DefaultFont)
-            .Distinct()
-            .Select(fontget)
-            .ToArray()
-            .First());
         pages.Each(x => Mapping(doc.NewPage(x.Size, x.Orientation), fontget, x.Models));
     }
 

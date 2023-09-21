@@ -45,16 +45,16 @@ public static class SectionBinder
                         .ToArray();
                     var pagebreak = breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak);
 
-                    models.AddRange(breakfooter.Select(x => SectionToModel(x.Section, pos, prevdata!, bind)));
+                    models.AddRange(breakfooter.Select(x => SectionToModel(x.Section, pos, prevdata!, bind, page)));
                     if (pagebreak && page.Footer is FooterSection pagefooter && pagefooter.ViewMode == ViewModes.Every)
                     {
                         pos.Bottom = pageheight;
-                        models.Add(SectionToModel(pagefooter, pos, prevdata!, bind));
+                        models.Add(SectionToModel(pagefooter, pos, prevdata!, bind, page));
                     }
 
                     if (pagebreak)
                     {
-                        if (page.Footer is TotalSection pagetotal && pagetotal.ViewMode == ViewModes.Every) models.Add(SectionToModel(pagetotal, pos, prevdata!, bind));
+                        if (page.Footer is TotalSection pagetotal && pagetotal.ViewMode == ViewModes.Every) models.Add(SectionToModel(pagetotal, pos, prevdata!, bind, page));
                         pages.Add(ModelsToPage(page, models));
                         models.Clear();
                     }
@@ -69,19 +69,19 @@ public static class SectionBinder
 
                         models.AddRange(headers
                             .SkipWhileOrPageFirst(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
-                            .Select(x => SectionToModel(x.Section, pos, data, bind)));
+                            .Select(x => SectionToModel(x.Section, pos, data, bind, page)));
                     }
                     else
                     {
                         models.AddRange(headers
                             .SkipWhileOrEveryPage(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
-                            .Select(x => SectionToModel(x.Section, pos, data, bind)));
+                            .Select(x => SectionToModel(x.Section, pos, data, bind, page)));
                     }
                 }
                 else
                 {
                     bind.DataBind(data);
-                    models.AddRange(headers.Select(x => SectionToModel(x.Section, pos, data, bind)));
+                    models.AddRange(headers.Select(x => SectionToModel(x.Section, pos, data, bind, page)));
                 }
                 prevkey = keyset;
             }
@@ -95,11 +95,11 @@ public static class SectionBinder
                 models.AddRange(footers
                     .SkipWhileOrEveryPage(_ => false)
                     .FooterSort()
-                    .Select(x => SectionToModel(x.Section, pos, prevdata!, bind)));
+                    .Select(x => SectionToModel(x.Section, pos, prevdata!, bind, page)));
                 if (page.Footer is FooterSection pagefooter && pagefooter.ViewMode == ViewModes.Every)
                 {
                     pos.Bottom = pageheight;
-                    models.Add(SectionToModel(pagefooter, pos, prevdata!, bind));
+                    models.Add(SectionToModel(pagefooter, pos, prevdata!, bind, page));
                 }
 
                 pages.Add(ModelsToPage(page, models));
@@ -110,42 +110,41 @@ public static class SectionBinder
 
                 models.AddRange(headers
                     .SkipWhileOrPageFirst(_ => false)
-                    .Select(x => SectionToModel(x.Section, pos, data, bind)));
+                    .Select(x => SectionToModel(x.Section, pos, data, bind, page)));
             }
-            models.Add(SectionToModel(detail, pos, data, bind));
+            models.Add(SectionToModel(detail, pos, data, bind, page));
             prevdata = data;
         }
 
-        models.AddRange(footers.FooterSort().Select(x => SectionToModel(x.Section, pos, prevdata!, bind)));
-        if (page.Footer is TotalSection lasttotal) models.Add(SectionToModel(lasttotal, pos, prevdata!, bind));
+        models.AddRange(footers.FooterSort().Select(x => SectionToModel(x.Section, pos, prevdata!, bind, page)));
+        if (page.Footer is TotalSection lasttotal) models.Add(SectionToModel(lasttotal, pos, prevdata!, bind, page));
         if (page.Footer is FooterSection lastfooter)
         {
             pos.Bottom = pageheight;
-            models.Add(SectionToModel(lastfooter, pos, prevdata!, bind));
+            models.Add(SectionToModel(lastfooter, pos, prevdata!, bind, page));
         }
         pages.Add(ModelsToPage(page, models));
 
         return pages.ToArray();
     }
 
-    public static SectionModel SectionToModel<T>(ISection section, TopBottom pos, T data, BindSummaryMapper<T> bind) => new()
+    public static SectionModel SectionToModel<T>(ISection section, TopBottom pos, T data, BindSummaryMapper<T> bind, PageSection page) => new()
     {
         Section = section,
         Top = section is FooterSection ? (pos.Bottom -= section.Height) : (pos.Top += section.Height) - section.Height,
-        Elements = BindElements(section.Elements, data, bind).ToList(),
+        Elements = BindElements(section.Elements, data, bind, page).ToList(),
     };
 
     public static PageModel ModelsToPage(PageSection page, List<SectionModel> models) => new()
     {
         Size = page.Size,
         Orientation = page.Orientation,
-        DefaultFont = page.DefaultFont,
         Models = models.ToList(),
     };
 
-    public static IEnumerable<IModelElement> BindElements<T>(List<ISectionElement> elements, T data, BindSummaryMapper<T> bind) => elements.Select(x => BindElement(x, data, bind));
+    public static IEnumerable<IModelElement> BindElements<T>(List<ISectionElement> elements, T data, BindSummaryMapper<T> bind, PageSection page) => elements.Select(x => BindElement(x, data, bind, page));
 
-    public static IModelElement BindElement<T>(ISectionElement element, T data, BindSummaryMapper<T> bind)
+    public static IModelElement BindElement<T>(ISectionElement element, T data, BindSummaryMapper<T> bind, PageSection page)
     {
         switch (element)
         {
@@ -155,7 +154,7 @@ public static class SectionBinder
                     X = x.X,
                     Y = x.Y,
                     Text = x.Text,
-                    Font = x.Font,
+                    Font = x.Font != "" ? x.Font : page.DefaultFont,
                     Size = x.Size,
                 };
 
@@ -167,7 +166,7 @@ public static class SectionBinder
                         X = x.X,
                         Y = x.Y,
                         Text = (x.Format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(x.Format, null)) ?? "",
-                        Font = x.Font,
+                        Font = x.Font != "" ? x.Font : page.DefaultFont,
                         Size = x.Size,
                     };
                 }
@@ -180,7 +179,7 @@ public static class SectionBinder
                         X = x.X,
                         Y = x.Y,
                         Text = (x.Format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(x.Format, null)) ?? "",
-                        Font = x.Font,
+                        Font = x.Font != "" ? x.Font : page.DefaultFont,
                         Size = x.Size,
                     };
                 }
