@@ -39,39 +39,42 @@ public static class SectionBinder
             {
                 if (prevkey is { })
                 {
-                    var breakfooter = footers
+                    var first_header_only = false;
+                    footers
                         .SkipWhileOrEveryPage(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
                         .FooterSort()
-                        .ToArray();
-                    var pagebreak = breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak);
+                        .Each(x =>
+                        {
+                            first_header_only = false;
+                            if (pos.Height < x.Section.Height || x.Section.Cast<IFooterSection>().PageBreak)
+                            {
+                                var before_footer = pos.Height >= x.Section.Height;
+                                if (before_footer) models.Add(SectionToModel(x.Section, pos, prevdata!, bind, page));
 
-                    models.AddRange(breakfooter.Select(x => SectionToModel(x.Section, pos, prevdata!, bind, page)));
-                    if (pagebreak && page.Footer is FooterSection pagefooter && pagefooter.ViewMode == ViewModes.Every)
-                    {
-                        pos.Bottom = pageheight;
-                        models.Add(SectionToModel(pagefooter, pos, prevdata!, bind, page));
-                    }
+                                if (page.Footer is FooterSection pagefooter && pagefooter.ViewMode == ViewModes.Every)
+                                {
+                                    pos.Bottom = pageheight;
+                                    models.Add(SectionToModel(pagefooter, pos, prevdata!, bind, page));
+                                }
+                                pages.Add(ModelsToPage(page, models));
+                                models.Clear();
 
-                    if (pagebreak)
-                    {
-                        if (page.Footer is TotalSection pagetotal && pagetotal.ViewMode == ViewModes.Every) models.Add(SectionToModel(pagetotal, pos, prevdata!, bind, page));
-                        pages.Add(ModelsToPage(page, models));
-                        models.Clear();
-                    }
+                                pos.Top = 0;
+                                pos.Bottom = pageheight_minus_everypagefooter;
 
-                    bind.Clear(keys.TakeWhile(x => prevkey[x].Equals(keyset[x])).ToArray());
-                    bind.DataBind(data);
+                                models.AddRange(headers
+                                    .SkipWhileOrPageFirst(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
+                                    .Select(x => SectionToModel(x.Section, pos, before_footer ? data : prevdata!, bind, page)));
+                                first_header_only = before_footer;
+                                if (!before_footer) models.Add(SectionToModel(x.Section, pos, prevdata!, bind, page));
+                            }
+                            else
+                            {
+                                models.Add(SectionToModel(x.Section, pos, prevdata!, bind, page));
+                            }
+                        });
 
-                    if (pagebreak)
-                    {
-                        pos.Top = 0;
-                        pos.Bottom = pageheight_minus_everypagefooter;
-
-                        models.AddRange(headers
-                            .SkipWhileOrPageFirst(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
-                            .Select(x => SectionToModel(x.Section, pos, data, bind, page)));
-                    }
-                    else
+                    if (!first_header_only)
                     {
                         models.AddRange(headers
                             .SkipWhileOrEveryPage(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
