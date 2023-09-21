@@ -12,7 +12,7 @@ public static class ModelMapping
 {
     public static void Mapping(Document doc, PageModel[] pages)
     {
-        var fontcache = new Dictionary<string, TrueTypeFont>();
+        var fontcache = doc.ResourcesFont.Values.OfType<TrueTypeFont>().ToDictionary(x => x.Name, x => x);
         TrueTypeFont fontget(string name)
         {
             if (fontcache.ContainsKey(name)) return fontcache[name];
