@@ -20,7 +20,7 @@ public class PdfObject : IPdfObject
     {
         if (deflate)
         {
-            _ = Elements.TryAdd("Filter", $"/FlateDecode");
+            _ = Elements.TryAdd("Filter", "/FlateDecode");
             return new ZLibStream(Stream = new MemoryStream(), CompressionLevel.SmallestSize, true);
         }
         else

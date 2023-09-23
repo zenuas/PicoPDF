@@ -15,10 +15,12 @@ public class ImageXObject : PdfObject
         _ = Elements.TryAdd("Height", 150);
         _ = Elements.TryAdd("ColorSpace", "/DeviceRGB");
         _ = Elements.TryAdd("BitsPerComponent", 8);
-        _ = Elements.TryAdd("Filter", "/DCTDecode");
 
         var datas = File.ReadAllBytes(Path);
-        Stream = new MemoryStream();
-        Stream.Write(datas);
+        var writer = GetWriteStream(option.JpegStreamDeflate);
+        writer.Write(datas);
+        writer.Flush();
+
+        Elements["Filter"] = option.JpegStreamDeflate ? "[ /FlateDecode /DCTDecode ]" : "/DCTDecode";
     }
 }
