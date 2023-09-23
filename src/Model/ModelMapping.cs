@@ -1,4 +1,5 @@
 ﻿using Extensions;
+using PicoPDF.Binder.Element;
 using PicoPDF.Model.Element;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
@@ -37,7 +38,29 @@ public static class ModelMapping
         switch (model)
         {
             case TextModel x:
-                page.Contents.DrawString(x.Text, posx, posy, x.Size, fontget(x.Font));
+                {
+                    var ttf = fontget(x.Font);
+                    switch (x.Alignment)
+                    {
+                        case TextAlignment.Start:
+                            page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf);
+                            break;
+
+                        case TextAlignment.Center:
+                            {
+                                var width = ttf.MeasureStringBox(x.Text).Width * x.Size;
+                                page.Contents.DrawString(x.Text, (int)(posx + ((x.Width - width) / 2)), posy, x.Size, ttf);
+                            }
+                            break;
+
+                        case TextAlignment.End:
+                            {
+                                var width = ttf.MeasureStringBox(x.Text).Width * x.Size;
+                                page.Contents.DrawString(x.Text, (int)(posx + x.Width - width), posy, x.Size, ttf);
+                            }
+                            break;
+                    }
+                }
                 return;
         }
         throw new();

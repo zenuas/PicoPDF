@@ -134,6 +134,8 @@ public static class SectionBinder
                         Text = (x.Format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(x.Format, null)) ?? "",
                         Font = x.Font != "" ? x.Font : page.DefaultFont,
                         Size = x.Size,
+                        Alignment = x.Alignment,
+                        Width = x.Width,
                     };
                 }
 
@@ -147,6 +149,8 @@ public static class SectionBinder
                         Text = (x.Format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(x.Format, null)) ?? "",
                         Font = x.Font != "" ? x.Font : page.DefaultFont,
                         Size = x.Size,
+                        Alignment = x.Alignment,
+                        Width = x.Width,
                     };
                 }
         }

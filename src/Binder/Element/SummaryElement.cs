@@ -10,4 +10,6 @@ public class SummaryElement : ISectionElement
     public required int Size { get; init; }
     public string Font { get; init; } = "";
     public SummaryType SummaryType { get; init; } = SummaryType.Summary;
+    public TextAlignment Alignment { get; init; } = TextAlignment.Start;
+    public int Width { get; init; }
 }

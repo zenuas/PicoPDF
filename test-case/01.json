@@ -33,7 +33,7 @@
 			{"Type": "TextElement", "Text": "Detail",      "Size": 10, "X": 10,  "Y": 0},
 			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 100, "Y": 0},
 			{"Type": "BindElement", "Bind": "Sikutyouson", "Size": 10, "X": 150, "Y": 0},
-			{"Type": "BindElement", "Bind": "Number",      "Size": 10, "X": 250, "Y": 0, "Format": "#,0"}
+			{"Type": "BindElement", "Bind": "Number",      "Size": 10, "X": 250, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50}
 		]},
 		{"Type": "TotalSection", "Name": "Total", "Height": 30, "ViewMode": "Last", "PageBreak": true, "Elements": [
 			{"Type": "TextElement",    "Text": "TiikiTotal", "Size": 10, "X": 10,  "Y": 10},
@@ -45,11 +45,11 @@
 		]},
 		{"Type": "TotalSection", "Name": "Total2", "Height": 30, "Elements": [
 			{"Type": "TextElement",    "Text": "TodouhukenTotal", "Size": 10, "X": 10,  "Y": 10},
-			{"Type": "SummaryElement", "Bind": "Number",          "Size": 10, "X": 250, "Y": 10, "Format": "#,0"}
+			{"Type": "SummaryElement", "Bind": "Number",          "Size": 10, "X": 250, "Y": 10, "Format": "#,0", "Alignment": "End", "Width": 50}
 		]},
 		{"Type": "FooterSection", "Name": "PageFooter", "Height": 30, "Elements": [
 			{"Type": "TextElement",    "Text": "PageFooter", "Size": 20, "X": 10,  "Y": 20, "Font": "HGMinchoB"},
-			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 250, "Y": 20, "Format": "#,0"}
+			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 250, "Y": 20, "Format": "#,0", "Alignment": "End", "Width": 50}
 		]}
 	]
 }

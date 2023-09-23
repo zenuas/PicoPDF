@@ -72,37 +72,47 @@ public static class SectionLoader
         switch (json["Type"]!.ToString())
         {
             case "TextElement":
-                return new TextElement()
                 {
-                    X = posx,
-                    Y = posy,
-                    Text = json["Text"]!.ToString(),
-                    Font = json["Font"]?.ToString() ?? "",
-                    Size = (int)json["Size"]!.AsValue(),
-                };
+                    return new TextElement()
+                    {
+                        X = posx,
+                        Y = posy,
+                        Text = json["Text"]!.ToString(),
+                        Font = json["Font"]?.ToString() ?? "",
+                        Size = (int)json["Size"]!.AsValue(),
+                    };
+                }
 
             case "BindElement":
-                return new BindElement()
                 {
-                    X = posx,
-                    Y = posy,
-                    Bind = json["Bind"]!.ToString(),
-                    Format = json["Format"]?.ToString() ?? "",
-                    Font = json["Font"]?.ToString() ?? "",
-                    Size = (int)json["Size"]!.AsValue(),
-                };
+                    return new BindElement()
+                    {
+                        X = posx,
+                        Y = posy,
+                        Bind = json["Bind"]!.ToString(),
+                        Format = json["Format"]?.ToString() ?? "",
+                        Font = json["Font"]?.ToString() ?? "",
+                        Size = (int)json["Size"]!.AsValue(),
+                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
+                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                    };
+                }
 
             case "SummaryElement":
-                return new SummaryElement()
                 {
-                    X = posx,
-                    Y = posy,
-                    Bind = json["Bind"]!.ToString(),
-                    Format = json["Format"]?.ToString() ?? "",
-                    Font = json["Font"]?.ToString() ?? "",
-                    Size = (int)json["Size"]!.AsValue(),
-                    SummaryType = json["SummaryType"] is { } v ? Enum.Parse<SummaryType>(v.ToString()) : SummaryType.Summary,
-                };
+                    return new SummaryElement()
+                    {
+                        X = posx,
+                        Y = posy,
+                        Bind = json["Bind"]!.ToString(),
+                        Format = json["Format"]?.ToString() ?? "",
+                        Font = json["Font"]?.ToString() ?? "",
+                        Size = (int)json["Size"]!.AsValue(),
+                        SummaryType = json["SummaryType"] is { } sum ? Enum.Parse<SummaryType>(sum.ToString()) : SummaryType.Summary,
+                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
+                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                    };
+                }
         }
         throw new();
     }
