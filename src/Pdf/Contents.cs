@@ -114,8 +114,5 @@ public class Contents : PdfObject
         var writer = GetWriteStream();
         Operations.Each(x => x.OperationWrite(width, height, writer));
         writer.Flush();
-
-        Elements.Add("Length", Stream!.Length);
-        Stream!.Position = 0;
     }
 }

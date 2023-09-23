@@ -17,9 +17,15 @@ public static class PdfExport
             xref.Add(stream.Position);
             stream.Write($"{x.IndirectIndex} 0 obj\n");
             stream.Write($"<<\n");
+            var input = x.Stream;
+            if (input is { })
+            {
+                x.Elements.Add("Length", input.Length);
+                input.Position = 0;
+            }
             x.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString()}\n"));
             stream.Write($">>\n");
-            if (x.Stream is { } input)
+            if (input is { })
             {
                 stream.Write($"stream\n");
                 stream.Write(input.ToArray());
