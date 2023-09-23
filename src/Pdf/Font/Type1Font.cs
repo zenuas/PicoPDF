@@ -23,7 +23,7 @@ public class Type1Font : PdfObject, IFont
         RelatedObjects.Add(FontDescriptor);
     }
 
-    public override void DoExport()
+    public override void DoExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("Type", $"/Font %{Name}");
         _ = Elements.TryAdd("Subtype", $"/Type1");

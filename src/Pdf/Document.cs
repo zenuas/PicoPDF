@@ -119,9 +119,9 @@ public class Document
         return image;
     }
 
-    public void Save(string path)
+    public void Save(string path, PdfExportOption? option = null)
     {
         using var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
-        PdfExport.Export(this, stream);
+        PdfExport.Export(this, stream, option ?? new());
     }
 }

@@ -114,7 +114,7 @@ public class CIDFont : PdfObject, IFont
     public static byte[] EscapeBytes = System.Text.Encoding.ASCII.GetBytes("()\\");
     public static byte EscapeCharByte = System.Text.Encoding.ASCII.GetBytes("\\")[0];
 
-    public override void DoExport()
+    public override void DoExport(PdfExportOption option)
     {
         RelatedObjects.Add(FontDictionary);
         _ = Elements.TryAdd("Type", $"/Font %{Name}");

@@ -6,13 +6,13 @@ namespace PicoPDF.Pdf;
 
 public static class PdfExport
 {
-    public static void Export(Document doc, Stream stream)
+    public static void Export(Document doc, Stream stream, PdfExportOption option)
     {
         stream.Write($"%PDF-{doc.Version / 10}.{doc.Version % 10}\n");
         new byte[] { (byte)'%', 0xF0, 0x9F, 0x8D, 0xA3, (byte)'\n', (byte)'\n' }.Each(stream.WriteByte);
 
         var xref = new List<long>();
-        GetAllReferences(doc).Each((x, i) =>
+        GetAllReferences(doc, option).Each((x, i) =>
         {
             xref.Add(stream.Position);
             stream.Write($"{x.IndirectIndex} 0 obj\n");
@@ -52,14 +52,14 @@ public static class PdfExport
         stream.Write($"%%EOF\n");
     }
 
-    public static List<PdfObject> GetAllReferences(Document doc)
+    public static List<PdfObject> GetAllReferences(Document doc, PdfExportOption option)
     {
         var refs = new List<PdfObject>();
 
         void refsadd(PdfObject x)
         {
             x.IndirectIndex = refs.Count + 1;
-            x.DoExport();
+            x.DoExport(option);
             refs.Add(x);
             x.RelatedObjects.Each(refsadd);
         }

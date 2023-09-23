@@ -14,7 +14,7 @@ public class TrueTypeFont : PdfObject, IFont
     public required string Encoding { get; init; }
     public CIDFontDictionary FontDictionary { get; init; } = new();
 
-    public override void DoExport()
+    public override void DoExport(PdfExportOption option)
     {
         RelatedObjects.Add(FontDictionary);
         _ = Elements.TryAdd("Type", $"/Font %{Name}");

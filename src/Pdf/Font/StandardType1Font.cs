@@ -14,7 +14,7 @@ public class StandardType1Font : PdfObject, IFont
     public static byte[] EscapeBytes = Encoding.ASCII.GetBytes("()\\");
     public static byte EscapeCharByte = Encoding.ASCII.GetBytes("\\")[0];
 
-    public override void DoExport()
+    public override void DoExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("Type", $"/Font %{Name}");
         _ = Elements.TryAdd("Subtype", "/Subtype1");

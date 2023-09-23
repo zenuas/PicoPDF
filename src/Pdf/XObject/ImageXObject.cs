@@ -7,7 +7,7 @@ public class ImageXObject : PdfObject
     public required string Name { get; init; }
     public required string Path { get; init; }
 
-    public override void DoExport()
+    public override void DoExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("Type", "/XObject");
         _ = Elements.TryAdd("Subtype", "/Image");

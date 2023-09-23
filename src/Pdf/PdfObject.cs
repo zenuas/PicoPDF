@@ -12,13 +12,13 @@ public class PdfObject : IPdfObject
     public MemoryStream? Stream { get; set; }
     public List<PdfObject> RelatedObjects { get; init; } = new();
 
-    public virtual void DoExport()
+    public virtual void DoExport(PdfExportOption option)
     {
     }
 
-    public Stream GetWriteStream(bool flate = true)
+    public Stream GetWriteStream(bool deflate = true)
     {
-        if (flate)
+        if (deflate)
         {
             _ = Elements.TryAdd("Filter", $"/FlateDecode");
             return new ZLibStream(Stream = new MemoryStream(), CompressionLevel.SmallestSize, true);

@@ -1,7 +1,7 @@
-﻿using PicoPDF.Model;
+﻿using PicoPDF.Binder;
+using PicoPDF.Model;
 using PicoPDF.Pdf;
 using PicoPDF.Sample;
-using PicoPDF.Binder;
 using System.Text;
 
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -17,4 +17,4 @@ var csv = File.ReadAllLines("test-case/test.csv")
 var pagesection = JsonLoader.Load("test-case/01.json");
 var pages = SectionBinder.Bind(pagesection, csv);
 ModelMapping.Mapping(doc, pages);
-doc.Save("@a.pdf");
+doc.Save("@a.pdf", new() { ContentsStreamDeflate = false });

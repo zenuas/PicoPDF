@@ -22,7 +22,7 @@ public class Page : PdfObject
         _ = Elements.TryAdd("Contents", Contents);
     }
 
-    public override void DoExport()
+    public override void DoExport(PdfExportOption option)
     {
         var (width, height) = PdfUtility.GetPageSize(Size, Orientation);
         _ = Elements.TryAdd("MediaBox", new long[] { 0, 0, width, height });

@@ -128,10 +128,10 @@ public class Contents : PdfObject
         });
     }
 
-    public override void DoExport()
+    public override void DoExport(PdfExportOption option)
     {
         var (width, height) = PdfUtility.GetPageSize(Page.Size, Page.Orientation);
-        var writer = GetWriteStream();
+        var writer = GetWriteStream(option.ContentsStreamDeflate);
         Operations.Each(x => x.OperationWrite(width, height, writer));
         writer.Flush();
     }
