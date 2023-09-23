@@ -7,10 +7,10 @@ namespace PicoPDF.Pdf.Operation;
 
 public class DrawLine : IOperation
 {
-    public required IPoint StartX { get; set; }
-    public required IPoint StartY { get; set; }
-    public required IPoint EndX { get; set; }
-    public required IPoint EndY { get; set; }
+    public required IPoint StartX { get; init; }
+    public required IPoint StartY { get; init; }
+    public required IPoint EndX { get; init; }
+    public required IPoint EndY { get; init; }
     public IColor? Color { get; init; }
 
     public void OperationWrite(int width, int height, Stream writer)

@@ -7,10 +7,10 @@ namespace PicoPDF.Pdf.Operation;
 
 public class DrawFillRectangle : IOperation
 {
-    public required IPoint X { get; set; }
-    public required IPoint Y { get; set; }
-    public required IPoint Width { get; set; }
-    public required IPoint Height { get; set; }
+    public required IPoint X { get; init; }
+    public required IPoint Y { get; init; }
+    public required IPoint Width { get; init; }
+    public required IPoint Height { get; init; }
     public IColor? LineColor { get; init; }
     public IColor? FillColor { get; init; }
 
