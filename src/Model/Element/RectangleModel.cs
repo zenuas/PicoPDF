@@ -10,5 +10,5 @@ public class RectangleModel : IModelElement
     public required int Height { get; init; }
     public IColor? Color { get; init; }
 
-    public override string ToString() => $"Line, X={X}, Y={Y}, Width={Width}, Height={Height}";
+    public override string ToString() => $"Rectangle, X={X}, Y={Y}, Width={Width}, Height={Height}";
 }
