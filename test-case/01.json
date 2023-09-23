@@ -11,30 +11,30 @@
 					"BreakKey": "Todouhuken",
 					"Header": "Header2",
 					"Detail": "Detail",
-					"Footer": "Total2"
+					"Footer": "Total2",
 				},
-			"Footer": "Total"
+			"Footer": "Total",
 		},
 	"Footer": "PageFooter",
 	
 	"Sections": [
 		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
-			{"Type": "TextElement", "Text": "PageHeader", "Size": 30, "X": 10, "Y": 30}
+			{"Type": "TextElement", "Text": "PageHeader", "Size": 30, "X": 10, "Y": 30},
 		]},
 		{"Type": "HeaderSection", "Name": "Header", "Height": 20, "ViewMode": "First", "Elements": [
 			{"Type": "TextElement", "Text": "Tiiki", "Size": 10, "X": 10,  "Y": 10},
-			{"Type": "BindElement", "Bind": "Tiiki", "Size": 20, "X": 100, "Y": 20}
+			{"Type": "BindElement", "Bind": "Tiiki", "Size": 20, "X": 100, "Y": 20},
 		]},
 		{"Type": "HeaderSection", "Name": "Header2", "Height": 50, "Elements": [
 			{"Type": "TextElement", "Text": "Todouhuken", "Size": 10, "X": 10,  "Y": 10},
-			{"Type": "BindElement", "Bind": "Todouhuken", "Size": 20, "X": 100, "Y": 20}
+			{"Type": "BindElement", "Bind": "Todouhuken", "Size": 20, "X": 100, "Y": 20},
 		]},
 		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
 			{"Type": "TextElement", "Text": "Detail",      "Size": 10, "X": 10,  "Y": 0},
 			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 100, "Y": 0},
 			{"Type": "BindElement", "Bind": "Sikutyouson", "Size": 10, "X": 150, "Y": 0},
 			{"Type": "BindElement", "Bind": "Number",      "Size": 10, "X": 250, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50},
-			{"Type": "LineElement", "X": 10,  "Y": 3, "Width": 300, "Height": 0, "Color": "Gray"}
+			{"Type": "LineElement", "X": 10,  "Y": 3, "Width": 300, "Height": 0, "Color": "Gray"},
 		]},
 		{"Type": "TotalSection", "Name": "Total", "Height": 30, "ViewMode": "Last", "PageBreak": true, "Elements": [
 			{"Type": "FillRectangleElement", "X": 10,  "Y": 1, "Width": 300, "Height": 25, "LineColor": "Blue", "FillColor": "#EEEEEE"},
@@ -43,16 +43,16 @@
 			{"Type": "TextElement",    "Text": "=",          "Size": 10, "X": 240, "Y": 10},
 			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 100, "Y": 10, "Format": "#,0", "SummaryType": "Summary"},
 			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 200, "Y": 10, "Format": "#,0", "SummaryType": "Count"},
-			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 250, "Y": 10, "Format": "#,0", "SummaryType": "Average"}
+			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 250, "Y": 10, "Format": "#,0", "SummaryType": "Average"},
 		]},
 		{"Type": "TotalSection", "Name": "Total2", "Height": 30, "Elements": [
 			{"Type": "TextElement",    "Text": "TodouhukenTotal", "Size": 10, "X": 10,  "Y": 10},
 			{"Type": "SummaryElement", "Bind": "Number",          "Size": 10, "X": 250, "Y": 10, "Format": "#,0", "Alignment": "End", "Width": 50},
-			{"Type": "RectangleElement", "X": 10,  "Y": 1, "Width": 300, "Height": 10, "Color": "#FF0000"}
+			{"Type": "RectangleElement", "X": 10,  "Y": 1, "Width": 300, "Height": 10, "Color": "#FF0000"},
 		]},
 		{"Type": "FooterSection", "Name": "PageFooter", "Height": 30, "Elements": [
 			{"Type": "TextElement",    "Text": "PageFooter", "Size": 20, "X": 10,  "Y": 20, "Font": "HGMinchoB"},
-			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 250, "Y": 20, "Format": "#,0", "Alignment": "End", "Width": 50}
-		]}
-	]
+			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 250, "Y": 20, "Format": "#,0", "Alignment": "End", "Width": 50},
+		]},
+	],
 }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Drawing;
 
@@ -15,7 +16,11 @@ public static class SectionLoader
 {
     public static PageSection Load(string path)
     {
-        var json = JsonNode.Parse(File.ReadAllText(path))!;
+        var json = JsonNode.Parse(
+                File.ReadAllText(path),
+                null,
+                new JsonDocumentOptions() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip }
+            )!;
 
         var sections = json["Sections"]!
             .AsArray()
