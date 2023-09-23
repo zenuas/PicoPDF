@@ -29,7 +29,7 @@
 			{"Type": "TextElement", "Text": "Todouhuken", "Size": 10, "X": 10,  "Y": 10},
 			{"Type": "BindElement", "Bind": "Todouhuken", "Size": 20, "X": 100, "Y": 20}
 		]},
-		{"Type": "DetailSection", "Name": "Detail", "Height": 10, "Elements": [
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
 			{"Type": "TextElement", "Text": "Detail",      "Size": 10, "X": 10,  "Y": 0},
 			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 100, "Y": 0},
 			{"Type": "BindElement", "Bind": "Sikutyouson", "Size": 10, "X": 150, "Y": 0},

@@ -11,141 +11,103 @@ namespace PicoPDF.Section;
 
 public static class SectionBinder
 {
-    public static PageModel[] Bind<T>(PageSection page, IEnumerable<T> datas)
+    public static PageModel[] Bind<T>(PageSection page, IEnumerable<T> datas) => BindPageModels(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() })
+        .Select(models =>
+        {
+            // header or detail top-down order
+            int top = 0;
+            models.Where(x => x.Section is not FooterSection).Each(x => x.Top = (top += x.Section.Height) - x.Section.Height);
+
+            // footer bottom-up order
+            int bottom = PdfUtility.GetPageSize(page.Size, page.Orientation).Height;
+            models.Where(x => x.Section is FooterSection).Reverse().Each(x => x.Top = bottom -= x.Section.Height);
+
+            return new PageModel() { Size = page.Size, Orientation = page.Orientation, Models = models };
+        })
+        .ToArray();
+
+    public static List<List<SectionModel>> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas)
     {
-        var pageheight = PdfUtility.GetPageSize(page.Size, page.Orientation).Height;
-        var sections = page.SubSection
-            .Travers(x => x is Section s ? [s.SubSection] : [])
-            .ToArray();
+        var sections = page.SubSection.Travers(x => x is Section s ? [s.SubSection] : []).ToArray();
         var detail = sections.OfType<DetailSection>().First();
         var headers = sections.OfType<Section>().Where(x => x.Header is { }).Select(x => (x.BreakKey, Section: (ISection)x.Header!)).PrependIf(page.Header).ToArray();
         var footers = sections.OfType<Section>().Where(x => x.Footer is { }).Select(x => (x.BreakKey, Section: (ISection)x.Footer!)).ToArray();
-        var pages = new List<PageModel>();
-        var models = new List<SectionModel>();
+        var keys = headers.Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
 
+        var pages = new List<List<SectionModel>>();
+        var models = new List<SectionModel>();
         var bind = new BindSummaryMapper<T>();
         bind.CreatePool(page);
 
-        var keys = headers.Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
-        Dictionary<string, object>? prevkey = null;
-        T? prevdata = default;
-        var pageheight_minus_everypagefooter = pageheight - (page.Footer is FooterSection everyfooter && everyfooter.ViewMode == ViewModes.Every ? everyfooter.Height : 0);
-        var pos = new TopBottom() { Bottom = pageheight_minus_everypagefooter };
+        var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
+        var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - everyfooter?.Height ?? 0;
+        var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Sum(x => x.Section.Height);
+        var rest_section = new List<SectionModel>();
 
-        foreach (var data in datas)
+        while (!datas.IsLast)
         {
-            var keyset = keys.ToDictionary(x => x, x => bind.Mapper[x](data));
-            if (prevkey is null || !keys.All(x => prevkey[x].Equals(keyset[x])))
+            var current = datas.Current;
+            headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page) }).Each(models.Add);
+            rest_section.Each(models.Add);
+            rest_section.Clear();
+
+            _ = datas.Next(0, out var lastdata);
+            while (!datas.IsLast)
             {
-                if (prevkey is { })
+                var height = pageheight_minus_everypagefooter - models.Sum(x => x.Section.Height);
+                var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
+                if (count == 0)
                 {
-                    var first_header_only = false;
-                    footers
-                        .SkipWhileOrEveryPage(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
-                        .FooterSort()
-                        .Each(x =>
-                        {
-                            first_header_only = false;
-                            if (pos.Height < x.Section.Height || x.Section.Cast<IFooterSection>().PageBreak)
-                            {
-                                var before_footer = pos.Height >= x.Section.Height;
-                                if (before_footer) models.Add(SectionToModel(x.Section, pos, prevdata!, bind, page));
-
-                                if (page.Footer is FooterSection pagefooter && pagefooter.ViewMode == ViewModes.Every)
-                                {
-                                    pos.Bottom = pageheight;
-                                    models.Add(SectionToModel(pagefooter, pos, prevdata!, bind, page));
-                                }
-                                pages.Add(ModelsToPage(page, models));
-                                models.Clear();
-
-                                pos.Top = 0;
-                                pos.Bottom = pageheight_minus_everypagefooter;
-
-                                models.AddRange(headers
-                                    .SkipWhileOrPageFirst(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
-                                    .Select(x => SectionToModel(x.Section, pos, before_footer ? data : prevdata!, bind, page)));
-                                first_header_only = before_footer;
-                                if (!before_footer) models.Add(SectionToModel(x.Section, pos, prevdata!, bind, page));
-                            }
-                            else
-                            {
-                                models.Add(SectionToModel(x.Section, pos, prevdata!, bind, page));
-                            }
-                        });
-
-                    if (!first_header_only)
-                    {
-                        models.AddRange(headers
-                            .SkipWhileOrEveryPage(x => x.BreakKey != "" && !prevkey[x.BreakKey].Equals(keyset[x.BreakKey]))
-                            .Select(x => SectionToModel(x.Section, pos, data, bind, page)));
-                    }
+                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page) });
+                    break;
                 }
-                else
-                {
-                    bind.DataBind(data);
-                    models.AddRange(headers.Select(x => SectionToModel(x.Section, pos, data, bind, page)));
-                }
-                prevkey = keyset;
-            }
-            else
-            {
-                bind.DataBind(data);
-            }
 
-            if (pos.Height < detail.Height)
-            {
-                models.AddRange(footers
-                    .SkipWhileOrEveryPage(_ => false)
+                current = datas.Current;
+                var existnext = datas.Next(count, out var next);
+                var breakfooter = (existnext ? footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next))) : footers)
                     .FooterSort()
-                    .Select(x => SectionToModel(x.Section, pos, prevdata!, bind, page)));
-                if (page.Footer is FooterSection pagefooter && pagefooter.ViewMode == ViewModes.Every)
+                    .ToArray();
+
+                if (height < (count * detail.Height) + breakfooter.Sum(x => x.Section.Height))
                 {
-                    pos.Bottom = pageheight;
-                    models.Add(SectionToModel(pagefooter, pos, prevdata!, bind, page));
+                    count--;
+                    breakfooter = footers.SkipWhileOrEveryPage(_ => false).FooterSort().ToArray();
                 }
 
-                pages.Add(ModelsToPage(page, models));
-                models.Clear();
-
-                pos.Top = 0;
-                pos.Bottom = pageheight_minus_everypagefooter;
-
-                models.AddRange(headers
-                    .SkipWhileOrPageFirst(_ => false)
-                    .Select(x => SectionToModel(x.Section, pos, data, bind, page)));
+                _ = datas.Next(count - 1, out lastdata);
+                datas.GetRange(count).Select(x => new SectionModel() { Section = detail, Elements = BindElements(detail.Elements, x, bind.Return(y => y.DataBind(x)), page) }).Each(models.Add);
+                breakfooter.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page) }).Each(models.Add);
+                if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
+                {
+                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page) });
+                    if (existnext) bind.Clear(keys.TakeWhile(x => bind.Mapper[x](lastdata).Equals(bind.Mapper[x](next))).ToArray());
+                    break;
+                }
+                if (existnext) bind.Clear(keys.TakeWhile(x => bind.Mapper[x](lastdata).Equals(bind.Mapper[x](next))).ToArray());
             }
-            models.Add(SectionToModel(detail, pos, data, bind, page));
-            prevdata = data;
-        }
 
-        models.AddRange(footers.FooterSort().Select(x => SectionToModel(x.Section, pos, prevdata!, bind, page)));
-        if (page.Footer is TotalSection lasttotal) models.Add(SectionToModel(lasttotal, pos, prevdata!, bind, page));
-        if (page.Footer is FooterSection lastfooter)
-        {
-            pos.Bottom = pageheight;
-            models.Add(SectionToModel(lastfooter, pos, prevdata!, bind, page));
+            pages.Add(models.ToList());
+            models.Clear();
         }
-        pages.Add(ModelsToPage(page, models));
-
-        return pages.ToArray();
+        return pages;
     }
 
-    public static SectionModel SectionToModel<T>(ISection section, TopBottom pos, T data, BindSummaryMapper<T> bind, PageSection page) => new()
+    public static int GetBreakOrTakeCount<T>(BufferedEnumerator<T> datas, BindSummaryMapper<T> bind, string[] keys, int maxcount)
     {
-        Section = section,
-        Top = section is FooterSection ? (pos.Bottom -= section.Height) : (pos.Top += section.Height) - section.Height,
-        Elements = BindElements(section.Elements, data, bind, page).ToList(),
-    };
+        if (maxcount <= 0) return 0;
 
-    public static PageModel ModelsToPage(PageSection page, List<SectionModel> models) => new()
-    {
-        Size = page.Size,
-        Orientation = page.Orientation,
-        Models = models.ToList(),
-    };
+        _ = datas.Next(0, out var prev);
+        var prevkey = keys.ToDictionary(x => x, x => bind.Mapper[x](prev));
 
-    public static IEnumerable<IModelElement> BindElements<T>(List<ISectionElement> elements, T data, BindSummaryMapper<T> bind, PageSection page) => elements.Select(x => BindElement(x, data, bind, page));
+        for (var i = 1; i < maxcount; i++)
+        {
+            if (!datas.Next(i, out var data) ||
+                !keys.All(x => prevkey[x].Equals(bind.Mapper[x](data)))) return i;
+        }
+        return maxcount;
+    }
+
+    public static List<IModelElement> BindElements<T>(List<ISectionElement> elements, T data, BindSummaryMapper<T> bind, PageSection page) => elements.Select(x => BindElement(x, data, bind, page)).ToList();
 
     public static IModelElement BindElement<T>(ISectionElement element, T data, BindSummaryMapper<T> bind, PageSection page)
     {
