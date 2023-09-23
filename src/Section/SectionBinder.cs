@@ -46,7 +46,7 @@ public static class SectionBinder
 
         while (!datas.IsLast)
         {
-            var current = datas.Current;
+            _ = datas.Next(0, out var current);
             headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page) }).Each(models.Add);
             rest_section.Each(models.Add);
             rest_section.Clear();
@@ -62,7 +62,7 @@ public static class SectionBinder
                     break;
                 }
 
-                current = datas.Current;
+                _ = datas.Next(0, out current);
                 var existnext = datas.Next(count, out var next);
                 var breakfooter = (existnext ? footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next))) : footers)
                     .FooterSort()
