@@ -66,6 +66,10 @@ public static class ModelMapping
             case LineModel x:
                 page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color);
                 return;
+
+            case RectangleModel x:
+                page.Contents.DrawRectangle(posx, posy, x.Width, x.Height, x.Color);
+                return;
         }
         throw new();
     }

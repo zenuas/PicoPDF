@@ -46,7 +46,8 @@
 		]},
 		{"Type": "TotalSection", "Name": "Total2", "Height": 30, "Elements": [
 			{"Type": "TextElement",    "Text": "TodouhukenTotal", "Size": 10, "X": 10,  "Y": 10},
-			{"Type": "SummaryElement", "Bind": "Number",          "Size": 10, "X": 250, "Y": 10, "Format": "#,0", "Alignment": "End", "Width": 50}
+			{"Type": "SummaryElement", "Bind": "Number",          "Size": 10, "X": 250, "Y": 10, "Format": "#,0", "Alignment": "End", "Width": 50},
+			{"Type": "RectangleElement", "X": 10,  "Y": 1, "Width": 300, "Height": 10, "Color": "#FF0000"}
 		]},
 		{"Type": "FooterSection", "Name": "PageFooter", "Height": 30, "Elements": [
 			{"Type": "TextElement",    "Text": "PageFooter", "Size": 20, "X": 10,  "Y": 20, "Font": "HGMinchoB"},

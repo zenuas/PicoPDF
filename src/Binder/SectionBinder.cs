@@ -166,6 +166,18 @@ public static class SectionBinder
                         Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
                     };
                 }
+
+            case RectangleElement x:
+                {
+                    return new RectangleModel()
+                    {
+                        X = x.X,
+                        Y = x.Y,
+                        Width = x.Width,
+                        Height = x.Height,
+                        Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
+                    };
+                }
         }
         throw new();
     }

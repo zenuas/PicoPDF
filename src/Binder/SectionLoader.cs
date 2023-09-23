@@ -126,6 +126,18 @@ public static class SectionLoader
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
                     };
                 }
+
+            case "RectangleElement":
+                {
+                    return new RectangleElement()
+                    {
+                        X = posx,
+                        Y = posy,
+                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+                    };
+                }
         }
         throw new();
     }
