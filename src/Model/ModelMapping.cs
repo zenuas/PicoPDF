@@ -3,6 +3,7 @@ using PicoPDF.Binder.Element;
 using PicoPDF.Model.Element;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
+using PicoPDF.Pdf.XObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ public static class ModelMapping
 {
     public static void Mapping(Document doc, PageModel[] pages)
     {
-        var fontcache = doc.ResourcesFont.Values.OfType<TrueTypeFont>().ToDictionary(x => x.Name, x => x);
+        var fontcache = doc.PdfObjects.OfType<TrueTypeFont>().ToDictionary(x => x.Name, x => x);
         TrueTypeFont fontget(string name)
         {
             if (fontcache.ContainsKey(name)) return fontcache[name];
@@ -21,17 +22,26 @@ public static class ModelMapping
             fontcache.Add(name, x);
             return x;
         }
-        pages.Each(x => Mapping(doc.NewPage(x.Size, x.Orientation), fontget, x.Models));
+
+        var imagecache = doc.PdfObjects.OfType<ImageXObject>().ToDictionary(x => x.Name, x => x);
+        ImageXObject imageget(string path)
+        {
+            if (imagecache.ContainsKey(path)) return imagecache[path];
+            var x = doc.AddImage($"X{imagecache.Count}", path);
+            imagecache.Add(path, x);
+            return x;
+        }
+        pages.Each(x => Mapping(doc.NewPage(x.Size, x.Orientation), fontget, imageget, x.Models));
     }
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, List<SectionModel> models)
+    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<string, ImageXObject> imageget, List<SectionModel> models)
     {
-        models.Each(x => Mapping(page, fontget, x, x.Top));
+        models.Each(x => Mapping(page, fontget, imageget, x, x.Top));
     }
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, SectionModel model, int top) => model.Elements.Each(x => Mapping(page, fontget, x, top));
+    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<string, ImageXObject> imageget, SectionModel model, int top) => model.Elements.Each(x => Mapping(page, fontget, imageget, x, top));
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, IModelElement model, int top)
+    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<string, ImageXObject> imageget, IModelElement model, int top)
     {
         var posx = model.X;
         var posy = model.Y + top;
@@ -73,6 +83,10 @@ public static class ModelMapping
 
             case FillRectangleModel x:
                 page.Contents.DrawFillRectangle(posx, posy, x.Width, x.Height, x.LineColor, x.FillColor);
+                return;
+
+            case ImageModel x:
+                page.Contents.DrawImage(posx, posy, imageget(x.Path));
                 return;
         }
         throw new();

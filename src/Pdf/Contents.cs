@@ -3,6 +3,7 @@ using PicoPDF.Pdf.Color;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.Operation;
+using PicoPDF.Pdf.XObject;
 using System.Collections.Generic;
 
 namespace PicoPDF.Pdf;
@@ -105,6 +106,25 @@ public class Contents : PdfObject
             Height = height,
             LineColor = line,
             FillColor = fill,
+        });
+    }
+
+    public void DrawImage(int x, int y, ImageXObject image)
+    {
+        DrawImage(
+                new PointValue() { Value = x },
+                new PointValue() { Value = y },
+                image
+            );
+    }
+
+    public void DrawImage(IPoint x, IPoint y, ImageXObject image)
+    {
+        Operations.Add(new DrawImage()
+        {
+            X = x,
+            Y = y,
+            Image = image,
         });
     }
 

@@ -156,6 +156,17 @@ public static class JsonLoader
                         FillColor = ColorTranslator.FromHtml(json["FillColor"]!.ToString()),
                     };
                 }
+
+            case "ImageElement":
+                {
+                    return new ImageElement()
+                    {
+                        X = posx,
+                        Y = posy,
+                        Path = json["Path"]?.ToString() ?? "",
+                        Bind = json["Bind"]?.ToString() ?? "",
+                    };
+                }
         }
         throw new();
     }

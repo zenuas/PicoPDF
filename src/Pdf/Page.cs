@@ -1,5 +1,8 @@
 ﻿using Extensions;
 using PicoPDF.Pdf.Element;
+using PicoPDF.Pdf.Font;
+using PicoPDF.Pdf.XObject;
+using System.Linq;
 
 namespace PicoPDF.Pdf;
 
@@ -26,13 +29,22 @@ public class Page : PdfObject
 
         var dic = new ElementDictionary();
         _ = Elements.TryAdd("Resources", dic);
-        dic.Dictionary.Add("ProcSet", new string[] { "/PDF", "/Text" });
+        dic.Dictionary.Add("ProcSet", new string[] { "/PDF", "/Text", "/ImageB", "/ImageC", "/ImageI" });
 
-        if (Document.ResourcesFont.Count > 0)
+        var fonts = Document.PdfObjects.OfType<IFont>().ToArray();
+        if (fonts.Length > 0)
         {
             var fontdic = new ElementDictionary();
-            Document.ResourcesFont.Each(x => fontdic.Dictionary.TryAdd(x.Key, new ElementIndirectObject() { References = x.Value }));
+            fonts.Each(x => fontdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x }));
             dic.Dictionary.Add("Font", fontdic);
+        }
+
+        var xobjs = Document.PdfObjects.OfType<ImageXObject>().ToArray();
+        if (xobjs.Length > 0)
+        {
+            var xobjdic = new ElementDictionary();
+            xobjs.Each(x => xobjdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x }));
+            dic.Dictionary.Add("XObject", xobjdic);
         }
     }
 }

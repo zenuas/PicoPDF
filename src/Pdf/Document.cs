@@ -1,6 +1,7 @@
 ﻿using Extensions;
 using PicoPDF.Pdf.Element;
 using PicoPDF.Pdf.Font;
+using PicoPDF.Pdf.XObject;
 using PicoPDF.TrueType;
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +14,6 @@ namespace PicoPDF.Pdf;
 public class Document
 {
     public int Version { get; init; } = 17;
-    public Dictionary<string, IFont> ResourcesFont { get; init; } = new();
     public List<PdfObject> PdfObjects { get; init; } = new();
     public PdfObject Catalog { get; init; } = new()
     {
@@ -56,7 +56,6 @@ public class Document
     {
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var font = new CIDFont() { Name = name, BaseFont = $"{basefont}-{cidsysinfo.Name}", Encoding = cidsysinfo.Name, TextEncoding = enc };
-        ResourcesFont.Add(name, font);
         PdfObjects.Add(font);
 
         font.FontDictionary.BaseFont = basefont;
@@ -74,7 +73,6 @@ public class Document
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary() { Subtype = "CIDFontType2 ", BaseFont = ttf.PostScriptName };
         var font = new TrueTypeFont() { Name = name, Font = ttf, Encoding = cidsysinfo.Name, FontDictionary = fontdict };
-        ResourcesFont.Add(name, font);
         PdfObjects.Add(font);
 
         font.FontDictionary.W = new ElementStringArray(
@@ -93,7 +91,6 @@ public class Document
     public Type1Font AddFont(string name, string basefont, Type1Encoding encoding, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
         var font = new Type1Font() { Name = name, BaseFont = basefont, Encoding = encoding.ToString(), TextEncoding = enc };
-        ResourcesFont.Add(name, font);
         PdfObjects.Add(font);
 
         font.FontDescriptor.FontName = basefont;
@@ -109,10 +106,17 @@ public class Document
     public StandardType1Font AddFont(string name, StandardType1Fonts fontname, Encoding enc)
     {
         var font = new StandardType1Font() { Name = name, Font = fontname, TextEncoding = enc };
-        ResourcesFont.Add(name, font);
         PdfObjects.Add(font);
 
         return font;
+    }
+
+    public ImageXObject AddImage(string name, string path)
+    {
+        var image = new ImageXObject() { Name = name, Path = path };
+        PdfObjects.Add(image);
+
+        return image;
     }
 
     public void Save(string path)

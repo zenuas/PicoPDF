@@ -191,6 +191,17 @@ public static class SectionBinder
                         FillColor = new DeviceRGB() { R = (double)x.FillColor.R / 255, G = (double)x.FillColor.G / 255, B = (double)x.FillColor.B / 255 },
                     };
                 }
+
+            case ImageElement x:
+                {
+                    var path = x.Bind == "" ? x.Path : bind.Mapper[x.Bind](data).ToString()!;
+                    return new ImageModel()
+                    {
+                        X = x.X,
+                        Y = x.Y,
+                        Path = path,
+                    };
+                }
         }
         throw new();
     }
