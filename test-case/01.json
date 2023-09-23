@@ -24,7 +24,7 @@
 		{"Type": "HeaderSection", "Name": "Header", "Height": 20, "ViewMode": "First", "Elements": [
 			{"Type": "TextElement", "Text": "Tiiki", "Size": 10, "X": 10,  "Y": 10},
 			{"Type": "BindElement", "Bind": "Tiiki", "Size": 20, "X": 100, "Y": 20},
-			{"Type": "ImageElement", "Path": "test-case/300x150.jpg", "X": 300, "Y": 10},
+			{"Type": "ImageElement", "Path": "test-case/300x150.jpg", "X": 350, "Y": 10},
 		]},
 		{"Type": "HeaderSection", "Name": "Header2", "Height": 50, "Elements": [
 			{"Type": "TextElement", "Text": "Todouhuken", "Size": 10, "X": 10,  "Y": 10},

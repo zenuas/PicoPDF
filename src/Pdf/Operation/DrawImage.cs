@@ -14,7 +14,7 @@ public class DrawImage : IOperation
     public void OperationWrite(int width, int height, Stream writer)
     {
         writer.Write($"q\n");
-        writer.Write($"1 0 0 1 {X.ToPoint()} {Y.ToPoint()} cm\n");
+        writer.Write($"150 0 0 75 {X.ToPoint()} {height - (/*height*/150 * /*zoom*/0.5) - Y.ToPoint()} cm\n");
         writer.Write($"/{Image.Name} Do\n");
         writer.Write($"Q\n");
     }
