@@ -37,6 +37,7 @@
 			{"Type": "LineElement", "X": 10,  "Y": 3, "Width": 300, "Height": 0, "Color": "Gray"}
 		]},
 		{"Type": "TotalSection", "Name": "Total", "Height": 30, "ViewMode": "Last", "PageBreak": true, "Elements": [
+			{"Type": "FillRectangleElement", "X": 10,  "Y": 1, "Width": 300, "Height": 25, "LineColor": "Blue", "FillColor": "#EEEEEE"},
 			{"Type": "TextElement",    "Text": "TiikiTotal", "Size": 10, "X": 10,  "Y": 10},
 			{"Type": "TextElement",    "Text": "/",          "Size": 10, "X": 190, "Y": 10},
 			{"Type": "TextElement",    "Text": "=",          "Size": 10, "X": 240, "Y": 10},

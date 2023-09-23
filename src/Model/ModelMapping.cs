@@ -70,6 +70,10 @@ public static class ModelMapping
             case RectangleModel x:
                 page.Contents.DrawRectangle(posx, posy, x.Width, x.Height, x.Color);
                 return;
+
+            case FillRectangleModel x:
+                page.Contents.DrawFillRectangle(posx, posy, x.Width, x.Height, x.LineColor, x.FillColor);
+                return;
         }
         throw new();
     }

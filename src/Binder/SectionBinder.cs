@@ -1,13 +1,13 @@
 ﻿using Extensions;
+using PicoPDF.Binder.Data;
+using PicoPDF.Binder.Element;
 using PicoPDF.Model;
 using PicoPDF.Model.Element;
 using PicoPDF.Pdf;
-using PicoPDF.Binder.Element;
-using PicoPDF.Binder.Data;
+using PicoPDF.Pdf.Color;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using PicoPDF.Pdf.Color;
 
 namespace PicoPDF.Binder;
 
@@ -176,6 +176,19 @@ public static class SectionBinder
                         Width = x.Width,
                         Height = x.Height,
                         Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
+                    };
+                }
+
+            case FillRectangleElement x:
+                {
+                    return new FillRectangleModel()
+                    {
+                        X = x.X,
+                        Y = x.Y,
+                        Width = x.Width,
+                        Height = x.Height,
+                        LineColor = new DeviceRGB() { R = (double)x.LineColor.R / 255, G = (double)x.LineColor.G / 255, B = (double)x.LineColor.B / 255 },
+                        FillColor = new DeviceRGB() { R = (double)x.FillColor.R / 255, G = (double)x.FillColor.G / 255, B = (double)x.FillColor.B / 255 },
                     };
                 }
         }
