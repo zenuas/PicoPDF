@@ -23,10 +23,10 @@ public class DrawString : IOperation
             writer.Write($"  q\n");
             writer.Write($"  {c.CreateColor(false)}\n");
         }
-        writer.Write($"  /{Font?.Name ?? "F0"} {FontSize} Tf\n");
+        writer.Write($"  /{Font.Name} {FontSize} Tf\n");
         writer.Write($"  {X.ToPoint()} {height - Y.ToPoint()} Td\n");
         writer.Write($"  ");
-        Font!.CreateTextShowingOperator(Text).Each(writer.WriteByte);
+        Font.CreateTextShowingOperator(Text).Each(writer.WriteByte);
         writer.Write($"\n");
         if (Color is { })
         {
