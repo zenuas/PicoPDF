@@ -14,7 +14,7 @@ var csv = File.ReadAllLines("test-case/test.csv")
     .Select(x => x.Split(','))
     .Select(x => new Data(x[0], x[1], x[2], int.Parse(x[3])))
     .ToArray();
-var pagesection = SectionLoader.Load("test-case/01.json");
+var pagesection = JsonLoader.Load("test-case/01.json");
 var pages = SectionBinder.Bind(pagesection, csv);
 ModelMapping.Mapping(doc, pages);
 doc.Save("@a.pdf");

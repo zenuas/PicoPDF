@@ -12,7 +12,7 @@ using System.Drawing;
 
 namespace PicoPDF.Binder;
 
-public static class SectionLoader
+public static class JsonLoader
 {
     public static PageSection Load(string path)
     {
