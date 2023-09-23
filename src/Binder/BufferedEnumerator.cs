@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PicoPDF.Section;
+namespace PicoPDF.Binder;
 
 public class BufferedEnumerator<T>
 {

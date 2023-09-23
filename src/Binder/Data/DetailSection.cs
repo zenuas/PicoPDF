@@ -1,8 +1,8 @@
-﻿using PicoPDF.Section.Element;
+﻿using PicoPDF.Binder.Element;
 using System;
 using System.Collections.Generic;
 
-namespace PicoPDF.Section;
+namespace PicoPDF.Binder.Data;
 
 public class DetailSection : ISection, ISubSection
 {

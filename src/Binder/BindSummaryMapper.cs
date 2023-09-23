@@ -1,11 +1,12 @@
 ﻿using Extensions;
 using PicoPDF.Mapper;
-using PicoPDF.Section.Element;
+using PicoPDF.Binder.Element;
+using PicoPDF.Binder.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PicoPDF.Section;
+namespace PicoPDF.Binder;
 
 public class BindSummaryMapper<T>
 {

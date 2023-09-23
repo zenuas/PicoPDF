@@ -1,10 +1,10 @@
-﻿using PicoPDF.Section.Element;
+﻿using PicoPDF.Binder.Element;
 using System;
 using System.Collections.Generic;
 
-namespace PicoPDF.Section;
+namespace PicoPDF.Binder.Data;
 
-public class FooterSection : ISection, IFooterSection, IHeaderFooter
+public class TotalSection : ISection, IFooterSection, IHeaderFooter
 {
     public ViewModes ViewMode_ = ViewModes.Last;
 

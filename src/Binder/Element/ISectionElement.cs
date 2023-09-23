@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Section.Element;
+﻿namespace PicoPDF.Binder.Element;
 
 public interface ISectionElement
 {

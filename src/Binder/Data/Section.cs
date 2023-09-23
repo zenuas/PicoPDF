@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Section;
+﻿namespace PicoPDF.Binder.Data;
 
 public class Section : ISubSection, IParentSection
 {

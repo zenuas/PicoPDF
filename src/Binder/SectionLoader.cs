@@ -1,13 +1,14 @@
 ﻿using Extensions;
 using PicoPDF.Pdf;
-using PicoPDF.Section.Element;
+using PicoPDF.Binder.Element;
+using PicoPDF.Binder.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
 
-namespace PicoPDF.Section;
+namespace PicoPDF.Binder;
 
 public static class SectionLoader
 {

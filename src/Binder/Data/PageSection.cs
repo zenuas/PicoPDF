@@ -1,6 +1,6 @@
 ﻿using PicoPDF.Pdf;
 
-namespace PicoPDF.Section;
+namespace PicoPDF.Binder.Data;
 
 public class PageSection : IParentSection
 {

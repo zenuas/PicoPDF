@@ -1,4 +1,4 @@
-﻿using PicoPDF.Section;
+﻿using PicoPDF.Binder;
 using Xunit;
 
 namespace PicoPDF.Test;

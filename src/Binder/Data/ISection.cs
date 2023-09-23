@@ -1,7 +1,7 @@
-﻿using PicoPDF.Section.Element;
+﻿using PicoPDF.Binder.Element;
 using System.Collections.Generic;
 
-namespace PicoPDF.Section;
+namespace PicoPDF.Binder.Data;
 
 public interface ISection
 {

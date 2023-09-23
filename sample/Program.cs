@@ -1,7 +1,7 @@
 ﻿using PicoPDF.Model;
 using PicoPDF.Pdf;
 using PicoPDF.Sample;
-using PicoPDF.Section;
+using PicoPDF.Binder;
 using System.Text;
 
 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

@@ -2,12 +2,13 @@
 using PicoPDF.Model;
 using PicoPDF.Model.Element;
 using PicoPDF.Pdf;
-using PicoPDF.Section.Element;
+using PicoPDF.Binder.Element;
+using PicoPDF.Binder.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PicoPDF.Section;
+namespace PicoPDF.Binder;
 
 public static class SectionBinder
 {
