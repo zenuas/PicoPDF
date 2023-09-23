@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
+using System.Drawing;
 
 namespace PicoPDF.Binder;
 
@@ -111,6 +112,18 @@ public static class SectionLoader
                         SummaryType = json["SummaryType"] is { } sum ? Enum.Parse<SummaryType>(sum.ToString()) : SummaryType.Summary,
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                    };
+                }
+
+            case "LineElement":
+                {
+                    return new LineElement()
+                    {
+                        X = posx,
+                        Y = posy,
+                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
                     };
                 }
         }

@@ -62,6 +62,10 @@ public static class ModelMapping
                     }
                 }
                 return;
+
+            case LineModel x:
+                page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color);
+                return;
         }
         throw new();
     }

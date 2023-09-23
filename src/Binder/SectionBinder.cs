@@ -7,6 +7,7 @@ using PicoPDF.Binder.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PicoPDF.Pdf.Color;
 
 namespace PicoPDF.Binder;
 
@@ -151,6 +152,18 @@ public static class SectionBinder
                         Size = x.Size,
                         Alignment = x.Alignment,
                         Width = x.Width,
+                    };
+                }
+
+            case LineElement x:
+                {
+                    return new LineModel()
+                    {
+                        X = x.X,
+                        Y = x.Y,
+                        Width = x.Width,
+                        Height = x.Height,
+                        Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
                     };
                 }
         }
