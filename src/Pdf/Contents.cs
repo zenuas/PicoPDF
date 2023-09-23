@@ -111,8 +111,11 @@ public class Contents : PdfObject
     public override void DoExport()
     {
         var (width, height) = PdfUtility.GetPageSize(Page.Size, Page.Orientation);
-        Operations.Each(x => x.OperationWrite(width, height, Stream));
-        Elements.Add("Length", Stream.Length);
-        Stream.Position = 0;
+        var writer = GetWriteStream();
+        Operations.Each(x => x.OperationWrite(width, height, writer));
+        writer.Flush();
+
+        Elements.Add("Length", Stream!.Length);
+        Stream!.Position = 0;
     }
 }
