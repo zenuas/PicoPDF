@@ -66,7 +66,7 @@ public static class SectionLoader
         throw new();
     }
 
-    public static ISectionElement LoadElement(JsonNode json)
+    public static IElement LoadElement(JsonNode json)
     {
         var posx = (int)json["X"]!.AsValue();
         var posy = (int)json["Y"]!.AsValue();

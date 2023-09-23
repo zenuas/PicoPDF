@@ -109,9 +109,9 @@ public static class SectionBinder
         return maxcount;
     }
 
-    public static List<IModelElement> BindElements<T>(List<ISectionElement> elements, T data, BindSummaryMapper<T> bind, PageSection page) => elements.Select(x => BindElement(x, data, bind, page)).ToList();
+    public static List<IModelElement> BindElements<T>(List<IElement> elements, T data, BindSummaryMapper<T> bind, PageSection page) => elements.Select(x => BindElement(x, data, bind, page)).ToList();
 
-    public static IModelElement BindElement<T>(ISectionElement element, T data, BindSummaryMapper<T> bind, PageSection page)
+    public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page)
     {
         switch (element)
         {

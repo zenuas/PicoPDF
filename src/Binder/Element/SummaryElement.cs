@@ -1,6 +1,6 @@
 ﻿namespace PicoPDF.Binder.Element;
 
-public class SummaryElement : ISectionElement
+public class SummaryElement : IElement
 {
     public required int X { get; init; }
     public required int Y { get; init; }

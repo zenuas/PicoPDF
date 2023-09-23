@@ -87,5 +87,5 @@ public class BindSummaryMapper<T>
         return results;
     }
 
-    public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, List<ISectionElement> elements) => elements.OfType<SummaryElement>().Select(x => (keys, x));
+    public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, List<IElement> elements) => elements.OfType<SummaryElement>().Select(x => (keys, x));
 }

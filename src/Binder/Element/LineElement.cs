@@ -2,7 +2,7 @@
 
 namespace PicoPDF.Binder.Element;
 
-public class LineElement : ISectionElement
+public class LineElement : IElement
 {
     public required int X { get; init; }
     public required int Y { get; init; }
