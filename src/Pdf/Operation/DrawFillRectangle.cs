@@ -14,7 +14,7 @@ public class DrawFillRectangle : IOperation
     public IColor? LineColor { get; init; }
     public IColor? FillColor { get; init; }
 
-    public void OperationWrite(int width, int height, Stream writer)
+    public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
         var isstack = LineColor is { } || FillColor is { };
         if (isstack)

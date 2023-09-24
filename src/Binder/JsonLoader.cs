@@ -165,6 +165,10 @@ public static class JsonLoader
                         Y = posy,
                         Path = json["Path"]?.ToString() ?? "",
                         Bind = json["Bind"]?.ToString() ?? "",
+                        Width = (int)json["Width"]!.AsValue(),
+                        Height = (int)json["Height"]!.AsValue(),
+                        ZoomWidth = json["ZoomWidth"]?.AsValue() is { } zoomwidth ? (double)zoomwidth : 1.0,
+                        ZoomHeight = json["ZoomHeight"]?.AsValue() is { } zoomheight ? (double)zoomheight : 1.0,
                     };
                 }
         }

@@ -15,7 +15,7 @@ public class DrawString : IOperation
     public required int FontSize { get; set; }
     public IColor? Color { get; init; }
 
-    public void OperationWrite(int width, int height, Stream writer)
+    public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
         writer.Write($"BT\n");
         if (Color is { } c)

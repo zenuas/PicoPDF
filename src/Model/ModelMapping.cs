@@ -24,24 +24,24 @@ public static class ModelMapping
         }
 
         var imagecache = doc.PdfObjects.OfType<ImageXObject>().ToDictionary(x => x.Name, x => x);
-        ImageXObject imageget(string path)
+        ImageXObject imageget(ImageModel image)
         {
-            if (imagecache.ContainsKey(path)) return imagecache[path];
-            var x = doc.AddImage($"X{imagecache.Count}", path);
-            imagecache.Add(path, x);
+            if (imagecache.ContainsKey(image.Path)) return imagecache[image.Path];
+            var x = doc.AddImage($"X{imagecache.Count}", image.Path, image.Width, image.Height);
+            imagecache.Add(image.Path, x);
             return x;
         }
         pages.Each(x => Mapping(doc.NewPage(x.Size, x.Orientation), fontget, imageget, x.Models));
     }
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<string, ImageXObject> imageget, List<SectionModel> models)
+    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, ImageXObject> imageget, List<SectionModel> models)
     {
         models.Each(x => Mapping(page, fontget, imageget, x, x.Top));
     }
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<string, ImageXObject> imageget, SectionModel model, int top) => model.Elements.Each(x => Mapping(page, fontget, imageget, x, top));
+    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, ImageXObject> imageget, SectionModel model, int top) => model.Elements.Each(x => Mapping(page, fontget, imageget, x, top));
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<string, ImageXObject> imageget, IModelElement model, int top)
+    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, ImageXObject> imageget, IModelElement model, int top)
     {
         var posx = model.X;
         var posy = model.Y + top;
@@ -86,7 +86,7 @@ public static class ModelMapping
                 return;
 
             case ImageModel x:
-                page.Contents.DrawImage(posx, posy, imageget(x.Path));
+                page.Contents.DrawImage(posx, posy, imageget(x), x.ZoomWidth, x.ZoomHeight);
                 return;
         }
         throw new();

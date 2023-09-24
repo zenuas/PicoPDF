@@ -111,9 +111,9 @@ public class Document
         return font;
     }
 
-    public ImageXObject AddImage(string name, string path)
+    public ImageXObject AddImage(string name, string path, int width, int height)
     {
-        var image = new ImageXObject() { Name = name, Path = path };
+        var image = new ImageXObject() { Name = name, Path = path, Width = width, Height = height };
         PdfObjects.Add(image);
 
         return image;

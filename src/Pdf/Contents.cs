@@ -109,22 +109,26 @@ public class Contents : PdfObject
         });
     }
 
-    public void DrawImage(int x, int y, ImageXObject image)
+    public void DrawImage(int x, int y, ImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
     {
         DrawImage(
                 new PointValue() { Value = x },
                 new PointValue() { Value = y },
-                image
+                image,
+                zoomwidth,
+                zoomheight
             );
     }
 
-    public void DrawImage(IPoint x, IPoint y, ImageXObject image)
+    public void DrawImage(IPoint x, IPoint y, ImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
     {
         Operations.Add(new DrawImage()
         {
             X = x,
             Y = y,
             Image = image,
+            ZoomWidth = zoomwidth,
+            ZoomHeight = zoomheight,
         });
     }
 
@@ -132,7 +136,7 @@ public class Contents : PdfObject
     {
         var (width, height) = PdfUtility.GetPageSize(Page.Size, Page.Orientation);
         var writer = GetWriteStream(option.ContentsStreamDeflate);
-        Operations.Each(x => x.OperationWrite(width, height, writer));
+        Operations.Each(x => x.OperationWrite(width, height, writer, option));
         writer.Flush();
     }
 }

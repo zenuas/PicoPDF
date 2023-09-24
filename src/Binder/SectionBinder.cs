@@ -200,6 +200,10 @@ public static class SectionBinder
                         X = x.X,
                         Y = x.Y,
                         Path = path,
+                        Width = x.Width,
+                        Height = x.Height,
+                        ZoomWidth = x.ZoomWidth,
+                        ZoomHeight = x.ZoomHeight,
                     };
                 }
         }

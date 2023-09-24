@@ -13,7 +13,7 @@ public class DrawLine : IOperation
     public required IPoint EndY { get; init; }
     public IColor? Color { get; init; }
 
-    public void OperationWrite(int width, int height, Stream writer)
+    public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
         if (Color is { } c)
         {
