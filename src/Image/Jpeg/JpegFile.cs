@@ -9,9 +9,9 @@ namespace PicoPDF.Image.Jpeg;
 public class JpegFile : IImage
 {
     public static readonly byte[] MagicNumber = new byte[] { 0xFF, 0xD8 };
-    public required int Width { get; set; }
-    public required int Height { get; set; }
-    public required int Precision { get; set; }
+    public required int Width { get; init; }
+    public required int Height { get; init; }
+    public required int Precision { get; init; }
 
     public static JpegFile FromStream(Stream stream)
     {

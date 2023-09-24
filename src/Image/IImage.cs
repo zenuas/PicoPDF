@@ -2,6 +2,6 @@
 
 public interface IImage
 {
-    public int Width { get; set; }
-    public int Height { get; set; }
+    public int Width { get; init; }
+    public int Height { get; init; }
 }

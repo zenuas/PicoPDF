@@ -1,7 +1,6 @@
 ﻿using Extensions;
 using PicoPDF.Binder.Data;
 using PicoPDF.Binder.Element;
-using PicoPDF.Image;
 using PicoPDF.Pdf;
 using System;
 using System.Collections.Generic;
@@ -160,28 +159,12 @@ public static class JsonLoader
 
             case "ImageElement":
                 {
-                    int width;
-                    int height;
-                    if (json["Width"]?.AsValue() is null || json["Height"]?.AsValue() is null)
-                    {
-                        var image = ImageLoader.FromFile(json["Path"]?.ToString()!)!;
-                        width = json["Width"]?.AsValue() is { } widthp ? (int)widthp : image.Width;
-                        height = json["Height"]?.AsValue() is { } heightp ? (int)heightp : image.Height;
-                    }
-                    else
-                    {
-                        width = (int)json["Width"]!.AsValue();
-                        height = (int)json["Height"]!.AsValue();
-                    }
-
                     return new ImageElement()
                     {
                         X = posx,
                         Y = posy,
                         Path = json["Path"]?.ToString() ?? "",
                         Bind = json["Bind"]?.ToString() ?? "",
-                        Width = width,
-                        Height = height,
                         ZoomWidth = json["ZoomWidth"]?.AsValue() is { } zoomwidth ? (double)zoomwidth : 1.0,
                         ZoomHeight = json["ZoomHeight"]?.AsValue() is { } zoomheight ? (double)zoomheight : 1.0,
                     };

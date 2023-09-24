@@ -5,8 +5,8 @@ namespace PicoPDF.Image.Bmp;
 public class BmpFile : IImage
 {
     public static readonly byte[] MagicNumber = new byte[] { 0x42, 0x4D };
-    public required int Width { get; set; }
-    public required int Height { get; set; }
+    public required int Width { get; init; }
+    public required int Height { get; init; }
 
     public static BmpFile FromStream(Stream stream)
     {

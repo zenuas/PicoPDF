@@ -1,5 +1,6 @@
 ﻿using Extensions;
 using PicoPDF.Binder.Element;
+using PicoPDF.Image;
 using PicoPDF.Model.Element;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
@@ -27,7 +28,8 @@ public static class ModelMapping
         ImageXObject imageget(ImageModel image)
         {
             if (imagecache.ContainsKey(image.Path)) return imagecache[image.Path];
-            var x = doc.AddImage($"X{imagecache.Count}", image.Path, image.Width, image.Height);
+            var load = ImageLoader.FromFile(image.Path)!;
+            var x = doc.AddImage($"X{imagecache.Count}", image.Path, load.Width, load.Height);
             imagecache.Add(image.Path, x);
             return x;
         }
