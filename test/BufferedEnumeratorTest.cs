@@ -28,6 +28,6 @@ public class BufferedEnumeratorTest
         Assert.Equal(xs.GetRange(1), [3]);
         Assert.False(xs.Next(0, out _));
 
-        Assert.Throws<IndexOutOfRangeException>(() => xs.GetRange(1));
+        _ = Assert.Throws<IndexOutOfRangeException>(() => xs.GetRange(1));
     }
 }
