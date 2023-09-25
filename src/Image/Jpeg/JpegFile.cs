@@ -3,6 +3,7 @@ using System;
 using System.Buffers.Binary;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace PicoPDF.Image.Jpeg;
 
@@ -15,8 +16,8 @@ public class JpegFile : IImage
 
     public static JpegFile FromStream(Stream stream)
     {
-        var soi = stream.ReadBytes(2);
-        Debug.Assert(BinaryPrimitives.ReadUInt16BigEndian(soi) == (ushort)SegmentTypes.SOI);
+        var signature = stream.ReadBytes(2);
+        Debug.Assert(MagicNumber.SequenceEqual(signature));
 
         while (true)
         {
