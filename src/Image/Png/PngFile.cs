@@ -125,8 +125,8 @@ public class PngFile : IImageCanvas
     public static void ApplyFilterType(Span<byte> datas, int width, int height, int bit_per_pixel)
     {
         var byte_per_pixel = BitToByte(bit_per_pixel);
-        var row_byte = BitToByte(bit_per_pixel * width);
-        var prev_scanline = new byte[row_byte].AsSpan();
+        var row_byte = 1 + BitToByte(bit_per_pixel * width);
+        var prev_scanline = new byte[row_byte - 1].AsSpan();
         for (var y = 0; y < height; y++)
         {
             var line = datas[(y * row_byte)..((y * row_byte) + row_byte)];
@@ -152,10 +152,6 @@ public class PngFile : IImageCanvas
                     break;
 
                 case (byte)FilterTypes.Average:
-                    for (var x = 0; x < scanline.Length; x++)
-                    {
-                        scanline[x] += (byte)(prev_scanline[x] / 2);
-                    }
                     for (var x = byte_per_pixel; x < scanline.Length; x++)
                     {
                         scanline[x] += (byte)((scanline[x - byte_per_pixel] + prev_scanline[x]) / 2);
