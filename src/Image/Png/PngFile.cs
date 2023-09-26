@@ -57,7 +57,7 @@ public class PngFile : IImageCanvas
 
                 case (uint)ChunkTypes.PLTE:
                     Debug.Assert(length >= 3 && length % 3 == 0);
-                    Lists.RangeTo(0, length / 3).Select(x => Color.FromArgb(chunkdataraw[x], chunkdataraw[x + 1], chunkdataraw[x + 2])).Each(palette.Add);
+                    Lists.RangeTo(0, (length / 3) - 1).Select(x => Color.FromArgb(chunkdataraw[x * 3], chunkdataraw[(x * 3) + 1], chunkdataraw[(x * 3) + 2])).Each(palette.Add);
                     break;
 
                 case (uint)ChunkTypes.IDAT:
@@ -95,6 +95,7 @@ public class PngFile : IImageCanvas
         ApplyFilterType(data, width, height, bit_per_pixcel);
 
         Func<byte[], Color> makecolor =
+            color_type == 3 ? xs => palette[xs[0]] :
             byte_per_pixcel == 3 ? xs => Color.FromArgb(xs[0], xs[1], xs[2]) :
             byte_per_pixcel == 1 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
             xs => Color.FromArgb(xs[0], xs[0], xs[0]);
