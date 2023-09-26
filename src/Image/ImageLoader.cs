@@ -39,9 +39,6 @@ public static class ImageLoader
 
             case ImageTypes.Png:
                 return PngFile.FromStream(stream);
-
-            case ImageTypes.Bmp:
-                return BmpFile.FromStream(stream);
         }
         return null;
     }
