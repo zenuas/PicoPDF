@@ -152,6 +152,10 @@ public class PngFile : IImageCanvas
                     break;
 
                 case (byte)FilterTypes.Average:
+                    for (var x = 0; x < byte_per_pixel; x++)
+                    {
+                        scanline[x] += (byte)(prev_scanline[x] / 2);
+                    }
                     for (var x = byte_per_pixel; x < scanline.Length; x++)
                     {
                         scanline[x] += (byte)((scanline[x - byte_per_pixel] + prev_scanline[x]) / 2);
@@ -159,8 +163,21 @@ public class PngFile : IImageCanvas
                     break;
 
                 case (byte)FilterTypes.Paeth:
-                    for (var x = 0; x < byte_per_pixel; x++)
+                    for (var i = 0; i < byte_per_pixel; i++)
                     {
+                        var a = 0;
+                        var c = 0;
+                        for (var x = i; x < scanline.Length; x += byte_per_pixel)
+                        {
+                            var b = (int)prev_scanline[x];
+                            var pa = Math.Abs(b - c);
+                            var pb = Math.Abs(a - c);
+                            var pc = Math.Abs(a + b - c - c);
+
+                            var paeth_predictor = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c);
+                            a = scanline[x] = (byte)(scanline[x] + paeth_predictor);
+                            c = b;
+                        }
                     }
                     break;
             }
