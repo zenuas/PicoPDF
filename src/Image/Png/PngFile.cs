@@ -90,14 +90,15 @@ public class PngFile : IImageCanvas
         using var memory = new MemoryStream(datas.ToArray());
         using var zlib = new ZLibStream(memory, CompressionMode.Decompress, true);
         var data = zlib.ReadAllBytes().ToArray();
-        var bit_per_pixcel = GetBitsPerPixel(color_type, bit_deps);
-        var byte_per_pixcel = BitToByte(bit_per_pixcel);
-        ApplyFilterType(data, width, height, bit_per_pixcel);
+        var bit_per_pixel = GetBitsPerPixel(color_type, bit_deps);
+        var byte_per_pixel = BitToByte(bit_per_pixel);
+        var row_byte = 1 + BitToByte(bit_per_pixel * width);
+        ApplyFilterType(data, width, height, byte_per_pixel, row_byte);
 
         Func<byte[], Color> makecolor =
             color_type == 3 ? xs => palette[xs[0]] :
-            byte_per_pixcel == 3 ? xs => Color.FromArgb(xs[0], xs[1], xs[2]) :
-            byte_per_pixcel == 1 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
+            byte_per_pixel == 3 ? xs => Color.FromArgb(xs[0], xs[1], xs[2]) :
+            byte_per_pixel == 1 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
             xs => Color.FromArgb(xs[0], xs[0], xs[0]);
 
         return new PngFile()
@@ -105,8 +106,8 @@ public class PngFile : IImageCanvas
             Width = width,
             Height = height,
             Canvas = data
-                .Chunk((width * byte_per_pixcel) + 1)
-                .Select(xs => xs.Skip(1).Chunk(byte_per_pixcel).Select(makecolor).ToArray())
+                .Chunk(row_byte)
+                .Select(xs => xs.Skip(1).Chunk(byte_per_pixel).Select(makecolor).ToArray())
                 .ToArray(),
         };
     }
@@ -123,10 +124,8 @@ public class PngFile : IImageCanvas
 
     public static int BitToByte(int bit) => (bit + 7) / 8;
 
-    public static void ApplyFilterType(Span<byte> datas, int width, int height, int bit_per_pixel)
+    public static void ApplyFilterType(Span<byte> datas, int width, int height, int byte_per_pixel, int row_byte)
     {
-        var byte_per_pixel = BitToByte(bit_per_pixel);
-        var row_byte = 1 + BitToByte(bit_per_pixel * width);
         var prev_scanline = new byte[row_byte - 1].AsSpan();
         for (var y = 0; y < height; y++)
         {
