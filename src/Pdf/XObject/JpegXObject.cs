@@ -1,11 +1,13 @@
-﻿namespace PicoPDF.Pdf.XObject;
+﻿using System.IO;
 
-public class ImageXObject : PdfObject, IImageXObject
+namespace PicoPDF.Pdf.XObject;
+
+public class JpegXObject : PdfObject, IImageXObject
 {
     public required string Name { get; init; }
     public required int Width { get; init; }
     public required int Height { get; init; }
-    public required System.Drawing.Color[][] Canvas { get; init; }
+    public required string Path { get; init; }
 
     public override void DoExport(PdfExportOption option)
     {
@@ -16,17 +18,11 @@ public class ImageXObject : PdfObject, IImageXObject
         _ = Elements.TryAdd("ColorSpace", "/DeviceRGB");
         _ = Elements.TryAdd("BitsPerComponent", 8);
 
-        var writer = GetWriteStream(option.ImageStreamDeflate);
-        for (var y = 0; y < Height; y++)
-        {
-            for (var x = 0; x < Width; x++)
-            {
-                var rgb = Canvas[y][x];
-                writer.WriteByte(rgb.R);
-                writer.WriteByte(rgb.G);
-                writer.WriteByte(rgb.B);
-            }
-        }
+        var datas = File.ReadAllBytes(Path);
+        var writer = GetWriteStream(option.JpegStreamDeflate);
+        writer.Write(datas);
         writer.Flush();
+
+        Elements["Filter"] = option.JpegStreamDeflate ? "[ /FlateDecode /DCTDecode ]" : "/DCTDecode";
     }
 }

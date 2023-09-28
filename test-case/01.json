@@ -24,8 +24,9 @@
 		{"Type": "HeaderSection", "Name": "Header", "Height": 20, "ViewMode": "First", "Elements": [
 			{"Type": "TextElement", "Text": "Tiiki", "Size": 10, "X": 10,  "Y": 10},
 			{"Type": "BindElement", "Bind": "Tiiki", "Size": 20, "X": 100, "Y": 20},
-			{"Type": "ImageElement", "Path": "test-case/300x150.jpg", "X": 350, "Y": 10, "ZoomWidth": 0.5, "ZoomHeight": 0.5},
-			{"Type": "RectangleElement", "X": 350,  "Y": 10, "Width": 150, "Height": 75, "Color": "#FF0000"},
+			{"Type": "ImageElement", "Path": "test-case/300x150.jpg", "X": 350, "Y": 10, "ZoomWidth": 0.25, "ZoomHeight": 0.25},
+			{"Type": "ImageElement", "Path": "test-case/300x150.png", "X": 450, "Y": 10, "ZoomWidth": 0.25, "ZoomHeight": 0.25},
+			{"Type": "RectangleElement", "X": 350,  "Y": 10, "Width": 75, "Height": 37, "Color": "#FF0000"},
 		]},
 		{"Type": "HeaderSection", "Name": "Header2", "Height": 50, "Elements": [
 			{"Type": "TextElement", "Text": "Todouhuken", "Size": 10, "X": 10,  "Y": 10},

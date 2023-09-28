@@ -1,4 +1,6 @@
 ﻿using Extensions;
+using PicoPDF.Image;
+using PicoPDF.Image.Png;
 using PicoPDF.Pdf.Element;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;
@@ -111,10 +113,15 @@ public class Document
         return font;
     }
 
-    public ImageXObject AddImage(string name, string path, int width, int height)
+    public IImageXObject AddImage(string name, string path, int width, int height)
     {
-        var image = new ImageXObject() { Name = name, Path = path, Width = width, Height = height };
-        PdfObjects.Add(image);
+        IImageXObject image = ImageLoader.TypeCheck(path) switch
+        {
+            ImageTypes.Jpeg => new JpegXObject() { Name = name, Width = width, Height = height, Path = path },
+            ImageTypes.Png => new ImageXObject() { Name = name, Width = width, Height = height, Canvas = ImageLoader.FromFile(path, ImageTypes.Png)!.Cast<PngFile>().Canvas },
+            _ => throw new(),
+        };
+        PdfObjects.Add(image.Cast<PdfObject>());
 
         return image;
     }

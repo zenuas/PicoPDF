@@ -2,13 +2,13 @@ $watcher = New-Object System.IO.FileSystemWatcher
 $watcher.Path = "test-case"
 $watcher.Filter = "*.*"
 $watcher.IncludeSubdirectories = $true
-$watcher.NotifyFilter = [System.IO.NotifyFilters]::LastAccess
+$watcher.NotifyFilter = [System.IO.NotifyFilters]::LastWrite
 
 $watcher2 = New-Object System.IO.FileSystemWatcher
 $watcher2.Path = "."
 $watcher2.Filter = "@b.bmp"
 $watcher2.IncludeSubdirectories = $true
-$watcher2.NotifyFilter = [System.IO.NotifyFilters]::LastAccess
+$watcher2.NotifyFilter = [System.IO.NotifyFilters]::LastWrite
 
 
 $action =

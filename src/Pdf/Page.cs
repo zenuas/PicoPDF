@@ -39,11 +39,11 @@ public class Page : PdfObject
             dic.Dictionary.Add("Font", fontdic);
         }
 
-        var xobjs = Document.PdfObjects.OfType<ImageXObject>().ToArray();
+        var xobjs = Document.PdfObjects.OfType<IImageXObject>().ToArray();
         if (xobjs.Length > 0)
         {
             var xobjdic = new ElementDictionary();
-            xobjs.Each(x => xobjdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x }));
+            xobjs.Each(x => xobjdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
             dic.Dictionary.Add("XObject", xobjdic);
         }
     }

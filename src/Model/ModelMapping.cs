@@ -24,8 +24,8 @@ public static class ModelMapping
             return x;
         }
 
-        var imagecache = doc.PdfObjects.OfType<ImageXObject>().ToDictionary(x => x.Name, x => x);
-        ImageXObject imageget(ImageModel image)
+        var imagecache = doc.PdfObjects.OfType<IImageXObject>().ToDictionary(x => x.Name, x => x);
+        IImageXObject imageget(ImageModel image)
         {
             if (imagecache.ContainsKey(image.Path)) return imagecache[image.Path];
             var load = ImageLoader.FromFile(image.Path)!;
@@ -36,14 +36,14 @@ public static class ModelMapping
         pages.Each(x => Mapping(doc.NewPage(x.Size, x.Orientation), fontget, imageget, x.Models));
     }
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, ImageXObject> imageget, List<SectionModel> models)
+    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, IImageXObject> imageget, List<SectionModel> models)
     {
         models.Each(x => Mapping(page, fontget, imageget, x, x.Top));
     }
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, ImageXObject> imageget, SectionModel model, int top) => model.Elements.Each(x => Mapping(page, fontget, imageget, x, top));
+    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, IImageXObject> imageget, SectionModel model, int top) => model.Elements.Each(x => Mapping(page, fontget, imageget, x, top));
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, ImageXObject> imageget, IModelElement model, int top)
+    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, IImageXObject> imageget, IModelElement model, int top)
     {
         var posx = model.X;
         var posy = model.Y + top;

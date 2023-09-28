@@ -109,7 +109,7 @@ public class Contents : PdfObject
         });
     }
 
-    public void DrawImage(int x, int y, ImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
+    public void DrawImage(int x, int y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
     {
         DrawImage(
                 new PointValue() { Value = x },
@@ -120,7 +120,7 @@ public class Contents : PdfObject
             );
     }
 
-    public void DrawImage(IPoint x, IPoint y, ImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
+    public void DrawImage(IPoint x, IPoint y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
     {
         Operations.Add(new DrawImage()
         {

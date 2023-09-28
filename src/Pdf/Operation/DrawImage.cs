@@ -9,7 +9,7 @@ public class DrawImage : IOperation
 {
     public required IPoint X { get; init; }
     public required IPoint Y { get; init; }
-    public required ImageXObject Image { get; init; }
+    public required IImageXObject Image { get; init; }
     public double ZoomWidth { get; init; } = 1.0;
     public double ZoomHeight { get; init; } = 1.0;
 
