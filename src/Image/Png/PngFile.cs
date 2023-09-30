@@ -98,6 +98,7 @@ public class PngFile : IImageCanvas
         Func<byte[], Color> makecolor =
             color_type == 3 ? xs => palette[xs[0]] :
             byte_per_pixel == 3 ? xs => Color.FromArgb(xs[0], xs[1], xs[2]) :
+            byte_per_pixel == 4 ? xs => Color.FromArgb(xs[3], xs[0], xs[1], xs[2]) :
             byte_per_pixel == 1 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
             xs => Color.FromArgb(xs[0], xs[0], xs[0]);
 
