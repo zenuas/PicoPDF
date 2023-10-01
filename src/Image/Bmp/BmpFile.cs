@@ -15,13 +15,13 @@ public class BmpFile : IImageCanvas, IImageWritable
     {
         // BITMAPFILEHEADER
         stream.Write(MagicNumber);
-        stream.Write(BitConverter.GetBytes(((uint)(/* sizeof(BITMAPFILEHEADER) */14 + /*BITMAPINFOHEADER*/40 + (Width * Height * 4)))));
+        stream.Write(BitConverter.GetBytes(((uint)(/* sizeof(BITMAPFILEHEADER) */14 + /* sizeof(BITMAPINFOHEADER) */40 + (Width * Height * 4)))));
         stream.Write(BitConverter.GetBytes((ushort)0));
         stream.Write(BitConverter.GetBytes((ushort)0));
-        stream.Write(BitConverter.GetBytes((uint)/* sizeof(BITMAPFILEHEADER) */14 + /*BITMAPINFOHEADER*/40));
+        stream.Write(BitConverter.GetBytes((uint)/* sizeof(BITMAPFILEHEADER) */14 + /* sizeof(BITMAPINFOHEADER) */40));
 
         // BITMAPINFOHEADER
-        stream.Write(BitConverter.GetBytes((uint)/*BITMAPINFOHEADER*/40));
+        stream.Write(BitConverter.GetBytes((uint)/* sizeof(BITMAPINFOHEADER) */40));
         stream.Write(BitConverter.GetBytes(Width));
         stream.Write(BitConverter.GetBytes(-Height));
         stream.Write(BitConverter.GetBytes((ushort)1));
