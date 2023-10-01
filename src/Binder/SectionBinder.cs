@@ -91,6 +91,7 @@ public static class SectionBinder
 
             pages.Add(models.ToList());
             models.Clear();
+            if (datas.IsLast && page.Footer is ISection lastfooter && lastfooter.ViewMode != ViewModes.Every) pages.Last().Add(new SectionModel() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page) });
         }
         return pages;
     }
