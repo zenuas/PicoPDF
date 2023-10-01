@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Extensions;
 using System.Drawing;
 using System.IO;
 
@@ -15,23 +15,23 @@ public class BmpFile : IImageCanvas, IImageWritable
     {
         // BITMAPFILEHEADER
         stream.Write(MagicNumber);
-        stream.Write(BitConverter.GetBytes(((uint)(/* sizeof(BITMAPFILEHEADER) */14 + /* sizeof(BITMAPINFOHEADER) */40 + (Width * Height * 4)))));
-        stream.Write(BitConverter.GetBytes((ushort)0));
-        stream.Write(BitConverter.GetBytes((ushort)0));
-        stream.Write(BitConverter.GetBytes((uint)/* sizeof(BITMAPFILEHEADER) */14 + /* sizeof(BITMAPINFOHEADER) */40));
+        stream.WriteUIntByLittleEndian((uint)(/* sizeof(BITMAPFILEHEADER) */14 + /* sizeof(BITMAPINFOHEADER) */40 + (Width * Height * 4)));
+        stream.WriteUShortByLittleEndian(0);
+        stream.WriteUShortByLittleEndian(0);
+        stream.WriteUIntByLittleEndian(/* sizeof(BITMAPFILEHEADER) */14 + /* sizeof(BITMAPINFOHEADER) */40);
 
         // BITMAPINFOHEADER
-        stream.Write(BitConverter.GetBytes((uint)/* sizeof(BITMAPINFOHEADER) */40));
-        stream.Write(BitConverter.GetBytes(Width));
-        stream.Write(BitConverter.GetBytes(-Height));
-        stream.Write(BitConverter.GetBytes((ushort)1));
-        stream.Write(BitConverter.GetBytes((ushort)32));
-        stream.Write(BitConverter.GetBytes((uint)0));
-        stream.Write(BitConverter.GetBytes((uint)0));
-        stream.Write(BitConverter.GetBytes((uint)0));
-        stream.Write(BitConverter.GetBytes((uint)0));
-        stream.Write(BitConverter.GetBytes((uint)0));
-        stream.Write(BitConverter.GetBytes((uint)0));
+        stream.WriteUIntByLittleEndian(/* sizeof(BITMAPINFOHEADER) */40);
+        stream.WriteIntByLittleEndian(Width);
+        stream.WriteIntByLittleEndian(-Height);
+        stream.WriteUShortByLittleEndian(1);
+        stream.WriteUShortByLittleEndian(32);
+        stream.WriteUIntByLittleEndian(0);
+        stream.WriteUIntByLittleEndian(0);
+        stream.WriteIntByLittleEndian(0);
+        stream.WriteIntByLittleEndian(0);
+        stream.WriteUIntByLittleEndian(0);
+        stream.WriteUIntByLittleEndian(0);
 
         for (var y = 0; y < Height; y++)
         {
