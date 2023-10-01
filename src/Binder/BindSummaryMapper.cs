@@ -16,6 +16,7 @@ public class BindSummaryMapper<T>
 
     public void CreatePool(PageSection page)
     {
+        SummaryPool.Add("$:PAGECOUNT()", new ClearableDynamicValue() { Value = 1, Clear = _ => { } });
         TraversSummaryElement([], page).Each(sr =>
         {
             var breakpoint = sr.BreakKeys.Join(".");
@@ -91,6 +92,8 @@ public class BindSummaryMapper<T>
         });
     }
 
+    public void SetPageCount(int pagecount) => SummaryPool["$:PAGECOUNT()"].Value = pagecount;
+
     public void Clear(string[] nobreaks)
     {
         var nobreak = nobreaks.Join(".");
@@ -116,6 +119,9 @@ public class BindSummaryMapper<T>
             case SummaryType.Maximum:
             case SummaryType.Minimum:
                 return Mapper[x.SummaryBind](data);
+
+            case SummaryType.PageCount:
+                return SummaryPool["$:PAGECOUNT()"].Value!;
         }
         throw new();
     }

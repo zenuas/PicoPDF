@@ -60,6 +60,9 @@
 		{"Type": "FooterSection", "Name": "PageFooter", "Height": 30, "Elements": [
 			{"Type": "TextElement",    "Text": "PageFooter", "Size": 20, "X": 10,  "Y": 20, "Font": "HGMinchoB"},
 			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 250, "Y": 20, "Format": "#,0", "Alignment": "End", "Width": 50},
+			{"Type": "SummaryElement", "Bind": "", "Size": 10, "X": 300, "Y": 20, "Format": "#,0", "SummaryType": "PageCount", "Alignment": "End", "Width": 50},
+			{"Type": "TextElement",    "Text": "/", "Size": 10, "X": 352,  "Y": 20},
+			{"Type": "SummaryElement", "Bind": "", "Size": 10, "X": 360, "Y": 20, "Format": "#,0", "SummaryType": "PageCount", "Alignment": "Start", "Width": 50},
 		]},
 	],
 }

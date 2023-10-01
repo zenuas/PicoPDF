@@ -7,4 +7,5 @@ public enum SummaryType
     Average,
     Maximum,
     Minimum,
+    PageCount,
 }

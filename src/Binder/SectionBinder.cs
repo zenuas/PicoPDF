@@ -47,6 +47,7 @@ public static class SectionBinder
 
         while (!datas.IsLast)
         {
+            bind.SetPageCount(pages.Count + 1);
             _ = datas.Next(0, out var lastdata);
             headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page) }).Each(models.Add);
             var page_first = true;
