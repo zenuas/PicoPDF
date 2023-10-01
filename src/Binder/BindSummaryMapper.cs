@@ -11,42 +11,83 @@ namespace PicoPDF.Binder;
 public class BindSummaryMapper<T>
 {
     public Dictionary<string, Func<T, object>> Mapper { get; init; } = ObjectMapper.CreateGetMapper<T>();
-    public Dictionary<string, dynamic> SummaryPool { get; init; } = new();
+    public Dictionary<string, ClearableDynamicValue> SummaryPool { get; init; } = new();
     public List<Action<T>> SummaryAction { get; init; } = new();
 
     public void CreatePool(PageSection page)
     {
         TraversSummaryElement([], page).Each(sr =>
         {
-            var key = sr.BreakKeys.Join(".");
+            var breakpoint = sr.BreakKeys.Join(".");
             var bind = sr.SummaryElement.Bind;
-            var sumkey = $"${key}:{bind}";
-            var countkey = $"${key}#";
             switch (sr.SummaryElement.SummaryType)
             {
                 case SummaryType.Summary:
-                    countkey = "";
+                case SummaryType.Average:
+                    {
+                        var key = $"${breakpoint}:{bind}";
+                        if (!SummaryPool.ContainsKey(key))
+                        {
+                            var v = new ClearableDynamicValue() { Value = 0, Clear = x => x.Value = 0 };
+                            SummaryPool.Add(key, v);
+                            Mapper.Add(key, _ => v.Value);
+                            SummaryAction.Add(x => v.Value += (dynamic)Mapper[bind](x));
+                        }
+                        sr.SummaryElement.Bind = key;
+                        if (sr.SummaryElement.SummaryType == SummaryType.Average) goto case SummaryType.Count;
+                    }
                     break;
 
                 case SummaryType.Count:
-                    sumkey = "";
+                    {
+                        var key = $"${breakpoint}:COUNT()";
+                        if (!SummaryPool.ContainsKey(key))
+                        {
+                            var v = new ClearableDynamicValue() { Value = 0, Clear = x => x.Value = 0 };
+                            SummaryPool.Add(key, v);
+                            Mapper.Add(key, _ => v.Value);
+                            SummaryAction.Add(x => v.Value++);
+                        }
+                        sr.SummaryElement.SummaryBind = key;
+                    }
                     break;
 
-                case SummaryType.Average:
+                case SummaryType.Maximum:
+                    {
+                        var key = $"${breakpoint}:MAX({bind})";
+                        if (!SummaryPool.ContainsKey(key))
+                        {
+                            var v = new ClearableDynamicValue() { Value = null, Clear = x => x.Value = null };
+                            SummaryPool.Add(key, v);
+                            Mapper.Add(key, _ => v.Value!);
+                            SummaryAction.Add(x =>
+                            {
+                                var value = (dynamic)Mapper[bind](x);
+                                v.Value = v.Value is null ? value : (v.Value < value ? value : v.Value);
+                            });
+                        }
+                        sr.SummaryElement.SummaryBind = key;
+                    }
+                    break;
+
+                case SummaryType.Minimum:
+                    {
+                        var key = $"${breakpoint}:MIN({bind})";
+                        if (!SummaryPool.ContainsKey(key))
+                        {
+                            var v = new ClearableDynamicValue() { Value = null, Clear = x => x.Value = null };
+                            SummaryPool.Add(key, v);
+                            Mapper.Add(key, _ => v.Value!);
+                            SummaryAction.Add(x =>
+                            {
+                                var value = (dynamic)Mapper[bind](x);
+                                v.Value = v.Value is null ? value : (v.Value > value ? value : v.Value);
+                            });
+                        }
+                        sr.SummaryElement.SummaryBind = key;
+                    }
                     break;
             }
-            if (sumkey != "" && SummaryPool.TryAdd(sumkey, 0))
-            {
-                Mapper.Add(sumkey, _ => SummaryPool[sumkey]);
-                SummaryAction.Add(x => SummaryPool[sumkey] += (dynamic)Mapper[bind](x));
-            }
-            if (countkey != "" && SummaryPool.TryAdd(countkey, 0))
-            {
-                Mapper.Add(countkey, _ => SummaryPool[countkey]);
-                SummaryAction.Add(x => SummaryPool[countkey]++);
-            }
-            if (sumkey != "") sr.SummaryElement.Bind = sumkey;
-            if (countkey != "") sr.SummaryElement.CountBind = countkey;
         });
     }
 
@@ -54,7 +95,7 @@ public class BindSummaryMapper<T>
     {
         var nobreak = nobreaks.Join(".");
         var sumkey_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
-        SummaryPool.Keys.Where(x => x.StartsWith(sumkey_prefix)).Each(x => SummaryPool[x] = 0);
+        SummaryPool.Keys.Where(x => x.StartsWith(sumkey_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
     public void DataBind(T data) => SummaryAction.Each(x => x(data));
@@ -67,10 +108,14 @@ public class BindSummaryMapper<T>
                 return Mapper[x.Bind](data);
 
             case SummaryType.Count:
-                return (int)Mapper[x.CountBind](data);
+                return (int)Mapper[x.SummaryBind](data);
 
             case SummaryType.Average:
-                return (dynamic)Mapper[x.Bind](data) / (dynamic)Mapper[x.CountBind](data);
+                return (dynamic)Mapper[x.Bind](data) / (dynamic)Mapper[x.SummaryBind](data);
+
+            case SummaryType.Maximum:
+            case SummaryType.Minimum:
+                return Mapper[x.SummaryBind](data);
         }
         throw new();
     }
