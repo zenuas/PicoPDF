@@ -43,7 +43,7 @@ public static class SectionBinder
 
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
         var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - (everyfooter?.Height ?? 0);
-        var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Sum(x => x.Section.Height);
+        var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
 
         while (!datas.IsLast)
         {
@@ -55,7 +55,7 @@ public static class SectionBinder
             {
                 _ = datas.Next(0, out var current);
                 var breakheader = page_first ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
-                var height = pageheight_minus_everypagefooter - (breakheader?.Sum(x => x.Section.Height) ?? 0) - models.Sum(x => x.Section.Height);
+                var height = pageheight_minus_everypagefooter - (breakheader?.Select(x => x.Section.Height).Sum() ?? 0) - models.Select(x => x.Section.Height).Sum();
                 var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
                 if (count == 0)
                 {
@@ -69,7 +69,7 @@ public static class SectionBinder
                     .FooterSort()
                     .ToArray();
 
-                if (height < (count * detail.Height) + breakfooter.Sum(x => x.Section.Height))
+                if (height < (count * detail.Height) + breakfooter.Select(x => x.Section.Height).Sum())
                 {
                     count--;
                     breakfooter = footers.SkipWhileOrEveryPage(_ => false).FooterSort().ToArray();
