@@ -42,25 +42,28 @@ public static class SectionBinder
         bind.CreatePool(page);
 
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
-        var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - everyfooter?.Height ?? 0;
+        var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Sum(x => x.Section.Height);
 
         while (!datas.IsLast)
         {
             _ = datas.Next(0, out var lastdata);
             headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page) }).Each(models.Add);
+            var page_first = true;
 
             while (!datas.IsLast)
             {
-                var height = pageheight_minus_everypagefooter - models.Sum(x => x.Section.Height);
+                _ = datas.Next(0, out var current);
+                var breakheader = page_first ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
+                var height = pageheight_minus_everypagefooter - (breakheader?.Sum(x => x.Section.Height) ?? 0) - models.Sum(x => x.Section.Height);
                 var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
                 if (count == 0)
                 {
                     if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page) });
                     break;
                 }
+                breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page) }).Each(models.Add);
 
-                _ = datas.Next(0, out var current);
                 var existnext = datas.Next(count, out var next);
                 var breakfooter = (existnext ? footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next))) : footers)
                     .FooterSort()
@@ -82,6 +85,7 @@ public static class SectionBinder
                     break;
                 }
                 if (existnext) bind.Clear(keys.TakeWhile(x => bind.Mapper[x](lastdata).Equals(bind.Mapper[x](next))).ToArray());
+                page_first = false;
             }
 
             pages.Add(models.ToList());
