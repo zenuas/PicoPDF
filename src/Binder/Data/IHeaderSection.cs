@@ -1,5 +1,5 @@
 ﻿namespace PicoPDF.Binder.Data;
 
-public interface IHeaderSection
+public interface IHeaderSection : ISection, IHeaderFooter
 {
 }

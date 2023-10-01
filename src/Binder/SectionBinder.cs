@@ -246,9 +246,5 @@ public static class SectionBinder
             .Concat(footer.Where(x => x.Section is FooterSection));
     }
 
-    public static IEnumerable<(string BreakKey, ISection Section)> PrependIf(this IEnumerable<(string BreakKey, ISection Section)> self, IHeaderSection? header)
-    {
-        if (header is ISection section) return self.Prepend(("", section));
-        return self;
-    }
+    public static IEnumerable<(string BreakKey, ISection Section)> PrependIf(this IEnumerable<(string BreakKey, ISection Section)> self, ISection? section) => section is { } ? (IEnumerable<(string BreakKey, ISection Section)>)self.Prepend(("", section)) : self;
 }

@@ -53,20 +53,19 @@ public static class JsonLoader
         var height = (int)json["Height"]!.AsValue();
         var viewmode = json["ViewMode"] is { } v ? Enum.Parse<ViewModes>(v.ToString()) : ViewModes.Every;
         var pagebreak = json["PageBreak"]?.AsValue() is { } pb ? (bool)pb : false;
-        var detailinclude = json["DetailInclude"]?.AsValue() is { } di ? (bool)di : true;
         switch (json["Type"]!.ToString())
         {
             case "HeaderSection":
-                return new HeaderSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, DetailInclude = detailinclude };
+                return new HeaderSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements };
 
             case "DetailSection":
                 return new DetailSection() { Name = name, Height = height, Elements = elements };
 
             case "TotalSection":
-                return new TotalSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak, DetailInclude = detailinclude };
+                return new TotalSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak };
 
             case "FooterSection":
-                return new FooterSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak, DetailInclude = detailinclude };
+                return new FooterSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak };
         }
         throw new();
     }
