@@ -44,16 +44,12 @@ public static class SectionBinder
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
         var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - everyfooter?.Height ?? 0;
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Sum(x => x.Section.Height);
-        var rest_section = new List<SectionModel>();
 
         while (!datas.IsLast)
         {
-            _ = datas.Next(0, out var current);
-            headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page) }).Each(models.Add);
-            rest_section.Each(models.Add);
-            rest_section.Clear();
-
             _ = datas.Next(0, out var lastdata);
+            headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page) }).Each(models.Add);
+
             while (!datas.IsLast)
             {
                 var height = pageheight_minus_everypagefooter - models.Sum(x => x.Section.Height);
@@ -64,7 +60,7 @@ public static class SectionBinder
                     break;
                 }
 
-                _ = datas.Next(0, out current);
+                _ = datas.Next(0, out var current);
                 var existnext = datas.Next(count, out var next);
                 var breakfooter = (existnext ? footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next))) : footers)
                     .FooterSort()
