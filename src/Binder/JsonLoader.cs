@@ -114,6 +114,7 @@ public static class JsonLoader
                         Font = json["Font"]?.ToString() ?? "",
                         Size = (int)json["Size"]!.AsValue(),
                         SummaryType = json["SummaryType"] is { } sum ? Enum.Parse<SummaryType>(sum.ToString()) : SummaryType.Summary,
+                        SummaryMethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethod>(method.ToString()) : SummaryMethod.Group,
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                     };
