@@ -38,9 +38,9 @@
 			{"Type": "BindElement", "Bind": "Sikutyouson", "Size": 10, "X": 150, "Y": 0},
 			{"Type": "BindElement", "Bind": "Number",      "Size": 10, "X": 250, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50},
 			{"Type": "LineElement", "X": 10,  "Y": 3, "Width": 300, "Height": 0, "Color": "Gray"},
-			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 400, "Y": 0, "Format": "#,0", "SummaryType": "Count", "SummaryMethod": "Page"},
-			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 440, "Y": 0, "Format": "#,0", "SummaryType": "Count", "SummaryMethod": "Group"},
-			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 480, "Y": 0, "Format": "#,0", "SummaryType": "Count", "SummaryMethod": "All"},
+			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 400, "Y": 0, "Format": "#,0", "SummaryType": "Average", "SummaryMethod": "Page"},
+			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 440, "Y": 0, "Format": "#,0", "SummaryType": "Average", "SummaryMethod": "Group"},
+			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 480, "Y": 0, "Format": "#,0", "SummaryType": "Average", "SummaryMethod": "All"},
 		]},
 		{"Type": "TotalSection", "Name": "Total", "Height": 30, "ViewMode": "Last", "PageBreak": true, "Elements": [
 			{"Type": "FillRectangleElement", "X": 10,  "Y": 1, "Width": 300, "Height": 25, "LineColor": "Blue", "FillColor": "#EEEEEE"},

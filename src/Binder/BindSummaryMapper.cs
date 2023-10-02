@@ -1,7 +1,8 @@
 ﻿using Extensions;
-using PicoPDF.Mapper;
-using PicoPDF.Binder.Element;
 using PicoPDF.Binder.Data;
+using PicoPDF.Binder.Element;
+using PicoPDF.Mapper;
+using PicoPDF.Model.Element;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ public class BindSummaryMapper<T>
     public Dictionary<string, Func<T, object>> Mapper { get; init; } = ObjectMapper.CreateGetMapper<T>();
     public Dictionary<string, ClearableDynamicValue> SummaryPool { get; init; } = new();
     public List<Action<T>> SummaryAction { get; init; } = new();
+    public List<List<(SummaryElement SummaryElement, TextModel TextModel)>> SummaryGoBack { get; init; } = new();
 
     public void CreatePool(PageSection page)
     {
@@ -91,6 +93,46 @@ public class BindSummaryMapper<T>
             }
         });
     }
+
+    public void CreateSummaryGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count + 2).Each(_ => SummaryGoBack.Add(new()));
+
+    public void AddSummaryGoBack(SummaryElement summary, TextModel model, int hierarchy_count)
+    {
+        switch (summary.SummaryMethod)
+        {
+            case SummaryMethod.Page:
+                SummaryGoBack[0].Add((summary, model));
+                break;
+
+            case SummaryMethod.All:
+                SummaryGoBack[1].Add((summary, model));
+                break;
+
+            case SummaryMethod.Group:
+                SummaryGoBack[hierarchy_count + 2].Add((summary, model));
+                break;
+        }
+    }
+
+    public void PageBreak(T data)
+    {
+        SummaryGoBack[0].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
+        SummaryGoBack[0].Clear();
+    }
+
+    public void KeyBreak(T data, int hierarchy_count)
+    {
+        SummaryGoBack[hierarchy_count + 2].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
+        SummaryGoBack[hierarchy_count + 2].Clear();
+    }
+
+    public void LastBreak(T data)
+    {
+        SummaryGoBack[1].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
+        SummaryGoBack[1].Clear();
+    }
+
+    public string BindFormat(object? o, string format) => (format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(format, null)) ?? "";
 
     public void SetPageCount(int pagecount) => SummaryPool["$:PAGECOUNT()"].Value = pagecount;
 

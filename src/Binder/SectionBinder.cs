@@ -32,14 +32,16 @@ public static class SectionBinder
     {
         var sections = page.SubSection.Travers(x => x is Section s ? [s.SubSection] : []).ToArray();
         var detail = sections.OfType<DetailSection>().First();
-        var headers = sections.OfType<Section>().Where(x => x.Header is { }).Select(x => (x.BreakKey, Section: (ISection)x.Header!)).PrependIf(page.Header).ToArray();
-        var footers = sections.OfType<Section>().Where(x => x.Footer is { }).Select(x => (x.BreakKey, Section: (ISection)x.Footer!)).ToArray();
-        var keys = headers.Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
+        var hierarchy = sections.OfType<Section>().AppendHierarchy().ToArray();
+        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => (x.Section.BreakKey, x.BreakKeyHierarchy, Section: (ISection)x.Section.Header!)).PrependIf(page.Header).ToArray();
+        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => (x.Section.BreakKey, x.BreakKeyHierarchy, Section: (ISection)x.Section.Footer!)).ToArray();
+        var keys = sections.OfType<Section>().Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
 
         var pages = new List<List<SectionModel>>();
         var models = new List<SectionModel>();
         var bind = new BindSummaryMapper<T>();
         bind.CreatePool(page);
+        bind.CreateSummaryGoBack(keys.Length);
 
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
         var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - (everyfooter?.Height ?? 0);
@@ -49,21 +51,22 @@ public static class SectionBinder
         {
             bind.SetPageCount(pages.Count + 1);
             _ = datas.Next(0, out var lastdata);
-            headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page) }).Each(models.Add);
+            headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy) }).Each(models.Add);
             var page_first = true;
 
             while (!datas.IsLast)
             {
                 _ = datas.Next(0, out var current);
+                bind.Clear(keys.TakeWhile(x => bind.Mapper[x](lastdata).Equals(bind.Mapper[x](current))).ToArray());
                 var breakheader = page_first ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
                 var height = pageheight_minus_everypagefooter - (breakheader?.Select(x => x.Section.Height).Sum() ?? 0) - models.Select(x => x.Section.Height).Sum();
                 var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
                 if (count == 0)
                 {
-                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page) });
+                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, []) });
                     break;
                 }
-                breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page) }).Each(models.Add);
+                breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page, x.BreakKeyHierarchy) }).Each(models.Add);
 
                 var existnext = datas.Next(count, out var next);
                 var breakfooter = (existnext ? footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next))) : footers)
@@ -77,21 +80,21 @@ public static class SectionBinder
                 }
 
                 _ = datas.Next(count - 1, out lastdata);
-                datas.GetRange(count).Select(x => new SectionModel() { Section = detail, Elements = BindElements(detail.Elements, x, bind.Return(y => y.DataBind(x)), page) }).Each(models.Add);
-                breakfooter.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page) }).Each(models.Add);
+                datas.GetRange(count).Select(x => new SectionModel() { Section = detail, Elements = BindElements(detail.Elements, x, bind.Return(y => y.DataBind(x)), page, keys) }).Each(models.Add);
+                breakfooter.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy) }).Each(models.Add);
                 if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
                 {
-                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page) });
-                    if (existnext) bind.Clear(keys.TakeWhile(x => bind.Mapper[x](lastdata).Equals(bind.Mapper[x](next))).ToArray());
+                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, []) });
                     break;
                 }
-                if (existnext) bind.Clear(keys.TakeWhile(x => bind.Mapper[x](lastdata).Equals(bind.Mapper[x](next))).ToArray());
                 page_first = false;
             }
 
             pages.Add(models.ToList());
             models.Clear();
-            if (datas.IsLast && page.Footer is ISection lastfooter && lastfooter.ViewMode != ViewModes.Every) pages.Last().Add(new SectionModel() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page) });
+            if (datas.IsLast && page.Footer is ISection lastfooter && lastfooter.ViewMode != ViewModes.Every) pages.Last().Add(new SectionModel() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page, []) });
+            bind.PageBreak(lastdata);
+            if (datas.IsLast) bind.LastBreak(lastdata);
         }
         return pages;
     }
@@ -111,9 +114,9 @@ public static class SectionBinder
         return maxcount;
     }
 
-    public static List<IModelElement> BindElements<T>(List<IElement> elements, T data, BindSummaryMapper<T> bind, PageSection page) => elements.Select(x => BindElement(x, data, bind, page)).ToList();
+    public static List<IModelElement> BindElements<T>(List<IElement> elements, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys) => elements.Select(x => BindElement(x, data, bind, page, keys)).ToList();
 
-    public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page)
+    public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys)
     {
         switch (element)
         {
@@ -129,12 +132,11 @@ public static class SectionBinder
 
             case BindElement x:
                 {
-                    var o = bind.Mapper[x.Bind](data);
                     return new TextModel()
                     {
                         X = x.X,
                         Y = x.Y,
-                        Text = (x.Format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(x.Format, null)) ?? "",
+                        Text = bind.BindFormat(bind.Mapper[x.Bind](data), x.Format),
                         Font = x.Font != "" ? x.Font : page.DefaultFont,
                         Size = x.Size,
                         Alignment = x.Alignment,
@@ -144,17 +146,18 @@ public static class SectionBinder
 
             case SummaryElement x:
                 {
-                    var o = bind.GetSummary(x, data);
-                    return new TextModel()
+                    var model = new TextModel()
                     {
                         X = x.X,
                         Y = x.Y,
-                        Text = (x.Format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(x.Format, null)) ?? "",
+                        Text = bind.BindFormat(bind.GetSummary(x, data), x.Format),
                         Font = x.Font != "" ? x.Font : page.DefaultFont,
                         Size = x.Size,
                         Alignment = x.Alignment,
                         Width = x.Width,
                     };
+                    bind.AddSummaryGoBack(x, model, keys.Length);
+                    return model;
                 }
 
             case LineElement x:
@@ -211,7 +214,29 @@ public static class SectionBinder
         throw new();
     }
 
-    public static IEnumerable<(string BreakKey, ISection Section)> SkipWhileOrPageFirst(this IEnumerable<(string BreakKey, ISection Section)> self, Func<(string BreakKey, ISection Section), bool> f)
+    public static IEnumerable<(string[] BreakKeys, SummaryElement Summary)> GetBreakKeyWithSummary(string[] keys, ISubSection subsection)
+    {
+        if (subsection is DetailSection detail)
+        {
+            foreach (var e in detail.GetSummaryNotIncrement()) yield return (keys, e);
+        }
+        else if (subsection is Section section)
+        {
+            var newkeys = section.BreakKey == "" ? keys : keys.Append(section.BreakKey).ToArray();
+
+            foreach (var e in section.Header?.GetSummaryNotIncrement() ?? []) yield return (newkeys, e);
+            foreach (var e in section.Footer?.GetSummaryNotIncrement() ?? []) yield return (newkeys, e);
+
+            if (section.SubSection is { })
+            {
+                foreach (var x in GetBreakKeyWithSummary(newkeys, section.SubSection)) yield return x;
+            }
+        }
+    }
+
+    public static IEnumerable<SummaryElement> GetSummaryNotIncrement(this ISection section) => section.Elements.OfType<SummaryElement>().Where(x => x.SummaryMethod != SummaryMethod.Increment);
+
+    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> SkipWhileOrPageFirst(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> self, Func<(string BreakKey, string[] BreakKeyHierarchy, ISection Section), bool> f)
     {
         var found = false;
         foreach (var x in self)
@@ -224,7 +249,7 @@ public static class SectionBinder
         }
     }
 
-    public static IEnumerable<(string BreakKey, ISection Section)> SkipWhileOrEveryPage(this IEnumerable<(string BreakKey, ISection Section)> self, Func<(string BreakKey, ISection Section), bool> f)
+    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> SkipWhileOrEveryPage(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> self, Func<(string BreakKey, string[] BreakKeyHierarchy, ISection Section), bool> f)
     {
         var found = false;
         foreach (var x in self)
@@ -237,7 +262,7 @@ public static class SectionBinder
         }
     }
 
-    public static IEnumerable<(string BreakKey, ISection Section)> FooterSort(this IEnumerable<(string BreakKey, ISection Section)> self)
+    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> FooterSort(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> self)
     {
         var footer = self.ToArray();
         return footer
@@ -246,5 +271,15 @@ public static class SectionBinder
             .Concat(footer.Where(x => x.Section is FooterSection));
     }
 
-    public static IEnumerable<(string BreakKey, ISection Section)> PrependIf(this IEnumerable<(string BreakKey, ISection Section)> self, ISection? section) => section is { } ? (IEnumerable<(string BreakKey, ISection Section)>)self.Prepend(("", section)) : self;
+    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> PrependIf(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> self, ISection? section) => section is { } ? (IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)>)self.Prepend(("", [], section)) : self;
+
+    public static IEnumerable<(string[] BreakKeyHierarchy, Section Section)> AppendHierarchy(this IEnumerable<Section> self)
+    {
+        var keys = new List<string>();
+        foreach (var x in self)
+        {
+            if (x.BreakKey != "") keys.Add(x.BreakKey);
+            yield return (keys.ToArray(), x);
+        }
+    }
 }
