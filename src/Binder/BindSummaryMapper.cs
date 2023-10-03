@@ -139,7 +139,7 @@ public class BindSummaryMapper<T>
         SummaryGoBack[1].Clear();
     }
 
-    public string BindFormat(object? o, string format) => (format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(format, null)) ?? "";
+    public static string BindFormat(object? o, string format) => (format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(format, null)) ?? "";
 
     public void SetPageCount(int pagecount) => SummaryPool["#:PAGECOUNT()"].Value = pagecount;
 

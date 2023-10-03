@@ -144,7 +144,7 @@ public static class SectionBinder
                     {
                         X = x.X,
                         Y = x.Y,
-                        Text = bind.BindFormat(bind.Mapper[x.Bind](data), x.Format),
+                        Text = BindSummaryMapper<T>.BindFormat(bind.Mapper[x.Bind](data), x.Format),
                         Font = x.Font != "" ? x.Font : page.DefaultFont,
                         Size = x.Size,
                         Alignment = x.Alignment,
@@ -158,7 +158,7 @@ public static class SectionBinder
                     {
                         X = x.X,
                         Y = x.Y,
-                        Text = bind.BindFormat(bind.GetSummary(x, data), x.Format),
+                        Text = BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format),
                         Font = x.Font != "" ? x.Font : page.DefaultFont,
                         Size = x.Size,
                         Alignment = x.Alignment,
