@@ -105,6 +105,7 @@ public static class JsonLoader
 
             case "SummaryElement":
                 {
+                    var sumtype = json["SummaryType"] is { } sum ? Enum.Parse<SummaryType>(sum.ToString()) : SummaryType.Summary;
                     return new SummaryElement()
                     {
                         X = posx,
@@ -113,8 +114,8 @@ public static class JsonLoader
                         Format = json["Format"]?.ToString() ?? "",
                         Font = json["Font"]?.ToString() ?? "",
                         Size = (int)json["Size"]!.AsValue(),
-                        SummaryType = json["SummaryType"] is { } sum ? Enum.Parse<SummaryType>(sum.ToString()) : SummaryType.Summary,
-                        SummaryMethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethod>(method.ToString()) : SummaryMethod.Group,
+                        SummaryType = sumtype,
+                        SummaryMethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethod>(method.ToString()) : (sumtype == SummaryType.PageCount ? SummaryMethod.Increment : SummaryMethod.Group),
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                     };
