@@ -18,17 +18,20 @@ public class BindSummaryMapper<T>
 
     public void CreatePool(PageSection page)
     {
-        SummaryPool.Add("$:PAGECOUNT()", new ClearableDynamicValue() { Value = 1, Clear = _ => { } });
+        SummaryPool.Add("#:PAGECOUNT()", new ClearableDynamicValue() { Value = 1, Clear = _ => { } });
         TraversSummaryElement([], page).Each(sr =>
         {
-            var breakpoint = sr.BreakKeys.Join(".");
+            var breakpoint =
+                sr.SummaryElement.SummaryMethod == SummaryMethod.All ? "#" :
+                sr.SummaryElement.SummaryMethod == SummaryMethod.Page ? "&" :
+                $"${sr.BreakKeys.Join(".")}";
             var bind = sr.SummaryElement.Bind;
             switch (sr.SummaryElement.SummaryType)
             {
                 case SummaryType.Summary:
                 case SummaryType.Average:
                     {
-                        var key = $"${breakpoint}:{bind}";
+                        var key = $"{breakpoint}:{bind}";
                         if (!SummaryPool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = 0, Clear = x => x.Value = 0 };
@@ -43,7 +46,7 @@ public class BindSummaryMapper<T>
 
                 case SummaryType.Count:
                     {
-                        var key = $"${breakpoint}:COUNT()";
+                        var key = $"{breakpoint}:COUNT()";
                         if (!SummaryPool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = 0, Clear = x => x.Value = 0 };
@@ -57,7 +60,7 @@ public class BindSummaryMapper<T>
 
                 case SummaryType.Maximum:
                     {
-                        var key = $"${breakpoint}:MAX({bind})";
+                        var key = $"{breakpoint}:MAX({bind})";
                         if (!SummaryPool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = null, Clear = x => x.Value = null };
@@ -75,7 +78,7 @@ public class BindSummaryMapper<T>
 
                 case SummaryType.Minimum:
                     {
-                        var key = $"${breakpoint}:MIN({bind})";
+                        var key = $"{breakpoint}:MIN({bind})";
                         if (!SummaryPool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = null, Clear = x => x.Value = null };
@@ -94,7 +97,7 @@ public class BindSummaryMapper<T>
         });
     }
 
-    public void CreateSummaryGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count + 2).Each(_ => SummaryGoBack.Add(new()));
+    public void CreateSummaryGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count + 1).Each(_ => SummaryGoBack.Add(new()));
 
     public void AddSummaryGoBack(SummaryElement summary, TextModel model, int hierarchy_count)
     {
@@ -118,12 +121,16 @@ public class BindSummaryMapper<T>
     {
         SummaryGoBack[0].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
         SummaryGoBack[0].Clear();
+        SummaryPool.Keys.Where(x => x.StartsWith("&")).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
     public void KeyBreak(T data, int hierarchy_count)
     {
-        SummaryGoBack[hierarchy_count + 2].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
-        SummaryGoBack[hierarchy_count + 2].Clear();
+        for (int i = SummaryGoBack.Count - hierarchy_count; i < SummaryGoBack.Count; i++)
+        {
+            SummaryGoBack[i].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
+            SummaryGoBack[i].Clear();
+        }
     }
 
     public void LastBreak(T data)
@@ -134,7 +141,7 @@ public class BindSummaryMapper<T>
 
     public string BindFormat(object? o, string format) => (format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(format, null)) ?? "";
 
-    public void SetPageCount(int pagecount) => SummaryPool["$:PAGECOUNT()"].Value = pagecount;
+    public void SetPageCount(int pagecount) => SummaryPool["#:PAGECOUNT()"].Value = pagecount;
 
     public void Clear(string[] nobreaks)
     {
@@ -163,7 +170,7 @@ public class BindSummaryMapper<T>
                 return Mapper[x.SummaryBind](data);
 
             case SummaryType.PageCount:
-                return SummaryPool["$:PAGECOUNT()"].Value!;
+                return SummaryPool["#:PAGECOUNT()"].Value!;
         }
         throw new();
     }

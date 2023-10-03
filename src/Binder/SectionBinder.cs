@@ -46,13 +46,16 @@ public static class SectionBinder
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
         var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
+        T lastdata = default!;
 
         while (!datas.IsLast)
         {
             bind.SetPageCount(pages.Count + 1);
-            _ = datas.Next(0, out var lastdata);
-            headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy) }).Each(models.Add);
+            _ = datas.Next(0, out var firstdata);
+            if (pages.Count == 0) lastdata = firstdata;
+            headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, firstdata, bind, page, x.BreakKeyHierarchy) }).Each(models.Add);
             var page_first = true;
+            var breakcount = 0;
 
             while (!datas.IsLast)
             {
@@ -64,17 +67,20 @@ public static class SectionBinder
                 if (count == 0)
                 {
                     if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, []) });
+                    if (breakcount > 0) bind.KeyBreak(lastdata, breakcount);
                     break;
                 }
                 breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page, x.BreakKeyHierarchy) }).Each(models.Add);
 
                 var existnext = datas.Next(count, out var next);
+                breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next))).Count() : 0);
                 var breakfooter = (existnext ? footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next))) : footers)
                     .FooterSort()
                     .ToArray();
 
                 if (height < (count * detail.Height) + breakfooter.Select(x => x.Section.Height).Sum())
                 {
+                    breakcount = 0;
                     count--;
                     breakfooter = footers.SkipWhileOrEveryPage(_ => false).FooterSort().ToArray();
                 }
@@ -85,8 +91,10 @@ public static class SectionBinder
                 if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
                 {
                     if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, []) });
+                    if (breakcount > 0) bind.KeyBreak(lastdata, breakcount);
                     break;
                 }
+                if (breakcount > 0) bind.KeyBreak(lastdata, breakcount);
                 page_first = false;
             }
 
@@ -156,7 +164,7 @@ public static class SectionBinder
                         Alignment = x.Alignment,
                         Width = x.Width,
                     };
-                    bind.AddSummaryGoBack(x, model, keys.Length);
+                    bind.AddSummaryGoBack(x, model, keys.Length - 1);
                     return model;
                 }
 
