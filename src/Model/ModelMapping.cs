@@ -52,6 +52,8 @@ public static class ModelMapping
             case TextModel x:
                 {
                     var ttf = fontget(x.Font);
+                    var box = ttf.MeasureStringBox(x.Text);
+                    posy += (int)(box.Height * x.Size);
                     switch (x.Alignment)
                     {
                         case TextAlignment.Start:
@@ -59,17 +61,11 @@ public static class ModelMapping
                             break;
 
                         case TextAlignment.Center:
-                            {
-                                var width = ttf.MeasureStringBox(x.Text).Width * x.Size;
-                                page.Contents.DrawString(x.Text, (int)(posx + ((x.Width - width) / 2)), posy, x.Size, ttf);
-                            }
+                            page.Contents.DrawString(x.Text, (int)(posx + ((x.Width - (box.Width * x.Size)) / 2)), posy, x.Size, ttf);
                             break;
 
                         case TextAlignment.End:
-                            {
-                                var width = ttf.MeasureStringBox(x.Text).Width * x.Size;
-                                page.Contents.DrawString(x.Text, (int)(posx + x.Width - width), posy, x.Size, ttf);
-                            }
+                            page.Contents.DrawString(x.Text, (int)(posx + x.Width - (box.Width * x.Size)), posy, x.Size, ttf);
                             break;
                     }
                 }
