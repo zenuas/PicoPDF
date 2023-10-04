@@ -104,12 +104,12 @@ public class BindSummaryMapper<T>
     {
         switch (summary.SummaryMethod)
         {
-            case SummaryMethod.Page:
+            case SummaryMethod.All:
                 SummaryGoBack[0].Add((summary, model));
                 break;
 
-            case SummaryMethod.All:
-                SummaryGoBack[1].Add((summary, model));
+            case SummaryMethod.Page:
+                SummaryGoBack[hierarchy_count + 2].Add((summary, model));
                 break;
 
             case SummaryMethod.Group:
@@ -120,12 +120,12 @@ public class BindSummaryMapper<T>
 
     public void PageBreak(T data)
     {
-        SummaryGoBack[0].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
-        SummaryGoBack[0].Clear();
+        SummaryGoBack[1].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
+        SummaryGoBack[1].Clear();
         SummaryPool.Keys.Where(x => x.StartsWith("&")).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
-    public void KeyBreak(T data, int hierarchy_count)
+    public void KeyBreak(T data, int hierarchy_count, string[] allkeys)
     {
         for (int i = SummaryGoBack.Count - hierarchy_count; i < SummaryGoBack.Count; i++)
         {
@@ -136,8 +136,8 @@ public class BindSummaryMapper<T>
 
     public void LastBreak(T data)
     {
-        SummaryGoBack[1].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
-        SummaryGoBack[1].Clear();
+        SummaryGoBack[0].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
+        SummaryGoBack[0].Clear();
     }
 
     public static string BindFormat(object? o, string format) => (format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(format, null)) ?? "";
@@ -149,6 +149,9 @@ public class BindSummaryMapper<T>
         var nobreak = nobreaks.Join(".");
         var sumkey_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
         SummaryPool.Keys.Where(x => x.StartsWith(sumkey_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
+
+        var pagekey_prefix = $"&{(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
+        SummaryPool.Keys.Where(x => x.StartsWith(pagekey_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
     public void DataBind(T data) => SummaryAction.Each(x => x(data));

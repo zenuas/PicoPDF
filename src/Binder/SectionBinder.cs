@@ -67,7 +67,7 @@ public static class SectionBinder
                 if (count == 0)
                 {
                     if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
-                    if (breakcount > 0) bind.KeyBreak(lastdata, breakcount);
+                    if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys);
                     break;
                 }
                 breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
@@ -91,10 +91,10 @@ public static class SectionBinder
                 if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
                 {
                     if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
-                    if (breakcount > 0) bind.KeyBreak(lastdata, breakcount);
+                    if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys);
                     break;
                 }
-                if (breakcount > 0) bind.KeyBreak(lastdata, breakcount);
+                if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys);
                 page_first = false;
             }
 
