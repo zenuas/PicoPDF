@@ -109,7 +109,7 @@ public class BindSummaryMapper<T>
                 break;
 
             case SummaryMethod.Page:
-                SummaryGoBack[hierarchy_count + 2].Add((summary, model));
+                SummaryGoBack[1].Add((summary, model));
                 break;
 
             case SummaryMethod.Group:
@@ -132,6 +132,16 @@ public class BindSummaryMapper<T>
             SummaryGoBack[i].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
             SummaryGoBack[i].Clear();
         }
+
+        var nobreak = allkeys.Take(hierarchy_count).Join(".");
+        var pagekey_prefix = $"&{(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
+
+        _ = SummaryGoBack[1].RemoveAll(x =>
+        {
+            var found = x.SummaryElement.Bind.StartsWith(pagekey_prefix) || x.SummaryElement.SummaryBind.StartsWith(pagekey_prefix);
+            if (found) x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format);
+            return found;
+        });
     }
 
     public void LastBreak(T data)
