@@ -40,7 +40,7 @@ public static class SectionBinder
         var pages = new List<List<SectionModel>>();
         var models = new List<SectionModel>();
         var bind = new BindSummaryMapper<T>();
-        bind.CreatePool(page);
+        bind.CreatePool(page, keys);
         bind.CreateSummaryGoBack(keys.Length);
 
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
@@ -53,7 +53,7 @@ public static class SectionBinder
             bind.SetPageCount(pages.Count + 1);
             _ = datas.Next(0, out var firstdata);
             if (pages.Count == 0) lastdata = firstdata;
-            headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, firstdata, bind, page, x.BreakKeyHierarchy) }).Each(models.Add);
+            headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, firstdata, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
             var page_first = true;
             var breakcount = 0;
 
@@ -66,11 +66,11 @@ public static class SectionBinder
                 var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
                 if (count == 0)
                 {
-                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, []) });
+                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount);
                     break;
                 }
-                breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page, x.BreakKeyHierarchy) }).Each(models.Add);
+                breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
 
                 var existnext = datas.Next(count, out var next);
                 breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next))).Count() : 0);
@@ -86,11 +86,11 @@ public static class SectionBinder
                 }
 
                 _ = datas.Next(count - 1, out lastdata);
-                datas.GetRange(count).Select(x => new SectionModel() { Section = detail, Elements = BindElements(detail.Elements, x, bind.Return(y => y.DataBind(x)), page, keys) }).Each(models.Add);
-                breakfooter.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy) }).Each(models.Add);
+                datas.GetRange(count).Select(x => new SectionModel() { Section = detail, Elements = BindElements(detail.Elements, x, bind.Return(y => y.DataBind(x)), page, keys, keys) }).Each(models.Add);
+                breakfooter.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
                 if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
                 {
-                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, []) });
+                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount);
                     break;
                 }
@@ -100,7 +100,7 @@ public static class SectionBinder
 
             pages.Add(models.ToList());
             models.Clear();
-            if (datas.IsLast && page.Footer is ISection lastfooter && lastfooter.ViewMode != ViewModes.Every) pages.Last().Add(new SectionModel() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page, []) });
+            if (datas.IsLast && page.Footer is ISection lastfooter && lastfooter.ViewMode != ViewModes.Every) pages.Last().Add(new SectionModel() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page, [], keys) });
             bind.PageBreak(lastdata);
             if (datas.IsLast) bind.LastBreak(lastdata);
         }
@@ -122,9 +122,9 @@ public static class SectionBinder
         return maxcount;
     }
 
-    public static List<IModelElement> BindElements<T>(List<IElement> elements, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys) => elements.Select(x => BindElement(x, data, bind, page, keys)).ToList();
+    public static List<IModelElement> BindElements<T>(List<IElement> elements, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys) => elements.Select(x => BindElement(x, data, bind, page, keys, allkeys)).ToList();
 
-    public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys)
+    public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys)
     {
         switch (element)
         {
@@ -154,6 +154,7 @@ public static class SectionBinder
 
             case SummaryElement x:
                 {
+                    var keycount = x.BreakKey == "" ? keys.Length - 1 : allkeys.FindLastIndex(y => y == x.BreakKey);
                     var model = new TextModel()
                     {
                         X = x.X,
@@ -164,7 +165,7 @@ public static class SectionBinder
                         Alignment = x.Alignment,
                         Width = x.Width,
                     };
-                    bind.AddSummaryGoBack(x, model, keys.Length - 1);
+                    bind.AddSummaryGoBack(x, model, keycount);
                     return model;
                 }
 

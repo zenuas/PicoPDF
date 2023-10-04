@@ -16,15 +16,16 @@ public class BindSummaryMapper<T>
     public List<Action<T>> SummaryAction { get; init; } = new();
     public List<List<(SummaryElement SummaryElement, TextModel TextModel)>> SummaryGoBack { get; init; } = new();
 
-    public void CreatePool(PageSection page)
+    public void CreatePool(PageSection page, string[] allkeys)
     {
         SummaryPool.Add("#:PAGECOUNT()", new ClearableDynamicValue() { Value = 1, Clear = _ => { } });
         TraversSummaryElement([], page).Each(sr =>
         {
+            var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : allkeys.Take(allkeys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1).ToArray();
             var breakpoint =
                 sr.SummaryElement.SummaryMethod == SummaryMethod.All ? "#" :
-                sr.SummaryElement.SummaryMethod == SummaryMethod.Page ? "&" :
-                $"${sr.BreakKeys.Join(".")}";
+                sr.SummaryElement.SummaryMethod == SummaryMethod.Page ? $"&{keys.Join(".")}" :
+                $"${keys.Join(".")}";
             var bind = sr.SummaryElement.Bind;
             switch (sr.SummaryElement.SummaryType)
             {

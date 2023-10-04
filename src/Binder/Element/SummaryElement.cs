@@ -11,6 +11,7 @@ public class SummaryElement : IElement
     public string Font { get; init; } = "";
     public SummaryType SummaryType { get; init; } = SummaryType.Summary;
     public SummaryMethod SummaryMethod { get; init; } = SummaryMethod.Increment;
+    public string BreakKey { get; init; } = "";
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
     public int Width { get; init; }
 }
