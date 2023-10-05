@@ -50,7 +50,7 @@ public static class ModelMapping
                 {
                     var ttf = fontget(x.Font);
                     var box = ttf.MeasureStringBox(x.Text);
-                    posy += (int)(box.Height * x.Size);
+                    posy += (int)(-box.Top * x.Size);
                     switch (x.Alignment)
                     {
                         case TextAlignment.Start:
