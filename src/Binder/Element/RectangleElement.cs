@@ -9,4 +9,5 @@ public class RectangleElement : IElement
     public required int Width { get; init; }
     public required int Height { get; init; }
     public Color? Color { get; init; } = null;
+    public int LineWidth { get; init; } = 1;
 }

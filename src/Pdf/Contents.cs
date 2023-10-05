@@ -38,18 +38,19 @@ public class Contents : PdfObject
         });
     }
 
-    public void DrawLine(int start_x, int start_y, int end_x, int end_y, IColor? c = null)
+    public void DrawLine(int start_x, int start_y, int end_x, int end_y, IColor? c = null, int? linewidth = null)
     {
         DrawLine(
                 new PointValue() { Value = start_x },
                 new PointValue() { Value = start_y },
                 new PointValue() { Value = end_x },
                 new PointValue() { Value = end_y },
-                c
+                c,
+                new PointValue() { Value = linewidth ?? 1 }
             );
     }
 
-    public void DrawLine(IPoint start_x, IPoint start_y, IPoint end_x, IPoint end_y, IColor? c = null)
+    public void DrawLine(IPoint start_x, IPoint start_y, IPoint end_x, IPoint end_y, IColor? c = null, IPoint? linewidth = null)
     {
         Operations.Add(new DrawLine()
         {
@@ -58,21 +59,23 @@ public class Contents : PdfObject
             EndX = end_x,
             EndY = end_y,
             Color = c,
+            LineWidth = linewidth ?? new PointValue() { Value = 1 },
         });
     }
 
-    public void DrawRectangle(int x, int y, int width, int height, IColor? c = null)
+    public void DrawRectangle(int x, int y, int width, int height, IColor? c = null, int? linewidth = null)
     {
         DrawRectangle(
                 new PointValue() { Value = x },
                 new PointValue() { Value = y },
                 new PointValue() { Value = width },
                 new PointValue() { Value = height },
-                c
+                c,
+                new PointValue() { Value = linewidth ?? 1 }
             );
     }
 
-    public void DrawRectangle(IPoint x, IPoint y, IPoint width, IPoint height, IColor? c = null)
+    public void DrawRectangle(IPoint x, IPoint y, IPoint width, IPoint height, IColor? c = null, IPoint? linewidth = null)
     {
         Operations.Add(new DrawRectangle()
         {
@@ -81,10 +84,11 @@ public class Contents : PdfObject
             Width = width,
             Height = height,
             Color = c,
+            LineWidth = linewidth ?? new PointValue() { Value = 1 },
         });
     }
 
-    public void DrawFillRectangle(int x, int y, int width, int height, IColor? line = null, IColor? fill = null)
+    public void DrawFillRectangle(int x, int y, int width, int height, IColor? line = null, IColor? fill = null, int? linewidth = null)
     {
         DrawFillRectangle(
                 new PointValue() { Value = x },
@@ -92,11 +96,12 @@ public class Contents : PdfObject
                 new PointValue() { Value = width },
                 new PointValue() { Value = height },
                 line,
-                fill
+                fill,
+                new PointValue() { Value = linewidth ?? 1 }
             );
     }
 
-    public void DrawFillRectangle(IPoint x, IPoint y, IPoint width, IPoint height, IColor? line = null, IColor? fill = null)
+    public void DrawFillRectangle(IPoint x, IPoint y, IPoint width, IPoint height, IColor? line = null, IColor? fill = null, IPoint? linewidth = null)
     {
         Operations.Add(new DrawFillRectangle()
         {
@@ -106,6 +111,7 @@ public class Contents : PdfObject
             Height = height,
             LineColor = line,
             FillColor = fill,
+            LineWidth = linewidth ?? new PointValue() { Value = 1 },
         });
     }
 

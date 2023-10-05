@@ -178,6 +178,7 @@ public static class SectionBinder
                         Width = x.Width,
                         Height = x.Height,
                         Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
+                        LineWidth = x.LineWidth,
                     };
                 }
 
@@ -190,6 +191,7 @@ public static class SectionBinder
                         Width = x.Width,
                         Height = x.Height,
                         Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
+                        LineWidth = x.LineWidth,
                     };
                 }
 
@@ -203,6 +205,7 @@ public static class SectionBinder
                         Height = x.Height,
                         LineColor = new DeviceRGB() { R = (double)x.LineColor.R / 255, G = (double)x.LineColor.G / 255, B = (double)x.LineColor.B / 255 },
                         FillColor = new DeviceRGB() { R = (double)x.FillColor.R / 255, G = (double)x.FillColor.G / 255, B = (double)x.FillColor.B / 255 },
+                        LineWidth = x.LineWidth,
                     };
                 }
 

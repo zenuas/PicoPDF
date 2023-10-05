@@ -10,4 +10,5 @@ public class FillRectangleElement : IElement
     public required int Height { get; init; }
     public required Color LineColor { get; init; }
     public required Color FillColor { get; init; }
+    public int LineWidth { get; init; } = 1;
 }

@@ -9,6 +9,7 @@ public class LineModel : IModelElement
     public required int Width { get; init; }
     public required int Height { get; init; }
     public IColor? Color { get; init; }
+    public int LineWidth { get; init; }
 
     public override string ToString() => $"Line, X={X}, Y={Y}, Width={Width}, Height={Height}";
 }

@@ -69,15 +69,15 @@ public static class ModelMapping
                 return;
 
             case LineModel x:
-                page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color);
+                page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color, x.LineWidth);
                 return;
 
             case RectangleModel x:
-                page.Contents.DrawRectangle(posx, posy, x.Width, x.Height, x.Color);
+                page.Contents.DrawRectangle(posx, posy, x.Width, x.Height, x.Color, x.LineWidth);
                 return;
 
             case FillRectangleModel x:
-                page.Contents.DrawFillRectangle(posx, posy, x.Width, x.Height, x.LineColor, x.FillColor);
+                page.Contents.DrawFillRectangle(posx, posy, x.Width, x.Height, x.LineColor, x.FillColor, x.LineWidth);
                 return;
 
             case ImageModel x:

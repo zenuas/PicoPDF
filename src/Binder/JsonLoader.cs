@@ -131,6 +131,7 @@ public static class JsonLoader
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
                     };
                 }
 
@@ -143,6 +144,7 @@ public static class JsonLoader
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
                     };
                 }
 
@@ -156,6 +158,7 @@ public static class JsonLoader
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
                         LineColor = ColorTranslator.FromHtml(json["LineColor"]!.ToString()),
                         FillColor = ColorTranslator.FromHtml(json["FillColor"]!.ToString()),
+                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
                     };
                 }
 

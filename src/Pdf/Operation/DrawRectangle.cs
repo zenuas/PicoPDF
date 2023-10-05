@@ -12,18 +12,14 @@ public class DrawRectangle : IOperation
     public required IPoint Width { get; init; }
     public required IPoint Height { get; init; }
     public IColor? Color { get; init; }
+    public IPoint LineWidth { get; init; } = new PointValue() { Value = 1 };
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        if (Color is { } c)
-        {
-            writer.Write($"q\n");
-            writer.Write($"{c.CreateColor(true)}\n");
-        }
+        writer.Write($"q\n");
+        if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
+        writer.Write($"{LineWidth.ToPoint()} w\n");
         writer.Write($"{X.ToPoint()} {height - Y.ToPoint()} {Width.ToPoint()} {-Height.ToPoint()} re S\n");
-        if (Color is { })
-        {
-            writer.Write($"Q\n");
-        }
+        writer.Write($"Q\n");
     }
 }
