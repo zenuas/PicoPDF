@@ -129,50 +129,14 @@ public static class SectionBinder
     {
         switch (element)
         {
-            case TextElement x:
-                {
-                    return new TextModel()
-                    {
-                        X = x.X,
-                        Y = x.Y,
-                        Text = x.Text,
-                        Font = x.Font != "" ? x.Font : page.DefaultFont,
-                        Size = x.Size,
-                        Alignment = x.Alignment,
-                        Width = x.Width,
-                        Color = x.Color?.ToDeviceRGB(),
-                    };
-                }
+            case TextElement x: return CreateTextModel(x, x.Text, page.DefaultFont);
 
-            case BindElement x:
-                {
-                    return new TextModel()
-                    {
-                        X = x.X,
-                        Y = x.Y,
-                        Text = BindSummaryMapper<T>.BindFormat(bind.Mapper[x.Bind](data), x.Format),
-                        Font = x.Font != "" ? x.Font : page.DefaultFont,
-                        Size = x.Size,
-                        Alignment = x.Alignment,
-                        Width = x.Width,
-                        Color = x.Color?.ToDeviceRGB(),
-                    };
-                }
+            case BindElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.Mapper[x.Bind](data), x.Format), page.DefaultFont);
 
             case SummaryElement x:
                 {
                     var keycount = x.BreakKey == "" ? keys.Length - 1 : allkeys.FindLastIndex(y => y == x.BreakKey);
-                    var model = new TextModel()
-                    {
-                        X = x.X,
-                        Y = x.Y,
-                        Text = BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format),
-                        Font = x.Font != "" ? x.Font : page.DefaultFont,
-                        Size = x.Size,
-                        Alignment = x.Alignment,
-                        Width = x.Width,
-                        Color = x.Color?.ToDeviceRGB(),
-                    };
+                    var model = CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format), page.DefaultFont);
                     bind.AddSummaryGoBack(x, model, keycount);
                     return model;
                 }
@@ -233,6 +197,18 @@ public static class SectionBinder
         }
         throw new();
     }
+
+    public static TextModel CreateTextModel(ITextElement element, string text, string default_font) => new TextModel()
+    {
+        X = element.X,
+        Y = element.Y,
+        Text = text,
+        Font = element.Font != "" ? element.Font : default_font,
+        Size = element.Size,
+        Alignment = element.Alignment,
+        Width = element.Width,
+        Color = element.Color?.ToDeviceRGB(),
+    };
 
     public static DeviceRGB ToDeviceRGB(this Color color) => new() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 };
 
