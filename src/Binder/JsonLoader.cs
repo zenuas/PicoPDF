@@ -85,6 +85,9 @@ public static class JsonLoader
                         Text = json["Text"]!.ToString(),
                         Font = json["Font"]?.ToString() ?? "",
                         Size = (int)json["Size"]!.AsValue(),
+                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
+                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
                     };
                 }
 
@@ -100,6 +103,7 @@ public static class JsonLoader
                         Size = (int)json["Size"]!.AsValue(),
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
                     };
                 }
 
@@ -119,6 +123,7 @@ public static class JsonLoader
                         BreakKey = json["BreakKey"]?.ToString() ?? "",
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
                     };
                 }
 

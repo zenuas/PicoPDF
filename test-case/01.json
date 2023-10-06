@@ -26,7 +26,7 @@
 		]},
 		{"Type": "HeaderSection", "Name": "Header", "Height": 20, "ViewMode": "First", "Elements": [
 			{"Type": "TextElement", "Text": "Tiiki", "Size": 10, "X": 10,  "Y": 0},
-			{"Type": "BindElement", "Bind": "Tiiki", "Size": 20, "X": 100, "Y": 0},
+			{"Type": "BindElement", "Bind": "Tiiki", "Size": 20, "X": 100, "Y": 0, "Color": "blue"},
 		]},
 		{"Type": "HeaderSection", "Name": "Header2", "Height": 30, "Elements": [
 			{"Type": "TextElement", "Text": "Todouhuken", "Size": 10, "X": 10,  "Y": 0},

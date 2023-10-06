@@ -1,4 +1,6 @@
-﻿namespace PicoPDF.Binder.Element;
+﻿using System.Drawing;
+
+namespace PicoPDF.Binder.Element;
 
 public class BindElement : IElement
 {
@@ -10,4 +12,5 @@ public class BindElement : IElement
     public string Font { get; init; } = "";
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
     public int Width { get; init; }
+    public Color? Color { get; init; } = null;
 }

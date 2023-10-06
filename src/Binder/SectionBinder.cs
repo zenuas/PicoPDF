@@ -129,14 +129,19 @@ public static class SectionBinder
         switch (element)
         {
             case TextElement x:
-                return new TextModel()
                 {
-                    X = x.X,
-                    Y = x.Y,
-                    Text = x.Text,
-                    Font = x.Font != "" ? x.Font : page.DefaultFont,
-                    Size = x.Size,
-                };
+                    return new TextModel()
+                    {
+                        X = x.X,
+                        Y = x.Y,
+                        Text = x.Text,
+                        Font = x.Font != "" ? x.Font : page.DefaultFont,
+                        Size = x.Size,
+                        Alignment = x.Alignment,
+                        Width = x.Width,
+                        Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
+                    };
+                }
 
             case BindElement x:
                 {
@@ -149,6 +154,7 @@ public static class SectionBinder
                         Size = x.Size,
                         Alignment = x.Alignment,
                         Width = x.Width,
+                        Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
                     };
                 }
 
@@ -164,6 +170,7 @@ public static class SectionBinder
                         Size = x.Size,
                         Alignment = x.Alignment,
                         Width = x.Width,
+                        Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
                     };
                     bind.AddSummaryGoBack(x, model, keycount);
                     return model;

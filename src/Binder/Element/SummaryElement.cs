@@ -1,4 +1,6 @@
-﻿namespace PicoPDF.Binder.Element;
+﻿using System.Drawing;
+
+namespace PicoPDF.Binder.Element;
 
 public class SummaryElement : IElement
 {
@@ -14,4 +16,5 @@ public class SummaryElement : IElement
     public string BreakKey { get; init; } = "";
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
     public int Width { get; init; }
+    public Color? Color { get; init; } = null;
 }

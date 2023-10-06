@@ -61,7 +61,7 @@ public static class ModelMapping
                             posx += (int)(x.Width - (box.Width * x.Size));
                             break;
                     }
-                    page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf);
+                    page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf, x.Color);
                 }
                 return;
 
