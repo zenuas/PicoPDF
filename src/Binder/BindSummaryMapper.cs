@@ -1,7 +1,6 @@
 ﻿using Extensions;
 using PicoPDF.Binder.Data;
 using PicoPDF.Binder.Element;
-using PicoPDF.Mapper;
 using PicoPDF.Model.Element;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ namespace PicoPDF.Binder;
 
 public class BindSummaryMapper<T>
 {
-    public Dictionary<string, Func<T, object>> Mapper { get; init; } = ObjectMapper.CreateGetMapper<T>();
+    public required Dictionary<string, Func<T, object>> Mapper { get; init; }
     public Dictionary<string, ClearableDynamicValue> SummaryPool { get; init; } = new();
     public List<Action<T>> SummaryAction { get; init; } = new();
     public List<List<(SummaryElement SummaryElement, TextModel TextModel)>> SummaryGoBack { get; init; } = new();

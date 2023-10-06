@@ -1,6 +1,7 @@
 ﻿using Extensions;
 using PicoPDF.Binder.Data;
 using PicoPDF.Binder.Element;
+using PicoPDF.Mapper;
 using PicoPDF.Model;
 using PicoPDF.Model.Element;
 using PicoPDF.Pdf;
@@ -14,7 +15,7 @@ namespace PicoPDF.Binder;
 
 public static class SectionBinder
 {
-    public static PageModel[] Bind<T>(PageSection page, IEnumerable<T> datas) => BindPageModels(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() })
+    public static PageModel[] Bind<T>(PageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => BindPageModels(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? ObjectMapper.CreateGetMapper<T>())
         .Select(models =>
         {
             // header or detail top-down order
@@ -29,7 +30,7 @@ public static class SectionBinder
         })
         .ToArray();
 
-    public static List<List<SectionModel>> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas)
+    public static List<List<SectionModel>> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
     {
         var sections = page.SubSection.Travers(x => x is Section s ? [s.SubSection] : []).ToArray();
         var detail = sections.OfType<DetailSection>().First();
@@ -40,7 +41,7 @@ public static class SectionBinder
 
         var pages = new List<List<SectionModel>>();
         var models = new List<SectionModel>();
-        var bind = new BindSummaryMapper<T>();
+        var bind = new BindSummaryMapper<T>() { Mapper = mapper };
         bind.CreatePool(page, keys);
         bind.CreateSummaryGoBack(keys.Length);
 
