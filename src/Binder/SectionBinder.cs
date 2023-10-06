@@ -7,6 +7,7 @@ using PicoPDF.Pdf;
 using PicoPDF.Pdf.Color;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace PicoPDF.Binder;
@@ -139,7 +140,7 @@ public static class SectionBinder
                         Size = x.Size,
                         Alignment = x.Alignment,
                         Width = x.Width,
-                        Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
+                        Color = x.Color?.ToDeviceRGB(),
                     };
                 }
 
@@ -154,7 +155,7 @@ public static class SectionBinder
                         Size = x.Size,
                         Alignment = x.Alignment,
                         Width = x.Width,
-                        Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
+                        Color = x.Color?.ToDeviceRGB(),
                     };
                 }
 
@@ -170,7 +171,7 @@ public static class SectionBinder
                         Size = x.Size,
                         Alignment = x.Alignment,
                         Width = x.Width,
-                        Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
+                        Color = x.Color?.ToDeviceRGB(),
                     };
                     bind.AddSummaryGoBack(x, model, keycount);
                     return model;
@@ -184,7 +185,7 @@ public static class SectionBinder
                         Y = x.Y,
                         Width = x.Width,
                         Height = x.Height,
-                        Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
+                        Color = x.Color?.ToDeviceRGB(),
                         LineWidth = x.LineWidth,
                     };
                 }
@@ -197,7 +198,7 @@ public static class SectionBinder
                         Y = x.Y,
                         Width = x.Width,
                         Height = x.Height,
-                        Color = x.Color is { } color ? new DeviceRGB() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 } : null,
+                        Color = x.Color?.ToDeviceRGB(),
                         LineWidth = x.LineWidth,
                     };
                 }
@@ -210,8 +211,8 @@ public static class SectionBinder
                         Y = x.Y,
                         Width = x.Width,
                         Height = x.Height,
-                        LineColor = new DeviceRGB() { R = (double)x.LineColor.R / 255, G = (double)x.LineColor.G / 255, B = (double)x.LineColor.B / 255 },
-                        FillColor = new DeviceRGB() { R = (double)x.FillColor.R / 255, G = (double)x.FillColor.G / 255, B = (double)x.FillColor.B / 255 },
+                        LineColor = x.LineColor.ToDeviceRGB(),
+                        FillColor = x.FillColor.ToDeviceRGB(),
                         LineWidth = x.LineWidth,
                     };
                 }
@@ -232,6 +233,8 @@ public static class SectionBinder
         }
         throw new();
     }
+
+    public static DeviceRGB ToDeviceRGB(this Color color) => new() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 };
 
     public static IEnumerable<(string[] BreakKeys, SummaryElement Summary)> GetBreakKeyWithSummary(string[] keys, ISubSection subsection)
     {
