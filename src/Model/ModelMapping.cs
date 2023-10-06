@@ -53,18 +53,15 @@ public static class ModelMapping
                     posy += (int)(-box.Top * x.Size);
                     switch (x.Alignment)
                     {
-                        case TextAlignment.Start:
-                            page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf);
-                            break;
-
                         case TextAlignment.Center:
-                            page.Contents.DrawString(x.Text, (int)(posx + ((x.Width - (box.Width * x.Size)) / 2)), posy, x.Size, ttf);
+                            posx += (int)((x.Width - (box.Width * x.Size)) / 2);
                             break;
 
                         case TextAlignment.End:
-                            page.Contents.DrawString(x.Text, (int)(posx + x.Width - (box.Width * x.Size)), posy, x.Size, ttf);
+                            posx += (int)(x.Width - (box.Width * x.Size));
                             break;
                     }
+                    page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf);
                 }
                 return;
 
