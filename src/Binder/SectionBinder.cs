@@ -202,7 +202,7 @@ public static class SectionBinder
         throw new();
     }
 
-    public static TextModel CreateTextModel(ITextElement element, string text, string default_font) => new TextModel()
+    public static TextModel CreateTextModel(ITextElement element, string text, string default_font) => new()
     {
         X = element.X,
         Y = element.Y,
