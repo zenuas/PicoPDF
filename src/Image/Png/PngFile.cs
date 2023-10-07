@@ -120,7 +120,7 @@ public class PngFile : IImageCanvas
         (byte)ColorTypes.Palette => bit_deps,
         (byte)ColorTypes.GrayscaleAlpha => bit_deps * 2,
         (byte)ColorTypes.Rgba => bit_deps * 4,
-        _ => 0,
+        _ => throw new(),
     };
 
     public static int BitToByte(int bit) => (bit + 7) / 8;
