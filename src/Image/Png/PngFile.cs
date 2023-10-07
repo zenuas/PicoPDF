@@ -24,11 +24,11 @@ public class PngFile : IImageCanvas
 
         var width = 0;
         var height = 0;
-        var bit_deps = 0;
-        var color_type = 0;
-        var compression_method = 0;
-        var filter_method = 0;
-        var interlace_method = 0;
+        var bit_deps = (byte)0;
+        var color_type = (byte)0;
+        var compression_method = (byte)0;
+        var filter_method = (byte)0;
+        var interlace_method = (byte)0;
         var palette = new List<Color>();
         var datas = new List<byte>();
 
@@ -113,13 +113,13 @@ public class PngFile : IImageCanvas
         };
     }
 
-    public static int GetBitsPerPixel(int color_type, int bit_deps) => color_type switch
+    public static int GetBitsPerPixel(byte color_type, byte bit_deps) => color_type switch
     {
-        0 => bit_deps,
-        2 => bit_deps * 3,
-        3 => bit_deps,
-        4 => bit_deps * 2,
-        6 => bit_deps * 4,
+        (byte)ColorTypes.Grayscale => bit_deps,
+        (byte)ColorTypes.Rgb => bit_deps * 3,
+        (byte)ColorTypes.Palette => bit_deps,
+        (byte)ColorTypes.GrayscaleAlpha => bit_deps * 2,
+        (byte)ColorTypes.Rgba => bit_deps * 4,
         _ => 0,
     };
 
