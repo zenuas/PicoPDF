@@ -93,7 +93,7 @@ public class PngFile : IImageCanvas
         var bit_per_pixel = GetBitsPerPixel(color_type, bit_deps);
         var byte_per_pixel = BitToByte(bit_per_pixel);
         var row_byte = 1 + BitToByte(bit_per_pixel * width);
-        ApplyFilterType(data, width, height, byte_per_pixel, row_byte);
+        ApplyFilterType(data, height, byte_per_pixel, row_byte);
 
         Func<byte[], Color> makecolor =
             color_type == 3 ? xs => palette[xs[0]] :
@@ -125,7 +125,7 @@ public class PngFile : IImageCanvas
 
     public static int BitToByte(int bit) => (bit + 7) / 8;
 
-    public static void ApplyFilterType(Span<byte> datas, int width, int height, int byte_per_pixel, int row_byte)
+    public static void ApplyFilterType(Span<byte> datas, int height, int byte_per_pixel, int row_byte)
     {
         var prev_scanline = new byte[row_byte - 1].AsSpan();
         for (var y = 0; y < height; y++)
