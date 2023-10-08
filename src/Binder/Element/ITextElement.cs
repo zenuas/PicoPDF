@@ -9,4 +9,5 @@ public interface ITextElement : IElement
     public TextAlignment Alignment { get; init; }
     public int Width { get; init; }
     public Color? Color { get; init; }
+    public bool Cliping { get; init; }
 }

@@ -212,6 +212,7 @@ public static class SectionBinder
         Alignment = element.Alignment,
         Width = element.Width,
         Color = element.Color?.ToDeviceRGB(),
+        Cliping = element.Cliping,
     };
 
     public static DeviceRGB ToDeviceRGB(this Color color) => new() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 };

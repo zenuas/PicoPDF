@@ -3,6 +3,7 @@ using PicoPDF.Binder.Element;
 using PicoPDF.Image;
 using PicoPDF.Model.Element;
 using PicoPDF.Pdf;
+using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;
 using System;
@@ -61,7 +62,21 @@ public static class ModelMapping
                             posx += (int)(x.Width - (box.Width * x.Size));
                             break;
                     }
-                    page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf, x.Color);
+                    if (x.Cliping)
+                    {
+                        var rect = new Rectangle()
+                        {
+                            X = new PointValue() { Value = model.X },
+                            Y = new PointValue() { Value = model.Y + top },
+                            Width = new PointValue() { Value = x.Width },
+                            Height = new PointValue() { Value = box.Height * x.Size },
+                        };
+                        page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf, x.Color, rect);
+                    }
+                    else
+                    {
+                        page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf, x.Color);
+                    }
                 }
                 return;
 

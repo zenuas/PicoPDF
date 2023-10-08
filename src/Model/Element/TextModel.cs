@@ -13,6 +13,7 @@ public class TextModel : IModelElement
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
     public int Width { get; init; }
     public IColor? Color { get; init; }
+    public bool Cliping { get; init; }
 
     public override string ToString() => $"{Text}, X={X}, Y={Y}, Size={Size}";
 }

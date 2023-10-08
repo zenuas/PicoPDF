@@ -13,4 +13,5 @@ public class BindElement : ITextElement
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
     public int Width { get; init; }
     public Color? Color { get; init; } = null;
+    public bool Cliping { get; init; }
 }

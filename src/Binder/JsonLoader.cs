@@ -88,6 +88,7 @@ public static class JsonLoader
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+                        Cliping = json["Cliping"]?.AsValue() is { } clip && (bool)clip,
                     };
                 }
 
@@ -104,6 +105,7 @@ public static class JsonLoader
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+                        Cliping = json["Cliping"]?.AsValue() is { } clip && (bool)clip,
                     };
                 }
 
@@ -124,6 +126,7 @@ public static class JsonLoader
                         SummaryType = sumtype,
                         SummaryMethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethod>(method.ToString()) : (sumtype == SummaryType.PageCount ? SummaryMethod.Increment : SummaryMethod.Group),
                         BreakKey = json["BreakKey"]?.ToString() ?? "",
+                        Cliping = json["Cliping"]?.AsValue() is { } clip && (bool)clip,
                     };
                 }
 

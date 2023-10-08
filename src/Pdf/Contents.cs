@@ -13,7 +13,7 @@ public class Contents : PdfObject
     public required Page Page { get; init; }
     public List<IOperation> Operations { get; init; } = new();
 
-    public void DrawString(string s, int x, int y, int size, IFont font, IColor? c = null)
+    public void DrawString(string s, int x, int y, int size, IFont font, IColor? c = null, Rectangle? clip = null)
     {
         DrawString(
                 s,
@@ -21,13 +21,14 @@ public class Contents : PdfObject
                 new PointValue() { Value = y },
                 size,
                 font,
-                c
+                c,
+                clip
             );
     }
 
-    public void DrawString(string s, IPoint x, IPoint y, int size, IFont font, IColor? c = null)
+    public void DrawString(string s, IPoint x, IPoint y, int size, IFont font, IColor? c = null, Rectangle? clip = null)
     {
-        Operations.Add(new DrawString()
+        var str = new DrawString()
         {
             Text = s,
             X = x,
@@ -35,7 +36,22 @@ public class Contents : PdfObject
             FontSize = size,
             Font = font,
             Color = c,
-        });
+        };
+        if (clip is { } r)
+        {
+            Operations.Add(new DrawCliping()
+            {
+                X = r.X,
+                Y = r.Y,
+                Width = r.Width,
+                Height = r.Height,
+                Operation = str,
+            });
+        }
+        else
+        {
+            Operations.Add(str);
+        }
     }
 
     public void DrawLine(int start_x, int start_y, int end_x, int end_y, IColor? c = null, int? linewidth = null)

@@ -17,4 +17,5 @@ public class SummaryElement : ITextElement
     public SummaryType SummaryType { get; init; } = SummaryType.Summary;
     public SummaryMethod SummaryMethod { get; init; } = SummaryMethod.Increment;
     public string BreakKey { get; init; } = "";
+    public bool Cliping { get; init; }
 }
