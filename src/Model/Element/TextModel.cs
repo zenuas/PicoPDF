@@ -11,6 +11,7 @@ public class TextModel : IModelElement
     public required int Size { get; init; }
     public string Font { get; init; } = "";
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
+    public TextStyle Style { get; init; } = TextStyle.None;
     public int Width { get; init; }
     public IColor? Color { get; init; }
     public bool Cliping { get; init; }

@@ -210,6 +210,7 @@ public static class SectionBinder
         Font = element.Font != "" ? element.Font : default_font,
         Size = element.Size,
         Alignment = element.Alignment,
+        Style = element.Style,
         Width = element.Width,
         Color = element.Color?.ToDeviceRGB(),
         Cliping = element.Cliping,

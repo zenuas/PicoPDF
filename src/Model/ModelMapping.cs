@@ -77,6 +77,52 @@ public static class ModelMapping
                     {
                         page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf, x.Color);
                     }
+                    if (x.Style != TextStyle.None)
+                    {
+                        var width = (int)(box.Width * x.Size);
+                        var topleft = model.Y + top;
+                        var bottomleft = (int)(model.Y + top + (box.Height * x.Size));
+
+                        if (x.Style.HasFlag(TextStyle.UnderLine))
+                        {
+                            page.Contents.DrawLine(posx, posy, posx + width, posy, x.Color);
+                        }
+                        if (x.Style.HasFlag(TextStyle.UnderLine2))
+                        {
+                            page.Contents.DrawLine(posx, posy + 2, posx + width, posy + 2, x.Color);
+                        }
+                        if (x.Style.HasFlag(TextStyle.LineThrough))
+                        {
+                            var center = (int)(topleft + (box.Height * x.Size / 2));
+                            page.Contents.DrawLine(posx, center, posx + width, center, x.Color);
+                        }
+                        if (x.Style.HasFlag(TextStyle.BorderTop) &&
+                            x.Style.HasFlag(TextStyle.BorderBottom) &&
+                            x.Style.HasFlag(TextStyle.BorderLeft) &&
+                            x.Style.HasFlag(TextStyle.BorderRight))
+                        {
+                            page.Contents.DrawRectangle(posx, topleft, width, bottomleft - topleft, x.Color);
+                        }
+                        else
+                        {
+                            if (x.Style.HasFlag(TextStyle.BorderTop))
+                            {
+                                page.Contents.DrawLine(posx, topleft, posx + width, topleft, x.Color);
+                            }
+                            if (x.Style.HasFlag(TextStyle.BorderBottom))
+                            {
+                                page.Contents.DrawLine(posx, bottomleft, posx + width, bottomleft, x.Color);
+                            }
+                            if (x.Style.HasFlag(TextStyle.BorderLeft))
+                            {
+                                page.Contents.DrawLine(posx, topleft, posx, bottomleft, x.Color);
+                            }
+                            if (x.Style.HasFlag(TextStyle.BorderRight))
+                            {
+                                page.Contents.DrawLine(posx + width, topleft, posx + width, bottomleft, x.Color);
+                            }
+                        }
+                    }
                 }
                 return;
 
