@@ -56,7 +56,7 @@ public static class SectionBinder
             _ = datas.Next(0, out var firstdata);
             if (pages.Count == 0) lastdata = firstdata;
             headers
-                .SkipWhileOrPageFirst(x => pages.Count == 0 || x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](firstdata)))
+                .SkipWhileOrPageFirst(x => pages.Count == 0 || (x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](firstdata))))
                 .Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, firstdata, bind, page, x.BreakKeyHierarchy, keys) })
                 .Each(models.Add);
             var page_first = true;
