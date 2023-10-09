@@ -11,4 +11,4 @@ doc.FontRegister.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%Syste
 var pagesection = PicoPDF.Binder.JsonLoader.Load("test-case/01.json");
 var pages = PicoPDF.Binder.SectionBinder.Bind(pagesection, csv);
 PicoPDF.Model.ModelMapping.Mapping(doc, pages);
-doc.Save("@a.pdf", new() { ContentsStreamDeflate = false });
+doc.Save("@a.pdf", new() { ContentsStreamDeflate = false, Debug = true });

@@ -27,6 +27,7 @@ public class DrawString : IOperation
         writer.Write($"  {X.ToPoint()} {height - Y.ToPoint()} Td\n");
         writer.Write($"  ");
         Font.CreateTextShowingOperator(Text).Each(writer.WriteByte);
+        if (option.Debug) writer.Write($" % {Text}");
         writer.Write($"\n");
         if (Color is { })
         {
