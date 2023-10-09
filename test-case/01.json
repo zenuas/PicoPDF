@@ -30,7 +30,7 @@
 		]},
 		{"Type": "HeaderSection", "Name": "Header2", "Height": 30, "Elements": [
 			{"Type": "TextElement", "Text": "都道府県",   "Size": 10, "X": 10,  "Y": 0},
-			{"Type": "BindElement", "Bind": "Todouhuken", "Size": 20, "X": 100, "Y": 0},
+			{"Type": "BindElement", "Bind": "Todouhuken", "Size": 20, "X": 100, "Y": 0, "Width": 60, "Style": "ShrinkToFit"},
 			{"Type": "TextElement", "Text": "P-地域", "Size": 10, "X": 180, "Y": 0, "Alignment": "End", "Width": 50},
 			{"Type": "TextElement", "Text": "P-県",   "Size": 10, "X": 230, "Y": 0, "Alignment": "End", "Width": 50},
 			{"Type": "TextElement", "Text": "G-地域", "Size": 10, "X": 280, "Y": 0, "Alignment": "End", "Width": 50},

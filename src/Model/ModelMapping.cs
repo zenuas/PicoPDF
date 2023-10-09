@@ -51,15 +51,16 @@ public static class ModelMapping
                 {
                     var ttf = fontget(x.Font);
                     var box = ttf.MeasureStringBox(x.Text);
-                    posy += (int)(-box.Top * x.Size);
+                    var size = x.Style.HasFlag(TextStyle.ShrinkToFit) && x.Width < (box.Width * x.Size) ? (int)(x.Width / box.Width) : x.Size;
+                    posy += (int)(-box.Top * size);
                     switch (x.Alignment)
                     {
                         case TextAlignment.Center:
-                            posx += (int)((x.Width - (box.Width * x.Size)) / 2);
+                            posx += (int)((x.Width - (box.Width * size)) / 2);
                             break;
 
                         case TextAlignment.End:
-                            posx += (int)(x.Width - (box.Width * x.Size));
+                            posx += (int)(x.Width - (box.Width * size));
                             break;
                     }
                     if (x.Cliping)
@@ -69,20 +70,20 @@ public static class ModelMapping
                             X = new PointValue() { Value = model.X },
                             Y = new PointValue() { Value = model.Y + top },
                             Width = new PointValue() { Value = x.Width },
-                            Height = new PointValue() { Value = box.Height * x.Size },
+                            Height = new PointValue() { Value = box.Height * size },
                         };
-                        page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf, x.Color, rect);
+                        page.Contents.DrawString(x.Text, posx, posy, size, ttf, x.Color, rect);
                     }
                     else
                     {
-                        page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf, x.Color);
+                        page.Contents.DrawString(x.Text, posx, posy, size, ttf, x.Color);
                     }
 
                     if (x.Style != TextStyle.None)
                     {
-                        var width = (int)(box.Width * x.Size);
+                        var width = (int)(box.Width * size);
                         var topleft = model.Y + top;
-                        var bottomleft = (int)(model.Y + top + (box.Height * x.Size));
+                        var bottomleft = (int)(model.Y + top + (box.Height * size));
 
                         if (x.Style.HasFlag(TextStyle.UnderLine))
                         {
@@ -94,7 +95,7 @@ public static class ModelMapping
                         }
                         if (x.Style.HasFlag(TextStyle.LineThrough))
                         {
-                            var center = (int)(topleft + (box.Height * x.Size / 2));
+                            var center = (int)(topleft + (box.Height * size / 2));
                             page.Contents.DrawLine(posx, center, posx + width, center, x.Color);
                         }
                         if (x.Style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
