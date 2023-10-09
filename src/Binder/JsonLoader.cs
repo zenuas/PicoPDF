@@ -35,6 +35,7 @@ public static class JsonLoader
             Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
             Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
             SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
+            Padding = LoadAllSides(json["Padding"]),
         };
     }
 
@@ -184,5 +185,21 @@ public static class JsonLoader
                 }
         }
         throw new();
+    }
+
+    public static AllSides LoadAllSides(JsonNode? node)
+    {
+        if (node is JsonValue v) return new((int)v, (int)v, (int)v, (int)v);
+        if (node is JsonArray xs)
+        {
+            switch (xs.Count)
+            {
+                case 1: return new((int)xs[0]!, (int)xs[0]!, (int)xs[0]!, (int)xs[0]!);
+                case 2: return new((int)xs[0]!, (int)xs[0]!, (int)xs[1]!, (int)xs[1]!);
+                case 3: return new((int)xs[0]!, (int)xs[2]!, (int)xs[1]!, (int)xs[1]!);
+                case 4: return new((int)xs[0]!, (int)xs[2]!, (int)xs[3]!, (int)xs[1]!);
+            }
+        }
+        return new(0, 0, 0, 0);
     }
 }

@@ -19,11 +19,11 @@ public static class SectionBinder
         .Select(models =>
         {
             // header or detail top-down order
-            int top = 0;
+            int top = page.Padding.Top;
             models.Where(x => x.Section is not FooterSection).Each(x => x.Top = (top += x.Section.Height) - x.Section.Height);
 
             // footer bottom-up order
-            int bottom = PdfUtility.GetPageSize(page.Size, page.Orientation).Height;
+            int bottom = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - page.Padding.Bottom;
             models.Where(x => x.Section is FooterSection).Reverse().Each(x => x.Top = bottom -= x.Section.Height);
 
             return new PageModel() { Size = page.Size, Orientation = page.Orientation, Models = models };
@@ -46,7 +46,7 @@ public static class SectionBinder
         bind.CreateSummaryGoBack(keys.Length);
 
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
-        var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - (everyfooter?.Height ?? 0);
+        var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
         T lastdata = default!;
 
@@ -131,16 +131,17 @@ public static class SectionBinder
 
     public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys)
     {
+        var posx = element.X + page.Padding.Left;
         switch (element)
         {
-            case TextElement x: return CreateTextModel(x, x.Text, page.DefaultFont);
+            case TextElement x: return CreateTextModel(x, x.Text, page);
 
-            case BindElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.Mapper[x.Bind](data), x.Format), page.DefaultFont);
+            case BindElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.Mapper[x.Bind](data), x.Format), page);
 
             case SummaryElement x:
                 {
                     var keycount = x.BreakKey == "" ? keys.Length - 1 : allkeys.FindLastIndex(y => y == x.BreakKey);
-                    var model = CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format), page.DefaultFont);
+                    var model = CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format), page);
                     bind.AddSummaryGoBack(x, model, keycount);
                     return model;
                 }
@@ -149,7 +150,7 @@ public static class SectionBinder
                 {
                     return new LineModel()
                     {
-                        X = x.X,
+                        X = posx,
                         Y = x.Y,
                         Width = x.Width,
                         Height = x.Height,
@@ -162,7 +163,7 @@ public static class SectionBinder
                 {
                     return new RectangleModel()
                     {
-                        X = x.X,
+                        X = posx,
                         Y = x.Y,
                         Width = x.Width,
                         Height = x.Height,
@@ -175,7 +176,7 @@ public static class SectionBinder
                 {
                     return new FillRectangleModel()
                     {
-                        X = x.X,
+                        X = posx,
                         Y = x.Y,
                         Width = x.Width,
                         Height = x.Height,
@@ -191,7 +192,7 @@ public static class SectionBinder
 
                     return new ImageModel()
                     {
-                        X = x.X,
+                        X = posx,
                         Y = x.Y,
                         Path = path,
                         ZoomWidth = x.ZoomWidth,
@@ -202,12 +203,12 @@ public static class SectionBinder
         throw new();
     }
 
-    public static TextModel CreateTextModel(ITextElement element, string text, string default_font) => new()
+    public static TextModel CreateTextModel(ITextElement element, string text, PageSection page) => new()
     {
-        X = element.X,
+        X = element.X + page.Padding.Left,
         Y = element.Y,
         Text = text,
-        Font = element.Font != "" ? element.Font : default_font,
+        Font = element.Font != "" ? element.Font : page.DefaultFont,
         Size = element.Size,
         Alignment = element.Alignment,
         Style = element.Style,
