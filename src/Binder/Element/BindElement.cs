@@ -14,5 +14,4 @@ public class BindElement : ITextElement
     public TextStyle Style { get; init; } = TextStyle.None;
     public int Width { get; init; }
     public Color? Color { get; init; } = null;
-    public bool Cliping { get; init; }
 }

@@ -14,4 +14,5 @@ public enum TextStyle
     BorderBottom = 32,
     LineThrough = 64,
     ShrinkToFit = 128,
+    Cliping = 256,
 }

@@ -10,5 +10,4 @@ public interface ITextElement : IElement
     public TextStyle Style { get; init; }
     public int Width { get; init; }
     public Color? Color { get; init; }
-    public bool Cliping { get; init; }
 }

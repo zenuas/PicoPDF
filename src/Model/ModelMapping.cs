@@ -63,7 +63,7 @@ public static class ModelMapping
                             posx += (int)(x.Width - (box.Width * size));
                             break;
                     }
-                    if (x.Cliping)
+                    if (x.Style.HasFlag(TextStyle.Cliping))
                     {
                         var rect = new Rectangle()
                         {

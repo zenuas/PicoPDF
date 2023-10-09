@@ -14,7 +14,6 @@ public class TextModel : IModelElement
     public TextStyle Style { get; init; } = TextStyle.None;
     public int Width { get; init; }
     public IColor? Color { get; init; }
-    public bool Cliping { get; init; }
 
     public override string ToString() => $"{Text}, X={X}, Y={Y}, Size={Size}";
 }
