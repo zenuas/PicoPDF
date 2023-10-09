@@ -12,7 +12,7 @@ public class DrawString : IOperation
     public required IPoint X { get; set; }
     public required IPoint Y { get; set; }
     public required IFont Font { get; set; }
-    public required int FontSize { get; set; }
+    public required double FontSize { get; set; }
     public IColor? Color { get; init; }
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)

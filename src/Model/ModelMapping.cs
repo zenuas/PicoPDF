@@ -43,41 +43,34 @@ public static class ModelMapping
 
     public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, IImageXObject> imageget, IModelElement model, int top)
     {
-        var posx = model.X;
-        var posy = model.Y + top;
+        double posx = model.X;
+        double posy = model.Y + top;
         switch (model)
         {
             case TextModel x:
                 {
                     var ttf = fontget(x.Font);
                     var box = ttf.MeasureStringBox(x.Text);
-                    var size = x.Style.HasFlag(TextStyle.ShrinkToFit) && x.Width < (box.Width * x.Size) ? (int)(x.Width / box.Width) : x.Size;
-                    posy += (int)(-box.Top * size);
+                    var size = x.Style.HasFlag(TextStyle.ShrinkToFit) && x.Width < (box.Width * x.Size) ? x.Width / box.Width : x.Size;
+                    posy += -box.Top * size;
                     switch (x.Alignment)
                     {
                         case TextAlignment.Center:
-                            posx += (int)((x.Width - (box.Width * size)) / 2);
+                            posx += (x.Width - (box.Width * size)) / 2;
                             break;
 
                         case TextAlignment.End:
-                            posx += (int)(x.Width - (box.Width * size));
+                            posx += x.Width - (box.Width * size);
                             break;
                     }
-                    if (x.Style.HasFlag(TextStyle.Cliping))
+                    var rect = !x.Style.HasFlag(TextStyle.Cliping) ? (Rectangle?)null : new Rectangle()
                     {
-                        var rect = new Rectangle()
-                        {
-                            X = new PointValue() { Value = model.X },
-                            Y = new PointValue() { Value = model.Y + top },
-                            Width = new PointValue() { Value = x.Width },
-                            Height = new PointValue() { Value = box.Height * size },
-                        };
-                        page.Contents.DrawString(x.Text, posx, posy, size, ttf, x.Color, rect);
-                    }
-                    else
-                    {
-                        page.Contents.DrawString(x.Text, posx, posy, size, ttf, x.Color);
-                    }
+                        X = new PointValue() { Value = model.X },
+                        Y = new PointValue() { Value = model.Y + top },
+                        Width = new PointValue() { Value = x.Width },
+                        Height = new PointValue() { Value = box.Height * size },
+                    };
+                    page.Contents.DrawString(x.Text, posx, posy, size, ttf, x.Color, rect);
 
                     if (x.Style != TextStyle.None)
                     {

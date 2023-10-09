@@ -13,7 +13,7 @@ public class Contents : PdfObject
     public required Page Page { get; init; }
     public List<IOperation> Operations { get; init; } = new();
 
-    public void DrawString(string s, int x, int y, int size, IFont font, IColor? c = null, Rectangle? clip = null)
+    public void DrawString(string s, double x, double y, double size, IFont font, IColor? c = null, Rectangle? clip = null)
     {
         DrawString(
                 s,
@@ -26,7 +26,7 @@ public class Contents : PdfObject
             );
     }
 
-    public void DrawString(string s, IPoint x, IPoint y, int size, IFont font, IColor? c = null, Rectangle? clip = null)
+    public void DrawString(string s, IPoint x, IPoint y, double size, IFont font, IColor? c = null, Rectangle? clip = null)
     {
         var str = new DrawString()
         {
@@ -54,7 +54,7 @@ public class Contents : PdfObject
         }
     }
 
-    public void DrawLine(int start_x, int start_y, int end_x, int end_y, IColor? c = null, int? linewidth = null)
+    public void DrawLine(double start_x, double start_y, double end_x, double end_y, IColor? c = null, double? linewidth = null)
     {
         DrawLine(
                 new PointValue() { Value = start_x },
@@ -79,7 +79,7 @@ public class Contents : PdfObject
         });
     }
 
-    public void DrawRectangle(int x, int y, int width, int height, IColor? c = null, int? linewidth = null)
+    public void DrawRectangle(double x, double y, double width, double height, IColor? c = null, double? linewidth = null)
     {
         DrawRectangle(
                 new PointValue() { Value = x },
@@ -104,7 +104,7 @@ public class Contents : PdfObject
         });
     }
 
-    public void DrawFillRectangle(int x, int y, int width, int height, IColor? line = null, IColor? fill = null, int? linewidth = null)
+    public void DrawFillRectangle(double x, double y, double width, double height, IColor? line = null, IColor? fill = null, double? linewidth = null)
     {
         DrawFillRectangle(
                 new PointValue() { Value = x },
@@ -131,7 +131,7 @@ public class Contents : PdfObject
         });
     }
 
-    public void DrawImage(int x, int y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
+    public void DrawImage(double x, double y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
     {
         DrawImage(
                 new PointValue() { Value = x },
