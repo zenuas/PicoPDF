@@ -77,6 +77,7 @@ public static class ModelMapping
                     {
                         page.Contents.DrawString(x.Text, posx, posy, x.Size, ttf, x.Color);
                     }
+
                     if (x.Style != TextStyle.None)
                     {
                         var width = (int)(box.Width * x.Size);
@@ -96,14 +97,11 @@ public static class ModelMapping
                             var center = (int)(topleft + (box.Height * x.Size / 2));
                             page.Contents.DrawLine(posx, center, posx + width, center, x.Color);
                         }
-                        if (x.Style.HasFlag(TextStyle.BorderTop) &&
-                            x.Style.HasFlag(TextStyle.BorderBottom) &&
-                            x.Style.HasFlag(TextStyle.BorderLeft) &&
-                            x.Style.HasFlag(TextStyle.BorderRight))
+                        if (x.Style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
                         {
                             page.Contents.DrawRectangle(posx, topleft, width, bottomleft - topleft, x.Color);
                         }
-                        else
+                        else if ((x.Style & (TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight)) > 0)
                         {
                             if (x.Style.HasFlag(TextStyle.BorderTop))
                             {
