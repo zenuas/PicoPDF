@@ -147,58 +147,48 @@ public static class SectionBinder
                 }
 
             case LineElement x:
+                return new LineModel()
                 {
-                    return new LineModel()
-                    {
-                        X = posx,
-                        Y = x.Y,
-                        Width = x.Width,
-                        Height = x.Height,
-                        Color = x.Color?.ToDeviceRGB(),
-                        LineWidth = x.LineWidth,
-                    };
-                }
+                    X = posx,
+                    Y = x.Y,
+                    Width = x.Width,
+                    Height = x.Height,
+                    Color = x.Color?.ToDeviceRGB(),
+                    LineWidth = x.LineWidth,
+                };
 
             case RectangleElement x:
+                return new RectangleModel()
                 {
-                    return new RectangleModel()
-                    {
-                        X = posx,
-                        Y = x.Y,
-                        Width = x.Width,
-                        Height = x.Height,
-                        Color = x.Color?.ToDeviceRGB(),
-                        LineWidth = x.LineWidth,
-                    };
-                }
+                    X = posx,
+                    Y = x.Y,
+                    Width = x.Width,
+                    Height = x.Height,
+                    Color = x.Color?.ToDeviceRGB(),
+                    LineWidth = x.LineWidth,
+                };
 
             case FillRectangleElement x:
+                return new FillRectangleModel()
                 {
-                    return new FillRectangleModel()
-                    {
-                        X = posx,
-                        Y = x.Y,
-                        Width = x.Width,
-                        Height = x.Height,
-                        LineColor = x.LineColor.ToDeviceRGB(),
-                        FillColor = x.FillColor.ToDeviceRGB(),
-                        LineWidth = x.LineWidth,
-                    };
-                }
+                    X = posx,
+                    Y = x.Y,
+                    Width = x.Width,
+                    Height = x.Height,
+                    LineColor = x.LineColor.ToDeviceRGB(),
+                    FillColor = x.FillColor.ToDeviceRGB(),
+                    LineWidth = x.LineWidth,
+                };
 
             case ImageElement x:
+                return new ImageModel()
                 {
-                    var path = x.Bind == "" ? x.Path : bind.Mapper[x.Bind](data).ToString()!;
-
-                    return new ImageModel()
-                    {
-                        X = posx,
-                        Y = x.Y,
-                        Path = path,
-                        ZoomWidth = x.ZoomWidth,
-                        ZoomHeight = x.ZoomHeight,
-                    };
-                }
+                    X = posx,
+                    Y = x.Y,
+                    Path = x.Bind == "" ? x.Path : bind.Mapper[x.Bind](data).ToString()!,
+                    ZoomWidth = x.ZoomWidth,
+                    ZoomHeight = x.ZoomHeight,
+                };
         }
         throw new();
     }
