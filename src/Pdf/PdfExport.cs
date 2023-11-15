@@ -9,7 +9,7 @@ public static class PdfExport
     public static void Export(Document doc, Stream stream, PdfExportOption option)
     {
         stream.Write($"%PDF-{doc.Version / 10}.{doc.Version % 10}\n");
-        new byte[] { (byte)'%', 0xF0, 0x9F, 0x8D, 0xA3, (byte)'\n', (byte)'\n' }.Each(stream.WriteByte);
+        "%🍣\n\n"u8.ToArray().Each(stream.WriteByte);
 
         var xref = new List<long>();
         GetAllReferences(doc, option).Each((x, i) =>
