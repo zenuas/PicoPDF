@@ -8,9 +8,9 @@ namespace PicoPDF.Pdf;
 public class PdfObject : IPdfObject
 {
     public int IndirectIndex { get; set; }
-    public Dictionary<string, ElementValue> Elements { get; init; } = new();
+    public Dictionary<string, ElementValue> Elements { get; init; } = [];
     public MemoryStream? Stream { get; set; }
-    public List<PdfObject> RelatedObjects { get; init; } = new();
+    public List<PdfObject> RelatedObjects { get; init; } = [];
 
     public virtual void DoExport(PdfExportOption option)
     {

@@ -8,7 +8,7 @@ namespace PicoPDF.Pdf.Font;
 
 public class FontRegister
 {
-    public Dictionary<string, TrueTypeFontInfo> Fonts { get; init; } = new();
+    public Dictionary<string, TrueTypeFontInfo> Fonts { get; init; } = [];
 
     public void RegistDirectory(string path)
     {

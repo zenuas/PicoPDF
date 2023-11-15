@@ -16,7 +16,7 @@ namespace PicoPDF.Pdf;
 public class Document
 {
     public int Version { get; init; } = 17;
-    public List<PdfObject> PdfObjects { get; init; } = new();
+    public List<PdfObject> PdfObjects { get; init; } = [];
     public PdfObject Catalog { get; init; } = new()
     {
         Elements = new()

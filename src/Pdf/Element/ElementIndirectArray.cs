@@ -6,7 +6,7 @@ namespace PicoPDF.Pdf.Element;
 
 public class ElementIndirectArray : ElementValue
 {
-    public List<ElementIndirectObject> Array { get; init; } = new();
+    public List<ElementIndirectObject> Array { get; init; } = [];
 
     public ElementIndirectArray(params ElementIndirectObject[] xs) => Array.AddRange(xs);
 

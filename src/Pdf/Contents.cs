@@ -11,7 +11,7 @@ namespace PicoPDF.Pdf;
 public class Contents : PdfObject
 {
     public required Page Page { get; init; }
-    public List<IOperation> Operations { get; init; } = new();
+    public List<IOperation> Operations { get; init; } = [];
 
     public void DrawString(string s, double x, double y, double size, IFont font, IColor? c = null, Rectangle? clip = null)
     {

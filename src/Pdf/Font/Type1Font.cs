@@ -14,7 +14,7 @@ public class Type1Font : PdfObject, IFont
     public required Encoding TextEncoding { get; init; }
     public int FirstChar { get; set; } = 0;
     public int LastChar { get => FirstChar + Widths.Count - 1; }
-    public List<long> Widths { get; init; } = new();
+    public List<long> Widths { get; init; } = [];
     public static byte[] EscapeBytes = System.Text.Encoding.ASCII.GetBytes("()\\");
     public static byte EscapeCharByte = System.Text.Encoding.ASCII.GetBytes("\\")[0];
 

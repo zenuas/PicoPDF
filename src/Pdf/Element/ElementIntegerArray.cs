@@ -6,7 +6,7 @@ namespace PicoPDF.Pdf.Element;
 
 public class ElementIntegerArray : ElementValue
 {
-    public List<long> Array { get; init; } = new();
+    public List<long> Array { get; init; } = [];
 
     public ElementIntegerArray(params long[] xs) => Array.AddRange(xs);
 

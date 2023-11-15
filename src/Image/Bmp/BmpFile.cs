@@ -6,7 +6,7 @@ namespace PicoPDF.Image.Bmp;
 
 public class BmpFile : IImageCanvas, IImageWritable
 {
-    public static readonly byte[] MagicNumber = new byte[] { 0x42, 0x4D };
+    public static readonly byte[] MagicNumber = [0x42, 0x4D];
     public required int Width { get; init; }
     public required int Height { get; init; }
     public required Color[][] Canvas { get; init; }

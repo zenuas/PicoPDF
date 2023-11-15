@@ -11,9 +11,9 @@ namespace PicoPDF.Binder;
 public class BindSummaryMapper<T>
 {
     public required Dictionary<string, Func<T, object>> Mapper { get; init; }
-    public Dictionary<string, ClearableDynamicValue> SummaryPool { get; init; } = new();
-    public List<Action<T>> SummaryAction { get; init; } = new();
-    public List<List<(SummaryElement SummaryElement, TextModel TextModel)>> SummaryGoBack { get; init; } = new();
+    public Dictionary<string, ClearableDynamicValue> SummaryPool { get; init; } = [];
+    public List<Action<T>> SummaryAction { get; init; } = [];
+    public List<List<(SummaryElement SummaryElement, TextModel TextModel)>> SummaryGoBack { get; init; } = [];
 
     public void CreatePool(PageSection page, string[] allkeys)
     {
@@ -97,7 +97,7 @@ public class BindSummaryMapper<T>
         });
     }
 
-    public void CreateSummaryGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count + 1).Each(_ => SummaryGoBack.Add(new()));
+    public void CreateSummaryGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count + 1).Each(_ => SummaryGoBack.Add([]));
 
     public void AddSummaryGoBack(SummaryElement summary, TextModel model, int hierarchy_count)
     {

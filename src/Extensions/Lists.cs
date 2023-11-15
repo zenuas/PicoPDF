@@ -72,7 +72,7 @@ public static class Lists
     }
 
     [DebuggerHidden]
-    public static IEnumerable<T> Concat<T>(this IEnumerable<T> self, T x) => Enumerable.Concat(self, new T[] { x });
+    public static IEnumerable<T> Concat<T>(this IEnumerable<T> self, T x) => Enumerable.Concat(self, [x]);
 
     [DebuggerHidden]
     public static IEnumerable<Task<R>> MapParallel<T, R>(this IEnumerable<T> self, Func<T, R> f) => self.Select(x => Task.Run(() => f(x)));

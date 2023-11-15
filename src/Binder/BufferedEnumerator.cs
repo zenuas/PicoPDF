@@ -7,7 +7,7 @@ namespace PicoPDF.Binder;
 public class BufferedEnumerator<T>
 {
     public required IEnumerator<T> BaseEnumerator { get; init; }
-    public List<T> Buffer { get; init; } = new();
+    public List<T> Buffer { get; init; } = [];
     public bool IsLast { get => !Next(0, out _); }
 
     public bool Next(int count, out T ret)
