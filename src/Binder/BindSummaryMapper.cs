@@ -121,7 +121,7 @@ public class BindSummaryMapper<T>
     {
         SummaryGoBack[1].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format));
         SummaryGoBack[1].Clear();
-        SummaryPool.Keys.Where(x => x.StartsWith("&")).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
+        SummaryPool.Keys.Where(x => x.StartsWith('&')).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
     public void KeyBreak(T data, int hierarchy_count, string[] allkeys)
