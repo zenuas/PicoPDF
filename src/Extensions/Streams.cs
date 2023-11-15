@@ -32,7 +32,7 @@ public static class Streams
     {
         var buffer = new byte[size];
         var readed = self.Read(buffer, 0, size);
-        return size == readed ? buffer : buffer.Take(readed).ToArray();
+        return size == readed ? buffer : [.. buffer.Take(readed)];
     }
 
     public static byte[] ReadPositionBytes(this Stream self, long pos, int size)

@@ -103,7 +103,7 @@ public static class SectionBinder
                 page_first = false;
             }
 
-            pages.Add(models.ToList());
+            pages.Add([.. models]);
             models.Clear();
             if (datas.IsLast && page.Footer is ISection lastfooter && lastfooter.ViewMode != ViewModes.Every) pages.Last().Add(new SectionModel() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page, [], keys) });
             bind.PageBreak(lastdata);
@@ -216,7 +216,7 @@ public static class SectionBinder
         }
         else if (subsection is Section section)
         {
-            var newkeys = section.BreakKey == "" ? keys : keys.Append(section.BreakKey).ToArray();
+            var newkeys = section.BreakKey == "" ? keys : [.. keys, section.BreakKey];
 
             foreach (var e in section.Header?.GetSummaryNotIncrement() ?? []) yield return (newkeys, e);
             foreach (var e in section.Footer?.GetSummaryNotIncrement() ?? []) yield return (newkeys, e);
@@ -273,7 +273,7 @@ public static class SectionBinder
         foreach (var x in self)
         {
             if (x.BreakKey != "") keys.Add(x.BreakKey);
-            yield return (keys.ToArray(), x);
+            yield return ([.. keys], x);
         }
     }
 }

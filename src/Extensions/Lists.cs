@@ -109,7 +109,7 @@ public static class Lists
         {
             if (f(x))
             {
-                yield return (values.ToArray(), true, x);
+                yield return ([.. values], true, x);
                 values.Clear();
                 if (prepend) values.Add(x);
             }

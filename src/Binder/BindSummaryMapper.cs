@@ -190,7 +190,7 @@ public class BindSummaryMapper<T>
 
     public static List<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IParentSection section)
     {
-        if (section is Section x && x.BreakKey != "") keys = keys.Append(x.BreakKey).ToArray();
+        if (section is Section x && x.BreakKey != "") keys = [.. keys, x.BreakKey];
 
         var results = new List<(string[] BreakKeys, SummaryElement SummaryElement)>();
         if (section.Header is ISection header) results.AddRange(TraversSummaryElement(keys, header.Elements));

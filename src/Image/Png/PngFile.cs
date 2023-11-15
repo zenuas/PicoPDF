@@ -87,7 +87,7 @@ public class PngFile : IImageCanvas
 
     END_OF_DATA:
 
-        using var memory = new MemoryStream(datas.ToArray());
+        using var memory = new MemoryStream([.. datas]);
         using var zlib = new ZLibStream(memory, CompressionMode.Decompress, true);
         var data = zlib.ReadAllBytes().ToArray();
         var bit_per_pixel = GetBitsPerPixel(color_type, bit_deps);
