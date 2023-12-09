@@ -1,7 +1,6 @@
 ﻿using Extensions;
 using PicoPDF.Binder.Data;
 using PicoPDF.Binder.Element;
-using PicoPDF.Mapper;
 using PicoPDF.Model;
 using PicoPDF.Model.Element;
 using PicoPDF.Pdf;
