@@ -11,5 +11,5 @@ public static class ObjectMapper
         .GetProperties()
         .Select(x => (x.Name, Method: x.GetGetMethod()!))
         .Where(x => x.Method.GetParameters().Length == 0)
-        .ToDictionary(x => x.Name, x => Expressions.GetMethod<T, object>(x.Method));
+        .ToDictionary(x => x.Name, x => Expressions.GetFunction<T, object>(x.Method));
 }
