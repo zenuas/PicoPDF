@@ -48,7 +48,7 @@ public static class Streams
         {
             var readed = self.Read(buffer, 0, buffer_size);
             if (readed <= 0) break;
-            for (int i = 0; i < readed; i++)
+            for (var i = 0; i < readed; i++)
             {
                 yield return buffer[i];
             }
