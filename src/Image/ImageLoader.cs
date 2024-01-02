@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
-using Extensions;
+using Mina.Extensions;
 using PicoPDF.Image.Bmp;
 using PicoPDF.Image.Jpeg;
 using PicoPDF.Image.Png;
