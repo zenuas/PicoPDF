@@ -129,6 +129,8 @@ public class Document
     public void Save(string path, PdfExportOption? option = null)
     {
         using var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
-        PdfExport.Export(this, stream, option ?? new());
+        Save(stream, option ?? new());
     }
+
+    public void Save(Stream stream, PdfExportOption? option = null) => PdfExport.Export(this, stream, option ?? new());
 }
