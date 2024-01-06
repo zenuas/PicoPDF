@@ -21,12 +21,12 @@ public class PdfObject : IPdfObject
         if (deflate)
         {
             _ = Elements.TryAdd("Filter", "/FlateDecode");
-            return new ZLibStream(Stream = new MemoryStream(), CompressionLevel.SmallestSize, true);
+            return new ZLibStream(Stream = new(), CompressionLevel.SmallestSize, true);
         }
         else
         {
             _ = Elements.Remove("Filter");
-            return Stream = new MemoryStream();
+            return Stream = new();
         }
     }
 }

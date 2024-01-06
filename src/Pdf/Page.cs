@@ -15,7 +15,7 @@ public class Page : PdfObject
 
     public Page()
     {
-        Contents = new Contents() { Page = this };
+        Contents = new() { Page = this };
         RelatedObjects.Add(Contents);
 
         _ = Elements.TryAdd("Type", "/Page");

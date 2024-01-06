@@ -64,7 +64,7 @@ public class Document
         font.FontDictionary.CIDSystemInfo.Dictionary["Registry"] = $"({cidsysinfo.Registry})";
         font.FontDictionary.CIDSystemInfo.Dictionary["Ordering"] = $"({cidsysinfo.Ordering})";
         font.FontDictionary.CIDSystemInfo.Dictionary["Supplement"] = cidsysinfo.Supplement;
-        font.FontDictionary.FontDescriptor = new FontDescriptor() { FontName = basefont, Flags = flags };
+        font.FontDictionary.FontDescriptor = new() { FontName = basefont, Flags = flags };
 
         return font;
     }
@@ -77,7 +77,7 @@ public class Document
         var font = new TrueTypeFont() { Name = name, Font = ttf, Encoding = cidsysinfo.Name, FontDictionary = fontdict };
         PdfObjects.Add(font);
 
-        font.FontDictionary.W = new ElementStringArray(
+        font.FontDictionary.W = new(
                 Lists.RangeTo(' ', '~')
                     .Select(x => (Char: x, GID: ttf.CharToGID(x)))
                     .Select(x => $"{x.GID}[{ttf.MeasureGID(x.GID)}] %{x.Char}\n")
@@ -85,7 +85,7 @@ public class Document
         font.FontDictionary.CIDSystemInfo.Dictionary["Registry"] = $"({cidsysinfo.Registry})";
         font.FontDictionary.CIDSystemInfo.Dictionary["Ordering"] = $"({cidsysinfo.Ordering})";
         font.FontDictionary.CIDSystemInfo.Dictionary["Supplement"] = cidsysinfo.Supplement;
-        font.FontDictionary.FontDescriptor = new FontDescriptor() { FontName = ttf.PostScriptName, Flags = flags };
+        font.FontDictionary.FontDescriptor = new() { FontName = ttf.PostScriptName, Flags = flags };
 
         return font;
     }
