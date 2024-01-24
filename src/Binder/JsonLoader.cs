@@ -14,14 +14,12 @@ namespace PicoPDF.Binder;
 
 public static class JsonLoader
 {
-    public static PageSection Load(string path)
-    {
-        var json = JsonNode.Parse(
-                File.ReadAllText(path),
-                null,
-                new JsonDocumentOptions() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip }
-            )!;
+    public static PageSection Load(string path) => LoadJsonString(File.ReadAllText(path));
 
+    public static PageSection LoadJsonString(string json) => LoadJson(JsonNode.Parse(json, null, new JsonDocumentOptions() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip })!);
+
+    public static PageSection LoadJson(JsonNode json)
+    {
         var sections = json["Sections"]!
             .AsArray()
             .Select(x => LoadSubSection(x!))
