@@ -14,28 +14,34 @@ namespace PicoPDF.Model;
 
 public static class ModelMapping
 {
-    public static void Mapping(Document doc, PageModel[] pages)
+    public static Func<string, TrueTypeFont> CreateFontCache(Document doc)
     {
         var fontcache = doc.PdfObjects.OfType<TrueTypeFont>().ToDictionary(x => x.Name, x => x);
-        TrueTypeFont fontget(string name)
+        return (name) =>
         {
-            if (fontcache.ContainsKey(name)) return fontcache[name];
+            if (fontcache.TryGetValue(name, out var value)) return value;
             var x = doc.AddFont($"F{fontcache.Count}", doc.FontRegister.GetOrNull(name)!);
             fontcache.Add(name, x);
             return x;
-        }
+        };
+    }
 
+    public static Func<ImageModel, IImageXObject> CreateImageCache(Document doc)
+    {
         var imagecache = doc.PdfObjects.OfType<IImageXObject>().ToDictionary(x => x.Name, x => x);
-        IImageXObject imageget(ImageModel image)
+        return (image) =>
         {
-            if (imagecache.ContainsKey(image.Path)) return imagecache[image.Path];
+            if (imagecache.TryGetValue(image.Path, out var value)) return value;
             var load = ImageLoader.FromFile(image.Path)!;
             var x = doc.AddImage($"X{imagecache.Count}", image.Path, load.Width, load.Height);
             imagecache.Add(image.Path, x);
             return x;
-        }
-        pages.Each(x => Mapping(doc.NewPage(x.Size, x.Orientation), fontget, imageget, x.Models));
+        };
     }
+
+    public static void Mapping(Document doc, PageModel[] pages) => Mapping(doc, CreateFontCache(doc), CreateImageCache(doc), pages);
+
+    public static void Mapping(Document doc, Func<string, TrueTypeFont> fontget, Func<ImageModel, IImageXObject> imageget, PageModel[] pages) => pages.Each(x => Mapping(doc.NewPage(x.Size, x.Orientation), fontget, imageget, x.Models));
 
     public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, IImageXObject> imageget, List<SectionModel> models) => models.Each(x => Mapping(page, fontget, imageget, x, x.Top));
 
