@@ -1,4 +1,5 @@
 ﻿using PicoPDF.Image;
+using System.IO;
 using Xunit;
 
 namespace PicoPDF.Test;

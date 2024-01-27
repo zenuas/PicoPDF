@@ -1,4 +1,6 @@
 ﻿using PicoPDF.Binder;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace PicoPDF.Test;

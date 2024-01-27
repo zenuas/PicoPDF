@@ -1,4 +1,7 @@
 ﻿using PicoPDF.Sample;
+using System;
+using System.IO;
+using System.Linq;
 
 var csv = File.ReadAllLines("test-case/test.csv")
     .Skip(1)
