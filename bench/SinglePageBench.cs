@@ -50,7 +50,6 @@ public class SinglePageBench
     public static Document CreateSinglePage<T>(IEnumerable<T> datas)
     {
         var doc = new Document() { FontRegister = FontRegister };
-        doc.FontRegister.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
         var mapper = new Dictionary<string, Func<T, object>> { ["Foo"] = (x) => x! };
         var pages = SectionBinder.Bind(PageSection, datas, mapper);
         ModelMapping.Mapping(doc, pages);
