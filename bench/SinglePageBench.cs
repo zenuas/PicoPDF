@@ -1,20 +1,21 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Mina.Extensions;
 using PicoPDF.Binder;
+using PicoPDF.Binder.Data;
 using PicoPDF.Model;
 using PicoPDF.Pdf;
+using PicoPDF.Pdf.Font;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
+using System.Linq;
 
 namespace PicoPDF.Benchmark;
 
 public class SinglePageBench
 {
-    public static Document CreateSinglePage<T>(IEnumerable<T> datas)
-    {
-        var doc = new Document();
-        doc.FontRegister.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
-        var pagesection = JsonLoader.LoadJsonString(@"
+    public static PageSection PageSection { get; } = JsonLoader.LoadJsonString(@"
 {
 	""Size"": ""A4"",
 	""Orientation"": ""Vertical"",
@@ -43,8 +44,23 @@ public class SinglePageBench
 	],
 }
 ");
+
+    public static FontRegister FontRegister { get; } = new FontRegister().Return(x => x.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts")));
+
+    public static Document CreateSinglePage<T>(IEnumerable<T> datas)
+    {
+        var doc = new Document() { FontRegister = FontRegister };
+        doc.FontRegister.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
         var mapper = new Dictionary<string, Func<T, object>> { ["Foo"] = (x) => x! };
-        var pages = SectionBinder.Bind(pagesection, datas, mapper);
+        var pages = SectionBinder.Bind(PageSection, datas, mapper);
+        ModelMapping.Mapping(doc, pages);
+        return doc;
+    }
+
+    public static Document CreateSinglePage(DataTable table)
+    {
+        var doc = new Document() { FontRegister = FontRegister };
+        var pages = SectionBinder.Bind(PageSection, table);
         ModelMapping.Mapping(doc, pages);
         return doc;
     }
@@ -53,6 +69,38 @@ public class SinglePageBench
     public void Line1()
     {
         var doc = CreateSinglePage([1]);
+        using var mem = new MemoryStream();
+        doc.Save(mem);
+    }
+
+    [Benchmark]
+    public void Line1K()
+    {
+        var doc = CreateSinglePage(Lists.Sequence(1).Take(1_000));
+        using var mem = new MemoryStream();
+        doc.Save(mem);
+    }
+
+    [Benchmark]
+    public void DataTable1()
+    {
+        var table = new DataTable();
+        _ = table.Columns.Add("Foo");
+        table.Rows.Add(table.NewRow().Return(x => x["Foo"] = 1));
+
+        var doc = CreateSinglePage(table);
+        using var mem = new MemoryStream();
+        doc.Save(mem);
+    }
+
+    [Benchmark]
+    public void DataTable1K()
+    {
+        var table = new DataTable();
+        _ = table.Columns.Add("Foo");
+        Lists.Sequence(1).Take(1_000).Each(i => table.Rows.Add(table.NewRow().Return(x => x["Foo"] = i)));
+
+        var doc = CreateSinglePage(table);
         using var mem = new MemoryStream();
         doc.Save(mem);
     }
