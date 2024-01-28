@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -73,6 +74,16 @@ public static class Lists
 
     [DebuggerHidden]
     public static IEnumerable<T> Concat<T>(this IEnumerable<T> self, T x) => Enumerable.Concat(self, [x]);
+
+    [DebuggerHidden]
+    public static IEnumerable GetIterator(this IEnumerable self)
+    {
+        var xs = self.GetEnumerator();
+        while (xs.MoveNext())
+        {
+            yield return xs.Current;
+        }
+    }
 
     [DebuggerHidden]
     public static IEnumerable<Task<R>> MapParallel<T, R>(this IEnumerable<T> self, Func<T, R> f) => self.Select(x => Task.Run(() => f(x)));

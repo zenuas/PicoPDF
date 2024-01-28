@@ -7,6 +7,7 @@ using PicoPDF.Pdf;
 using PicoPDF.Pdf.Color;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Linq;
 
@@ -28,6 +29,14 @@ public static class SectionBinder
             return new PageModel() { Size = page.Size, Orientation = page.Orientation, Models = models };
         })
         .ToArray();
+
+    public static PageModel[] Bind(PageSection page, DataTable table) => Bind(page,
+        table.Rows.GetIterator().OfType<DataRow>(),
+        table.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRow, object>>(x => x.ColumnName, x => (row) => row[x]));
+
+    public static PageModel[] Bind(PageSection page, DataView view) => Bind(page,
+        view.GetIterator().OfType<DataRowView>(),
+        view.Table!.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRowView, object>>(x => x.ColumnName, x => (row) => row[x.ColumnName]));
 
     public static List<List<SectionModel>> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
     {
