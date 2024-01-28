@@ -11,7 +11,7 @@ var csv = File.ReadAllLines("test-case/test.csv")
 
 var doc = new PicoPDF.Pdf.Document();
 doc.FontRegister.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
-var pagesection = PicoPDF.Binder.JsonLoader.Load("test-case/01.json");
+var pagesection = PicoPDF.Binder.JsonLoader.Load("test-case/test-01.json");
 var pages = PicoPDF.Binder.SectionBinder.Bind(pagesection, csv);
 PicoPDF.Model.ModelMapping.Mapping(doc, pages);
 doc.Save("@a.pdf", new() { ContentsStreamDeflate = false, Debug = true });

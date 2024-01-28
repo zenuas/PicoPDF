@@ -9,7 +9,7 @@ public class ImageLoaderTest
     [Fact]
     public void TypeMatch1()
     {
-        Assert.Equal(ImageTypes.Unknown, ImageLoader.TypeCheck("../../../../test-case/01.json"));
+        Assert.Equal(ImageTypes.Unknown, ImageLoader.TypeCheck("../../../../test-case/test-01.json"));
     }
 
     [Fact]

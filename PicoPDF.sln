@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PicoPDF.Test", "test\PicoPD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PicoPDF.Sample", "sample\PicoPDF.Sample.csproj", "{38C31E97-3205-44E8-85BD-36CFB61442B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicoPDF.Benchmark", "bench\PicoPDF.Benchmark.csproj", "{8827DB95-3894-4EA2-A264-F89A32EA868E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PicoPDF.Benchmark", "bench\PicoPDF.Benchmark.csproj", "{8827DB95-3894-4EA2-A264-F89A32EA868E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicoPDF.TestAll", "test-all\PicoPDF.TestAll.csproj", "{094D3AE2-7651-407E-93D6-E7F7BC6FA357}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{8827DB95-3894-4EA2-A264-F89A32EA868E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8827DB95-3894-4EA2-A264-F89A32EA868E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8827DB95-3894-4EA2-A264-F89A32EA868E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{094D3AE2-7651-407E-93D6-E7F7BC6FA357}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{094D3AE2-7651-407E-93D6-E7F7BC6FA357}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{094D3AE2-7651-407E-93D6-E7F7BC6FA357}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{094D3AE2-7651-407E-93D6-E7F7BC6FA357}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

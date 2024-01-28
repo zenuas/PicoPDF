@@ -40,6 +40,10 @@
 	dotnet test --nologo -v q
 	@exit /b %ERRORLEVEL%
 
+:test-all
+	dotnet run --project test-all/PicoPDF.TestAll.csproj
+	@exit /b %ERRORLEVEL%
+
 :bench
 	dotnet run --project bench/PicoPDF.Benchmark.csproj --no-launch-profile -c Release %*
 	@exit /b %ERRORLEVEL%
