@@ -1,4 +1,4 @@
-﻿using Mina.Extensions;
+﻿using Mina.Extension;
 using System.Drawing;
 using System.IO;
 

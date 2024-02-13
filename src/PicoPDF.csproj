@@ -8,4 +8,8 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Zenu.Mina" Version="2024.2.13-build-2051" />
+  </ItemGroup>
+
 </Project>

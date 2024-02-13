@@ -1,4 +1,4 @@
-﻿using Mina.Extensions;
+﻿using Mina.Extension;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;

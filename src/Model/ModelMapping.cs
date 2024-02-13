@@ -1,4 +1,4 @@
-﻿using Mina.Extensions;
+﻿using Mina.Extension;
 using PicoPDF.Binder.Element;
 using PicoPDF.Image;
 using PicoPDF.Model.Element;

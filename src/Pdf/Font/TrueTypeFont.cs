@@ -1,4 +1,4 @@
-﻿using Mina.Extensions;
+﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Element;
 using PicoPDF.TrueType;

@@ -1,4 +1,5 @@
-﻿using Mina.Extensions;
+﻿using Mina.Extension;
+using Mina.Mapper;
 using PicoPDF.Binder.Data;
 using PicoPDF.Binder.Element;
 using PicoPDF.Model;
@@ -15,7 +16,7 @@ namespace PicoPDF.Binder;
 
 public static class SectionBinder
 {
-    public static PageModel[] Bind<T>(PageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => BindPageModels(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? ObjectMapper.CreateGetMapper<T>())
+    public static PageModel[] Bind<T>(PageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => BindPageModels(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? InstanceMapper.CreateGetMapper<T>())
         .Select(models =>
         {
             // header or detail top-down order
