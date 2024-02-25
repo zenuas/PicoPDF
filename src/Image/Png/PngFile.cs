@@ -89,7 +89,7 @@ public class PngFile : IImageCanvas
 
         using var memory = new MemoryStream([.. datas]);
         using var zlib = new ZLibStream(memory, CompressionMode.Decompress, true);
-        var data = zlib.ReadAllBytes().ToArray();
+        var data = zlib.EnumerableReadBytes().ToArray();
         var bit_per_pixel = GetBitsPerPixel(color_type, bit_deps);
         var byte_per_pixel = BitToByte(bit_per_pixel);
         var row_byte = 1 + BitToByte(bit_per_pixel * width);
