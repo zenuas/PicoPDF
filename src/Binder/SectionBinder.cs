@@ -84,7 +84,6 @@ public static class SectionBinder
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys);
                     break;
                 }
-                breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
 
                 var existnext = datas.Next(count, out var next);
                 breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next))).Count() : 0);
@@ -94,10 +93,15 @@ public static class SectionBinder
 
                 if (height < (count * detail.Height) + breakfooter.Select(x => x.Section.Height).Sum())
                 {
+                    if (--count <= 0)
+                    {
+                        if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
+                        break;
+                    }
                     breakcount = 0;
-                    count--;
                     breakfooter = footers.SkipWhileOrEveryPage(_ => false).FooterSort().ToArray();
                 }
+                breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
 
                 _ = datas.Next(count - 1, out lastdata);
                 datas.GetRange(count).Select(x => new SectionModel() { Section = detail, Elements = BindElements(detail.Elements, x, bind.Return(y => y.DataBind(x)), page, keys, keys) }).Each(models.Add);
