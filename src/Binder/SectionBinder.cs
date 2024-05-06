@@ -71,7 +71,7 @@ public static class SectionBinder
             var page_first = true;
             var breakcount = 0;
 
-            while (!datas.IsLast)
+            while (true)
             {
                 _ = datas.Next(0, out var current);
                 bind.Clear(keys.TakeWhile(x => bind.Mapper[x](lastdata).Equals(bind.Mapper[x](current))).ToArray());
@@ -110,11 +110,16 @@ public static class SectionBinder
                 }
                 if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys);
                 page_first = false;
+
+                if (datas.IsLast)
+                {
+                    if (page.Footer is ISection lastfooter) models.Add(new SectionModel() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page, [], keys) });
+                    break;
+                }
             }
 
             pages.Add([.. models]);
             models.Clear();
-            if (datas.IsLast && page.Footer is ISection lastfooter && lastfooter.ViewMode != ViewModes.Every) pages.Last().Add(new SectionModel() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page, [], keys) });
             bind.PageBreak(lastdata);
             if (datas.IsLast) bind.LastBreak(lastdata);
         }
