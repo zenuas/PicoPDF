@@ -2,6 +2,7 @@
 using PicoPDF.Binder;
 using PicoPDF.Binder.Data;
 using PicoPDF.Model;
+using PicoPDF.Model.Element;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -46,132 +47,148 @@ public class SectionBinderSingleTest
         return SectionBinder.Bind(PageSection, datas, mapper);
     }
 
+    public static string ToSectionString(SectionModel section) => section.Section switch
+    {
+        ISection a when a is HeaderSection => $"{a.Name}/{(section.Elements[0] is TextModel t ? t.Text : "")}",
+        ISection a when a is DetailSection => $"{a.Name}/{(section.Elements[0] is TextModel t ? t.Text : "")}",
+        _ => section.Section.Name,
+    };
+
     [Fact]
     public void Line1()
     {
+        var i = 0;
         var models = CreatePageModel(Lists.RangeTo(1, 1));
         Assert.Equal(models.Length, 1);
         Assert.Equal(models[0].Models.Count, 3);
-        Assert.Equal(models[0].Models[0].Section.Name, "PageHeader");
-        Assert.Equal(models[0].Models[1].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[2].Section.Name, "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
     }
 
     [Fact]
     public void Line10()
     {
+        var i = 0;
         var models = CreatePageModel(Lists.RangeTo(1, 10));
         Assert.Equal(models.Length, 1);
         Assert.Equal(models[0].Models.Count, 12);
-        Assert.Equal(models[0].Models[0].Section.Name, "PageHeader");
-        Assert.Equal(models[0].Models[1].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[2].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[3].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[4].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[5].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[6].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[7].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[8].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[9].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[10].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[11].Section.Name, "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/2");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/3");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/4");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/8");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/9");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/10");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
     }
 
     [Fact]
     public void Line11()
     {
+        var i = 0;
         var models = CreatePageModel(Lists.RangeTo(1, 11));
         Assert.Equal(models.Length, 2);
         Assert.Equal(models[0].Models.Count, 12);
-        Assert.Equal(models[0].Models[0].Section.Name, "PageHeader");
-        Assert.Equal(models[0].Models[1].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[2].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[3].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[4].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[5].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[6].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[7].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[8].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[9].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[10].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[11].Section.Name, "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/2");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/3");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/4");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/8");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/9");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/10");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
 
+        i = 0;
         Assert.Equal(models[1].Models.Count, 3);
-        Assert.Equal(models[1].Models[0].Section.Name, "PageHeader");
-        Assert.Equal(models[1].Models[1].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[2].Section.Name, "PageFooter");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/11");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter");
     }
 
     [Fact]
     public void Line20()
     {
+        var i = 0;
         var models = CreatePageModel(Lists.RangeTo(1, 20));
         Assert.Equal(models.Length, 2);
         Assert.Equal(models[0].Models.Count, 12);
-        Assert.Equal(models[0].Models[0].Section.Name, "PageHeader");
-        Assert.Equal(models[0].Models[1].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[2].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[3].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[4].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[5].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[6].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[7].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[8].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[9].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[10].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[11].Section.Name, "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/2");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/3");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/4");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/8");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/9");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/10");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
 
+        i = 0;
         Assert.Equal(models[1].Models.Count, 12);
-        Assert.Equal(models[1].Models[0].Section.Name, "PageHeader");
-        Assert.Equal(models[1].Models[1].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[2].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[3].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[4].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[5].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[6].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[7].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[8].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[9].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[10].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[11].Section.Name, "PageFooter");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/11");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/12");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/13");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/14");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/15");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/16");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/17");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/18");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/19");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/20");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter");
     }
 
     [Fact]
     public void Line21()
     {
+        var i = 0;
         var models = CreatePageModel(Lists.RangeTo(1, 21));
         Assert.Equal(models.Length, 3);
         Assert.Equal(models[0].Models.Count, 12);
-        Assert.Equal(models[0].Models[0].Section.Name, "PageHeader");
-        Assert.Equal(models[0].Models[1].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[2].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[3].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[4].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[5].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[6].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[7].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[8].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[9].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[10].Section.Name, "Detail");
-        Assert.Equal(models[0].Models[11].Section.Name, "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/2");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/3");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/4");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/8");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/9");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/10");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
 
+        i = 0;
         Assert.Equal(models[1].Models.Count, 12);
-        Assert.Equal(models[1].Models[0].Section.Name, "PageHeader");
-        Assert.Equal(models[1].Models[1].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[2].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[3].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[4].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[5].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[6].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[7].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[8].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[9].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[10].Section.Name, "Detail");
-        Assert.Equal(models[1].Models[11].Section.Name, "PageFooter");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/11");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/12");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/13");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/14");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/15");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/16");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/17");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/18");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/19");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/20");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter");
 
+        i = 0;
         Assert.Equal(models[2].Models.Count, 3);
-        Assert.Equal(models[2].Models[0].Section.Name, "PageHeader");
-        Assert.Equal(models[2].Models[1].Section.Name, "Detail");
-        Assert.Equal(models[2].Models[2].Section.Name, "PageFooter");
+        Assert.Equal(ToSectionString(models[2].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[2].Models[i++]), "Detail/21");
+        Assert.Equal(ToSectionString(models[2].Models[i++]), "PageFooter");
     }
 }
