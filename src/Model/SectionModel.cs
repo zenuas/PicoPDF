@@ -1,5 +1,5 @@
-﻿using PicoPDF.Model.Element;
-using PicoPDF.Binder.Data;
+﻿using PicoPDF.Binder.Data;
+using PicoPDF.Model.Element;
 using System.Collections.Generic;
 
 namespace PicoPDF.Model;
