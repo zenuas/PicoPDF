@@ -4,18 +4,11 @@ using System.IO;
 
 namespace PicoPDF.TrueType;
 
-public struct NameTable
+public class NameTable(Stream stream)
 {
-    public ushort Format;
-    public ushort Count;
-    public ushort StringOffset;
-
-    public static NameTable ReadFrom(Stream stream) => new()
-    {
-        Format = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        Count = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        StringOffset = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))
-    };
+    public readonly ushort Format = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+    public readonly ushort Count = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+    public readonly ushort StringOffset = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
 
     public override string ToString() => $"Format={Format}, Count={Count}, StringOffset={StringOffset}";
 }

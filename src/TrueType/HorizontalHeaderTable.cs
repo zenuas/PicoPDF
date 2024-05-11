@@ -4,46 +4,24 @@ using System.IO;
 
 namespace PicoPDF.TrueType;
 
-public struct HorizontalHeaderTable
+public class HorizontalHeaderTable(Stream stream)
 {
-    public ushort MajorVersion;
-    public ushort MinorVersion;
-    public short Ascender;
-    public short Descender;
-    public short LineGap;
-    public ushort AdvanceWidthMax;
-    public short MinLeftSideBearing;
-    public short MinRightSideBearing;
-    public short XMaxExtent;
-    public short CaretSlopeRise;
-    public short CaretSlopeRun;
-    public short CaretOffset;
-    public short Reserved1;
-    public short Reserved2;
-    public short Reserved3;
-    public short Reserved4;
-    public short MetricDataFormat;
-    public ushort NumberOfHMetrics;
-
-    public static HorizontalHeaderTable ReadFrom(Stream stream) => new()
-    {
-        MajorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        MinorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        Ascender = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        Descender = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        LineGap = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        AdvanceWidthMax = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        MinLeftSideBearing = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        MinRightSideBearing = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        XMaxExtent = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        CaretSlopeRise = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        CaretSlopeRun = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        CaretOffset = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        Reserved1 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        Reserved2 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        Reserved3 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        Reserved4 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        MetricDataFormat = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        NumberOfHMetrics = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-    };
+    public readonly ushort MajorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+    public readonly ushort MinorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+    public readonly short Ascender = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short Descender = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short LineGap = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly ushort AdvanceWidthMax = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+    public readonly short MinLeftSideBearing = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short MinRightSideBearing = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short XMaxExtent = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short CaretSlopeRise = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short CaretSlopeRun = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short CaretOffset = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short Reserved1 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short Reserved2 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short Reserved3 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short Reserved4 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly short MetricDataFormat = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+    public readonly ushort NumberOfHMetrics = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
 }

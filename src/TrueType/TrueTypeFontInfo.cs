@@ -12,10 +12,10 @@ public class TrueTypeFontInfo
     public required string Path { get; init; }
     public required long Position { get; init; }
     public required Dictionary<string, TableRecord> TableRecords { get; init; }
-    public FontHeaderTable FontHeader { get; set; }
-    public MaximumProfileTable MaximumProfile { get; set; }
-    public OS2Table OS2 { get; set; }
-    public CMapFormat4 CMap4 { get; set; }
-    public HorizontalHeaderTable HorizontalHeader { get; set; }
-    public HorizontalMetricsTable HorizontalMetrics { get; set; }
+    public FontHeaderTable FontHeader { get; set; } = default!;
+    public MaximumProfileTable MaximumProfile { get; set; } = default!;
+    public OS2Table OS2 { get; set; } = default!;
+    public CMapFormat4 CMap4 { get; set; } = default!;
+    public HorizontalHeaderTable HorizontalHeader { get; set; } = default!;
+    public HorizontalMetricsTable HorizontalMetrics { get; set; } = default!;
 }
