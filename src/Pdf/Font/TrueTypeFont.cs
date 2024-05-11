@@ -35,7 +35,7 @@ public class TrueTypeFont : PdfObject, IFont
     public IEnumerable<byte> CreateTextShowingOperator(string s)
     {
         return s
-            .Select(x => System.Text.Encoding.ASCII.GetBytes($"{Font.CharToGID(x):x4}"))
+            .Select(x => System.Text.Encoding.ASCII.GetBytes($"{Font.CharToGIDCached(x):x4}"))
             .Flatten()
             .Prepend(System.Text.Encoding.ASCII.GetBytes("<")[0])
             .Concat(System.Text.Encoding.ASCII.GetBytes("> Tj"));

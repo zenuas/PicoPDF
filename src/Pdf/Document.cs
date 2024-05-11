@@ -79,7 +79,7 @@ public class Document
 
         font.FontDictionary.W = new(
                 Lists.RangeTo(' ', '~')
-                    .Select(x => (Char: x, GID: ttf.CharToGID(x)))
+                    .Select(x => (Char: x, GID: ttf.CharToGIDCached(x)))
                     .Select(x => $"{x.GID}[{ttf.MeasureGID(x.GID)}] %{x.Char}\n")
             );
         font.FontDictionary.CIDSystemInfo.Dictionary["Registry"] = $"({cidsysinfo.Registry})";

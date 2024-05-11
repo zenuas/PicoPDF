@@ -78,7 +78,15 @@ public static class TrueTypeFontLoader
         var encoding =
             encodings.FirstOrDefault(x => x.PlatformID == 0 && x.EncodingID == 3) ??
             encodings.FirstOrDefault(x => x.PlatformID == 3 && x.EncodingID == 1);
-        if (encoding is { }) font.CMap4 = new CMapFormat4(stream, cmap, encoding);
+        if (encoding is { })
+        {
+            font.CMap4 = new CMapFormat4(stream, cmap, encoding);
+            _ = font.CMap4.EndCode.Aggregate(0, (acc, x) =>
+            {
+                font.CMap4Range.Add((acc, x));
+                return x + 1;
+            });
+        }
 
         stream.Position = font.TableRecords["hhea"].Offset;
         font.HorizontalHeader = new HorizontalHeaderTable(stream);

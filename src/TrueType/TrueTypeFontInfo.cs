@@ -16,6 +16,8 @@ public class TrueTypeFontInfo
     public MaximumProfileTable MaximumProfile { get; set; } = default!;
     public OS2Table OS2 { get; set; } = default!;
     public CMapFormat4 CMap4 { get; set; } = default!;
+    public List<(int Start, int End)> CMap4Range { get; init; } = [];
+    public Dictionary<char, int> CMap4Cache { get; init; } = [];
     public HorizontalHeaderTable HorizontalHeader { get; set; } = default!;
     public HorizontalMetricsTable HorizontalMetrics { get; set; } = default!;
 }
