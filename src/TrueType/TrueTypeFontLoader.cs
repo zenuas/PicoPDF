@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PicoPDF.TrueType;
 
-public class TrueTypeFontLoader
+public static class TrueTypeFontLoader
 {
     public static TrueTypeFontInfo Load(string path, LoadOption? opt = null)
     {
