@@ -22,6 +22,12 @@ public class TrueTypeFont : PdfObject, IFont
         _ = Elements.TryAdd("BaseFont", $"/{Font.PostScriptName}");
         _ = Elements.TryAdd("Encoding", $"/{Encoding}");
         _ = Elements.TryAdd("DescendantFonts", new ElementIndirectArray(FontDictionary));
+        if (option.AppendCIDToUnicode)
+        {
+            var cmap = new CIDToUnicode { Font = Font };
+            RelatedObjects.Add(cmap);
+            _ = Elements.TryAdd("ToUnicode", cmap);
+        }
     }
 
     public Position MeasureStringBox(string s) => new()

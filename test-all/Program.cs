@@ -35,7 +35,7 @@ foreach (var json in Directory.GetFiles("test-case", "*.json"))
     var pagesection = PicoPDF.Binder.JsonLoader.Load(json);
     var pages = PicoPDF.Binder.SectionBinder.Bind(pagesection, datas);
     PicoPDF.Model.ModelMapping.Mapping(doc, pages);
-    doc.Save(pdfname, new() { ContentsStreamDeflate = false, Debug = true });
+    doc.Save(pdfname, new() { ContentsStreamDeflate = false, CMapStreamDeflate = false, Debug = true });
 }
 
 static object autoconv(string s)
