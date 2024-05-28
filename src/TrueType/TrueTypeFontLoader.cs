@@ -48,7 +48,7 @@ public static class TrueTypeFontLoader
             .Where(x => x is { })
             .FirstOrDefault();
 
-        return new TrueTypeFontInfo()
+        return new()
         {
             FontFamily = namev(1) ?? "",
             Style = namev(2) ?? "",
@@ -65,13 +65,13 @@ public static class TrueTypeFontLoader
         using var stream = File.OpenRead(font.Path);
 
         stream.Position = font.TableRecords["head"].Offset;
-        font.FontHeader = new FontHeaderTable(stream);
+        font.FontHeader = new(stream);
 
         stream.Position = font.TableRecords["maxp"].Offset;
-        font.MaximumProfile = new MaximumProfileTable(stream);
+        font.MaximumProfile = new(stream);
 
         stream.Position = font.TableRecords["OS/2"].Offset;
-        font.OS2 = new OS2Table(stream);
+        font.OS2 = new(stream);
 
         var cmap = font.TableRecords["cmap"];
         var encodings = EncodingRecord.ReadFrom(stream, cmap);
@@ -80,7 +80,7 @@ public static class TrueTypeFontLoader
             encodings.FirstOrDefault(x => x.PlatformID == 3 && x.EncodingID == 1);
         if (encoding is { })
         {
-            font.CMap4 = new CMapFormat4(stream, cmap, encoding);
+            font.CMap4 = new(stream, cmap, encoding);
             _ = font.CMap4.EndCode.Aggregate(0, (acc, x) =>
             {
                 font.CMap4Range.Add((acc, x));
@@ -89,10 +89,16 @@ public static class TrueTypeFontLoader
         }
 
         stream.Position = font.TableRecords["hhea"].Offset;
-        font.HorizontalHeader = new HorizontalHeaderTable(stream);
+        font.HorizontalHeader = new(stream);
 
         stream.Position = font.TableRecords["hmtx"].Offset;
-        font.HorizontalMetrics = new HorizontalMetricsTable(stream, font.HorizontalHeader.NumberOfHMetrics, font.MaximumProfile.NumberOfGlyphs);
+        font.HorizontalMetrics = new(stream, font.HorizontalHeader.NumberOfHMetrics, font.MaximumProfile.NumberOfGlyphs);
+
+        if (font.TableRecords.TryGetValue("CFF ", out var cff))
+        {
+            stream.Position = cff.Offset;
+            font.CompactFileFormat = new(stream);
+        }
 
         font.Loaded = true;
     }
