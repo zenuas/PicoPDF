@@ -17,6 +17,7 @@ public class CompactFileFormat(Stream stream)
 
     public readonly string[] NameIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
     public readonly Dictionary<string, object>[] TopDictIndex = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).ToArray();
+    public readonly string[] StringIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
 
     public static byte[][] ReadIndexData(Stream stream)
     {
@@ -25,10 +26,10 @@ public class CompactFileFormat(Stream stream)
 
         Func<Stream, int> offsetRead = offSize switch
         {
-            1 => (x) => x.ReadByte().Cast<int>(),
-            2 => (x) => BinaryPrimitives.ReadUInt16BigEndian(x.ReadBytes(2)).Cast<int>(),
-            3 => (x) => BinaryPrimitives.ReadUInt32BigEndian(x.ReadBytes(3)).Cast<int>(),
-            _ => (x) => BinaryPrimitives.ReadUInt32BigEndian(x.ReadBytes(4)).Cast<int>(),
+            1 => (x) => x.ReadByte(),
+            2 => (x) => BinaryPrimitives.ReadUInt16BigEndian(x.ReadBytes(2)),
+            3 => (x) => (int)BinaryPrimitives.ReadUInt32BigEndian(x.ReadBytes(3)),
+            _ => (x) => (int)BinaryPrimitives.ReadUInt32BigEndian(x.ReadBytes(4)),
         };
 
         var offset = Lists.RangeTo(0, count).Select(_ => offsetRead(stream)).ToArray();
