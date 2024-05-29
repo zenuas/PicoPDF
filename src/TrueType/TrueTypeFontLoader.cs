@@ -97,7 +97,7 @@ public static class TrueTypeFontLoader
         if (font.TableRecords.TryGetValue("CFF ", out var cff))
         {
             stream.Position = cff.Offset;
-            font.CompactFileFormat = new(stream);
+            font.CompactFontFormat = new(stream);
         }
 
         font.Loaded = true;

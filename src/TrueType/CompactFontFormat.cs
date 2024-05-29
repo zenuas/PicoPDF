@@ -8,7 +8,7 @@ using System.Text;
 
 namespace PicoPDF.TrueType;
 
-public class CompactFileFormat(Stream stream)
+public class CompactFontFormat(Stream stream)
 {
     public readonly byte Major = (byte)stream.ReadByte();
     public readonly byte Minor = (byte)stream.ReadByte();

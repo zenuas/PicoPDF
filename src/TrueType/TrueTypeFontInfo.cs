@@ -20,5 +20,5 @@ public class TrueTypeFontInfo
     public Dictionary<char, int> CMap4Cache { get; init; } = [];
     public HorizontalHeaderTable HorizontalHeader { get; set; } = default!;
     public HorizontalMetricsTable HorizontalMetrics { get; set; } = default!;
-    public CompactFileFormat? CompactFileFormat { get; set; }
+    public CompactFontFormat? CompactFontFormat { get; set; }
 }
