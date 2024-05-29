@@ -10,9 +10,13 @@ public class FontRegister
 {
     public Dictionary<string, TrueTypeFontInfo> Fonts { get; init; } = [];
 
-    public void RegistDirectory(string path)
+    public void RegistDirectory(string path) => RegistDirectory([path]);
+
+    public void RegistDirectory(IEnumerable<string> paths)
     {
-        Directory.GetFiles(path, "*.*", SearchOption.AllDirectories)
+        paths
+            .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
+            .Flatten()
             .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
             .Where(x => x.Extension.In(".TTF", ".TTC"))
             .Select(x => x.Extension == ".TTF" ? [TrueTypeFontLoader.Load(x.Path)] : TrueTypeFontLoader.LoadCollection(x.Path))
