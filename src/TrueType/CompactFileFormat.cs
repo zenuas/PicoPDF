@@ -100,7 +100,7 @@ public class CompactFileFormat(Stream stream)
             value = (value * 10) + bytes[i];
         }
 
-        if (i < bytes.Length && bytes[i] <= 0x0a)
+        if (i < bytes.Length && bytes[i] == 0x0a)
         {
             i++;
             var dec = 0.1;
