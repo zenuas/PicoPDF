@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.IO;
 using System.Text;
 
-namespace PicoPDF.TrueType;
+namespace PicoPDF.OpenType;
 
 public class TableRecord(Stream stream)
 {

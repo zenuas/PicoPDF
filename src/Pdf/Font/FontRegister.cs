@@ -1,5 +1,5 @@
 ﻿using Mina.Extension;
-using PicoPDF.TrueType;
+using PicoPDF.OpenType;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +8,7 @@ namespace PicoPDF.Pdf.Font;
 
 public class FontRegister
 {
-    public Dictionary<string, TrueTypeFontInfo> Fonts { get; init; } = [];
+    public Dictionary<string, FontInfo> Fonts { get; init; } = [];
 
     public void RegistDirectory(string path) => RegistDirectory([path]);
 
@@ -19,17 +19,17 @@ public class FontRegister
             .Flatten()
             .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
             .Where(x => x.Extension.In(".TTF", ".TTC"))
-            .Select(x => x.Extension == ".TTF" ? [TrueTypeFontLoader.Load(x.Path)] : TrueTypeFontLoader.LoadCollection(x.Path))
+            .Select(x => x.Extension == ".TTF" ? [FontLoader.Load(x.Path)] : FontLoader.LoadCollection(x.Path))
             .Flatten()
             .Each(x => Fonts.TryAdd(x.PostScriptName, x));
     }
 
-    public TrueTypeFontInfo? GetOrNull(string name)
+    public FontInfo? GetOrNull(string name)
     {
         var font = Fonts.GetValueOrDefault(name);
         if (font is null || font.Loaded) return font;
 
-        TrueTypeFontLoader.DelayLoad(font);
+        FontLoader.DelayLoad(font);
         return font;
     }
 }

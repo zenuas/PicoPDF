@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 
-namespace PicoPDF.TrueType;
+namespace PicoPDF.OpenType;
 
 public class CMapFormat4
 {

@@ -1,5 +1,5 @@
 ﻿using Mina.Extension;
-using PicoPDF.TrueType;
+using PicoPDF.OpenType;
 using System.Linq;
 using System.Text;
 
@@ -7,7 +7,7 @@ namespace PicoPDF.Pdf.Font;
 
 public class CIDToUnicode : PdfObject
 {
-    public required TrueTypeFontInfo Font { get; init; }
+    public required FontInfo Font { get; init; }
 
     public override void DoExport(PdfExportOption option)
     {

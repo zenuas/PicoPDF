@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace PicoPDF.TrueType;
+namespace PicoPDF.OpenType;
 
-public class TrueTypeFontInfo
+public class FontInfo
 {
     public required string FontFamily { get; init; }
     public required string Style { get; init; }

@@ -14,9 +14,9 @@ namespace PicoPDF.Model;
 
 public static class ModelMapping
 {
-    public static Func<string, TrueTypeFont> CreateFontCache(Document doc)
+    public static Func<string, Type0Font> CreateFontCache(Document doc)
     {
-        var fontcache = doc.PdfObjects.OfType<TrueTypeFont>().ToDictionary(x => x.Name, x => x);
+        var fontcache = doc.PdfObjects.OfType<Type0Font>().ToDictionary(x => x.Name, x => x);
         return (name) =>
         {
             if (fontcache.TryGetValue(name, out var value)) return value;
@@ -41,13 +41,13 @@ public static class ModelMapping
 
     public static void Mapping(Document doc, PageModel[] pages) => Mapping(doc, CreateFontCache(doc), CreateImageCache(doc), pages);
 
-    public static void Mapping(Document doc, Func<string, TrueTypeFont> fontget, Func<ImageModel, IImageXObject> imageget, PageModel[] pages) => pages.Each(x => Mapping(doc.NewPage(x.Size, x.Orientation), fontget, imageget, x.Models));
+    public static void Mapping(Document doc, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, PageModel[] pages) => pages.Each(x => Mapping(doc.NewPage(x.Size, x.Orientation), fontget, imageget, x.Models));
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, IImageXObject> imageget, List<SectionModel> models) => models.Each(x => Mapping(page, fontget, imageget, x, x.Top));
+    public static void Mapping(Page page, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, List<SectionModel> models) => models.Each(x => Mapping(page, fontget, imageget, x, x.Top));
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, IImageXObject> imageget, SectionModel model, int top) => model.Elements.Each(x => Mapping(page, fontget, imageget, x, top));
+    public static void Mapping(Page page, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, SectionModel model, int top) => model.Elements.Each(x => Mapping(page, fontget, imageget, x, top));
 
-    public static void Mapping(Page page, Func<string, TrueTypeFont> fontget, Func<ImageModel, IImageXObject> imageget, IModelElement model, int top)
+    public static void Mapping(Page page, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, IModelElement model, int top)
     {
         double posx = model.X;
         double posy = model.Y + top;
@@ -55,8 +55,8 @@ public static class ModelMapping
         {
             case TextModel x:
                 {
-                    var ttf = fontget(x.Font);
-                    var box = ttf.MeasureStringBox(x.Text);
+                    var font = fontget(x.Font);
+                    var box = font.MeasureStringBox(x.Text);
                     var size = x.Style.HasFlag(TextStyle.ShrinkToFit) && x.Width < (box.Width * x.Size) ? x.Width / box.Width : x.Size;
                     posy += -box.Top * size;
                     switch (x.Alignment)
@@ -76,7 +76,7 @@ public static class ModelMapping
                         Width = new PointValue() { Value = x.Width },
                         Height = new PointValue() { Value = box.Height * size },
                     };
-                    page.Contents.DrawString(x.Text, posx, posy, size, ttf, x.Color, rect);
+                    page.Contents.DrawString(x.Text, posx, posy, size, font, x.Color, rect);
 
                     if (x.Style != TextStyle.None)
                     {

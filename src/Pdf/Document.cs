@@ -1,10 +1,10 @@
 ﻿using Mina.Extension;
 using PicoPDF.Image;
 using PicoPDF.Image.Png;
+using PicoPDF.OpenType;
 using PicoPDF.Pdf.Element;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;
-using PicoPDF.TrueType;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -69,25 +69,25 @@ public class Document
         return font;
     }
 
-    public TrueTypeFont AddFont(string name, TrueTypeFontInfo ttf, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public Type0Font AddFont(string name, FontInfo font, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
         var cmap = CMap.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
-        var fontdict = new CIDFontDictionary() { Subtype = "CIDFontType2 ", BaseFont = ttf.PostScriptName };
-        var font = new TrueTypeFont() { Name = name, Font = ttf, Encoding = cidsysinfo.Name, FontDictionary = fontdict };
-        PdfObjects.Add(font);
+        var fontdict = new CIDFontDictionary() { Subtype = "CIDFontType2 ", BaseFont = font.PostScriptName };
+        var type0 = new Type0Font() { Name = name, Font = font, Encoding = cidsysinfo.Name, FontDictionary = fontdict };
+        PdfObjects.Add(type0);
 
-        font.FontDictionary.W = new(
+        type0.FontDictionary.W = new(
                 Lists.RangeTo(' ', '~')
-                    .Select(x => (Char: x, GID: ttf.CharToGIDCached(x)))
-                    .Select(x => $"{x.GID}[{ttf.MeasureGID(x.GID)}] %{x.Char}\n")
+                    .Select(x => (Char: x, GID: font.CharToGIDCached(x)))
+                    .Select(x => $"{x.GID}[{font.MeasureGID(x.GID)}] %{x.Char}\n")
             );
-        font.FontDictionary.CIDSystemInfo.Dictionary["Registry"] = $"({cidsysinfo.Registry})";
-        font.FontDictionary.CIDSystemInfo.Dictionary["Ordering"] = $"({cidsysinfo.Ordering})";
-        font.FontDictionary.CIDSystemInfo.Dictionary["Supplement"] = cidsysinfo.Supplement;
-        font.FontDictionary.FontDescriptor = new() { FontName = ttf.PostScriptName, Flags = flags };
+        type0.FontDictionary.CIDSystemInfo.Dictionary["Registry"] = $"({cidsysinfo.Registry})";
+        type0.FontDictionary.CIDSystemInfo.Dictionary["Ordering"] = $"({cidsysinfo.Ordering})";
+        type0.FontDictionary.CIDSystemInfo.Dictionary["Supplement"] = cidsysinfo.Supplement;
+        type0.FontDictionary.FontDescriptor = new() { FontName = font.PostScriptName, Flags = flags };
 
-        return font;
+        return type0;
     }
 
     public Type1Font AddFont(string name, string basefont, Type1Encoding encoding, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)

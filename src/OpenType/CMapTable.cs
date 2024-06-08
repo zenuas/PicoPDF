@@ -2,7 +2,7 @@
 using System.Buffers.Binary;
 using System.IO;
 
-namespace PicoPDF.TrueType;
+namespace PicoPDF.OpenType;
 
 public class CMapTable(Stream stream)
 {

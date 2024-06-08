@@ -1,16 +1,16 @@
 ﻿using Mina.Extension;
+using PicoPDF.OpenType;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Element;
-using PicoPDF.TrueType;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PicoPDF.Pdf.Font;
 
-public class TrueTypeFont : PdfObject, IFont
+public class Type0Font : PdfObject, IFont
 {
     public required string Name { get; init; }
-    public required TrueTypeFontInfo Font { get; init; }
+    public required FontInfo Font { get; init; }
     public required string Encoding { get; init; }
     public CIDFontDictionary FontDictionary { get; init; } = new();
 

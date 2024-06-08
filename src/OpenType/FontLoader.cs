@@ -4,23 +4,23 @@ using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 
-namespace PicoPDF.TrueType;
+namespace PicoPDF.OpenType;
 
-public static class TrueTypeFontLoader
+public static class FontLoader
 {
-    public static TrueTypeFontInfo Load(string path, LoadOption? opt = null)
+    public static FontInfo Load(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
         return Load(path, stream, 0, opt ?? new());
     }
 
-    public static TrueTypeFontInfo[] LoadCollection(string path, LoadOption? opt = null)
+    public static FontInfo[] LoadCollection(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
         return LoadCollection(path, stream, opt ?? new());
     }
 
-    public static TrueTypeFontInfo[] LoadCollection(string path, Stream stream, LoadOption opt)
+    public static FontInfo[] LoadCollection(string path, Stream stream, LoadOption opt)
     {
         var header = new TrueTypeCollectionHeader(stream);
         if (header.TTCTag != "ttcf") throw new InvalidOperationException();
@@ -32,7 +32,7 @@ public static class TrueTypeFontLoader
             .ToArray();
     }
 
-    public static TrueTypeFontInfo Load(string path, Stream stream, long pos, LoadOption opt)
+    public static FontInfo Load(string path, Stream stream, long pos, LoadOption opt)
     {
         stream.Position = pos;
         var header = new OffsetTable(stream);
@@ -60,7 +60,7 @@ public static class TrueTypeFontLoader
         };
     }
 
-    public static void DelayLoad(TrueTypeFontInfo font)
+    public static void DelayLoad(FontInfo font)
     {
         using var stream = File.OpenRead(font.Path);
 

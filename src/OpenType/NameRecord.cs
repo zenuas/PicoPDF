@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace PicoPDF.TrueType;
+namespace PicoPDF.OpenType;
 
 public class NameRecord(Stream stream)
 {

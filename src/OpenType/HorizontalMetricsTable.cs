@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 
-namespace PicoPDF.TrueType;
+namespace PicoPDF.OpenType;
 
 public class HorizontalMetricsTable(Stream stream, ushort number_of_hmetrics, ushort number_of_glyphs)
 {
