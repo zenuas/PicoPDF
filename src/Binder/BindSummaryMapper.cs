@@ -17,7 +17,7 @@ public class BindSummaryMapper<T>
 
     public void CreatePool(PageSection page, string[] allkeys)
     {
-        SummaryPool.Add("#:PAGECOUNT()", new ClearableDynamicValue() { Value = 1, Clear = _ => { } });
+        SummaryPool.Add("#:PAGECOUNT()", new() { Value = 1, Clear = _ => { } });
         TraversSummaryElement([], page).Each(sr =>
         {
             var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : allkeys.Take(allkeys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1).ToArray();

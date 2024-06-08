@@ -102,7 +102,7 @@ public class PngFile : IImageCanvas
             byte_per_pixel == 1 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
             xs => Color.FromArgb(xs[0], xs[0], xs[0]);
 
-        return new PngFile()
+        return new()
         {
             Width = width,
             Height = height,

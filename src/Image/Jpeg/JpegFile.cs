@@ -47,7 +47,7 @@ public class JpegFile : IImage
                 var precision = sof[0];
                 var height = BinaryPrimitives.ReadUInt16BigEndian(sof[1..3]);
                 var width = BinaryPrimitives.ReadUInt16BigEndian(sof[3..5]);
-                return new JpegFile() { Width = width, Height = height, Precision = precision };
+                return new() { Width = width, Height = height, Precision = precision };
             }
             stream.Position += length;
         }

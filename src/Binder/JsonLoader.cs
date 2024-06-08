@@ -16,7 +16,7 @@ public static class JsonLoader
 {
     public static PageSection Load(string path) => LoadJsonString(File.ReadAllText(path));
 
-    public static PageSection LoadJsonString(string json) => LoadJson(JsonNode.Parse(json, null, new JsonDocumentOptions() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip })!);
+    public static PageSection LoadJsonString(string json) => LoadJson(JsonNode.Parse(json, null, new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip })!);
 
     public static PageSection LoadJson(JsonNode json)
     {
@@ -25,7 +25,7 @@ public static class JsonLoader
             .Select(x => LoadSubSection(x!))
             .ToDictionary(x => x.Name, x => x);
 
-        return new PageSection()
+        return new()
         {
             Size = Enum.Parse<PageSize>(json["Size"]!.ToString()),
             Orientation = Enum.Parse<Orientation>(json["Orientation"]!.ToString()),
@@ -37,7 +37,7 @@ public static class JsonLoader
         };
     }
 
-    public static Section LoadSection(JsonNode json, Dictionary<string, ISection> sections) => new Section()
+    public static Section LoadSection(JsonNode json, Dictionary<string, ISection> sections) => new()
     {
         BreakKey = json["BreakKey"]?.ToString() ?? "",
         Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,

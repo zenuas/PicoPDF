@@ -80,7 +80,7 @@ public static class SectionBinder
                 var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
                 if (count == 0)
                 {
-                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
+                    if (everyfooter is { }) models.Add(new() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys);
                     break;
                 }
@@ -95,7 +95,7 @@ public static class SectionBinder
                 {
                     if (--count <= 0)
                     {
-                        if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
+                        if (everyfooter is { }) models.Add(new() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
                         break;
                     }
                     breakcount = 0;
@@ -108,7 +108,7 @@ public static class SectionBinder
                 breakfooter.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
                 if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
                 {
-                    if (everyfooter is { }) models.Add(new SectionModel() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
+                    if (everyfooter is { }) models.Add(new() { Section = everyfooter, Elements = BindElements(everyfooter.Elements, lastdata, bind, page, [], keys) });
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys);
                     break;
                 }
@@ -117,7 +117,7 @@ public static class SectionBinder
 
                 if (datas.IsLast)
                 {
-                    if (page.Footer is ISection lastfooter) models.Add(new SectionModel() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page, [], keys) });
+                    if (page.Footer is ISection lastfooter) models.Add(new() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page, [], keys) });
                     break;
                 }
             }
