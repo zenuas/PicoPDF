@@ -73,7 +73,7 @@ public class Document
     {
         var cmap = CMap.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
-        var fontdict = new CIDFontDictionary() { Subtype = "CIDFontType2 ", BaseFont = font.PostScriptName };
+        var fontdict = new CIDFontDictionary() { Subtype = font.Offset.ContainTrueType() ? "CIDFontType2" : "CIDFontType0", BaseFont = font.PostScriptName };
         var type0 = new Type0Font() { Name = name, Font = font, Encoding = cidsysinfo.Name, FontDictionary = fontdict };
         PdfObjects.Add(type0);
 
