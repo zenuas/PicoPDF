@@ -35,10 +35,10 @@ public static class FontLoader
     public static FontInfo Load(string path, Stream stream, long pos, LoadOption opt)
     {
         stream.Position = pos;
-        var header = new OffsetTable(stream);
-        if (header.Version != 0x00010000 && header.Version != 0x4F54544F) throw new InvalidOperationException();
+        var offset = new OffsetTable(stream);
+        if (!offset.ContainTrueType() && !offset.ContainCFF()) throw new InvalidOperationException();
 
-        var tables = Enumerable.Range(0, header.NumberOfTables)
+        var tables = Enumerable.Range(0, offset.NumberOfTables)
             .Select(_ => new TableRecord(stream))
             .ToDictionary(x => x.TableTag, x => x);
 
@@ -50,6 +50,7 @@ public static class FontLoader
 
         return new()
         {
+            Offset = offset,
             FontFamily = namev(1) ?? "",
             Style = namev(2) ?? "",
             FullFontName = namev(4) ?? "",

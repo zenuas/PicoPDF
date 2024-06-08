@@ -12,6 +12,7 @@ public class FontInfo
     public required string Path { get; init; }
     public required long Position { get; init; }
     public required Dictionary<string, TableRecord> TableRecords { get; init; }
+    public required OffsetTable Offset { get; set; }
     public FontHeaderTable FontHeader { get; set; } = default!;
     public MaximumProfileTable MaximumProfile { get; set; } = default!;
     public OS2Table OS2 { get; set; } = default!;
