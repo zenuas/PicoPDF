@@ -8,7 +8,7 @@ using System.Linq;
 
 var datacache = new Dictionary<string, DataTable>();
 var fontreg = new FontRegister();
-fontreg.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
+fontreg.RegistDirectory([@"test-case", Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts")]);
 
 foreach (var json in Directory.GetFiles("test-case", "*.json"))
 {
