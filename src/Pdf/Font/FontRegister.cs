@@ -10,19 +10,14 @@ public class FontRegister
 {
     public Dictionary<string, FontInfo> Fonts { get; init; } = [];
 
-    public void RegistDirectory(string path) => RegistDirectory([path]);
-
-    public void RegistDirectory(IEnumerable<string> paths)
-    {
-        paths
-            .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
-            .Flatten()
-            .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
-            .Where(x => x.Extension.In(".TTF", ".TTC"))
-            .Select(x => x.Extension == ".TTF" ? [FontLoader.Load(x.Path)] : FontLoader.LoadCollection(x.Path))
-            .Flatten()
-            .Each(x => Fonts.TryAdd(x.PostScriptName, x));
-    }
+    public void RegistDirectory(params string[] paths) => paths
+        .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
+        .Flatten()
+        .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
+        .Where(x => x.Extension.In(".TTF", ".TTC"))
+        .Select(x => x.Extension == ".TTF" ? [FontLoader.Load(x.Path)] : FontLoader.LoadCollection(x.Path))
+        .Flatten()
+        .Each(x => Fonts.TryAdd(x.PostScriptName, x));
 
     public FontInfo? GetOrNull(string name)
     {
