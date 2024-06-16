@@ -2,5 +2,5 @@
 
 public record struct CentimeterValue(double Value) : IPoint
 {
-    public double ToPoint() => PdfUtility.CentimeterToPoint(Value);
+    public readonly double ToPoint() => PdfUtility.CentimeterToPoint(Value);
 }
