@@ -8,11 +8,11 @@ namespace PicoPDF.Pdf.Operation;
 
 public class DrawString : IOperation
 {
-    public required string Text { get; set; }
-    public required IPoint X { get; set; }
-    public required IPoint Y { get; set; }
-    public required IFont Font { get; set; }
-    public required double FontSize { get; set; }
+    public required string Text { get; init; }
+    public required IPoint X { get; init; }
+    public required IPoint Y { get; init; }
+    public required IFont Font { get; init; }
+    public required double FontSize { get; init; }
     public IColor? Color { get; init; }
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
