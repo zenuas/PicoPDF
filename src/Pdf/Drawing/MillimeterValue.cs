@@ -1,8 +1,6 @@
 ﻿namespace PicoPDF.Pdf.Drawing;
 
-public struct MillimeterValue : IPoint
+public record struct MillimeterValue(double Value) : IPoint
 {
-    public required double Value;
-
     public double ToPoint() => PdfUtility.MillimeterToPoint(Value);
 }

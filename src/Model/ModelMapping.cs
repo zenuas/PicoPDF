@@ -71,10 +71,10 @@ public static class ModelMapping
                     }
                     var rect = !x.Style.HasFlag(TextStyle.Cliping) ? (Rectangle?)null : new Rectangle()
                     {
-                        X = new PointValue() { Value = model.X },
-                        Y = new PointValue() { Value = model.Y + top },
-                        Width = new PointValue() { Value = x.Width },
-                        Height = new PointValue() { Value = box.Height * size },
+                        X = new PointValue(model.X),
+                        Y = new PointValue(model.Y + top),
+                        Width = new PointValue(x.Width),
+                        Height = new PointValue(box.Height * size),
                     };
                     page.Contents.DrawString(x.Text, posx, posy, size, font, x.Color, rect);
 

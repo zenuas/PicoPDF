@@ -1,8 +1,6 @@
 ﻿namespace PicoPDF.Pdf.Drawing;
 
-public struct PointValue : IPoint
+public record struct PointValue(double Value) : IPoint
 {
-    public required double Value;
-
     public double ToPoint() => Value;
 }

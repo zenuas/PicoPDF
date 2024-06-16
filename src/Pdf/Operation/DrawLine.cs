@@ -12,7 +12,7 @@ public class DrawLine : IOperation
     public required IPoint EndX { get; init; }
     public required IPoint EndY { get; init; }
     public IColor? Color { get; init; }
-    public IPoint LineWidth { get; init; } = new PointValue() { Value = 1 };
+    public IPoint LineWidth { get; init; } = new PointValue(1);
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {

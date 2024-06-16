@@ -13,7 +13,7 @@ public class DrawFillRectangle : IOperation
     public required IPoint Height { get; init; }
     public IColor? LineColor { get; init; }
     public IColor? FillColor { get; init; }
-    public IPoint LineWidth { get; init; } = new PointValue() { Value = 1 };
+    public IPoint LineWidth { get; init; } = new PointValue(1);
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {

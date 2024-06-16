@@ -17,8 +17,8 @@ public class Contents : PdfObject
     {
         DrawString(
                 s,
-                new PointValue() { Value = x },
-                new PointValue() { Value = y },
+                new PointValue(x),
+                new PointValue(y),
                 size,
                 font,
                 c,
@@ -57,12 +57,12 @@ public class Contents : PdfObject
     public void DrawLine(double start_x, double start_y, double end_x, double end_y, IColor? c = null, double? linewidth = null)
     {
         DrawLine(
-                new PointValue() { Value = start_x },
-                new PointValue() { Value = start_y },
-                new PointValue() { Value = end_x },
-                new PointValue() { Value = end_y },
+                new PointValue(start_x),
+                new PointValue(start_y),
+                new PointValue(end_x),
+                new PointValue(end_y),
                 c,
-                new PointValue() { Value = linewidth ?? 1 }
+                new PointValue(linewidth ?? 1)
             );
     }
 
@@ -75,19 +75,19 @@ public class Contents : PdfObject
             EndX = end_x,
             EndY = end_y,
             Color = c,
-            LineWidth = linewidth ?? new PointValue() { Value = 1 },
+            LineWidth = linewidth ?? new PointValue(1),
         });
     }
 
     public void DrawRectangle(double x, double y, double width, double height, IColor? c = null, double? linewidth = null)
     {
         DrawRectangle(
-                new PointValue() { Value = x },
-                new PointValue() { Value = y },
-                new PointValue() { Value = width },
-                new PointValue() { Value = height },
+                new PointValue(x),
+                new PointValue(y),
+                new PointValue(width),
+                new PointValue(height),
                 c,
-                new PointValue() { Value = linewidth ?? 1 }
+                new PointValue(linewidth ?? 1)
             );
     }
 
@@ -100,20 +100,20 @@ public class Contents : PdfObject
             Width = width,
             Height = height,
             Color = c,
-            LineWidth = linewidth ?? new PointValue() { Value = 1 },
+            LineWidth = linewidth ?? new PointValue(1),
         });
     }
 
     public void DrawFillRectangle(double x, double y, double width, double height, IColor? line = null, IColor? fill = null, double? linewidth = null)
     {
         DrawFillRectangle(
-                new PointValue() { Value = x },
-                new PointValue() { Value = y },
-                new PointValue() { Value = width },
-                new PointValue() { Value = height },
+                new PointValue(x),
+                new PointValue(y),
+                new PointValue(width),
+                new PointValue(height),
                 line,
                 fill,
-                new PointValue() { Value = linewidth ?? 1 }
+                new PointValue(linewidth ?? 1)
             );
     }
 
@@ -127,15 +127,15 @@ public class Contents : PdfObject
             Height = height,
             LineColor = line,
             FillColor = fill,
-            LineWidth = linewidth ?? new PointValue() { Value = 1 },
+            LineWidth = linewidth ?? new PointValue(1),
         });
     }
 
     public void DrawImage(double x, double y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
     {
         DrawImage(
-                new PointValue() { Value = x },
-                new PointValue() { Value = y },
+                new PointValue(x),
+                new PointValue(y),
                 image,
                 zoomwidth,
                 zoomheight

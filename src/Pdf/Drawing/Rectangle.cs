@@ -1,9 +1,3 @@
 ﻿namespace PicoPDF.Pdf.Drawing;
 
-public struct Rectangle
-{
-    public required IPoint X { get; init; }
-    public required IPoint Y { get; init; }
-    public required IPoint Width { get; init; }
-    public required IPoint Height { get; init; }
-}
+public record struct Rectangle(IPoint X, IPoint Y, IPoint Width, IPoint Height);
