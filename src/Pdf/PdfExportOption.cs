@@ -2,11 +2,11 @@
 
 public class PdfExportOption
 {
-    public bool Debug { get; set; } = false;
-    public bool AppendCIDToUnicode { get; set; } = true;
-    public bool EmbeddedFont { get; set; } = false;
-    public bool ContentsStreamDeflate { get; set; } = true;
-    public bool JpegStreamDeflate { get; set; } = true;
-    public bool ImageStreamDeflate { get; set; } = true;
-    public bool CMapStreamDeflate { get; set; } = true;
+    public bool Debug { get; init; } = false;
+    public bool AppendCIDToUnicode { get; init; } = true;
+    public bool EmbeddedFont { get; init; } = false;
+    public bool ContentsStreamDeflate { get; init; } = true;
+    public bool JpegStreamDeflate { get; init; } = true;
+    public bool ImageStreamDeflate { get; init; } = true;
+    public bool CMapStreamDeflate { get; init; } = true;
 }
