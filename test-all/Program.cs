@@ -2,6 +2,7 @@
 using Mina.Extension;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
+using PicoPDF.TestAll;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -58,31 +59,4 @@ static object autoconv(string s)
         DateTime.TryParse(s, out var d) ? d :
         double.TryParse(s, out var f) ? f :
         s;
-}
-
-public class Option
-{
-    [CommandOption("debug")]
-    public bool Debug { get; init; } = true;
-
-    [CommandOption("unicode")]
-    public bool AppendCIDToUnicode { get; init; } = true;
-
-    [CommandOption("embedded-font")]
-    public bool EmbeddedFont { get; init; } = false;
-
-    [CommandOption("contents-deflate")]
-    public bool ContentsStreamDeflate { get; init; } = false;
-
-    [CommandOption("jpeg-deflate")]
-    public bool JpegStreamDeflate { get; init; } = true;
-
-    [CommandOption("image-deflate")]
-    public bool ImageStreamDeflate { get; init; } = true;
-
-    [CommandOption("cmap-deflate")]
-    public bool CMapStreamDeflate { get; init; } = false;
-
-    [CommandOption("always-update")]
-    public bool AlwaysUpdate { get; init; } = true;
 }
