@@ -7,7 +7,7 @@ $watcher.NotifyFilter = [System.IO.NotifyFilters]::LastWrite
 
 $testall =
 {
-	Start-Process -FilePath "dotnet" -ArgumentList "run", "--project", "test-all\PicoPDF.TestAll.csproj" -WorkingDirectory "." -NoNewWindow -Wait
+	Start-Process -FilePath "dotnet" -ArgumentList "run", "--project", "test-all\PicoPDF.TestAll.csproj", "--no-launch-profile" -WorkingDirectory "." -NoNewWindow -Wait
 	Write-Host "$(Get-Date) dotnet test-all done"
 }
 
