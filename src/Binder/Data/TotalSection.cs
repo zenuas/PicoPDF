@@ -10,7 +10,7 @@ public class TotalSection : IFooterSection
 
     public required string Name { get; init; }
     public required int Height { get; init; }
-    public ViewModes ViewMode { get => ViewMode_; init => ViewMode_ = value == ViewModes.Last || value == ViewModes.Every ? value : throw new ArgumentException(); }
+    public ViewModes ViewMode { get => ViewMode_; init => ViewMode_ = value is ViewModes.Last or ViewModes.Every ? value : throw new ArgumentException(); }
     public List<IElement> Elements { get; init; } = [];
     public required bool PageBreak { get; init; }
 }
