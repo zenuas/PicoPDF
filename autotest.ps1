@@ -5,9 +5,9 @@ $watcher.IncludeSubdirectories = $true
 $watcher.NotifyFilter = [System.IO.NotifyFilters]::LastWrite
 
 
-$testall =
+function Test-All($always_update)
 {
-	Start-Process -FilePath "dotnet" -ArgumentList "run", "--project", "test-all\PicoPDF.TestAll.csproj", "--no-launch-profile" -WorkingDirectory "." -NoNewWindow -Wait
+	Start-Process -FilePath "dotnet" -ArgumentList "run", "--project", "test-all\PicoPDF.TestAll.csproj", "--no-launch-profile", "--", "--always-update", $always_update -WorkingDirectory "." -NoNewWindow -Wait
 	Write-Host "$(Get-Date) dotnet test-all done"
 }
 
@@ -16,12 +16,12 @@ $action =
 	$exten = [System.IO.Path]::GetExtension($Event.SourceEventArgs.FullPath)
 	if ($exten -ne ".pdf")
 	{
-		Invoke-Command $testall
+		Test-All false
 	}
 }
 
 Register-ObjectEvent $watcher "Changed" -Action $action
-Invoke-Command $testall
+Test-All true
 
 while ($true)
 {

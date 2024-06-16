@@ -32,6 +32,10 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
     var dataname = $"test-case/{(fname.Contains('-') ? fname[0..fname.LastIndexOf('-')] : fname)}.csv";
     var pdfname = $"test-case/{fname}.pdf";
 
+    var pdftime = File.GetLastWriteTime(pdfname);
+    if (!opt.AlwaysUpdate && pdftime > File.GetLastWriteTime(json) && pdftime > File.GetLastWriteTime(dataname)) continue;
+    Console.WriteLine(json);
+
     if (!datacache.TryGetValue(dataname, out var table))
     {
         var lines = File.ReadAllLines(dataname);
@@ -84,4 +88,7 @@ public class Option
 
     [CommandOption("cmap-deflate")]
     public bool CMapStreamDeflate { get; set; } = false;
+
+    [CommandOption("always-update")]
+    public bool AlwaysUpdate { get; set; } = true;
 }
