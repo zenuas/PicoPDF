@@ -2,6 +2,7 @@
 using PicoPDF.Binder;
 using PicoPDF.Binder.Data;
 using PicoPDF.Model;
+using PicoPDF.Pdf.Color;
 using PicoPDF.Pdf.Font;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,8 @@ public static class PdfUtility
     public static double PointToCentimeter(double v) => v / 72 * 2.54;
     public static double PointToMillimeter(double v) => v / 72 * 25.4;
     [Obsolete("use SI")] public static double PointToInch(double v) => v / 72;
+
+    public static DeviceRGB ToDeviceRGB(this System.Drawing.Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
 
     public static Document Create<T>(FontRegister register, string json, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => Create(register, JsonLoader.Load(json), datas, mapper);
     public static Document Create(FontRegister register, string json, DataTable table) => Create(register, JsonLoader.Load(json), table);

@@ -5,11 +5,9 @@ using PicoPDF.Binder.Element;
 using PicoPDF.Model;
 using PicoPDF.Model.Element;
 using PicoPDF.Pdf;
-using PicoPDF.Pdf.Color;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 
 namespace PicoPDF.Binder;
@@ -223,8 +221,6 @@ public static class SectionBinder
         Width = element.Width,
         Color = element.Color?.ToDeviceRGB(),
     };
-
-    public static DeviceRGB ToDeviceRGB(this Color color) => new() { R = (double)color.R / 255, G = (double)color.G / 255, B = (double)color.B / 255 };
 
     public static IEnumerable<(string[] BreakKeys, SummaryElement Summary)> GetBreakKeyWithSummary(string[] keys, ISubSection subsection)
     {
