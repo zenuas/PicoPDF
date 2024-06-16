@@ -1,4 +1,11 @@
-﻿using System;
+﻿using Mina.Extension;
+using PicoPDF.Binder;
+using PicoPDF.Binder.Data;
+using PicoPDF.Model;
+using PicoPDF.Pdf.Font;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace PicoPDF.Pdf;
 
@@ -38,4 +45,11 @@ public static class PdfUtility
     public static double PointToCentimeter(double v) => v / 72 * 2.54;
     public static double PointToMillimeter(double v) => v / 72 * 25.4;
     [Obsolete("use SI")] public static double PointToInch(double v) => v / 72;
+
+    public static Document Create<T>(FontRegister register, string json, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => Create(register, JsonLoader.Load(json), datas, mapper);
+    public static Document Create(FontRegister register, string json, DataTable table) => Create(register, JsonLoader.Load(json), table);
+    public static Document Create(FontRegister register, string json, DataView view) => Create(register, JsonLoader.Load(json), view);
+    public static Document Create<T>(FontRegister register, PageSection pagesection, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => new Document { FontRegister = register }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, datas, mapper)));
+    public static Document Create(FontRegister register, PageSection pagesection, DataTable table) => new Document { FontRegister = register }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, table)));
+    public static Document Create(FontRegister register, PageSection pagesection, DataView view) => new Document { FontRegister = register }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, view)));
 }

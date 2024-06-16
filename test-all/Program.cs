@@ -1,7 +1,5 @@
 ﻿using Mina.Command;
 using Mina.Extension;
-using PicoPDF.Binder;
-using PicoPDF.Model;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
 using System;
@@ -50,11 +48,7 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
         datacache.Add(dataname, table);
     }
 
-    var doc = new Document() { FontRegister = fontreg };
-    var pagesection = JsonLoader.Load(json);
-    var pages = SectionBinder.Bind(pagesection, table);
-    ModelMapping.Mapping(doc, pages);
-    doc.Save(pdfname, export_opt);
+    PdfUtility.Create(fontreg, json, table).Save(pdfname, export_opt);
 }
 
 static object autoconv(string s)
