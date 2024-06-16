@@ -26,22 +26,22 @@ public class JpegFile : IImage
 
             var maeker = BinaryPrimitives.ReadUInt16BigEndian(header[0..2]);
             var length = BinaryPrimitives.ReadUInt16BigEndian(header[2..4]) - 2;
-            if (maeker.In(
-                    (ushort)SegmentTypes.SOF0,
-                    (ushort)SegmentTypes.SOF1,
-                    (ushort)SegmentTypes.SOF2,
-                    (ushort)SegmentTypes.SOF3,
-                    (ushort)SegmentTypes.SOF5,
-                    (ushort)SegmentTypes.SOF6,
-                    (ushort)SegmentTypes.SOF7,
-                    (ushort)SegmentTypes.SOF8,
-                    (ushort)SegmentTypes.SOF9,
-                    (ushort)SegmentTypes.SOF10,
-                    (ushort)SegmentTypes.SOF11,
-                    (ushort)SegmentTypes.SOF13,
-                    (ushort)SegmentTypes.SOF14,
+            if (maeker is
+                    (ushort)SegmentTypes.SOF0 or
+                    (ushort)SegmentTypes.SOF1 or
+                    (ushort)SegmentTypes.SOF2 or
+                    (ushort)SegmentTypes.SOF3 or
+                    (ushort)SegmentTypes.SOF5 or
+                    (ushort)SegmentTypes.SOF6 or
+                    (ushort)SegmentTypes.SOF7 or
+                    (ushort)SegmentTypes.SOF8 or
+                    (ushort)SegmentTypes.SOF9 or
+                    (ushort)SegmentTypes.SOF10 or
+                    (ushort)SegmentTypes.SOF11 or
+                    (ushort)SegmentTypes.SOF13 or
+                    (ushort)SegmentTypes.SOF14 or
                     (ushort)SegmentTypes.SOF15
-                ))
+                )
             {
                 var sof = stream.ReadBytes(5).AsSpan();
                 var precision = sof[0];

@@ -14,7 +14,7 @@ public class FontRegister
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
         .Flatten()
         .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
-        .Where(x => x.Extension.In(".TTF", ".TTC"))
+        .Where(x => x.Extension is ".TTF" or ".TTC")
         .Select(x => x.Extension == ".TTF" ? [FontLoader.Load(x.Path)] : FontLoader.LoadCollection(x.Path))
         .Flatten()
         .Each(x => Fonts.TryAdd(x.PostScriptName, x));
