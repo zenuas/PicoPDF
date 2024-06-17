@@ -41,7 +41,7 @@
 	@exit /b %ERRORLEVEL%
 
 :test-all
-	dotnet run --project test-all/PicoPDF.TestAll.csproj
+	dotnet run --project test-all/PicoPDF.TestAll.csproj --no-launch-profile
 	@exit /b %ERRORLEVEL%
 
 :bench
