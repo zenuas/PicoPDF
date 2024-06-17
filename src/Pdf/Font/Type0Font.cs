@@ -14,6 +14,7 @@ public class Type0Font : PdfObject, IFont
     public required FontInfo Font { get; init; }
     public required string Encoding { get; init; }
     public CIDFontDictionary FontDictionary { get; init; } = new();
+    public HashSet<char> Chars { get; init; } = [];
 
     public override void DoExport(PdfExportOption option)
     {
@@ -24,7 +25,7 @@ public class Type0Font : PdfObject, IFont
         _ = Elements.TryAdd("DescendantFonts", new ElementIndirectArray(FontDictionary));
         if (option.AppendCIDToUnicode)
         {
-            var cmap = new CIDToUnicode { Font = Font };
+            var cmap = new CIDToUnicode { Font = Font, Chars = Chars };
             RelatedObjects.Add(cmap);
             _ = Elements.TryAdd("ToUnicode", cmap);
         }
@@ -64,7 +65,11 @@ public class Type0Font : PdfObject, IFont
     public IEnumerable<byte> CreateTextShowingOperator(string s)
     {
         return s
-            .Select(x => System.Text.Encoding.ASCII.GetBytes($"{Font.CharToGIDCached(x):x4}"))
+            .Select(x =>
+            {
+                Chars.Add(x);
+                return System.Text.Encoding.ASCII.GetBytes($"{Font.CharToGIDCached(x):x4}");
+            })
             .Flatten()
             .Prepend(System.Text.Encoding.ASCII.GetBytes("<")[0])
             .Concat(System.Text.Encoding.ASCII.GetBytes("> Tj"));

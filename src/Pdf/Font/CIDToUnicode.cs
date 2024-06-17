@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.OpenType;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -8,12 +9,13 @@ namespace PicoPDF.Pdf.Font;
 public class CIDToUnicode : PdfObject
 {
     public required FontInfo Font { get; init; }
+    public required HashSet<char> Chars { get; init; }
 
     public override void DoExport(PdfExportOption option)
     {
-        var bfchar = Font.CMap4Cache
-            .OrderBy(x => x.Key)
-            .Select(x => $"        <{x.Value:x4}> <{Encoding.BigEndianUnicode.GetBytes(x.Key.ToString()).Select(x => $"{x:x2}").Join()}>{(option.Debug ? $" %{x.Key}" : "")}")
+        var bfchar = Chars
+            .Order()
+            .Select(x => $"        <{Font.CharToGID(x):x4}> <{Encoding.BigEndianUnicode.GetBytes(x.ToString()).Select(x => $"{x:x2}").Join()}>{(option.Debug ? $" %{x}" : "")}")
             .Join("\n");
 
         var writer = GetWriteStream(option.CMapStreamDeflate);
@@ -27,7 +29,7 @@ public class CIDToUnicode : PdfObject
       1 begincodespacerange
         <0000> <FFFF>
       endcodespacerange
-      {Font.CMap4Cache.Count} beginbfchar
+      {Chars.Count} beginbfchar
 {bfchar}
       endbfchar
     endcmap
