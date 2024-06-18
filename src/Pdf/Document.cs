@@ -69,7 +69,20 @@ public class Document
         return font;
     }
 
-    public Type0Font AddFont(string name, FontInfo font, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public Type0Font AddFont(string name, FontInfo font)
+    {
+        FontDescriptorFlags flag = font.EncodingRecords.Contains(x => x.PlatformID == 3 && x.EncodingID == 0) ?
+            FontDescriptorFlags.Symbolic :
+            FontDescriptorFlags.Nonsymbolic;
+
+        if (font.PostScript.IsFixedPitch != 0) flag |= FontDescriptorFlags.FixedPitch;
+        if ((font.FontHeader.MacStyle & 1) != 0) flag |= FontDescriptorFlags.ForceBold;
+        if ((font.FontHeader.MacStyle & 2) != 0) flag |= FontDescriptorFlags.Italic;
+
+        return AddFont(name, font, flag);
+    }
+
+    public Type0Font AddFont(string name, FontInfo font, FontDescriptorFlags flags)
     {
         var cmap = CMap.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
