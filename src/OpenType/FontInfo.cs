@@ -15,7 +15,9 @@ public class FontInfo
     public required OffsetTable Offset { get; set; }
     public FontHeaderTable FontHeader { get; set; } = default!;
     public MaximumProfileTable MaximumProfile { get; set; } = default!;
+    public PostScriptTable PostScript { get; set; } = default!;
     public OS2Table OS2 { get; set; } = default!;
+    public EncodingRecord[] EncodingRecords { get; set; } = default!;
     public CMapFormat4 CMap4 { get; set; } = default!;
     public List<(int Start, int End)> CMap4Range { get; init; } = [];
     public Dictionary<char, int> CMap4Cache { get; init; } = [];

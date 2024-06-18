@@ -71,14 +71,17 @@ public static class FontLoader
         stream.Position = font.TableRecords["maxp"].Offset;
         font.MaximumProfile = new(stream);
 
+        stream.Position = font.TableRecords["post"].Offset;
+        font.PostScript = new(stream);
+
         stream.Position = font.TableRecords["OS/2"].Offset;
         font.OS2 = new(stream);
 
         var cmap = font.TableRecords["cmap"];
-        var encodings = EncodingRecord.ReadFrom(stream, cmap);
+        font.EncodingRecords = EncodingRecord.ReadFrom(stream, cmap);
         var encoding =
-            encodings.FirstOrDefault(x => x.PlatformID == 0 && x.EncodingID == 3) ??
-            encodings.FirstOrDefault(x => x.PlatformID == 3 && x.EncodingID == 1);
+            font.EncodingRecords.FirstOrDefault(x => x.PlatformID == 0 && x.EncodingID == 3) ??
+            font.EncodingRecords.FirstOrDefault(x => x.PlatformID == 3 && x.EncodingID == 1);
         if (encoding is { })
         {
             font.CMap4 = new(stream, cmap, encoding);
