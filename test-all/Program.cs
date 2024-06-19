@@ -14,6 +14,15 @@ var fontreg = new FontRegister();
 fontreg.RegistDirectory([@"test-case", Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts")]);
 
 var (opt, jsons) = CommandLine.Run<Option>(args);
+if (opt.FontList)
+{
+    foreach (var kv in fontreg.Fonts)
+    {
+        Console.WriteLine($"{kv.Key},\"{kv.Value.Path}\"");
+    }
+    return;
+}
+
 var export_opt = new PdfExportOption
 {
     Debug = opt.Debug,

@@ -27,4 +27,7 @@ public class Option
 
     [CommandOption("always-update")]
     public bool AlwaysUpdate { get; init; } = true;
+
+    [CommandOption("font-list")]
+    public bool FontList { get; init; } = false;
 }
