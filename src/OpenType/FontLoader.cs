@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using System;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -8,19 +9,19 @@ namespace PicoPDF.OpenType;
 
 public static class FontLoader
 {
-    public static FontInfo Load(string path, LoadOption? opt = null)
+    public static FontLoading Load(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
         return Load(path, stream, 0, opt ?? new());
     }
 
-    public static FontInfo[] LoadCollection(string path, LoadOption? opt = null)
+    public static FontLoading[] LoadCollection(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
         return LoadCollection(path, stream, opt ?? new());
     }
 
-    public static FontInfo[] LoadCollection(string path, Stream stream, LoadOption opt)
+    public static FontLoading[] LoadCollection(string path, Stream stream, LoadOption opt)
     {
         var header = new TrueTypeCollectionHeader(stream);
         if (header.TTCTag != "ttcf") throw new InvalidOperationException();
@@ -32,7 +33,7 @@ public static class FontLoader
             .ToArray();
     }
 
-    public static FontInfo Load(string path, Stream stream, long pos, LoadOption opt)
+    public static FontLoading Load(string path, Stream stream, long pos, LoadOption opt)
     {
         stream.Position = pos;
         var offset = new OffsetTable(stream);
@@ -50,7 +51,6 @@ public static class FontLoader
 
         return new()
         {
-            Offset = offset,
             FontFamily = namev(1) ?? "",
             Style = namev(2) ?? "",
             FullFontName = namev(4) ?? "",
@@ -58,52 +58,62 @@ public static class FontLoader
             Path = path,
             Position = pos,
             TableRecords = tables,
+            Offset = offset,
         };
     }
 
-    public static void DelayLoad(FontInfo font)
+    public static FontInfo DelayLoad(FontLoading font)
     {
         using var stream = File.OpenRead(font.Path);
 
-        stream.Position = font.TableRecords["head"].Offset;
-        font.FontHeader = new(stream);
-
-        stream.Position = font.TableRecords["maxp"].Offset;
-        font.MaximumProfile = new(stream);
-
-        stream.Position = font.TableRecords["post"].Offset;
-        font.PostScript = new(stream);
-
-        stream.Position = font.TableRecords["OS/2"].Offset;
-        font.OS2 = new(stream);
+        var head = ReadTableRecprds(font, "head", stream, x => new FontHeaderTable(x)).Try();
+        var maxp = ReadTableRecprds(font, "maxp", stream, x => new MaximumProfileTable(x)).Try();
+        var post = ReadTableRecprds(font, "post", stream, x => new PostScriptTable(x)).Try();
+        var os2 = ReadTableRecprds(font, "OS/2", stream, x => new OS2Table(x)).Try();
+        var hhea = ReadTableRecprds(font, "hhea", stream, x => new HorizontalHeaderTable(x)).Try();
+        var hmtx = ReadTableRecprds(font, "hmtx", stream, x => new HorizontalMetricsTable(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
+        var cff = ReadTableRecprds(font, "CFF ", stream, x => new CompactFontFormat(x));
 
         var cmap = font.TableRecords["cmap"];
-        font.EncodingRecords = EncodingRecord.ReadFrom(stream, cmap);
+        var encoding_records = EncodingRecord.ReadFrom(stream, cmap);
         var encoding =
-            font.EncodingRecords.FirstOrDefault(x => x.PlatformID == 0 && x.EncodingID == 3) ??
-            font.EncodingRecords.FirstOrDefault(x => x.PlatformID == 3 && x.EncodingID == 1);
-        if (encoding is { })
+            encoding_records.FirstOrDefault(x => x.PlatformID == 0 && x.EncodingID == 3) ??
+            encoding_records.FirstOrDefault(x => x.PlatformID == 3 && x.EncodingID == 1);
+        var cmap4 = new CMapFormat4(stream, cmap, encoding.Try());
+        var cmap4_range = new List<(int Start, int End)>();
+        _ = cmap4.EndCode.Aggregate(0, (acc, x) =>
         {
-            font.CMap4 = new(stream, cmap, encoding);
-            _ = font.CMap4.EndCode.Aggregate(0, (acc, x) =>
-            {
-                font.CMap4Range.Add((acc, x));
-                return x + 1;
-            });
-        }
+            cmap4_range.Add((acc, x));
+            return x + 1;
+        });
 
-        stream.Position = font.TableRecords["hhea"].Offset;
-        font.HorizontalHeader = new(stream);
-
-        stream.Position = font.TableRecords["hmtx"].Offset;
-        font.HorizontalMetrics = new(stream, font.HorizontalHeader.NumberOfHMetrics, font.MaximumProfile.NumberOfGlyphs);
-
-        if (font.TableRecords.TryGetValue("CFF ", out var cff))
+        return new()
         {
-            stream.Position = cff.Offset;
-            font.CompactFontFormat = new(stream);
-        }
+            FontFamily = font.FontFamily,
+            Style = font.Style,
+            FullFontName = font.FullFontName,
+            PostScriptName = font.PostScriptName,
+            Path = font.Path,
+            Position = font.Position,
+            TableRecords = font.TableRecords,
+            Offset = font.Offset,
+            FontHeader = head,
+            MaximumProfile = maxp,
+            PostScript = post,
+            OS2 = os2,
+            EncodingRecords = encoding_records,
+            CMap4 = cmap4,
+            CMap4Range = cmap4_range,
+            HorizontalHeader = hhea,
+            HorizontalMetrics = hmtx,
+            CompactFontFormat = cff,
+        };
+    }
 
-        font.Loaded = true;
+    public static T? ReadTableRecprds<T>(FontLoading font, string name, Stream stream, Func<Stream, T> f)
+    {
+        if (!font.TableRecords.TryGetValue(name, out var record)) return default;
+        stream.Position = record.Offset;
+        return f(stream);
     }
 }

@@ -8,7 +8,7 @@ namespace PicoPDF.Pdf.Font;
 
 public class FontRegister
 {
-    public Dictionary<string, FontInfo> Fonts { get; init; } = [];
+    public Dictionary<string, OpenType.IFont> Fonts { get; init; } = [];
 
     public void RegistDirectory(params string[] paths) => paths
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
@@ -22,9 +22,11 @@ public class FontRegister
     public FontInfo? GetOrNull(string name)
     {
         var font = Fonts.GetValueOrDefault(name);
-        if (font is null || font.Loaded) return font;
+        if (font is null) return null;
+        if (font is FontInfo fi) return fi;
 
-        FontLoader.DelayLoad(font);
-        return font;
+        var fontinfo = FontLoader.DelayLoad(font.Cast<FontLoading>());
+        Fonts[name] = fontinfo;
+        return fontinfo;
     }
 }
