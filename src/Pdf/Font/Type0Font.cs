@@ -35,7 +35,7 @@ public class Type0Font : PdfObject, IFont
             var fontfile = new PdfObject();
             RelatedObjects.Add(fontfile);
             var stream = fontfile.GetWriteStream(true);
-            var fontdata = File.ReadAllBytes(Font.Path);
+            var fontdata = File.ReadAllBytes(Font.Path.Path);
             stream.Write(fontdata);
             if (Font.Offset.ContainTrueType())
             {

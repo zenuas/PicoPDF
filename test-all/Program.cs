@@ -1,5 +1,6 @@
 ﻿using Mina.Command;
 using Mina.Extension;
+using PicoPDF.OpenType;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
 using PicoPDF.TestAll;
@@ -18,7 +19,7 @@ if (opt.FontList)
 {
     foreach (var kv in fontreg.Fonts)
     {
-        Console.WriteLine($"{kv.Key},\"{kv.Value.Path}\"");
+        Console.WriteLine($"{kv.Key},\"{(kv.Value.Path is FontCollectionPath fc ? $"{fc.Path},{fc.Index}" : kv.Value.Path.Path)}\"");
     }
     return;
 }

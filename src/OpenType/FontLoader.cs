@@ -12,7 +12,7 @@ public static class FontLoader
     public static FontLoading Load(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
-        return Load(path, stream, 0, opt ?? new());
+        return Load(new FontPath { Path = path }, stream, 0, opt ?? new());
     }
 
     public static FontLoading[] LoadCollection(string path, LoadOption? opt = null)
@@ -29,11 +29,11 @@ public static class FontLoader
         return Enumerable.Range(0, (int)header.NumberOfFonts)
             .Select(_ => BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)))
             .ToArray()
-            .Select(x => Load(path, stream, x, opt))
+            .Select((x, i) => Load(new FontCollectionPath { Path = path, Index = i }, stream, x, opt))
             .ToArray();
     }
 
-    public static FontLoading Load(string path, Stream stream, long pos, LoadOption opt)
+    public static FontLoading Load(IFontPath path, Stream stream, long pos, LoadOption opt)
     {
         stream.Position = pos;
         var offset = new OffsetTable(stream);
@@ -64,7 +64,7 @@ public static class FontLoader
 
     public static FontInfo DelayLoad(FontLoading font)
     {
-        using var stream = File.OpenRead(font.Path);
+        using var stream = File.OpenRead(font.Path.Path);
 
         var head = ReadTableRecprds(font, "head", stream, x => new FontHeaderTable(x)).Try();
         var maxp = ReadTableRecprds(font, "maxp", stream, x => new MaximumProfileTable(x)).Try();
