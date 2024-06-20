@@ -71,7 +71,7 @@ public class Document
 
     public Type0Font AddFont(string name, FontInfo font)
     {
-        FontDescriptorFlags flag = font.EncodingRecords.Contains(x => x.PlatformID == 3 && x.EncodingID == 0) ?
+        FontDescriptorFlags flag = font.EncodingRecords.Contains(x => x.PlatformEncoding == PlatformEncodings.Windows_Symbol) ?
             FontDescriptorFlags.Symbolic :
             FontDescriptorFlags.Nonsymbolic;
 

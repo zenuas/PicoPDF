@@ -77,8 +77,8 @@ public static class FontLoader
         var cmap = font.TableRecords["cmap"];
         var encoding_records = EncodingRecord.ReadFrom(stream, cmap);
         var encoding =
-            encoding_records.FirstOrDefault(x => x.PlatformID == 0 && x.EncodingID == 3) ??
-            encoding_records.FirstOrDefault(x => x.PlatformID == 3 && x.EncodingID == 1);
+            encoding_records.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.UnicodeBMPOnly) ??
+            encoding_records.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.Windows_UnicodeBMP);
         var cmap4 = new CMapFormat4(stream, cmap, encoding.Try());
         var cmap4_range = new List<(int Start, int End)>();
         _ = cmap4.EndCode.Aggregate(0, (acc, x) =>

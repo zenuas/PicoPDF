@@ -11,6 +11,8 @@ public class EncodingRecord(Stream stream)
     public readonly ushort EncodingID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
     public readonly uint Offset = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4));
 
+    public PlatformEncodings PlatformEncoding { get => (PlatformEncodings)(((uint)PlatformID << 16) | EncodingID); }
+
     public static EncodingRecord[] ReadFrom(Stream stream, TableRecord rec)
     {
         var bytes = stream.ReadPositionBytes(rec.Offset, (int)rec.Length);
