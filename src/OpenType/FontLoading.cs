@@ -12,4 +12,5 @@ public class FontLoading : IFont
     public required long Position { get; init; }
     public required Dictionary<string, TableRecord> TableRecords { get; init; }
     public required OffsetTable Offset { get; init; }
+    public required (string Name, NameRecord NameRecord)[] NameRecords { get; init; }
 }

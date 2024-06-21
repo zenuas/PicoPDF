@@ -59,6 +59,7 @@ public static class FontLoader
             Position = pos,
             TableRecords = tables,
             Offset = offset,
+            NameRecords = namerecs,
         };
     }
 
@@ -97,6 +98,7 @@ public static class FontLoader
             Position = font.Position,
             TableRecords = font.TableRecords,
             Offset = font.Offset,
+            NameRecords = font.NameRecords,
             FontHeader = head,
             MaximumProfile = maxp,
             PostScript = post,
