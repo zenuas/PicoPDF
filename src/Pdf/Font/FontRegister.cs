@@ -39,7 +39,7 @@ public class FontRegister
         return fontinfo;
     }
 
-    public FontInfo GetOrNull(IFontPath path)
+    public FontInfo Get(IFontPath path)
     {
         var name = GetFontFilePath(path);
         if (GetOrNull(name) is { } font) return font;

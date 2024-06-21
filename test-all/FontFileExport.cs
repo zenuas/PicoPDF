@@ -6,6 +6,6 @@ public static class FontFileExport
 {
     public static void Export(FontRegister fontreg, Option opt)
     {
-        var font = fontreg.GetOrNull(FontRegister.GetFontFilePath(opt.FontFileExport));
+        var font = fontreg.Get(FontRegister.GetFontFilePath(opt.FontFileExport));
     }
 }
