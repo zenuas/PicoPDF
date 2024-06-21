@@ -57,6 +57,16 @@ public class FontRegister
 
     public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
 
+    public static IFontPath GetFontFilePath(string name)
+    {
+        var ext = Path.GetExtension(name).ToUpper();
+        if (ext.StartsWith(".TTC,") && int.TryParse(ext[5..], out var index))
+        {
+            return new FontCollectionPath { Path = Path.GetFullPath(name[0..^(ext.Length - 4)]), Index = index };
+        }
+        return new FontPath { Path = Path.GetFullPath(name) };
+    }
+
     public bool Add(IOpenType font)
     {
         var name = GetFontFilePath(font.Path);
