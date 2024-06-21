@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PicoPDF.TestAll;
 
-public class FontListTest
+public static class FontListTest
 {
     public static void Preview(FontRegister fontreg, Option opt)
     {
