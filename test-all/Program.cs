@@ -9,7 +9,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 
-var datacache = new Dictionary<string, DataTable>();
 var fontreg = new FontRegister();
 fontreg.RegistDirectory([@"test-case", Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts")]);
 
@@ -34,6 +33,7 @@ var export_opt = new PdfExportOption
     CMapStreamDeflate = opt.CMapStreamDeflate,
 };
 
+var datacache = new Dictionary<string, DataTable>();
 foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", "*.json"))
 {
     var fname = Path.GetFileNameWithoutExtension(json);
