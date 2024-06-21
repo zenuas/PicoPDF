@@ -8,7 +8,7 @@ namespace PicoPDF.Pdf.Font;
 
 public class FontRegister
 {
-    public Dictionary<string, OpenType.IFont> Fonts { get; init; } = [];
+    public Dictionary<string, IOpenType> Fonts { get; init; } = [];
 
     public void RegistDirectory(params string[] paths) => paths
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
