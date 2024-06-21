@@ -1,4 +1,5 @@
-﻿using Mina.Extension;
+﻿using Mina.Data;
+using Mina.Extension;
 using PicoPDF.OpenType;
 using System.Collections.Generic;
 using System.IO;
@@ -8,25 +9,68 @@ namespace PicoPDF.Pdf.Font;
 
 public class FontRegister
 {
-    public Dictionary<string, IOpenType> Fonts { get; init; } = [];
+    public Dictionary<string, PropertyGetSet<IOpenType>> Fonts { get; init; } = [];
 
     public void RegistDirectory(params string[] paths) => paths
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
         .Flatten()
         .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
         .Where(x => x.Extension is ".TTF" or ".TTC")
-        .Select(x => x.Extension == ".TTF" ? [FontLoader.Load(x.Path)] : FontLoader.LoadCollection(x.Path))
-        .Flatten()
-        .Each(x => Fonts.TryAdd(x.PostScriptName, x));
+        .Each(x =>
+        {
+            if (x.Extension == ".TTC")
+            {
+                AddFontCollection(x.Path);
+            }
+            else
+            {
+                AddFont(x.Path);
+            }
+        });
 
     public FontInfo? GetOrNull(string name)
     {
         var font = Fonts.GetValueOrDefault(name);
         if (font is null) return null;
-        if (font is FontInfo fi) return fi;
+        if (font.Value is FontInfo fi) return fi;
 
-        var fontinfo = FontLoader.DelayLoad(font.Cast<FontLoading>());
-        Fonts[name] = fontinfo;
+        var fontinfo = FontLoader.DelayLoad(font.Value.Cast<FontLoading>());
+        Fonts[name].Value = fontinfo;
         return fontinfo;
     }
+
+    public FontInfo GetOrNull(IFontPath path)
+    {
+        var name = GetFontFilePath(path);
+        if (GetOrNull(name) is { } font) return font;
+
+        if (path is FontCollectionPath)
+        {
+            AddFontCollection(path.Path);
+        }
+        else
+        {
+            AddFont(path.Path);
+        }
+        return GetOrNull(name)!;
+    }
+
+    public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
+
+    public bool Add(IOpenType font)
+    {
+        var name = GetFontFilePath(font.Path);
+        if (Fonts.TryGetValue(name, out _)) return false;
+
+        var r = new PropertyGetSet<IOpenType>() { Value = font };
+        Fonts.Add(name, r);
+        font.NameRecords
+            .Where(x => x.NameRecord.NameID == 4)
+            .Each(x => Fonts.TryAdd(x.Name, r));
+        return true;
+    }
+
+    public void AddFont(string path) => Add(FontLoader.Load(path));
+
+    public void AddFontCollection(string path) => FontLoader.LoadCollection(path).Each(x => Add(x));
 }
