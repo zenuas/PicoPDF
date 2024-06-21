@@ -9,18 +9,10 @@ using System.Data;
 using System.IO;
 using System.Linq;
 
+var (opt, jsons) = CommandLine.Run<Option>(args);
 var fontreg = new FontRegister();
 fontreg.RegistDirectory([@"test-case", Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts")]);
-
-var (opt, jsons) = CommandLine.Run<Option>(args);
-if (opt.FontList)
-{
-    foreach (var kv in fontreg.Fonts.Where(x => opt.AllFontPreview || x.Key != FontRegister.GetFontFilePath(x.Value.Value.Path)))
-    {
-        Console.WriteLine($"{kv.Key},\"{FontRegister.GetFontFilePath(kv.Value.Value.Path)}\"");
-    }
-    return;
-}
+if (opt.FontList) { FontListTest.Preview(fontreg, opt); return; }
 
 var export_opt = new PdfExportOption
 {
