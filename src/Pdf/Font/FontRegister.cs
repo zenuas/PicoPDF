@@ -70,7 +70,7 @@ public class FontRegister
     public bool Add(IOpenType font)
     {
         var name = GetFontFilePath(font.Path);
-        if (Fonts.TryGetValue(name, out _)) return false;
+        if (Fonts.ContainsKey(name)) return false;
 
         var r = new PropertyGetSet<IOpenType>() { Value = font };
         Fonts.Add(name, r);
