@@ -15,7 +15,7 @@ fontreg.RegistDirectory([@"test-case", Environment.ExpandEnvironmentVariables(@"
 var (opt, jsons) = CommandLine.Run<Option>(args);
 if (opt.FontList)
 {
-    foreach (var kv in fontreg.Fonts)
+    foreach (var kv in fontreg.Fonts.Where(x => opt.AllFontPreview || x.Key != FontRegister.GetFontFilePath(x.Value.Value.Path)))
     {
         Console.WriteLine($"{kv.Key},\"{FontRegister.GetFontFilePath(kv.Value.Value.Path)}\"");
     }

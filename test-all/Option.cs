@@ -30,4 +30,7 @@ public class Option
 
     [CommandOption("font-list")]
     public bool FontList { get; init; } = false;
+
+    [CommandOption("all-font-preview")]
+    public bool AllFontPreview { get; init; } = false;
 }
