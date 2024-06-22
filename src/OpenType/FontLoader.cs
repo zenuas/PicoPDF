@@ -80,7 +80,7 @@ public static class FontLoader
         var encoding =
             encoding_records.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.UnicodeBMPOnly) ??
             encoding_records.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.Windows_UnicodeBMP);
-        var cmap4 = new CMapFormat4(stream, cmap, encoding.Try());
+        var cmap4 = CMapFormat4.ReadFrom(stream, cmap, encoding.Try());
         var cmap4_range = new List<(int Start, int End)>();
         _ = cmap4.EndCode.Aggregate(0, (acc, x) =>
         {
