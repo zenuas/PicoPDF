@@ -56,11 +56,8 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
     PdfUtility.Create(fontreg, json, table).Save(pdfname, export_opt);
 }
 
-static object autoconv(string s)
-{
-    return
-        int.TryParse(s, out var n) ? n :
-        DateTime.TryParse(s, out var d) ? d :
-        double.TryParse(s, out var f) ? f :
-        s;
-}
+static object autoconv(string s) =>
+    int.TryParse(s, out var n) ? n :
+    DateTime.TryParse(s, out var d) ? d :
+    double.TryParse(s, out var f) ? f :
+    s;
