@@ -72,7 +72,7 @@ public static class FontLoader
         var post = ReadTableRecprds(font, "post", stream, x => new PostScriptTable(x)).Try();
         var os2 = ReadTableRecprds(font, "OS/2", stream, x => new OS2Table(x)).Try();
         var hhea = ReadTableRecprds(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
-        var hmtx = ReadTableRecprds(font, "hmtx", stream, x => new HorizontalMetricsTable(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
+        var hmtx = ReadTableRecprds(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
         var cff = ReadTableRecprds(font, "CFF ", stream, CompactFontFormat.ReadFrom);
 
         var cmap = font.TableRecords["cmap"];
