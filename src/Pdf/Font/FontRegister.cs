@@ -55,6 +55,10 @@ public class FontRegister
         return GetOrNull(name)!;
     }
 
+    public FontInfo Get(string name) => Path.GetExtension(name) != "" ?
+        Get(GetFontFilePath(name)) :
+        GetOrNull(name).Try();
+
     public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
 
     public static IFontPath GetFontFilePath(string name)

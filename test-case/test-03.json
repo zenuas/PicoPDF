@@ -1,0 +1,78 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": "test-case/NotoSansCJK-Regular.ttc,0",
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": {
+			"BreakKey": "Tiiki",
+			"Header": "Header",
+			"Detail": {
+					"BreakKey": "Todouhuken",
+					"Header": "Header2",
+					"Detail": "Detail",
+					"Footer": "Total2",
+				},
+			"Footer": "Total",
+		},
+	"Footer": "PageFooter",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "PageHeader", "Size": 30, "X": 10, "Y": 0},
+			{"Type": "ImageElement", "Path": "test-case/300x150.jpg", "X": 350, "Y": 10, "ZoomWidth": 0.25, "ZoomHeight": 0.25},
+			{"Type": "ImageElement", "Path": "test-case/300x150.png", "X": 450, "Y": 10, "ZoomWidth": 0.25, "ZoomHeight": 0.25},
+			{"Type": "RectangleElement", "X": 350, "Y": 10, "Width": 75, "Height": 37, "Color": "#FF0000"},
+		]},
+		{"Type": "HeaderSection", "Name": "Header", "Height": 20, "ViewMode": "First", "Elements": [
+			{"Type": "TextElement", "Text": "地域",  "Size": 10, "X": 10,  "Y": 0},
+			{"Type": "BindElement", "Bind": "Tiiki", "Size": 20, "X": 100, "Y": 0, "Color": "blue"},
+		]},
+		{"Type": "HeaderSection", "Name": "Header2", "Height": 30, "Elements": [
+			{"Type": "TextElement", "Text": "都道府県",   "Size": 10, "X": 10,  "Y": 0},
+			{"Type": "BindElement", "Bind": "Todouhuken", "Size": 20, "X": 100, "Y": 0, "Width": 60, "Style": "ShrinkToFit"},
+			{"Type": "TextElement", "Text": "P-地域", "Size": 10, "X": 180, "Y": 0, "Alignment": "End", "Width": 50},
+			{"Type": "TextElement", "Text": "P-県",   "Size": 10, "X": 230, "Y": 0, "Alignment": "End", "Width": 50},
+			{"Type": "TextElement", "Text": "G-地域", "Size": 10, "X": 280, "Y": 0, "Alignment": "End", "Width": 50},
+			{"Type": "TextElement", "Text": "G-県",   "Size": 10, "X": 330, "Y": 0, "Alignment": "End", "Width": 50},
+			{"Type": "TextElement", "Text": "All",    "Size": 10, "X": 380, "Y": 0, "Alignment": "End", "Width": 50},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Sikutyouson", "Size": 10, "X": 60, "Y": 0},
+			{"Type": "BindElement", "Bind": "Number",      "Size": 10, "X": 100, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50},
+			{"Type": "LineElement", "X": 10,  "Y": 12, "Width": 150, "Height": 0, "Color": "Gray"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 180, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Tiiki"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 230, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Todouhuken"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 280, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Tiiki"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 330, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Todouhuken"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 380, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "All"},
+		]},
+		{"Type": "TotalSection", "Name": "Total", "Height": 20, "ViewMode": "Last", "PageBreak": true, "Elements": [
+			{"Type": "FillRectangleElement", "X": 10,  "Y": 0, "Width": 450, "Height": 10, "LineColor": "Blue", "FillColor": "#EEEEEE"},
+			{"Type": "TextElement",    "Text": "地域計", "Size": 10, "X": 10,  "Y": 0},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 180, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Tiiki"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 230, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Todouhuken"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 280, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Tiiki"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 330, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Todouhuken"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 380, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "All"},
+		]},
+		{"Type": "TotalSection", "Name": "Total2", "Height": 20, "Elements": [
+			{"Type": "TextElement",    "Text": "都道府県計", "Size": 10, "X": 10,  "Y": 0},
+			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 100, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryMethod": "Increment",  "BreakKey": "Todouhuken"},
+			{"Type": "RectangleElement", "X": 10,  "Y": 0, "Width": 450, "Height": 10, "Color": "#FF0000"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 180, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Tiiki"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 230, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Todouhuken"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 280, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Tiiki"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 330, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Todouhuken"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 380, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "All"},
+		]},
+		{"Type": "FooterSection", "Name": "PageFooter", "Height": 30, "Elements": [
+			{"Type": "TextElement", "Text": "PageFooter", "Size": 20, "X": 10,  "Y": 0},
+			{"Type": "SummaryElement",           "Size": 10, "X": 300, "Y": 0, "Format": "#,0", "SummaryType": "PageCount", "Alignment": "End",   "Width": 50},
+			{"Type": "TextElement", "Text": "/", "Size": 10, "X": 352, "Y": 0},
+			{"Type": "SummaryElement",           "Size": 10, "X": 360, "Y": 0, "Format": "#,0", "SummaryType": "PageCount", "Alignment": "Start", "Width": 50, "SummaryMethod": "All"},
+		]},
+	],
+}

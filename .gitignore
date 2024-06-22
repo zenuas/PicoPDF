@@ -343,3 +343,5 @@ healthchecksdb
 @*/
 @*
 test-case/*.pdf
+test-case/*.ttf
+test-case/*.ttc

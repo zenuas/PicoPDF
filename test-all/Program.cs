@@ -14,7 +14,7 @@ var (opt, jsons) = CommandLine.Run<Option>(args);
 var fontreg = new FontRegister();
 if (opt.FontFileExport != "") { FontFileExport.Export(fontreg, opt); return; }
 
-fontreg.RegistDirectory([@"test-case", Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts")]);
+fontreg.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
 if (opt.FontList) { FontListTest.Preview(fontreg, opt); return; }
 
 var export_opt = new PdfExportOption
