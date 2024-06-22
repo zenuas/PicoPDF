@@ -6,14 +6,24 @@ using System.Text;
 
 namespace PicoPDF.OpenType;
 
-public class NameRecord(Stream stream)
+public class NameRecord
 {
-    public readonly ushort PlatformID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-    public readonly ushort EncodingID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-    public readonly ushort LanguageID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-    public readonly ushort NameID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-    public readonly ushort Length = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-    public readonly ushort Offset = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+    public required ushort PlatformID { get; init; }
+    public required ushort EncodingID { get; init; }
+    public required ushort LanguageID { get; init; }
+    public required ushort NameID { get; init; }
+    public required ushort Length { get; init; }
+    public required ushort Offset { get; init; }
+
+    public static NameRecord ReadFrom(Stream stream) => new()
+    {
+        PlatformID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
+        EncodingID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
+        LanguageID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
+        NameID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
+        Length = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
+        Offset = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
+    };
 
     public static (string Name, NameRecord NameRecord)[] ReadFrom(Stream stream, TableRecord rec)
     {
@@ -21,7 +31,7 @@ public class NameRecord(Stream stream)
         var buffer = new MemoryStream(bytes);
         var nametable = new NameTable(buffer);
         return Enumerable.Range(0, nametable.Count)
-            .Select(_ => new NameRecord(buffer))
+            .Select(_ => ReadFrom(buffer))
             .Select(x => ((x.PlatformID == 0 || x.PlatformID == 3 ? Encoding.BigEndianUnicode : Encoding.UTF8).GetString(bytes, nametable.StringOffset + x.Offset, x.Length), x))
             .ToArray();
     }
