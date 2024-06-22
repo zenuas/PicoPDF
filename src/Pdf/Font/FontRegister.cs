@@ -9,7 +9,7 @@ namespace PicoPDF.Pdf.Font;
 
 public class FontRegister
 {
-    public Dictionary<string, PropertyGetSet<IOpenType>> Fonts { get; init; } = [];
+    public Dictionary<string, PropertyGetSet<IOpenTypeHeader>> Fonts { get; init; } = [];
 
     public void RegistDirectory(params string[] paths) => paths
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
@@ -28,18 +28,18 @@ public class FontRegister
             }
         });
 
-    public FontInfo? GetOrNull(string name)
+    public IOpenTypeRequiredTables? GetOrNull(string name)
     {
         var font = Fonts.GetValueOrDefault(name);
         if (font is null) return null;
-        if (font.Value is FontInfo fi) return fi;
+        if (font.Value is IOpenTypeRequiredTables req) return req;
 
         var fontinfo = FontLoader.DelayLoad(font.Value.Cast<FontLoading>());
         Fonts[name].Value = fontinfo;
         return fontinfo;
     }
 
-    public FontInfo Get(IFontPath path)
+    public IOpenTypeRequiredTables Get(IFontPath path)
     {
         var name = GetFontFilePath(path);
         if (GetOrNull(name) is { } font) return font;
@@ -55,7 +55,7 @@ public class FontRegister
         return GetOrNull(name)!;
     }
 
-    public FontInfo Get(string name) => Path.GetExtension(name) != "" ?
+    public IOpenTypeRequiredTables Get(string name) => Path.GetExtension(name) != "" ?
         Get(GetFontFilePath(name)) :
         GetOrNull(name).Try();
 
@@ -71,12 +71,12 @@ public class FontRegister
         return new FontPath { Path = Path.GetFullPath(name) };
     }
 
-    public bool Add(IOpenType font)
+    public bool Add(IOpenTypeHeader font)
     {
         var name = GetFontFilePath(font.Path);
         if (Fonts.ContainsKey(name)) return false;
 
-        var r = new PropertyGetSet<IOpenType>() { Value = font };
+        var r = new PropertyGetSet<IOpenTypeHeader>() { Value = font };
         Fonts.Add(name, r);
         font.NameRecords
             .Where(x => x.NameRecord.NameID == 4)

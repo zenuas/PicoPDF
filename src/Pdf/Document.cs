@@ -69,7 +69,7 @@ public class Document
         return font;
     }
 
-    public Type0Font AddFont(string name, FontInfo font)
+    public Type0Font AddFont(string name, IOpenTypeRequiredTables font)
     {
         FontDescriptorFlags flag = font.EncodingRecords.Contains(x => x.PlatformEncoding == PlatformEncodings.Windows_Symbol) ?
             FontDescriptorFlags.Symbolic :
@@ -82,7 +82,7 @@ public class Document
         return AddFont(name, font, flag);
     }
 
-    public Type0Font AddFont(string name, FontInfo font, FontDescriptorFlags flags)
+    public Type0Font AddFont(string name, IOpenTypeRequiredTables font, FontDescriptorFlags flags)
     {
         var cmap = CMap.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;

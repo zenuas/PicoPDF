@@ -2,7 +2,7 @@
 
 namespace PicoPDF.OpenType;
 
-public class FontLoading : IOpenType
+public class FontLoading : IOpenTypeHeader
 {
     public required string FontFamily { get; init; }
     public required string Style { get; init; }

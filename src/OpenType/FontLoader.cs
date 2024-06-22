@@ -63,7 +63,7 @@ public static class FontLoader
         };
     }
 
-    public static FontInfo DelayLoad(FontLoading font)
+    public static IOpenTypeRequiredTables DelayLoad(FontLoading font)
     {
         using var stream = File.OpenRead(font.Path.Path);
 
@@ -73,7 +73,6 @@ public static class FontLoader
         var os2 = ReadTableRecprds(font, "OS/2", stream, OS2Table.ReadFrom).Try();
         var hhea = ReadTableRecprds(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
         var hmtx = ReadTableRecprds(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
-        var cff = ReadTableRecprds(font, "CFF ", stream, CompactFontFormat.ReadFrom);
 
         var cmap = font.TableRecords["cmap"];
         var encoding_records = EncodingRecord.ReadFrom(stream, cmap);
@@ -87,6 +86,88 @@ public static class FontLoader
             cmap4_range.Add((acc, x));
             return x + 1;
         });
+
+        return font.Offset.ContainTrueType() ?
+            LoadTrueTypeFont(
+                stream,
+                font,
+                head,
+                maxp,
+                post,
+                os2,
+                hhea,
+                hmtx,
+                encoding_records,
+                cmap4,
+                cmap4_range
+            ) :
+            LoadPostScriptFont(
+                stream,
+                font,
+                head,
+                maxp,
+                post,
+                os2,
+                hhea,
+                hmtx,
+                encoding_records,
+                cmap4,
+                cmap4_range
+            );
+    }
+
+    public static TrueTypeFont LoadTrueTypeFont(
+            Stream stream,
+            FontLoading font,
+            FontHeaderTable head,
+            MaximumProfileTable maxp,
+            PostScriptTable post,
+            OS2Table os2,
+            HorizontalHeaderTable hhea,
+            HorizontalMetricsTable hmtx,
+            EncodingRecord[] encoding_records,
+            CMapFormat4 cmap4,
+            List<(int Start, int End)> cmap4_range
+        )
+    {
+        return new()
+        {
+            FontFamily = font.FontFamily,
+            Style = font.Style,
+            FullFontName = font.FullFontName,
+            PostScriptName = font.PostScriptName,
+            Path = font.Path,
+            Position = font.Position,
+            TableRecords = font.TableRecords,
+            Offset = font.Offset,
+            NameRecords = font.NameRecords,
+            FontHeader = head,
+            MaximumProfile = maxp,
+            PostScript = post,
+            OS2 = os2,
+            EncodingRecords = encoding_records,
+            CMap4 = cmap4,
+            CMap4Range = cmap4_range,
+            HorizontalHeader = hhea,
+            HorizontalMetrics = hmtx,
+        };
+    }
+
+    public static PostScriptFont LoadPostScriptFont(
+            Stream stream,
+            FontLoading font,
+            FontHeaderTable head,
+            MaximumProfileTable maxp,
+            PostScriptTable post,
+            OS2Table os2,
+            HorizontalHeaderTable hhea,
+            HorizontalMetricsTable hmtx,
+            EncodingRecord[] encoding_records,
+            CMapFormat4 cmap4,
+            List<(int Start, int End)> cmap4_range
+        )
+    {
+        var cff = ReadTableRecprds(font, "CFF ", stream, CompactFontFormat.ReadFrom).Try();
 
         return new()
         {

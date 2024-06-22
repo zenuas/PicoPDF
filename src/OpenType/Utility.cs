@@ -12,9 +12,9 @@ public static class Utility
 
     public static bool ContainCFF(this OffsetTable self) => self.Version == 0x4F54544F;
 
-    public static int CharToGIDCached(this FontInfo font, char c) => font.CMap4Cache.TryGetValue(c, out var gid) ? gid : (font.CMap4Cache[c] = CharToGID(font, c));
+    public static int CharToGIDCached(this IOpenTypeRequiredTables font, char c) => font.CMap4Cache.TryGetValue(c, out var gid) ? gid : (font.CMap4Cache[c] = CharToGID(font, c));
 
-    public static int CharToGID(this FontInfo font, char c)
+    public static int CharToGID(this IOpenTypeRequiredTables font, char c)
     {
         var seg = font.CMap4Range.BinarySearch((c, c), CMap4RangeComparer);
         var start = font.CMap4.StartCode[seg];
@@ -27,11 +27,11 @@ public static class Utility
         return (font.CMap4.GlyphIdArray[gindex] + font.CMap4.IdDelta[seg]) & 0xFFFF;
     }
 
-    public static int MeasureString(this FontInfo font, string s) => s.Select(x => MeasureChar(font, x)).Sum();
+    public static int MeasureString(this IOpenTypeRequiredTables font, string s) => s.Select(x => MeasureChar(font, x)).Sum();
 
-    public static int MeasureChar(this FontInfo font, char c) => MeasureGID(font, CharToGIDCached(font, c));
+    public static int MeasureChar(this IOpenTypeRequiredTables font, char c) => MeasureGID(font, CharToGIDCached(font, c));
 
-    public static int MeasureGID(this FontInfo font, int gid)
+    public static int MeasureGID(this IOpenTypeRequiredTables font, int gid)
     {
         var width = font.HorizontalMetrics.Metrics[Math.Min(gid, font.HorizontalHeader.NumberOfHMetrics - 1)].AdvanceWidth;
         return font.FontHeader.UnitsPerEm == 1000 ? width : width * 1000 / font.FontHeader.UnitsPerEm;

@@ -2,7 +2,7 @@
 
 namespace PicoPDF.OpenType;
 
-public class FontInfo : IOpenType
+public class TrueTypeFont : IOpenTypeRequiredTables
 {
     public required string FontFamily { get; init; }
     public required string Style { get; init; }
@@ -23,5 +23,4 @@ public class FontInfo : IOpenType
     public Dictionary<char, int> CMap4Cache { get; init; } = [];
     public required HorizontalHeaderTable HorizontalHeader { get; init; }
     public required HorizontalMetricsTable HorizontalMetrics { get; init; }
-    public CompactFontFormat? CompactFontFormat { get; init; }
 }

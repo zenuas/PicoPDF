@@ -4,7 +4,7 @@ namespace PicoPDF.OpenType;
 
 public static class FontExport
 {
-    public static void Export(FontInfo font, Stream stream)
+    public static void Export(IOpenTypeRequiredTables font, Stream stream)
     {
 
     }

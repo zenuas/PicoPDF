@@ -8,7 +8,7 @@ namespace PicoPDF.Pdf.Font;
 
 public class CIDToUnicode : PdfObject
 {
-    public required FontInfo Font { get; init; }
+    public required IOpenTypeRequiredTables Font { get; init; }
     public required HashSet<char> Chars { get; init; }
 
     public override void DoExport(PdfExportOption option)
