@@ -29,7 +29,7 @@ public class NameRecord
     {
         var bytes = stream.ReadPositionBytes(rec.Offset, (int)rec.Length);
         var buffer = new MemoryStream(bytes);
-        var nametable = new NameTable(buffer);
+        var nametable = NameTable.ReadFrom(buffer);
         return Enumerable.Range(0, nametable.Count)
             .Select(_ => ReadFrom(buffer))
             .Select(x => ((x.PlatformID == 0 || x.PlatformID == 3 ? Encoding.BigEndianUnicode : Encoding.UTF8).GetString(bytes, nametable.StringOffset + x.Offset, x.Length), x))
