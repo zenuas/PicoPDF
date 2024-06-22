@@ -40,7 +40,7 @@ public static class FontLoader
         if (!offset.ContainTrueType() && !offset.ContainCFF()) throw new InvalidOperationException();
 
         var tables = Enumerable.Range(0, offset.NumberOfTables)
-            .Select(_ => new TableRecord(stream))
+            .Select(_ => TableRecord.ReadFrom(stream))
             .ToDictionary(x => x.TableTag, x => x);
 
         var namerecs = NameRecord.ReadFrom(stream, tables["name"]);
