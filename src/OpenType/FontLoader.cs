@@ -67,7 +67,7 @@ public static class FontLoader
     {
         using var stream = File.OpenRead(font.Path.Path);
 
-        var head = ReadTableRecprds(font, "head", stream, x => new FontHeaderTable(x)).Try();
+        var head = ReadTableRecprds(font, "head", stream, FontHeaderTable.ReadFrom).Try();
         var maxp = ReadTableRecprds(font, "maxp", stream, x => new MaximumProfileTable(x)).Try();
         var post = ReadTableRecprds(font, "post", stream, x => new PostScriptTable(x)).Try();
         var os2 = ReadTableRecprds(font, "OS/2", stream, x => new OS2Table(x)).Try();
