@@ -17,7 +17,7 @@ public class EncodingRecord(Stream stream)
     {
         var bytes = stream.ReadPositionBytes(rec.Offset, (int)rec.Length);
         var buffer = new MemoryStream(bytes);
-        var cmaptable = new CMapTable(buffer);
+        var cmaptable = CMapTable.ReadFrom(buffer);
         return Enumerable.Range(0, cmaptable.NumberOfTables)
             .Select(_ => new EncodingRecord(buffer))
             .ToArray();
