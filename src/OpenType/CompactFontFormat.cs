@@ -8,16 +8,27 @@ using System.Text;
 
 namespace PicoPDF.OpenType;
 
-public class CompactFontFormat(Stream stream)
+public class CompactFontFormat
 {
-    public readonly byte Major = (byte)stream.ReadByte();
-    public readonly byte Minor = (byte)stream.ReadByte();
-    public readonly byte HdrSize = (byte)stream.ReadByte();
-    public readonly byte OffSize = (byte)stream.ReadByte();
+    public required byte Major { get; init; }
+    public required byte Minor { get; init; }
+    public required byte HdrSize { get; init; }
+    public required byte OffSize { get; init; }
 
-    public readonly string[] NameIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
-    public readonly Dictionary<string, object>[] TopDictIndex = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).ToArray();
-    public readonly string[] StringIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
+    public required string[] NameIndex { get; init; }
+    public required Dictionary<string, object>[] TopDictIndex { get; init; }
+    public required string[] StringIndex { get; init; }
+
+    public static CompactFontFormat ReadFrom(Stream stream) => new()
+    {
+        Major = (byte)stream.ReadByte(),
+        Minor = (byte)stream.ReadByte(),
+        HdrSize = (byte)stream.ReadByte(),
+        OffSize = (byte)stream.ReadByte(),
+        NameIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray(),
+        TopDictIndex = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).ToArray(),
+        StringIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray(),
+    };
 
     public static byte[][] ReadIndexData(Stream stream)
     {
