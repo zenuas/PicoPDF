@@ -69,7 +69,7 @@ public static class FontLoader
 
         var head = ReadTableRecprds(font, "head", stream, FontHeaderTable.ReadFrom).Try();
         var maxp = ReadTableRecprds(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
-        var post = ReadTableRecprds(font, "post", stream, x => new PostScriptTable(x)).Try();
+        var post = ReadTableRecprds(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var os2 = ReadTableRecprds(font, "OS/2", stream, OS2Table.ReadFrom).Try();
         var hhea = ReadTableRecprds(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
         var hmtx = ReadTableRecprds(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
