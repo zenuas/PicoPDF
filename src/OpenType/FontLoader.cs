@@ -36,7 +36,7 @@ public static class FontLoader
     public static FontLoading Load(IFontPath path, Stream stream, long pos, LoadOption opt)
     {
         stream.Position = pos;
-        var offset = new OffsetTable(stream);
+        var offset = OffsetTable.ReadFrom(stream);
         if (!offset.ContainTrueType() && !offset.ContainCFF()) throw new InvalidOperationException();
 
         var tables = Enumerable.Range(0, offset.NumberOfTables)
