@@ -24,13 +24,14 @@ public static class FontLoader
     public static FontLoading[] LoadCollection(string path, Stream stream, LoadOption opt)
     {
         var header = TrueTypeCollectionHeader.ReadFrom(stream);
-        if (header.TTCTag != "ttcf") throw new InvalidOperationException();
 
-        return Enumerable.Range(0, (int)header.NumberOfFonts)
-            .Select(_ => BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)))
-            .ToArray()
-            .Select((x, i) => Load(new FontCollectionPath { Path = path, Index = i }, stream, x, opt))
-            .ToArray();
+        return header.TTCTag != "ttcf"
+            ? throw new InvalidOperationException()
+            : Enumerable.Range(0, (int)header.NumberOfFonts)
+                .Select(_ => BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)))
+                .ToArray()
+                .Select((x, i) => Load(new FontCollectionPath { Path = path, Index = i }, stream, x, opt))
+                .ToArray();
     }
 
     public static FontLoading Load(IFontPath path, Stream stream, long pos, LoadOption opt)
@@ -44,7 +45,7 @@ public static class FontLoader
             .ToDictionary(x => x.TableTag, x => x);
 
         var namerecs = NameRecord.ReadFrom(stream, tables["name"]);
-        var namev = (ushort nameid) => opt.PlatformIDOrder
+        string? namev(ushort nameid) => opt.PlatformIDOrder
             .Select(x => namerecs.FindFirstOrNullValue(y => y.NameRecord.PlatformID == x && y.NameRecord.NameID == nameid)?.Name)
             .Where(x => x is { })
             .FirstOrDefault();
