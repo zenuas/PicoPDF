@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 
-namespace PicoPDF.OpenType;
+namespace PicoPDF.OpenType.TrueType;
 
 public class SimpleGlyph : ITrueTypeGlyph
 {

@@ -1,4 +1,6 @@
 ﻿using Mina.Extension;
+using PicoPDF.OpenType.PostScript;
+using PicoPDF.OpenType.TrueType;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.OpenType;
+﻿namespace PicoPDF.OpenType.TrueType;
 
 public enum SimpleGlyphFlags
 {

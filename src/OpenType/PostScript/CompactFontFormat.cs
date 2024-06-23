@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace PicoPDF.OpenType;
+namespace PicoPDF.OpenType.PostScript;
 
 public class CompactFontFormat
 {
@@ -67,15 +67,15 @@ public class CompactFontFormat
                 kv.Add($"{b0}", values.ToArray());
                 values.Clear();
             }
-            else if (b0 is 28 or 29 or (>= 32 and <= 254))
+            else if (b0 is 28 or 29 or >= 32 and <= 254)
             {
                 values.Add(b0 switch
                 {
                     >= 32 and <= 246 => b0 - 139,
-                    >= 247 and <= 250 => ((b0 - 247) * 256) + stream.ReadByte() + 108,
-                    >= 251 and <= 254 => (-(b0 - 251) * 256) + stream.ReadByte() - 108,
-                    28 => (stream.ReadByte() << 8) | stream.ReadByte(),
-                    29 => (stream.ReadByte() << 24) | (stream.ReadByte() << 16) | (stream.ReadByte() << 8) | stream.ReadByte(),
+                    >= 247 and <= 250 => (b0 - 247) * 256 + stream.ReadByte() + 108,
+                    >= 251 and <= 254 => -(b0 - 251) * 256 + stream.ReadByte() - 108,
+                    28 => stream.ReadByte() << 8 | stream.ReadByte(),
+                    29 => stream.ReadByte() << 24 | stream.ReadByte() << 16 | stream.ReadByte() << 8 | stream.ReadByte(),
                     _ => 0,
                 });
             }
@@ -108,7 +108,7 @@ public class CompactFontFormat
 
         for (; i < bytes.Length && bytes[i] <= 9; i++)
         {
-            value = (value * 10) + bytes[i];
+            value = value * 10 + bytes[i];
         }
 
         if (i < bytes.Length && bytes[i] == 0x0a)
@@ -128,7 +128,7 @@ public class CompactFontFormat
             var e = 0;
             for (; i < bytes.Length && bytes[i] <= 9; i++)
             {
-                e = (e * 10) + bytes[i];
+                e = e * 10 + bytes[i];
             }
             value *= Math.Pow(10, esign ? e : -e);
         }
