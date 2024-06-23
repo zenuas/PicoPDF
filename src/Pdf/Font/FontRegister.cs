@@ -52,7 +52,7 @@ public class FontRegister
         {
             AddFont(path.Path);
         }
-        return GetOrNull(name)!;
+        return GetOrNull(name).Try();
     }
 
     public IOpenTypeRequiredTables Get(string name) => Path.GetExtension(name) != "" ?
