@@ -132,6 +132,17 @@ public static class FontLoader
         )
     {
         var loca = ReadTableRecprds(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, head.IndexToLocFormat, maxp.NumberOfGlyphs)).Try();
+        var glyf = ReadTableRecprds(font, "glyf", stream, x =>
+        {
+            return Enumerable.Range(0, maxp.NumberOfGlyphs)
+                .Select(_ =>
+                {
+                    var number_of_contours = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+                    if (number_of_contours < 0) throw new();
+                    return SimpleGlyph.ReadFrom(stream, number_of_contours);
+                })
+                .ToArray();
+        }).Try();
 
         return new()
         {
@@ -154,6 +165,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             IndexToLocation = loca,
+            Glyphs = glyf,
         };
     }
 

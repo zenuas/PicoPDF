@@ -24,4 +24,5 @@ public class TrueTypeFont : IOpenTypeRequiredTables
     public required HorizontalHeaderTable HorizontalHeader { get; init; }
     public required HorizontalMetricsTable HorizontalMetrics { get; init; }
     public required IndexToLocationTable IndexToLocation { get; init; }
+    public required ITrueTypeGlyph[] Glyphs { get; init; }
 }
