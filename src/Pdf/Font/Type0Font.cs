@@ -60,9 +60,9 @@ public class Type0Font : PdfObject, IFont
         return new()
         {
             Left = 0,
-            Top = (double)(-Font.OS2.STypoAscender) / Font.FontHeader.UnitsPerEm,
+            Top = (double)-Font.OS2.STypoAscender / Font.FontHeader.UnitsPerEm,
             Right = (double)Font.MeasureString(s) / 1000,
-            Bottom = (double)(-Font.OS2.STypoDescender) / Font.FontHeader.UnitsPerEm,
+            Bottom = (double)-Font.OS2.STypoDescender / Font.FontHeader.UnitsPerEm,
         };
     }
 

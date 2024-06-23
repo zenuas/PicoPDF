@@ -6,7 +6,7 @@ namespace PicoPDF.OpenType;
 
 public static class Utility
 {
-    public static readonly ComparerBinder<(int Start, int End)> CMap4RangeComparer = new() { Compare = (a, b) => (a.End < b.End ? -1 : a.Start > b.Start ? 1 : 0) };
+    public static readonly ComparerBinder<(int Start, int End)> CMap4RangeComparer = new() { Compare = (a, b) => a.End < b.End ? -1 : a.Start > b.Start ? 1 : 0 };
 
     public static bool ContainTrueType(this OffsetTable self) => self.Version == 0x00010000;
 
