@@ -23,4 +23,5 @@ public class TrueTypeFont : IOpenTypeRequiredTables
     public Dictionary<char, int> CMap4Cache { get; init; } = [];
     public required HorizontalHeaderTable HorizontalHeader { get; init; }
     public required HorizontalMetricsTable HorizontalMetrics { get; init; }
+    public required IndexToLocationTable IndexToLocation { get; init; }
 }

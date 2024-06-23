@@ -131,6 +131,8 @@ public static class FontLoader
             List<(int Start, int End)> cmap4_range
         )
     {
+        var loca = ReadTableRecprds(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, head.IndexToLocFormat, maxp.NumberOfGlyphs)).Try();
+
         return new()
         {
             FontFamily = font.FontFamily,
@@ -151,6 +153,7 @@ public static class FontLoader
             CMap4Range = cmap4_range,
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
+            IndexToLocation = loca,
         };
     }
 
