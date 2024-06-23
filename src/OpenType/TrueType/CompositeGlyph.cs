@@ -1,6 +1,6 @@
 ﻿namespace PicoPDF.OpenType.TrueType;
 
-public class CompositeGlyph : ITrueTypeGlyph
+public class CompositeGlyph : IGlyph
 {
     public required short NumberOfContours { get; init; }
     public required short XMin { get; init; }

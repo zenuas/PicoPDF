@@ -1,6 +1,6 @@
 ﻿namespace PicoPDF.OpenType.TrueType;
 
-public interface ITrueTypeGlyph
+public interface IGlyph
 {
     public short NumberOfContours { get; init; }
     public short XMin { get; init; }

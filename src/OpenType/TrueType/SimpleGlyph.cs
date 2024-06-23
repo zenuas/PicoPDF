@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace PicoPDF.OpenType.TrueType;
 
-public class SimpleGlyph : ITrueTypeGlyph
+public class SimpleGlyph : IGlyph
 {
     public required short NumberOfContours { get; init; }
     public required short XMin { get; init; }
