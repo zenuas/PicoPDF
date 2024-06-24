@@ -32,8 +32,6 @@ public class SimpleGlyph : IGlyph
 
         var lastpoint = endpoints.Last() + 1;
         var flags = new byte[lastpoint];
-        var xcoordinates = new short[lastpoint];
-        var ycoordinates = new short[lastpoint];
         for (var i = 0; i < lastpoint; i++)
         {
             var flag = flags[i] = (byte)stream.ReadByte();
@@ -44,6 +42,7 @@ public class SimpleGlyph : IGlyph
             }
         }
 
+        var xcoordinates = new short[lastpoint];
         for (var i = 0; i < lastpoint; i++)
         {
             var flag = flags[i];
@@ -59,6 +58,7 @@ public class SimpleGlyph : IGlyph
             }
         }
 
+        var ycoordinates = new short[lastpoint];
         for (var i = 0; i < lastpoint; i++)
         {
             var flag = flags[i];
