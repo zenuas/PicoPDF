@@ -83,12 +83,7 @@ public static class FontLoader
             encoding_records.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.UnicodeBMPOnly) ??
             encoding_records.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.Windows_UnicodeBMP);
         var cmap4 = CMapFormat4.ReadFrom(stream, cmap, encoding.Try());
-        var cmap4_range = new List<(int Start, int End)>();
-        _ = cmap4.EndCode.Aggregate(0, (acc, x) =>
-        {
-            cmap4_range.Add((acc, x));
-            return x + 1;
-        });
+        var cmap4_range = CreateCMap4Range(cmap4);
 
         return font.Offset.ContainTrueType() ?
             LoadTrueTypeFont(
@@ -117,6 +112,17 @@ public static class FontLoader
                 cmap4,
                 cmap4_range
             );
+    }
+
+    public static List<(int Start, int End)> CreateCMap4Range(CMapFormat4 cmap4)
+    {
+        var cmap4_range = new List<(int Start, int End)>();
+        _ = cmap4.EndCode.Aggregate(0, (acc, x) =>
+        {
+            cmap4_range.Add((acc, x));
+            return x + 1;
+        });
+        return cmap4_range;
     }
 
     public static TrueTypeFont LoadTrueTypeFont(

@@ -36,4 +36,7 @@ public class Option
 
     [CommandOption("font-file-export")]
     public string FontFileExport { get; init; } = "";
+
+    [CommandOption("font-export-chars")]
+    public string FontExportChars { get; init; } = "a";
 }
