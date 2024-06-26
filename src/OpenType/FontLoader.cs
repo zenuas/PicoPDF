@@ -74,15 +74,14 @@ public static class FontLoader
         var maxp = ReadTableRecprds(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
         var post = ReadTableRecprds(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var os2 = ReadTableRecprds(font, "OS/2", stream, OS2Table.ReadFrom).Try();
+        var cmap = ReadTableRecprds(font, "cmap", stream, CMapTable.ReadFrom).Try();
         var hhea = ReadTableRecprds(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
         var hmtx = ReadTableRecprds(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
-        var cmap = font.TableRecords["cmap"];
-        var encoding_records = EncodingRecord.ReadFrom(stream, cmap);
         var encoding =
-            encoding_records.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.UnicodeBMPOnly) ??
-            encoding_records.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.Windows_UnicodeBMP);
-        var cmap4 = CMapFormat4.ReadFrom(stream, cmap, encoding.Try());
+            cmap.EncodingRecords.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.UnicodeBMPOnly) ??
+            cmap.EncodingRecords.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.Windows_UnicodeBMP);
+        var cmap4 = CMapFormat4.ReadFrom(stream, font.TableRecords["cmap"], encoding.Try());
         var cmap4_range = CreateCMap4Range(cmap4);
 
         return font.Offset.ContainTrueType() ?
@@ -95,7 +94,7 @@ public static class FontLoader
                 os2,
                 hhea,
                 hmtx,
-                encoding_records,
+                cmap,
                 cmap4,
                 cmap4_range
             ) :
@@ -108,7 +107,7 @@ public static class FontLoader
                 os2,
                 hhea,
                 hmtx,
-                encoding_records,
+                cmap,
                 cmap4,
                 cmap4_range
             );
@@ -134,7 +133,7 @@ public static class FontLoader
             OS2Table os2,
             HorizontalHeaderTable hhea,
             HorizontalMetricsTable hmtx,
-            EncodingRecord[] encoding_records,
+            CMapTable cmap,
             CMapFormat4 cmap4,
             List<(int Start, int End)> cmap4_range
         )
@@ -170,11 +169,11 @@ public static class FontLoader
             MaximumProfile = maxp,
             PostScript = post,
             OS2 = os2,
-            EncodingRecords = encoding_records,
-            CMap4 = cmap4,
-            CMap4Range = cmap4_range,
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
+            CMap = cmap,
+            CMap4 = cmap4,
+            CMap4Range = cmap4_range,
             IndexToLocation = loca,
             Glyphs = glyf,
         };
@@ -189,7 +188,7 @@ public static class FontLoader
             OS2Table os2,
             HorizontalHeaderTable hhea,
             HorizontalMetricsTable hmtx,
-            EncodingRecord[] encoding_records,
+            CMapTable cmap,
             CMapFormat4 cmap4,
             List<(int Start, int End)> cmap4_range
         )
@@ -211,11 +210,11 @@ public static class FontLoader
             MaximumProfile = maxp,
             PostScript = post,
             OS2 = os2,
-            EncodingRecords = encoding_records,
-            CMap4 = cmap4,
-            CMap4Range = cmap4_range,
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
+            CMap = cmap,
+            CMap4 = cmap4,
+            CMap4Range = cmap4_range,
             CompactFontFormat = cff,
         };
     }
