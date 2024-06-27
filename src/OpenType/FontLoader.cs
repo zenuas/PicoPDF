@@ -78,10 +78,14 @@ public static class FontLoader
         var hhea = ReadTableRecprds(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
         var hmtx = ReadTableRecprds(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
-        var encoding =
-            cmap.EncodingRecords.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.UnicodeBMPOnly) ??
-            cmap.EncodingRecords.FirstOrDefault(x => x.PlatformEncoding == PlatformEncodings.Windows_UnicodeBMP);
-        var cmap4 = CMapFormat4.ReadFrom(stream, font.TableRecords["cmap"], encoding.Try());
+        var cmap_offset = font.TableRecords["cmap"].Offset;
+        var cmap4 = cmap.EncodingRecords.Select(x =>
+            {
+                stream.Position = cmap_offset + x.Offset;
+                return ReadCMapFormat(stream);
+            })
+            .OfType<CMapFormat4>()
+            .First();
         var cmap4_range = CreateCMap4Range(cmap4);
 
         return font.Offset.ContainTrueType() ?
@@ -111,6 +115,16 @@ public static class FontLoader
                 cmap4,
                 cmap4_range
             );
+    }
+
+    public static ICMapFormat? ReadCMapFormat(Stream stream)
+    {
+        var format = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+        return format switch
+        {
+            4 => CMapFormat4.ReadFrom(stream),
+            _ => null,
+        };
     }
 
     public static List<(int Start, int End)> CreateCMap4Range(CMapFormat4 cmap4)

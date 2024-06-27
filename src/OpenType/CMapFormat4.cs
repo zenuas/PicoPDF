@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace PicoPDF.OpenType;
 
-public class CMapFormat4
+public class CMapFormat4 : ICMapFormat
 {
     public required ushort Format { get; init; }
     public required ushort Length { get; init; }
@@ -21,11 +21,8 @@ public class CMapFormat4
     public required ushort[] IdRangeOffsets { get; init; }
     public required ushort[] GlyphIdArray { get; init; }
 
-    public static CMapFormat4 ReadFrom(Stream stream, TableRecord rec, EncodingRecord enc)
+    public static CMapFormat4 ReadFrom(Stream stream)
     {
-        stream.Position = rec.Offset + enc.Offset;
-
-        var format = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
         var length = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
         var language = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
         var seg_count_x2 = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
@@ -35,7 +32,7 @@ public class CMapFormat4
 
         return new()
         {
-            Format = format,
+            Format = 4,
             Length = length,
             Language = language,
             SegCountX2 = seg_count_x2,
