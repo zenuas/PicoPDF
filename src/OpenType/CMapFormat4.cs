@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using System;
 using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
@@ -45,6 +46,29 @@ public class CMapFormat4 : ICMapFormat
             IdDelta = Lists.RangeTo(0, seg_count - 1).Select(_ => BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2))).ToArray(),
             IdRangeOffsets = Lists.RangeTo(0, seg_count - 1).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
             GlyphIdArray = Lists.RangeTo(0, glyph_count - 1).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
+        };
+    }
+
+    public static CMapFormat4 CreateFormat((char Char, ushort GlyphId)[] char_gid)
+    {
+        var seg_count = char_gid.Length;
+        var serach_range = Math.Pow(2, Math.Floor(Math.Log2(seg_count)));
+
+        return new()
+        {
+            Format = 4,
+            Length = 0,
+            Language = 0,
+            SegCountX2 = (ushort)(seg_count * 2),
+            SearchRange = (ushort)serach_range,
+            EntrySelector = (ushort)Math.Log2(serach_range / 2),
+            RangeShift = (ushort)((seg_count * 2) - serach_range),
+            EndCode = [],
+            ReservedPad = 0,
+            StartCode = [],
+            IdDelta = [],
+            IdRangeOffsets = [],
+            GlyphIdArray = [],
         };
     }
 }
