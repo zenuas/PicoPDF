@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 
 namespace PicoPDF.OpenType;
@@ -27,23 +26,23 @@ public class HorizontalHeaderTable
 
     public static HorizontalHeaderTable ReadFrom(Stream stream) => new()
     {
-        MajorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        MinorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        Ascender = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        Descender = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        LineGap = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        AdvanceWidthMax = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        MinLeftSideBearing = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        MinRightSideBearing = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        XMaxExtent = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        CaretSlopeRise = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        CaretSlopeRun = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        CaretOffset = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        Reserved1 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        Reserved2 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        Reserved3 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        Reserved4 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        MetricDataFormat = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        NumberOfHMetrics = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
+        MajorVersion = stream.ReadUShortByBigEndian(),
+        MinorVersion = stream.ReadUShortByBigEndian(),
+        Ascender = stream.ReadShortByBigEndian(),
+        Descender = stream.ReadShortByBigEndian(),
+        LineGap = stream.ReadShortByBigEndian(),
+        AdvanceWidthMax = stream.ReadUShortByBigEndian(),
+        MinLeftSideBearing = stream.ReadShortByBigEndian(),
+        MinRightSideBearing = stream.ReadShortByBigEndian(),
+        XMaxExtent = stream.ReadShortByBigEndian(),
+        CaretSlopeRise = stream.ReadShortByBigEndian(),
+        CaretSlopeRun = stream.ReadShortByBigEndian(),
+        CaretOffset = stream.ReadShortByBigEndian(),
+        Reserved1 = stream.ReadShortByBigEndian(),
+        Reserved2 = stream.ReadShortByBigEndian(),
+        Reserved3 = stream.ReadShortByBigEndian(),
+        Reserved4 = stream.ReadShortByBigEndian(),
+        MetricDataFormat = stream.ReadShortByBigEndian(),
+        NumberOfHMetrics = stream.ReadUShortByBigEndian(),
     };
 }

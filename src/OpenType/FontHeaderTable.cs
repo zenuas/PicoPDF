@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 
 namespace PicoPDF.OpenType;
@@ -27,24 +26,24 @@ public class FontHeaderTable
 
     public static FontHeaderTable ReadFrom(Stream stream) => new()
     {
-        MajorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        MinorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        FontRevision = BinaryPrimitives.ReadInt32BigEndian(stream.ReadBytes(4)),
-        ChecksumAdjustment = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
-        MagicNumber = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
-        Flags = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        UnitsPerEm = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        Created = BinaryPrimitives.ReadInt64BigEndian(stream.ReadBytes(8)),
-        Modified = BinaryPrimitives.ReadInt64BigEndian(stream.ReadBytes(8)),
-        XMin = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        YMin = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        XMax = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        YMax = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        MacStyle = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        LowestRecPPEM = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        FontDirectionHint = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        IndexToLocFormat = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        GlyphDataFormat = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
+        MajorVersion = stream.ReadUShortByBigEndian(),
+        MinorVersion = stream.ReadUShortByBigEndian(),
+        FontRevision = stream.ReadIntByBigEndian(),
+        ChecksumAdjustment = stream.ReadUIntByBigEndian(),
+        MagicNumber = stream.ReadUIntByBigEndian(),
+        Flags = stream.ReadUShortByBigEndian(),
+        UnitsPerEm = stream.ReadUShortByBigEndian(),
+        Created = stream.ReadLongByBigEndian(),
+        Modified = stream.ReadLongByBigEndian(),
+        XMin = stream.ReadShortByBigEndian(),
+        YMin = stream.ReadShortByBigEndian(),
+        XMax = stream.ReadShortByBigEndian(),
+        YMax = stream.ReadShortByBigEndian(),
+        MacStyle = stream.ReadUShortByBigEndian(),
+        LowestRecPPEM = stream.ReadUShortByBigEndian(),
+        FontDirectionHint = stream.ReadShortByBigEndian(),
+        IndexToLocFormat = stream.ReadShortByBigEndian(),
+        GlyphDataFormat = stream.ReadShortByBigEndian(),
     };
 
     public long WriteTo(Stream stream)

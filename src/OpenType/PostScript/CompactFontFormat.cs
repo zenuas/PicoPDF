@@ -32,15 +32,15 @@ public class CompactFontFormat
 
     public static byte[][] ReadIndexData(Stream stream)
     {
-        var count = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+        var count = stream.ReadUShortByBigEndian();
         var offSize = (byte)stream.ReadByte();
 
         Func<Stream, int> offsetRead = offSize switch
         {
             1 => (x) => x.ReadByte(),
-            2 => (x) => BinaryPrimitives.ReadUInt16BigEndian(x.ReadBytes(2)),
+            2 => (x) => x.ReadUShortByBigEndian(),
             3 => (x) => (int)BinaryPrimitives.ReadUInt32BigEndian(x.ReadBytes(3)),
-            _ => (x) => (int)BinaryPrimitives.ReadUInt32BigEndian(x.ReadBytes(4)),
+            _ => (x) => (int)x.ReadUIntByBigEndian(),
         };
 
         var offset = Lists.RangeTo(0, count).Select(_ => offsetRead(stream)).ToArray();

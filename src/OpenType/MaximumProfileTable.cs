@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 
 namespace PicoPDF.OpenType;
@@ -24,8 +23,8 @@ public class MaximumProfileTable
 
     public static MaximumProfileTable ReadFrom(Stream stream)
     {
-        var version = BinaryPrimitives.ReadInt32BigEndian(stream.ReadBytes(4));
-        var number_of_glyphs = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+        var version = stream.ReadIntByBigEndian();
+        var number_of_glyphs = stream.ReadUShortByBigEndian();
 
         return version != 0x00010000
             ? new() { Version = version, NumberOfGlyphs = number_of_glyphs }
@@ -33,19 +32,19 @@ public class MaximumProfileTable
             {
                 Version = version,
                 NumberOfGlyphs = number_of_glyphs,
-                MaxPoints = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxContours = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxCompositePoints = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxCompositeContours = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxZones = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxTwilightPoints = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxStorage = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxFunctionDefs = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxInstructionDefs = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxStackElements = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxSizeOfInstructions = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxComponentElements = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-                MaxComponentDepth = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
+                MaxPoints = stream.ReadUShortByBigEndian(),
+                MaxContours = stream.ReadUShortByBigEndian(),
+                MaxCompositePoints = stream.ReadUShortByBigEndian(),
+                MaxCompositeContours = stream.ReadUShortByBigEndian(),
+                MaxZones = stream.ReadUShortByBigEndian(),
+                MaxTwilightPoints = stream.ReadUShortByBigEndian(),
+                MaxStorage = stream.ReadUShortByBigEndian(),
+                MaxFunctionDefs = stream.ReadUShortByBigEndian(),
+                MaxInstructionDefs = stream.ReadUShortByBigEndian(),
+                MaxStackElements = stream.ReadUShortByBigEndian(),
+                MaxSizeOfInstructions = stream.ReadUShortByBigEndian(),
+                MaxComponentElements = stream.ReadUShortByBigEndian(),
+                MaxComponentDepth = stream.ReadUShortByBigEndian(),
             };
     }
 }

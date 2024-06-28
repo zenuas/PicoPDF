@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 
 namespace PicoPDF.OpenType;
@@ -12,9 +11,9 @@ public class NameTable
 
     public static NameTable ReadFrom(Stream stream) => new()
     {
-        Format = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        Count = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        StringOffset = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
+        Format = stream.ReadUShortByBigEndian(),
+        Count = stream.ReadUShortByBigEndian(),
+        StringOffset = stream.ReadUShortByBigEndian(),
     };
 
     public override string ToString() => $"Format={Format}, Count={Count}, StringOffset={StringOffset}";

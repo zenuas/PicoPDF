@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 
 namespace PicoPDF.OpenType;
@@ -14,9 +13,9 @@ public class EncodingRecord
 
     public static EncodingRecord ReadFrom(Stream stream) => new()
     {
-        PlatformID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        EncodingID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        Offset = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
+        PlatformID = stream.ReadUShortByBigEndian(),
+        EncodingID = stream.ReadUShortByBigEndian(),
+        Offset = stream.ReadUIntByBigEndian(),
     };
 
     public override string ToString() => $"PlatformID={PlatformID}, EncodingID={EncodingID}";

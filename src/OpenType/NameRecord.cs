@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,12 +16,12 @@ public class NameRecord
 
     public static NameRecord ReadFrom(Stream stream) => new()
     {
-        PlatformID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        EncodingID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        LanguageID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        NameID = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        Length = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        Offset = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
+        PlatformID = stream.ReadUShortByBigEndian(),
+        EncodingID = stream.ReadUShortByBigEndian(),
+        LanguageID = stream.ReadUShortByBigEndian(),
+        NameID = stream.ReadUShortByBigEndian(),
+        Length = stream.ReadUShortByBigEndian(),
+        Offset = stream.ReadUShortByBigEndian(),
     };
 
     public static (string Name, NameRecord NameRecord)[] ReadFrom(Stream stream, TableRecord rec)

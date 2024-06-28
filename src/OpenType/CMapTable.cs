@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 
@@ -13,8 +12,8 @@ public class CMapTable
 
     public static CMapTable ReadFrom(Stream stream)
     {
-        var ver = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-        var num_of_tables = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+        var ver = stream.ReadUShortByBigEndian();
+        var num_of_tables = stream.ReadUShortByBigEndian();
 
         return new()
         {

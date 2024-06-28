@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 
 namespace PicoPDF.OpenType;
@@ -11,8 +10,8 @@ public class HorizontalMetrics
 
     public static HorizontalMetrics ReadFrom(Stream stream) => new()
     {
-        AdvanceWidth = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        LeftSideBearing = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
+        AdvanceWidth = stream.ReadUShortByBigEndian(),
+        LeftSideBearing = stream.ReadShortByBigEndian(),
     };
 
     public override string ToString() => $"AdvanceWidth={AdvanceWidth}, LeftSideBearing={LeftSideBearing}";

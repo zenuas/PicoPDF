@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,18 +18,18 @@ public class CompositeGlyph : IGlyph
 
     public static CompositeGlyph ReadFrom(Stream stream, short number_of_contours)
     {
-        var xmin = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
-        var ymin = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
-        var xmax = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
-        var ymax = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+        var xmin = stream.ReadShortByBigEndian();
+        var ymin = stream.ReadShortByBigEndian();
+        var xmax = stream.ReadShortByBigEndian();
+        var ymax = stream.ReadShortByBigEndian();
 
         var records = new List<CompositeGlyphRecord>();
         ushort instruction_length = 0;
         byte[]? instructions;
         while (true)
         {
-            var flags = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-            var glyph_index = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+            var flags = stream.ReadUShortByBigEndian();
+            var glyph_index = stream.ReadUShortByBigEndian();
             int arg1;
             int arg2;
 
@@ -39,13 +38,13 @@ public class CompositeGlyph : IGlyph
             {
                 if (isargs_are_xy_values)
                 {
-                    arg1 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
-                    arg2 = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+                    arg1 = stream.ReadShortByBigEndian();
+                    arg2 = stream.ReadShortByBigEndian();
                 }
                 else
                 {
-                    arg1 = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-                    arg2 = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+                    arg1 = stream.ReadUShortByBigEndian();
+                    arg2 = stream.ReadUShortByBigEndian();
                 }
             }
             else
@@ -69,19 +68,19 @@ public class CompositeGlyph : IGlyph
             ushort scale10 = 0;
             if ((flags & (ushort)CompositeGlyphFlags.WE_HAVE_A_SCALE) != 0)
             {
-                scale = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+                scale = stream.ReadUShortByBigEndian();
             }
             else if ((flags & (ushort)CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE) != 0)
             {
-                xscale = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-                yscale = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+                xscale = stream.ReadUShortByBigEndian();
+                yscale = stream.ReadUShortByBigEndian();
             }
             else if ((flags & (ushort)CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO) != 0)
             {
-                xscale = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-                scale01 = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-                scale10 = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-                yscale = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+                xscale = stream.ReadUShortByBigEndian();
+                scale01 = stream.ReadUShortByBigEndian();
+                scale10 = stream.ReadUShortByBigEndian();
+                yscale = stream.ReadUShortByBigEndian();
             }
             records.Add(new()
             {
@@ -98,7 +97,7 @@ public class CompositeGlyph : IGlyph
 
             if ((flags & (ushort)CompositeGlyphFlags.MORE_COMPONENTS) == 0)
             {
-                instruction_length = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+                instruction_length = stream.ReadUShortByBigEndian();
                 instructions = Enumerable.Range(0, instruction_length).Select(_ => (byte)stream.ReadByte()).ToArray();
                 break;
             }

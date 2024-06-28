@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 using System.Text;
 
@@ -15,9 +14,9 @@ public class TableRecord
     public static TableRecord ReadFrom(Stream stream) => new()
     {
         TableTag = Encoding.ASCII.GetString(stream.ReadBytes(4)),
-        CheckSum = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
-        Offset = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
-        Length = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
+        CheckSum = stream.ReadUIntByBigEndian(),
+        Offset = stream.ReadUIntByBigEndian(),
+        Length = stream.ReadUIntByBigEndian(),
     };
 
     public override string ToString() => $"{TableTag}, Offset={Offset}, Length={Length}";

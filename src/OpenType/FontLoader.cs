@@ -2,7 +2,6 @@
 using PicoPDF.OpenType.PostScript;
 using PicoPDF.OpenType.TrueType;
 using System;
-using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,7 +29,7 @@ public static class FontLoader
         return header.TTCTag != "ttcf"
             ? throw new InvalidOperationException()
             : Enumerable.Range(0, (int)header.NumberOfFonts)
-                .Select(_ => BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)))
+                .Select(_ => stream.ReadUIntByBigEndian())
                 .ToArray()
                 .Select((x, i) => Load(new FontCollectionPath { Path = path, Index = i }, stream, x, opt))
                 .ToArray();
@@ -119,7 +118,7 @@ public static class FontLoader
 
     public static ICMapFormat? ReadCMapFormat(Stream stream)
     {
-        var format = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+        var format = stream.ReadUShortByBigEndian();
         return format switch
         {
             4 => CMapFormat4.ReadFrom(stream),
@@ -160,7 +159,7 @@ public static class FontLoader
                     .Select(i =>
                     {
                         x.Position = position + loca.Offsets[i];
-                        var number_of_contours = BinaryPrimitives.ReadInt16BigEndian(x.ReadBytes(2));
+                        var number_of_contours = x.ReadShortByBigEndian();
                         return number_of_contours >= 0
                             ? SimpleGlyph.ReadFrom(x, number_of_contours).Cast<IGlyph>()
                             : CompositeGlyph.ReadFrom(x, number_of_contours);

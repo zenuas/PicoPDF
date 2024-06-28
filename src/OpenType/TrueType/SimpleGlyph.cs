@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 
@@ -21,13 +20,13 @@ public class SimpleGlyph : IGlyph
 
     public static SimpleGlyph ReadFrom(Stream stream, short number_of_contours)
     {
-        var xmin = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
-        var ymin = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
-        var xmax = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
-        var ymax = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+        var xmin = stream.ReadShortByBigEndian();
+        var ymin = stream.ReadShortByBigEndian();
+        var xmax = stream.ReadShortByBigEndian();
+        var ymax = stream.ReadShortByBigEndian();
 
-        var endpoints = Enumerable.Range(0, number_of_contours).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray();
-        var instruction_length = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+        var endpoints = Enumerable.Range(0, number_of_contours).Select(_ => stream.ReadUShortByBigEndian()).ToArray();
+        var instruction_length = stream.ReadUShortByBigEndian();
         var instructions = Enumerable.Range(0, instruction_length).Select(_ => (byte)stream.ReadByte()).ToArray();
 
         var lastpoint = endpoints.Last() + 1;
@@ -54,7 +53,7 @@ public class SimpleGlyph : IGlyph
             }
             else
             {
-                xcoordinates[i] = issame_or_positive ? (short)0 : BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+                xcoordinates[i] = issame_or_positive ? (short)0 : stream.ReadShortByBigEndian();
             }
         }
 
@@ -70,7 +69,7 @@ public class SimpleGlyph : IGlyph
             }
             else
             {
-                ycoordinates[i] = issame_or_positive ? (short)0 : BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2));
+                ycoordinates[i] = issame_or_positive ? (short)0 : stream.ReadShortByBigEndian();
             }
         }
 

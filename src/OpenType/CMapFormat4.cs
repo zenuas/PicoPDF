@@ -1,6 +1,5 @@
 ﻿using Mina.Extension;
 using System;
-using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,9 +24,9 @@ public class CMapFormat4 : ICMapFormat
 
     public static CMapFormat4 ReadFrom(Stream stream)
     {
-        var length = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-        var language = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
-        var seg_count_x2 = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2));
+        var length = stream.ReadUShortByBigEndian();
+        var language = stream.ReadUShortByBigEndian();
+        var seg_count_x2 = stream.ReadUShortByBigEndian();
 
         var seg_count = seg_count_x2 / 2;
         var glyph_count = (length - (16 + (8 * seg_count))) / 2;
@@ -38,15 +37,15 @@ public class CMapFormat4 : ICMapFormat
             Length = length,
             Language = language,
             SegCountX2 = seg_count_x2,
-            SearchRange = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-            EntrySelector = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-            RangeShift = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-            EndCode = Enumerable.Range(0, seg_count).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
-            ReservedPad = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-            StartCode = Enumerable.Range(0, seg_count).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
-            IdDelta = Enumerable.Range(0, seg_count).Select(_ => BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2))).ToArray(),
-            IdRangeOffsets = Enumerable.Range(0, seg_count).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
-            GlyphIdArray = Enumerable.Range(0, glyph_count).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
+            SearchRange = stream.ReadUShortByBigEndian(),
+            EntrySelector = stream.ReadUShortByBigEndian(),
+            RangeShift = stream.ReadUShortByBigEndian(),
+            EndCode = Enumerable.Range(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            ReservedPad = stream.ReadUShortByBigEndian(),
+            StartCode = Enumerable.Range(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            IdDelta = Enumerable.Range(0, seg_count).Select(_ => stream.ReadShortByBigEndian()).ToArray(),
+            IdRangeOffsets = Enumerable.Range(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            GlyphIdArray = Enumerable.Range(0, glyph_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
         };
     }
 

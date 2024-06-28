@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 using System.Text;
 
@@ -15,9 +14,9 @@ public class TrueTypeCollectionHeader
     public static TrueTypeCollectionHeader ReadFrom(Stream stream) => new()
     {
         TTCTag = Encoding.ASCII.GetString(stream.ReadBytes(4)),
-        MajorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        MinorVersion = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-        NumberOfFonts = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
+        MajorVersion = stream.ReadUShortByBigEndian(),
+        MinorVersion = stream.ReadUShortByBigEndian(),
+        NumberOfFonts = stream.ReadUIntByBigEndian(),
     };
 
     public override string ToString() => $"{TTCTag}, MajorVersion={MajorVersion}, MinorVersion={MinorVersion}";

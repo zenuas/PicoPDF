@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System.Buffers.Binary;
 using System.IO;
 
 namespace PicoPDF.OpenType;
@@ -18,14 +17,14 @@ public class PostScriptTable
 
     public static PostScriptTable ReadFrom(Stream stream) => new()
     {
-        Version = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
-        ItalicAngle = BinaryPrimitives.ReadInt32BigEndian(stream.ReadBytes(4)),
-        UnderlinePosition = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        UnderlineThickness = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
-        IsFixedPitch = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
-        MinMemType42 = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
-        MaxMemType42 = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
-        MinMemType1 = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
-        MaxMemType1 = BinaryPrimitives.ReadUInt32BigEndian(stream.ReadBytes(4)),
+        Version = stream.ReadUIntByBigEndian(),
+        ItalicAngle = stream.ReadIntByBigEndian(),
+        UnderlinePosition = stream.ReadShortByBigEndian(),
+        UnderlineThickness = stream.ReadShortByBigEndian(),
+        IsFixedPitch = stream.ReadUIntByBigEndian(),
+        MinMemType42 = stream.ReadUIntByBigEndian(),
+        MaxMemType42 = stream.ReadUIntByBigEndian(),
+        MinMemType1 = stream.ReadUIntByBigEndian(),
+        MaxMemType1 = stream.ReadUIntByBigEndian(),
     };
 }
