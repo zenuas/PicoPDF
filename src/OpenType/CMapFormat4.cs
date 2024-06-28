@@ -54,7 +54,7 @@ public class CMapFormat4 : ICMapFormat
     {
         var start_ends = CreateStartEnds(char_gid);
         var seg_count = start_ends.Length;
-        var serach_range = Math.Pow(2, Math.Floor(Math.Log2(seg_count)));
+        var serach_range = Math.Pow(2, Math.Floor(Math.Log2(seg_count))) * 2;
 
         return new()
         {
