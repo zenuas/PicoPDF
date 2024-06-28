@@ -1,6 +1,7 @@
 ﻿using PicoPDF.OpenType;
 using PicoPDF.Pdf.Font;
 using System.IO;
+using System.Linq;
 
 namespace PicoPDF.TestAll;
 
@@ -14,7 +15,12 @@ public static class FontFileExport
 
     public static void Export(TrueTypeFont font, Option opt)
     {
-        var cmap4 = CreateCMap4(opt.FontExportChars);
+        var chars = opt.FontExportChars.Order();
+        var char_glyph = chars
+            .Select((c, i) => (Char: c, Index: (ushort)i))
+            .ToDictionary(x => x.Char, x => (x.Index, Glyph: font.Glyphs[font.MeasureChar(x.Char)]));
+
+        var cmap4 = CMapFormat4.CreateFormat(chars.ToDictionary(x => x, x => char_glyph[x].Index));
         var cmap4_range = FontLoader.CreateCMap4Range(cmap4);
 
         var ttf = new TrueTypeFont()
@@ -38,30 +44,10 @@ public static class FontFileExport
             CMap4 = cmap4,
             CMap4Range = cmap4_range,
             IndexToLocation = font.IndexToLocation,
-            Glyphs = [],
+            Glyphs = chars.Select(x => char_glyph[x].Glyph).ToArray(),
         };
 
         using var stream = new MemoryStream();
         FontExport.Export(ttf, stream);
-    }
-
-    public static CMapFormat4 CreateCMap4(string s)
-    {
-        return new()
-        {
-            Format = 4,
-            Length = (ushort)s.Length,
-            Language = 0,
-            SegCountX2 = 0,
-            SearchRange = 0,
-            EntrySelector = 0,
-            RangeShift = 0,
-            EndCode = [],
-            ReservedPad = 0,
-            StartCode = [],
-            IdDelta = [],
-            IdRangeOffsets = [],
-            GlyphIdArray = [],
-        };
     }
 }
