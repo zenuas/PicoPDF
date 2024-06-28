@@ -33,7 +33,7 @@ public static class FontFileExport
             Position = font.Position,
             TableRecords = font.TableRecords,
             Offset = font.Offset,
-            NameRecords = font.NameRecords,
+            Name = font.Name,
             FontHeader = font.FontHeader,
             MaximumProfile = font.MaximumProfile,
             PostScript = font.PostScript,

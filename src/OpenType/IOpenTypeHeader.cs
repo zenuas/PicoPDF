@@ -12,5 +12,5 @@ public interface IOpenTypeHeader
     public long Position { get; init; }
     public Dictionary<string, TableRecord> TableRecords { get; init; }
     public OffsetTable Offset { get; init; }
-    public (string Name, NameRecord NameRecord)[] NameRecords { get; init; }
+    public NameTable Name { get; init; }
 }

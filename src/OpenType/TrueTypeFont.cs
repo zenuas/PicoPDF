@@ -13,7 +13,7 @@ public class TrueTypeFont : IOpenTypeRequiredTables
     public required long Position { get; init; }
     public required Dictionary<string, TableRecord> TableRecords { get; init; }
     public required OffsetTable Offset { get; init; }
-    public required (string Name, NameRecord NameRecord)[] NameRecords { get; init; }
+    public required NameTable Name { get; init; }
     public required FontHeaderTable FontHeader { get; init; }
     public required MaximumProfileTable MaximumProfile { get; init; }
     public required PostScriptTable PostScript { get; init; }

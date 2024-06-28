@@ -78,7 +78,7 @@ public class FontRegister
 
         var r = new PropertyGetSet<IOpenTypeHeader>() { Value = font };
         Fonts.Add(name, r);
-        font.NameRecords
+        font.Name.NameRecords
             .Where(x => x.NameRecord.NameID == 4)
             .Each(x => Fonts.TryAdd(x.Name, r));
         return true;

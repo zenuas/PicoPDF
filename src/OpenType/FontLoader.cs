@@ -45,9 +45,10 @@ public static class FontLoader
             .Select(_ => TableRecord.ReadFrom(stream))
             .ToDictionary(x => x.TableTag, x => x);
 
-        var namerecs = NameRecord.ReadFrom(stream, tables["name"]);
+        stream.Position = tables["name"].Offset;
+        var namerecs = NameTable.ReadFrom(stream);
         string? namev(ushort nameid) => opt.PlatformIDOrder
-            .Select(x => namerecs.FindFirstOrNullValue(y => y.NameRecord.PlatformID == x && y.NameRecord.NameID == nameid)?.Name)
+            .Select(x => namerecs.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == x && y.NameRecord.NameID == nameid)?.Name)
             .Where(x => x is { })
             .FirstOrDefault();
 
@@ -61,7 +62,7 @@ public static class FontLoader
             Position = pos,
             TableRecords = tables,
             Offset = offset,
-            NameRecords = namerecs,
+            Name = namerecs,
         };
     }
 
@@ -177,7 +178,7 @@ public static class FontLoader
             Position = font.Position,
             TableRecords = font.TableRecords,
             Offset = font.Offset,
-            NameRecords = font.NameRecords,
+            Name = font.Name,
             FontHeader = head,
             MaximumProfile = maxp,
             PostScript = post,
@@ -218,7 +219,7 @@ public static class FontLoader
             Position = font.Position,
             TableRecords = font.TableRecords,
             Offset = font.Offset,
-            NameRecords = font.NameRecords,
+            Name = font.Name,
             FontHeader = head,
             MaximumProfile = maxp,
             PostScript = post,
