@@ -9,7 +9,7 @@ public static class FontFileExport
 {
     public static void Export(FontRegister fontreg, Option opt)
     {
-        var font = fontreg.Get(FontRegister.GetFontFilePath(opt.FontFileExport));
+        var font = fontreg.Get(opt.FontFileExport);
         if (font is TrueTypeFont ttf) Export(ttf, opt);
     }
 

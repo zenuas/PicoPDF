@@ -10,7 +10,7 @@ public static class FontExporter
 {
     public static void Export(TrueTypeFont font, Stream stream)
     {
-        var table_names = new string[] { "name", "head" };
+        var table_names = new string[] { "head", "name" };
         var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
 
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
@@ -26,14 +26,19 @@ public static class FontExporter
         table_names.Each(x =>
         {
             stream.Write(x);
-            var table = tables[x];
-            table.Position = stream.Position;
-            WriteTableRecord(stream, table);
+            WriteTableRecord(stream, tables[x]);
         });
 
         var head = tables["head"];
+        head.Offset = (uint)stream.Position;
         head.Length = (uint)font.FontHeader.WriteTo(stream);
         Debug.Assert(head.Length == 54);
+
+        var name = tables["name"];
+        name.Offset = (uint)stream.Position;
+        name.Length = (uint)font.Name.WriteTo(stream);
+
+        tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
     }
 
     public static void WriteTableRecord(Stream stream, MutableTableRecord table)

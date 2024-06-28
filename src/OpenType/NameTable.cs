@@ -11,6 +11,8 @@ public class NameTable
     public required ushort Count { get; init; }
     public required ushort StringOffset { get; init; }
     public required (string Name, NameRecord NameRecord)[] NameRecords { get; init; }
+    public ushort LanguageTagCount { get; init; } = 0;
+    public (string Name, LanguageTagRecord LanguageTagRecord)[] LanguageTagRecords { get; init; } = [];
 
     public static NameTable ReadFrom(Stream stream)
     {
@@ -24,8 +26,23 @@ public class NameTable
             .Select(_ => NameRecord.ReadFrom(stream))
             .ToArray();
 
+        ushort lang_tag_count = 0;
+        LanguageTagRecord[] tags = [];
+        if (format == 1)
+        {
+            lang_tag_count = stream.ReadUShortByBigEndian();
+
+            tags = Enumerable.Range(0, lang_tag_count)
+                .Select(_ => LanguageTagRecord.ReadFrom(stream))
+                .ToArray();
+        }
+
         var name_records = records
             .Select(x => ((x.PlatformID == 0 || x.PlatformID == 3 ? Encoding.BigEndianUnicode : Encoding.UTF8).GetString(stream.ReadPositionBytes(position + string_offset + x.Offset, x.Length)), x))
+            .ToArray();
+
+        var lang_tags = tags
+            .Select(x => (Encoding.BigEndianUnicode.GetString(stream.ReadPositionBytes(position + string_offset + x.LanguageTagOffset, x.Length)), x))
             .ToArray();
 
         return new()
@@ -34,7 +51,49 @@ public class NameTable
             Count = count,
             StringOffset = string_offset,
             NameRecords = name_records,
+            LanguageTagCount = lang_tag_count,
+            LanguageTagRecords = lang_tags,
         };
+    }
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+
+        var string_offset = 6 + (/* sizeof(NameRecord) */12 * Count) + (/* sizeof(LanguageTagRecord) */4 * LanguageTagCount);
+
+        stream.WriteUShortByBigEndian(Format);
+        stream.WriteUShortByBigEndian(Count);
+        stream.WriteUShortByBigEndian((ushort)string_offset);
+
+        using var strings = new MemoryStream();
+
+        NameRecords.Each(x =>
+        {
+            var offset = strings.Position;
+            strings.Write((x.NameRecord.PlatformID == 0 || x.NameRecord.PlatformID == 3 ? Encoding.BigEndianUnicode : Encoding.UTF8).GetBytes(x.Name));
+
+            stream.WriteUShortByBigEndian(x.NameRecord.PlatformID);
+            stream.WriteUShortByBigEndian(x.NameRecord.EncodingID);
+            stream.WriteUShortByBigEndian(x.NameRecord.LanguageID);
+            stream.WriteUShortByBigEndian(x.NameRecord.NameID);
+            stream.WriteUShortByBigEndian(x.NameRecord.Length);
+            stream.WriteUShortByBigEndian((ushort)offset);
+        });
+
+        LanguageTagRecords.Each(x =>
+        {
+            var offset = strings.Position;
+            strings.Write(Encoding.BigEndianUnicode.GetBytes(x.Name));
+
+            stream.WriteUShortByBigEndian(x.LanguageTagRecord.Length);
+            stream.WriteUShortByBigEndian((ushort)offset);
+        });
+
+        strings.Position = 0;
+        stream.Write(strings.ToArray());
+
+        return stream.Position - position;
     }
 
     public override string ToString() => $"Format={Format}, Count={Count}, StringOffset={StringOffset}";

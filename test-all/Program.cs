@@ -12,9 +12,8 @@ using System.Linq;
 var (opt, jsons) = CommandLine.Run<Option>(args);
 
 var fontreg = new FontRegister();
-if (opt.FontFileExport != "") { FontFileExport.Export(fontreg, opt); return; }
-
 fontreg.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
+if (opt.FontFileExport != "") { FontFileExport.Export(fontreg, opt); return; }
 if (opt.FontList) { FontListTest.Preview(fontreg, opt); return; }
 
 var export_opt = new PdfExportOption
