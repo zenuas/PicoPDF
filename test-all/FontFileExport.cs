@@ -48,6 +48,6 @@ public static class FontFileExport
         };
 
         using var stream = new MemoryStream();
-        FontExport.Export(ttf, stream);
+        FontExporter.Export(ttf, stream);
     }
 }
