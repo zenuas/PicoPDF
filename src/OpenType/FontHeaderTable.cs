@@ -46,4 +46,28 @@ public class FontHeaderTable
         IndexToLocFormat = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
         GlyphDataFormat = BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2)),
     };
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+        stream.WriteUShortByBigEndian(MajorVersion);
+        stream.WriteUShortByBigEndian(MinorVersion);
+        stream.WriteIntByBigEndian(FontRevision);
+        stream.WriteUIntByBigEndian(ChecksumAdjustment);
+        stream.WriteUIntByBigEndian(MagicNumber);
+        stream.WriteUShortByBigEndian(Flags);
+        stream.WriteUShortByBigEndian(UnitsPerEm);
+        stream.WriteLongByBigEndian(Created);
+        stream.WriteLongByBigEndian(Modified);
+        stream.WriteShortByBigEndian(XMin);
+        stream.WriteShortByBigEndian(YMin);
+        stream.WriteShortByBigEndian(XMax);
+        stream.WriteShortByBigEndian(YMax);
+        stream.WriteUShortByBigEndian(MacStyle);
+        stream.WriteUShortByBigEndian(LowestRecPPEM);
+        stream.WriteShortByBigEndian(FontDirectionHint);
+        stream.WriteShortByBigEndian(IndexToLocFormat);
+        stream.WriteShortByBigEndian(GlyphDataFormat);
+        return stream.Position - position;
+    }
 }

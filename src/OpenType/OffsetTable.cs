@@ -20,4 +20,15 @@ public class OffsetTable
         EntrySelector = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
         RangeShift = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
     };
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+        stream.WriteUIntByBigEndian(Version);
+        stream.WriteUShortByBigEndian(NumberOfTables);
+        stream.WriteUShortByBigEndian(SearchRange);
+        stream.WriteUShortByBigEndian(EntrySelector);
+        stream.WriteUShortByBigEndian(RangeShift);
+        return stream.Position - position;
+    }
 }
