@@ -170,9 +170,6 @@ public static class FontLoader
 
         return new()
         {
-            FontFamily = font.FontFamily,
-            Style = font.Style,
-            FullFontName = font.FullFontName,
             PostScriptName = font.PostScriptName,
             Path = font.Path,
             Position = font.Position,
@@ -211,9 +208,6 @@ public static class FontLoader
 
         return new()
         {
-            FontFamily = font.FontFamily,
-            Style = font.Style,
-            FullFontName = font.FullFontName,
             PostScriptName = font.PostScriptName,
             Path = font.Path,
             Position = font.Position,

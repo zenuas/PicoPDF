@@ -25,9 +25,6 @@ public static class FontFileExport
 
         var ttf = new TrueTypeFont()
         {
-            FontFamily = font.FontFamily,
-            Style = font.Style,
-            FullFontName = font.FullFontName,
             PostScriptName = font.PostScriptName,
             Path = font.Path,
             Position = font.Position,

@@ -4,9 +4,6 @@ namespace PicoPDF.OpenType;
 
 public interface IOpenTypeHeader
 {
-    public string FontFamily { get; init; }
-    public string Style { get; init; }
-    public string FullFontName { get; init; }
     public string PostScriptName { get; init; }
     public IFontPath Path { get; init; }
     public long Position { get; init; }
