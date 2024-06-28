@@ -8,12 +8,10 @@ namespace PicoPDF.OpenType;
 
 public static class FontExporter
 {
-    public class MutableTableRecord { public long Position; public uint Checksum; public uint Offset; public uint Length; }
-
     public static void Export(TrueTypeFont font, Stream stream)
     {
         var table_names = new string[] { "name", "head" };
-        var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0L, Checksum = 0, Offset = 0, Length = 0 });
+        var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
 
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
         new OffsetTable
