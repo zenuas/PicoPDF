@@ -66,7 +66,7 @@ public static class FontLoader
         };
     }
 
-    public static IOpenTypeRequiredTables DelayLoad(FontLoading font)
+    public static FontRequiredTables DelayLoad(FontLoading font)
     {
         using var stream = File.OpenRead(font.Path.Path);
 
@@ -88,33 +88,33 @@ public static class FontLoader
             .First();
         var cmap4_range = CreateCMap4Range(cmap4);
 
+        return new()
+        {
+            PostScriptName = font.PostScriptName,
+            Path = font.Path,
+            Position = font.Position,
+            TableRecords = font.TableRecords,
+            Offset = font.Offset,
+            Name = font.Name,
+            FontHeader = head,
+            MaximumProfile = maxp,
+            PostScript = post,
+            OS2 = os2,
+            HorizontalHeader = hhea,
+            HorizontalMetrics = hmtx,
+            CMap = cmap,
+            CMap4 = cmap4,
+            CMap4Range = cmap4_range,
+        };
+    }
+
+    public static IOpenTypeRequiredTables DelayLoadComplete(FontRequiredTables font)
+    {
+        using var stream = File.OpenRead(font.Path.Path);
+
         return font.Offset.ContainTrueType() ?
-            LoadTrueTypeFont(
-                stream,
-                font,
-                head,
-                maxp,
-                post,
-                os2,
-                hhea,
-                hmtx,
-                cmap,
-                cmap4,
-                cmap4_range
-            ) :
-            LoadPostScriptFont(
-                stream,
-                font,
-                head,
-                maxp,
-                post,
-                os2,
-                hhea,
-                hmtx,
-                cmap,
-                cmap4,
-                cmap4_range
-            );
+            LoadTrueTypeFont(stream, font) :
+            LoadPostScriptFont(stream, font);
     }
 
     public static ICMapFormat? ReadCMapFormat(Stream stream)
@@ -138,25 +138,13 @@ public static class FontLoader
         return cmap4_range;
     }
 
-    public static TrueTypeFont LoadTrueTypeFont(
-            Stream stream,
-            FontLoading font,
-            FontHeaderTable head,
-            MaximumProfileTable maxp,
-            PostScriptTable post,
-            OS2Table os2,
-            HorizontalHeaderTable hhea,
-            HorizontalMetricsTable hmtx,
-            CMapTable cmap,
-            CMapFormat4 cmap4,
-            List<(int Start, int End)> cmap4_range
-        )
+    public static TrueTypeFont LoadTrueTypeFont(Stream stream, FontRequiredTables font)
     {
-        var loca = ReadTableRecprds(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, head.IndexToLocFormat, maxp.NumberOfGlyphs)).Try();
+        var loca = ReadTableRecprds(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, font.FontHeader.IndexToLocFormat, font.MaximumProfile.NumberOfGlyphs)).Try();
         var glyf = ReadTableRecprds(font, "glyf", stream, x =>
             {
                 var position = x.Position;
-                return Enumerable.Range(0, maxp.NumberOfGlyphs)
+                return Enumerable.Range(0, font.MaximumProfile.NumberOfGlyphs)
                     .Select(i =>
                     {
                         x.Position = position + loca.Offsets[i];
@@ -176,33 +164,21 @@ public static class FontLoader
             TableRecords = font.TableRecords,
             Offset = font.Offset,
             Name = font.Name,
-            FontHeader = head,
-            MaximumProfile = maxp,
-            PostScript = post,
-            OS2 = os2,
-            HorizontalHeader = hhea,
-            HorizontalMetrics = hmtx,
-            CMap = cmap,
-            CMap4 = cmap4,
-            CMap4Range = cmap4_range,
+            FontHeader = font.FontHeader,
+            MaximumProfile = font.MaximumProfile,
+            PostScript = font.PostScript,
+            OS2 = font.OS2,
+            HorizontalHeader = font.HorizontalHeader,
+            HorizontalMetrics = font.HorizontalMetrics,
+            CMap = font.CMap,
+            CMap4 = font.CMap4,
+            CMap4Range = font.CMap4Range,
             IndexToLocation = loca,
             Glyphs = glyf,
         };
     }
 
-    public static PostScriptFont LoadPostScriptFont(
-            Stream stream,
-            FontLoading font,
-            FontHeaderTable head,
-            MaximumProfileTable maxp,
-            PostScriptTable post,
-            OS2Table os2,
-            HorizontalHeaderTable hhea,
-            HorizontalMetricsTable hmtx,
-            CMapTable cmap,
-            CMapFormat4 cmap4,
-            List<(int Start, int End)> cmap4_range
-        )
+    public static PostScriptFont LoadPostScriptFont(Stream stream, FontRequiredTables font)
     {
         var cff = ReadTableRecprds(font, "CFF ", stream, CompactFontFormat.ReadFrom).Try();
 
@@ -214,20 +190,20 @@ public static class FontLoader
             TableRecords = font.TableRecords,
             Offset = font.Offset,
             Name = font.Name,
-            FontHeader = head,
-            MaximumProfile = maxp,
-            PostScript = post,
-            OS2 = os2,
-            HorizontalHeader = hhea,
-            HorizontalMetrics = hmtx,
-            CMap = cmap,
-            CMap4 = cmap4,
-            CMap4Range = cmap4_range,
+            FontHeader = font.FontHeader,
+            MaximumProfile = font.MaximumProfile,
+            PostScript = font.PostScript,
+            OS2 = font.OS2,
+            HorizontalHeader = font.HorizontalHeader,
+            HorizontalMetrics = font.HorizontalMetrics,
+            CMap = font.CMap,
+            CMap4 = font.CMap4,
+            CMap4Range = font.CMap4Range,
             CompactFontFormat = cff,
         };
     }
 
-    public static T? ReadTableRecprds<T>(FontLoading font, string name, Stream stream, Func<Stream, T> f)
+    public static T? ReadTableRecprds<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f)
     {
         if (!font.TableRecords.TryGetValue(name, out var record)) return default;
         stream.Position = record.Offset;

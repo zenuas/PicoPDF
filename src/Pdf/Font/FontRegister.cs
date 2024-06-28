@@ -39,6 +39,17 @@ public class FontRegister
         return fontinfo;
     }
 
+    public IOpenTypeRequiredTables? GetCompleteOrNull(string name)
+    {
+        var font = GetOrNull(name);
+        if (font is null) return null;
+        if (font is not FontRequiredTables req) return font;
+
+        var fontinfo = FontLoader.DelayLoadComplete(req);
+        Fonts[name].Value = fontinfo;
+        return fontinfo;
+    }
+
     public IOpenTypeRequiredTables Get(IFontPath path)
     {
         var name = GetFontFilePath(path);
@@ -55,9 +66,20 @@ public class FontRegister
         return GetOrNull(name).Try();
     }
 
+    public IOpenTypeRequiredTables GetComplete(IFontPath path)
+    {
+        _ = Get(path);
+        var name = GetFontFilePath(path);
+        return GetCompleteOrNull(name).Try();
+    }
+
     public IOpenTypeRequiredTables Get(string name) => Path.GetExtension(name) != "" ?
         Get(GetFontFilePath(name)) :
         GetOrNull(name).Try();
+
+    public IOpenTypeRequiredTables GetComplete(string name) => Path.GetExtension(name) != "" ?
+        GetComplete(GetFontFilePath(name)) :
+        GetCompleteOrNull(name).Try();
 
     public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
 
