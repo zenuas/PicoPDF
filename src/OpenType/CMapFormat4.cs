@@ -41,12 +41,12 @@ public class CMapFormat4 : ICMapFormat
             SearchRange = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
             EntrySelector = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
             RangeShift = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-            EndCode = Lists.RangeTo(0, seg_count - 1).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
+            EndCode = Enumerable.Range(0, seg_count).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
             ReservedPad = BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2)),
-            StartCode = Lists.RangeTo(0, seg_count - 1).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
-            IdDelta = Lists.RangeTo(0, seg_count - 1).Select(_ => BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2))).ToArray(),
-            IdRangeOffsets = Lists.RangeTo(0, seg_count - 1).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
-            GlyphIdArray = Lists.RangeTo(0, glyph_count - 1).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
+            StartCode = Enumerable.Range(0, seg_count).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
+            IdDelta = Enumerable.Range(0, seg_count).Select(_ => BinaryPrimitives.ReadInt16BigEndian(stream.ReadBytes(2))).ToArray(),
+            IdRangeOffsets = Enumerable.Range(0, seg_count).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
+            GlyphIdArray = Enumerable.Range(0, glyph_count).Select(_ => BinaryPrimitives.ReadUInt16BigEndian(stream.ReadBytes(2))).ToArray(),
         };
     }
 
