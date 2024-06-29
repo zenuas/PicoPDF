@@ -40,6 +40,7 @@ public static class FontExporter
         ExportTable(stream, tables["loca"], font.IndexToLocation);
 
         Debug.Assert(tables["head"].Length == 54);
+        Debug.Assert(tables["maxp"].Length is 6 or 32);
         Debug.Assert(tables["post"].Length == 32);
         Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
         Debug.Assert(tables["hhea"].Length == 36);

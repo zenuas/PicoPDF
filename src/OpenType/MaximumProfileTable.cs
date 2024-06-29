@@ -51,6 +51,27 @@ public class MaximumProfileTable : IExportable
     public long WriteTo(Stream stream)
     {
         var position = stream.Position;
+
+        stream.WriteIntByBigEndian(Version);
+        stream.WriteUShortByBigEndian(NumberOfGlyphs);
+
+        if (Version == 0x00010000)
+        {
+            stream.WriteUShortByBigEndian(MaxPoints);
+            stream.WriteUShortByBigEndian(MaxContours);
+            stream.WriteUShortByBigEndian(MaxCompositePoints);
+            stream.WriteUShortByBigEndian(MaxCompositeContours);
+            stream.WriteUShortByBigEndian(MaxZones);
+            stream.WriteUShortByBigEndian(MaxTwilightPoints);
+            stream.WriteUShortByBigEndian(MaxStorage);
+            stream.WriteUShortByBigEndian(MaxFunctionDefs);
+            stream.WriteUShortByBigEndian(MaxInstructionDefs);
+            stream.WriteUShortByBigEndian(MaxStackElements);
+            stream.WriteUShortByBigEndian(MaxSizeOfInstructions);
+            stream.WriteUShortByBigEndian(MaxComponentElements);
+            stream.WriteUShortByBigEndian(MaxComponentDepth);
+        }
+
         return stream.Position - position;
     }
 }
