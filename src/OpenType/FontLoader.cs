@@ -54,9 +54,6 @@ public static class FontLoader
 
         return new()
         {
-            FontFamily = namev(1) ?? "",
-            Style = namev(2) ?? "",
-            FullFontName = namev(4) ?? "",
             PostScriptName = namev(6) ?? "",
             Path = path,
             Position = pos,
