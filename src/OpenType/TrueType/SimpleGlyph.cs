@@ -27,16 +27,16 @@ public class SimpleGlyph : IGlyph
 
         var endpoints = Enumerable.Range(0, number_of_contours).Select(_ => stream.ReadUShortByBigEndian()).ToArray();
         var instruction_length = stream.ReadUShortByBigEndian();
-        var instructions = Enumerable.Range(0, instruction_length).Select(_ => (byte)stream.ReadByte()).ToArray();
+        var instructions = Enumerable.Range(0, instruction_length).Select(_ => stream.ReadUByte()).ToArray();
 
         var lastpoint = endpoints.Last() + 1;
         var flags = new byte[lastpoint];
         for (var i = 0; i < lastpoint; i++)
         {
-            var flag = flags[i] = (byte)stream.ReadByte();
+            var flag = flags[i] = stream.ReadUByte();
             if ((flags[i] & (byte)SimpleGlyphFlags.REPEAT_FLAG) != 0)
             {
-                var repeat = stream.ReadByte();
+                var repeat = stream.ReadUByte();
                 Enumerable.Range(0, repeat).Each(_ => flags[++i] = flag);
             }
         }
@@ -48,7 +48,7 @@ public class SimpleGlyph : IGlyph
             var issame_or_positive = (flag & (byte)SimpleGlyphFlags.X_IS_SAME_OR_POSITIVE_X_SHORT_VECTOR) != 0;
             if ((flag & (byte)SimpleGlyphFlags.X_SHORT_VECTOR) != 0)
             {
-                xcoordinates[i] = (short)stream.ReadByte();
+                xcoordinates[i] = stream.ReadUByte();
                 if (!issame_or_positive) xcoordinates[i] = (short)-xcoordinates[i];
             }
             else
@@ -64,7 +64,7 @@ public class SimpleGlyph : IGlyph
             var issame_or_positive = (flag & (byte)SimpleGlyphFlags.Y_IS_SAME_OR_POSITIVE_Y_SHORT_VECTOR) != 0;
             if ((flag & (byte)SimpleGlyphFlags.Y_SHORT_VECTOR) != 0)
             {
-                ycoordinates[i] = (short)stream.ReadByte();
+                ycoordinates[i] = stream.ReadUByte();
                 if (!issame_or_positive) ycoordinates[i] = (short)-ycoordinates[i];
             }
             else

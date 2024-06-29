@@ -21,10 +21,10 @@ public class CompactFontFormat
 
     public static CompactFontFormat ReadFrom(Stream stream) => new()
     {
-        Major = (byte)stream.ReadByte(),
-        Minor = (byte)stream.ReadByte(),
-        HdrSize = (byte)stream.ReadByte(),
-        OffSize = (byte)stream.ReadByte(),
+        Major = stream.ReadUByte(),
+        Minor = stream.ReadUByte(),
+        HdrSize = stream.ReadUByte(),
+        OffSize = stream.ReadUByte(),
         NameIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray(),
         TopDictIndex = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).ToArray(),
         StringIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray(),
@@ -33,11 +33,11 @@ public class CompactFontFormat
     public static byte[][] ReadIndexData(Stream stream)
     {
         var count = stream.ReadUShortByBigEndian();
-        var offSize = (byte)stream.ReadByte();
+        var offSize = stream.ReadUByte();
 
         Func<Stream, int> offsetRead = offSize switch
         {
-            1 => (x) => x.ReadByte(),
+            1 => (x) => x.ReadUByte(),
             2 => (x) => x.ReadUShortByBigEndian(),
             3 => (x) => (int)BinaryPrimitives.ReadUInt32BigEndian(x.ReadBytes(3)),
             _ => (x) => (int)x.ReadUIntByBigEndian(),
@@ -54,11 +54,11 @@ public class CompactFontFormat
         var pos = stream.Position;
         while (stream.Position < pos + length)
         {
-            var b0 = (byte)stream.ReadByte();
+            var b0 = stream.ReadUByte();
 
             if (b0 is 12)
             {
-                var b1 = (byte)stream.ReadByte();
+                var b1 = stream.ReadUByte();
                 kv.Add($"{b0} {b1}", values.ToArray());
                 values.Clear();
             }
@@ -72,17 +72,17 @@ public class CompactFontFormat
                 values.Add(b0 switch
                 {
                     >= 32 and <= 246 => b0 - 139,
-                    >= 247 and <= 250 => ((b0 - 247) * 256) + stream.ReadByte() + 108,
-                    >= 251 and <= 254 => (-(b0 - 251) * 256) + stream.ReadByte() - 108,
-                    28 => (stream.ReadByte() << 8) | stream.ReadByte(),
-                    29 => (stream.ReadByte() << 24) | (stream.ReadByte() << 16) | (stream.ReadByte() << 8) | stream.ReadByte(),
+                    >= 247 and <= 250 => ((b0 - 247) * 256) + stream.ReadUByte() + 108,
+                    >= 251 and <= 254 => (-(b0 - 251) * 256) + stream.ReadUByte() - 108,
+                    28 => (stream.ReadUByte() << 8) | stream.ReadUByte(),
+                    29 => (stream.ReadUByte() << 24) | (stream.ReadUByte() << 16) | (stream.ReadUByte() << 8) | stream.ReadUByte(),
                     _ => 0,
                 });
             }
             else if (b0 is 30)
             {
                 var value = PackedBCDToDouble(Lists.Repeat(stream)
-                        .Select(x => (byte)x.ReadByte())
+                        .Select(x => x.ReadUByte())
                         .Select(x => new byte[] { (byte)(x >> 4), (byte)(x & 0x0f) })
                         .Flatten()
                         .TakeWhile(x => x != 0x0f)

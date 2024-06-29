@@ -51,13 +51,13 @@ public class CompositeGlyph : IGlyph
             {
                 if (isargs_are_xy_values)
                 {
-                    arg1 = (sbyte)stream.ReadByte();
-                    arg2 = (sbyte)stream.ReadByte();
+                    arg1 = stream.ReadSByte();
+                    arg2 = stream.ReadSByte();
                 }
                 else
                 {
-                    arg1 = stream.ReadByte();
-                    arg2 = stream.ReadByte();
+                    arg1 = stream.ReadUByte();
+                    arg2 = stream.ReadUByte();
                 }
             }
 
@@ -98,7 +98,7 @@ public class CompositeGlyph : IGlyph
             if ((flags & (ushort)CompositeGlyphFlags.MORE_COMPONENTS) == 0)
             {
                 instruction_length = stream.ReadUShortByBigEndian();
-                instructions = Enumerable.Range(0, instruction_length).Select(_ => (byte)stream.ReadByte()).ToArray();
+                instructions = Enumerable.Range(0, instruction_length).Select(_ => stream.ReadUByte()).ToArray();
                 break;
             }
         }
