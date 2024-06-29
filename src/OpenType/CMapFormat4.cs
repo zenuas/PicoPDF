@@ -91,6 +91,22 @@ public class CMapFormat4 : ICMapFormat
 
     public long WriteTo(Stream stream)
     {
-        return 0;
+        var position = stream.Position;
+
+        stream.WriteUShortByBigEndian(Format);
+        stream.WriteUShortByBigEndian(Length);
+        stream.WriteUShortByBigEndian(Language);
+        stream.WriteUShortByBigEndian(SegCountX2);
+        stream.WriteUShortByBigEndian(SearchRange);
+        stream.WriteUShortByBigEndian(EntrySelector);
+        stream.WriteUShortByBigEndian(RangeShift);
+        EndCode.Each(stream.WriteUShortByBigEndian);
+        stream.WriteUShortByBigEndian(ReservedPad);
+        StartCode.Each(stream.WriteUShortByBigEndian);
+        IdDelta.Each(stream.WriteShortByBigEndian);
+        IdRangeOffsets.Each(stream.WriteUShortByBigEndian);
+        GlyphIdArray.Each(stream.WriteUShortByBigEndian);
+
+        return stream.Position - position;
     }
 }
