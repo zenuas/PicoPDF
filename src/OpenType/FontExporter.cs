@@ -42,6 +42,7 @@ public static class FontExporter
         Debug.Assert(tables["head"].Length == 54);
         Debug.Assert(tables["post"].Length == 32);
         Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
+        Debug.Assert(tables["hhea"].Length == 36);
 
         tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
     }

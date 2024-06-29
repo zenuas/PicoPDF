@@ -49,6 +49,24 @@ public class HorizontalHeaderTable : IExportable
     public long WriteTo(Stream stream)
     {
         var position = stream.Position;
+        stream.WriteUShortByBigEndian(MajorVersion);
+        stream.WriteUShortByBigEndian(MinorVersion);
+        stream.WriteShortByBigEndian(Ascender);
+        stream.WriteShortByBigEndian(Descender);
+        stream.WriteShortByBigEndian(LineGap);
+        stream.WriteUShortByBigEndian(AdvanceWidthMax);
+        stream.WriteShortByBigEndian(MinLeftSideBearing);
+        stream.WriteShortByBigEndian(MinRightSideBearing);
+        stream.WriteShortByBigEndian(XMaxExtent);
+        stream.WriteShortByBigEndian(CaretSlopeRise);
+        stream.WriteShortByBigEndian(CaretSlopeRun);
+        stream.WriteShortByBigEndian(CaretOffset);
+        stream.WriteShortByBigEndian(Reserved1);
+        stream.WriteShortByBigEndian(Reserved2);
+        stream.WriteShortByBigEndian(Reserved3);
+        stream.WriteShortByBigEndian(Reserved4);
+        stream.WriteShortByBigEndian(MetricDataFormat);
+        stream.WriteUShortByBigEndian(NumberOfHMetrics);
         return stream.Position - position;
     }
 }
