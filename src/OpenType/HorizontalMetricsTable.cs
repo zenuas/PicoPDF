@@ -18,6 +18,8 @@ public class HorizontalMetricsTable : IExportable
     public long WriteTo(Stream stream)
     {
         var position = stream.Position;
+        Metrics.Each(x => x.WriteTo(stream));
+        LeftSideBearing.Each(stream.WriteShortByBigEndian);
         return stream.Position - position;
     }
 }
