@@ -65,5 +65,6 @@ public static class FontFileExport
 
         using var stream = File.OpenWrite(opt.OutputFontFile);
         FontExporter.Export(ttf, stream);
+        stream.Flush();
     }
 }

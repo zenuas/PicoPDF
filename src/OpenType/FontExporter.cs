@@ -25,8 +25,10 @@ public static class FontExporter
 
         table_names.Each(x =>
         {
+            var table = tables[x];
+            table.Position = stream.Position;
             stream.Write(x);
-            WriteTableRecord(stream, tables[x]);
+            WriteTableRecord(stream, table);
         });
 
         ExportTable(stream, tables["name"], font.Name);
