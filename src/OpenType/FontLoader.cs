@@ -79,10 +79,12 @@ public static class FontLoader
         var hmtx = ReadTableRecprds(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
         var cmap_offset = font.TableRecords["cmap"].Offset;
-        var cmap4 = cmap.EncodingRecords.Select(x =>
+        var cmap4 = cmap.EncodingRecords.Keys
+            .ToArray()
+            .Select(x =>
             {
                 stream.Position = cmap_offset + x.Offset;
-                return ReadCMapFormat(stream);
+                return cmap.EncodingRecords[x] = ReadCMapFormat(stream);
             })
             .OfType<CMapFormat4>()
             .First();

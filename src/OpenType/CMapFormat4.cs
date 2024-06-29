@@ -88,4 +88,9 @@ public class CMapFormat4 : ICMapFormat
         }
         return [(start, chars[^1])];
     }
+
+    public long WriteTo(Stream stream)
+    {
+        return 0;
+    }
 }

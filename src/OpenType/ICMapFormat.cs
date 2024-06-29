@@ -1,6 +1,6 @@
 ﻿namespace PicoPDF.OpenType;
 
-public interface ICMapFormat
+public interface ICMapFormat : IExportable
 {
     public ushort Format { get; init; }
 }

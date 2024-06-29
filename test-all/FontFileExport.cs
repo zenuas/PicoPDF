@@ -56,7 +56,7 @@ public static class FontFileExport
             OS2 = font.OS2,
             HorizontalHeader = font.HorizontalHeader,
             HorizontalMetrics = font.HorizontalMetrics,
-            CMap = new() { Version = 0, NumberOfTables = 1, EncodingRecords = [new() { PlatformID = (ushort)PlatformEncodings.UnicodeBMPOnly >> 16, EncodingID = (ushort)((uint)PlatformEncodings.UnicodeBMPOnly & 0xFFFF), Offset = 0 }] },
+            CMap = new() { Version = 0, NumberOfTables = 1, EncodingRecords = new() { [new() { PlatformID = (ushort)Platforms.Unicode, EncodingID = (ushort)Encodings.Unicode2_0_BMPOnly, Offset = 0 }] = cmap4 } },
             CMap4 = cmap4,
             CMap4Range = cmap4_range,
             IndexToLocation = font.IndexToLocation,
