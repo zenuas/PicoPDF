@@ -26,8 +26,8 @@ public static class FontExporter
         table_names.Each(x =>
         {
             var table = tables[x];
-            table.Position = stream.Position;
             stream.Write(x);
+            table.Position = stream.Position;
             WriteTableRecord(stream, table);
         });
 
