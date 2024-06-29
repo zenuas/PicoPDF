@@ -34,6 +34,9 @@ public class Option
     [CommandOption("all-font-preview")]
     public bool AllFontPreview { get; init; } = false;
 
+    [CommandOption("output-font-file")]
+    public string OutputFontFile { get; init; } = "";
+
     [CommandOption("font-file-export")]
     public string FontFileExport { get; init; } = "";
 
