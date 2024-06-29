@@ -25,7 +25,7 @@ public class CompositeGlyph : IGlyph
 
         var records = new List<CompositeGlyphRecord>();
         ushort instruction_length = 0;
-        byte[]? instructions;
+        byte[]? instructions = null;
         while (true)
         {
             var flags = stream.ReadUShortByBigEndian();
@@ -97,8 +97,11 @@ public class CompositeGlyph : IGlyph
 
             if ((flags & (ushort)CompositeGlyphFlags.MORE_COMPONENTS) == 0)
             {
-                instruction_length = stream.ReadUShortByBigEndian();
-                instructions = Enumerable.Range(0, instruction_length).Select(_ => stream.ReadUByte()).ToArray();
+                if ((flags & (ushort)CompositeGlyphFlags.WE_HAVE_INSTRUCTIONS) != 0)
+                {
+                    instruction_length = stream.ReadUShortByBigEndian();
+                    instructions = Enumerable.Range(0, instruction_length).Select(_ => stream.ReadUByte()).ToArray();
+                }
                 break;
             }
         }
