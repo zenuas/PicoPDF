@@ -42,4 +42,7 @@ public class Option
 
     [CommandOption("font-export-chars")]
     public string FontExportChars { get; init; } = "a";
+
+    [CommandOption("regist-system-font")]
+    public bool RegistSystemFont { get; init; } = true;
 }

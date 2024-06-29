@@ -12,7 +12,7 @@ using System.Linq;
 var (opt, jsons) = CommandLine.Run<Option>(args);
 
 var fontreg = new FontRegister();
-fontreg.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
+if (opt.RegistSystemFont) fontreg.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
 if (opt.FontFileExport != "") { FontFileExport.Export(fontreg, opt); return; }
 if (opt.FontList) { FontListTest.Preview(fontreg, opt); return; }
 
