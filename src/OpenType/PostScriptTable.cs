@@ -3,7 +3,7 @@ using System.IO;
 
 namespace PicoPDF.OpenType;
 
-public class PostScriptTable
+public class PostScriptTable : IExportable
 {
     public required uint Version { get; init; }
     public required int ItalicAngle { get; init; }
@@ -27,4 +27,10 @@ public class PostScriptTable
         MinMemType1 = stream.ReadUIntByBigEndian(),
         MaxMemType1 = stream.ReadUIntByBigEndian(),
     };
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+        return stream.Position - position;
+    }
 }

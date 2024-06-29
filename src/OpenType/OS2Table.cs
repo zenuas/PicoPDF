@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PicoPDF.OpenType;
 
-public class OS2Table
+public class OS2Table : IExportable
 {
     public required ushort Version { get; init; }
     public required short XAvgCharWidth { get; init; }
@@ -94,5 +94,61 @@ public class OS2Table
             UsLowerOpticalPointSize = version >= 5 ? stream.ReadUShortByBigEndian() : (ushort)0,
             UsUpperOpticalPointSize = version >= 5 ? stream.ReadUShortByBigEndian() : (ushort)0,
         };
+    }
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+        stream.WriteUShortByBigEndian(Version);
+        stream.WriteShortByBigEndian(XAvgCharWidth);
+        stream.WriteUShortByBigEndian(UsWeightClass);
+        stream.WriteUShortByBigEndian(UsWidthClass);
+        stream.WriteUShortByBigEndian(FsType);
+        stream.WriteShortByBigEndian(YSubscriptXSize);
+        stream.WriteShortByBigEndian(YSubscriptYSize);
+        stream.WriteShortByBigEndian(YSubscriptXOffset);
+        stream.WriteShortByBigEndian(YSubscriptYOffset);
+        stream.WriteShortByBigEndian(YSuperscriptXSize);
+        stream.WriteShortByBigEndian(YSuperscriptYSize);
+        stream.WriteShortByBigEndian(YSuperscriptXOffset);
+        stream.WriteShortByBigEndian(YSuperscriptYOffset);
+        stream.WriteShortByBigEndian(YStrikeoutSize);
+        stream.WriteShortByBigEndian(YStrikeoutPosition);
+        stream.WriteShortByBigEndian(SFamilyClass);
+        stream.Write(Panose);
+        stream.WriteUIntByBigEndian(UlUnicodeRange1);
+        stream.WriteUIntByBigEndian(UlUnicodeRange2);
+        stream.WriteUIntByBigEndian(UlUnicodeRange3);
+        stream.WriteUIntByBigEndian(UlUnicodeRange4);
+        stream.Write(AchVendID);
+        stream.WriteUShortByBigEndian(FsSelection);
+        stream.WriteUShortByBigEndian(UsFirstCharIndex);
+        stream.WriteUShortByBigEndian(UsLastCharIndex);
+        stream.WriteShortByBigEndian(STypoAscender);
+        stream.WriteShortByBigEndian(STypoDescender);
+        stream.WriteShortByBigEndian(STypoLineGap);
+        stream.WriteUShortByBigEndian(UsWinAscent);
+        stream.WriteUShortByBigEndian(UsWinDescent);
+
+        if (Version >= 1)
+        {
+            stream.WriteUIntByBigEndian(UlCodePageRange1);
+            stream.WriteUIntByBigEndian(UlCodePageRange2);
+        }
+        if (Version >= 2)
+        {
+            stream.WriteShortByBigEndian(SxHeight);
+            stream.WriteShortByBigEndian(SCapHeight);
+            stream.WriteUShortByBigEndian(UsDefaultChar);
+            stream.WriteUShortByBigEndian(UsBreakChar);
+            stream.WriteUShortByBigEndian(UsMaxContext);
+        }
+        if (Version >= 5)
+        {
+            stream.WriteUShortByBigEndian(UsLowerOpticalPointSize);
+            stream.WriteUShortByBigEndian(UsUpperOpticalPointSize);
+        }
+
+        return stream.Position - position;
     }
 }

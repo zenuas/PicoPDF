@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PicoPDF.OpenType;
 
-public class NameTable
+public class NameTable : IExportable
 {
     public required ushort Format { get; init; }
     public required ushort Count { get; init; }

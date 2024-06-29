@@ -10,7 +10,7 @@ public static class FontExporter
 {
     public static void Export(TrueTypeFont font, Stream stream)
     {
-        var table_names = new string[] { "head", "name" };
+        var table_names = new string[] { "name", "head", "maxp", "post", "OS/2", "cmap", "hhea", "hmtx", "loca", "glyf" };
         var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
 
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
@@ -29,16 +29,26 @@ public static class FontExporter
             WriteTableRecord(stream, tables[x]);
         });
 
-        var head = tables["head"];
-        head.Offset = (uint)stream.Position;
-        head.Length = (uint)font.FontHeader.WriteTo(stream);
-        Debug.Assert(head.Length == 54);
+        ExportTable(stream, tables["name"], font.Name);
+        ExportTable(stream, tables["head"], font.FontHeader);
+        ExportTable(stream, tables["maxp"], font.MaximumProfile);
+        ExportTable(stream, tables["post"], font.PostScript);
+        ExportTable(stream, tables["OS/2"], font.OS2);
+        ExportTable(stream, tables["cmap"], font.CMap);
+        ExportTable(stream, tables["hhea"], font.HorizontalHeader);
+        ExportTable(stream, tables["hmtx"], font.HorizontalMetrics);
+        ExportTable(stream, tables["loca"], font.IndexToLocation);
 
-        var name = tables["name"];
-        name.Offset = (uint)stream.Position;
-        name.Length = (uint)font.Name.WriteTo(stream);
+        Debug.Assert(tables["head"].Length == 54);
+        Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
 
         tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
+    }
+
+    public static void ExportTable(Stream stream, MutableTableRecord rec, IExportable table)
+    {
+        rec.Offset = (uint)stream.Position;
+        rec.Length = (uint)table.WriteTo(stream);
     }
 
     public static void WriteTableRecord(Stream stream, MutableTableRecord table)

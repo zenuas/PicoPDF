@@ -3,7 +3,7 @@ using System.IO;
 
 namespace PicoPDF.OpenType;
 
-public class FontHeaderTable
+public class FontHeaderTable : IExportable
 {
     public required ushort MajorVersion { get; init; }
     public required ushort MinorVersion { get; init; }

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PicoPDF.OpenType;
 
-public class IndexToLocationTable
+public class IndexToLocationTable : IExportable
 {
     public required uint[] Offsets { get; init; }
 
@@ -14,4 +14,10 @@ public class IndexToLocationTable
             ? Lists.RangeTo(0, number_of_glyphs + 1).Select(_ => ((uint)stream.ReadUShortByBigEndian()) * 2).ToArray()
             : Lists.RangeTo(0, number_of_glyphs + 1).Select(_ => stream.ReadUIntByBigEndian()).ToArray(),
     };
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+        return stream.Position - position;
+    }
 }

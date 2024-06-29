@@ -3,7 +3,7 @@ using System.IO;
 
 namespace PicoPDF.OpenType;
 
-public class MaximumProfileTable
+public class MaximumProfileTable : IExportable
 {
     public required int Version { get; init; }
     public required ushort NumberOfGlyphs { get; init; }
@@ -46,5 +46,11 @@ public class MaximumProfileTable
                 MaxComponentElements = stream.ReadUShortByBigEndian(),
                 MaxComponentDepth = stream.ReadUShortByBigEndian(),
             };
+    }
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+        return stream.Position - position;
     }
 }

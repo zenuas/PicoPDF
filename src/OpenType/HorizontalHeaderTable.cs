@@ -3,7 +3,7 @@ using System.IO;
 
 namespace PicoPDF.OpenType;
 
-public class HorizontalHeaderTable
+public class HorizontalHeaderTable : IExportable
 {
     public required ushort MajorVersion { get; init; }
     public required ushort MinorVersion { get; init; }
@@ -45,4 +45,10 @@ public class HorizontalHeaderTable
         MetricDataFormat = stream.ReadShortByBigEndian(),
         NumberOfHMetrics = stream.ReadUShortByBigEndian(),
     };
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+        return stream.Position - position;
+    }
 }

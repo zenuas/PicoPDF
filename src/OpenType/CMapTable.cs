@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PicoPDF.OpenType;
 
-public class CMapTable
+public class CMapTable : IExportable
 {
     public required ushort Version { get; init; }
     public required ushort NumberOfTables { get; init; }
@@ -21,6 +21,12 @@ public class CMapTable
             NumberOfTables = num_of_tables,
             EncodingRecords = Enumerable.Range(0, num_of_tables).Select(_ => EncodingRecord.ReadFrom(stream)).ToArray(),
         };
+    }
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+        return stream.Position - position;
     }
 
     public override string ToString() => $"Version={Version}, NumberOfTables={NumberOfTables}";
