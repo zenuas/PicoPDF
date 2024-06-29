@@ -38,7 +38,7 @@ public class NameTable : IExportable
         }
 
         var name_records = records
-            .Select(x => ((x.PlatformID == 0 || x.PlatformID == 3 ? Encoding.BigEndianUnicode : Encoding.UTF8).GetString(stream.ReadPositionBytes(position + string_offset + x.Offset, x.Length)), x))
+            .Select(x => ((x.PlatformID == (ushort)Platforms.Unicode || x.PlatformID == (ushort)Platforms.Windows ? Encoding.BigEndianUnicode : Encoding.UTF8).GetString(stream.ReadPositionBytes(position + string_offset + x.Offset, x.Length)), x))
             .ToArray();
 
         var lang_tags = tags
@@ -71,7 +71,7 @@ public class NameTable : IExportable
         NameRecords.Each(x =>
         {
             var offset = strings.Position;
-            strings.Write((x.NameRecord.PlatformID == 0 || x.NameRecord.PlatformID == 3 ? Encoding.BigEndianUnicode : Encoding.UTF8).GetBytes(x.Name));
+            strings.Write((x.NameRecord.PlatformID == (ushort)Platforms.Unicode || x.NameRecord.PlatformID == (ushort)Platforms.Windows ? Encoding.BigEndianUnicode : Encoding.UTF8).GetBytes(x.Name));
 
             stream.WriteUShortByBigEndian(x.NameRecord.PlatformID);
             stream.WriteUShortByBigEndian(x.NameRecord.EncodingID);

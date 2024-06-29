@@ -48,7 +48,7 @@ public static class FontLoader
         stream.Position = tables["name"].Offset;
         var name = NameTable.ReadFrom(stream);
         string? namev(ushort nameid) => opt.PlatformIDOrder
-            .Select(x => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == x && y.NameRecord.NameID == nameid)?.Name)
+            .Select(x => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == (ushort)x && y.NameRecord.NameID == nameid)?.Name)
             .Where(x => x is { })
             .FirstOrDefault();
 

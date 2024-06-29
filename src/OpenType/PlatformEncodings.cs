@@ -5,53 +5,56 @@ namespace PicoPDF.OpenType;
 public enum PlatformEncodings
 {
     [Obsolete("deprecated")]
-    UnicodeUnicode1_0 = (0 << 16) | 0,
+    Unicode1_0 = (Platforms.Unicode << 16) | Encodings.Unicode1_0,
 
     [Obsolete("deprecated")]
-    UnicodeUnicode1_1 = (0 << 16) | 1,
+    Unicode1_1 = (Platforms.Unicode << 16) | Encodings.Unicode1_1,
 
     [Obsolete("deprecated")]
-    UnicodeISO_IEC_10646 = (0 << 16) | 2,
+    ISO_IEC_10646 = (Platforms.Unicode << 16) | Encodings.ISO_IEC_10646,
 
-    UnicodeBMPOnly = (0 << 16) | 3,
+    UnicodeBMPOnly = (Platforms.Unicode << 16) | Encodings.Unicode2_0_BMPOnly,
 
-    UnicodeFullRepertoire = (0 << 16) | 4,
+    Unicode2_0_FullRepertoire = (Platforms.Unicode << 16) | Encodings.Unicode2_0_FullRepertoire,
 
-    UnicodeFormat14 = (0 << 16) | 5,
+    UnicodeVariationSequences = (Platforms.Unicode << 16) | Encodings.UnicodeVariationSequences,
 
-    UnicodeFullRepertoireFormat13 = (0 << 16) | 6,
-
-    [Obsolete("deprecated")]
-    Macintosh = (1 << 16) | 0,
-
-    ISO_7bitASCII = (2 << 16) | 0,
-
-    ISO_ISO10646 = (2 << 16) | 1,
-
-    ISO_ISO8859_1 = (2 << 16) | 2,
-
-    Windows_Symbol = (3 << 16) | 0,
-
-    Windows_UnicodeBMP = (3 << 16) | 1,
-
-    Windows_ShiftJIS = (3 << 16) | 2,
-
-    Windows_PRC = (3 << 16) | 3,
-
-    Windows_Big5 = (3 << 16) | 4,
-
-    Windows_Wansung = (3 << 16) | 5,
-
-    Windows_Johab = (3 << 16) | 6,
-
-    Windows_Reserved1 = (3 << 16) | 7,
-
-    Windows_Reserved2 = (3 << 16) | 8,
-
-    Windows_Reserved3 = (3 << 16) | 9,
-
-    Windows_UnicodeFullRepertoire = (3 << 16) | 10,
+    UnicodeFullRepertoire = (Platforms.Unicode << 16) | Encodings.UnicodeFullRepertoire,
 
     [Obsolete("deprecated")]
-    Custom = (4 << 16) | 0,
+    Macintosh = (Platforms.Macintosh << 16) | 0,
+
+    [Obsolete("deprecated")]
+    ASCII7bit = (Platforms.ISO << 16) | Encodings.ASCII7bit,
+
+    [Obsolete("deprecated")]
+    ISO10646 = (Platforms.ISO << 16) | Encodings.ISO10646,
+
+    [Obsolete("deprecated")]
+    ISO8859_1 = (Platforms.ISO << 16) | Encodings.ISO8859_1,
+
+    Windows_Symbol = (Platforms.Windows << 16) | Encodings.Windows_Symbol,
+
+    Windows_UnicodeBMP = (Platforms.Windows << 16) | Encodings.Windows_UnicodeBMP,
+
+    Windows_ShiftJIS = (Platforms.Windows << 16) | Encodings.Windows_ShiftJIS,
+
+    Windows_PRC = (Platforms.Windows << 16) | Encodings.Windows_PRC,
+
+    Windows_Big5 = (Platforms.Windows << 16) | Encodings.Windows_Big5,
+
+    Windows_Wansung = (Platforms.Windows << 16) | Encodings.Windows_Wansung,
+
+    Windows_Johab = (Platforms.Windows << 16) | Encodings.Windows_Johab,
+
+    Windows_Reserved1 = (Platforms.Windows << 16) | Encodings.Windows_Reserved1,
+
+    Windows_Reserved2 = (Platforms.Windows << 16) | Encodings.Windows_Reserved2,
+
+    Windows_Reserved3 = (Platforms.Windows << 16) | Encodings.Windows_Reserved3,
+
+    Windows_UnicodeFullRepertoire = (Platforms.Windows << 16) | Encodings.Windows_UnicodeFullRepertoire,
+
+    [Obsolete("deprecated")]
+    Custom = (Platforms.Custom << 16) | 0,
 }

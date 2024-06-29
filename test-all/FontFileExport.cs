@@ -23,6 +23,25 @@ public static class FontFileExport
         var cmap4 = CMapFormat4.CreateFormat(chars.ToDictionary(x => x, x => char_glyph[x].Index));
         var cmap4_range = FontLoader.CreateCMap4Range(cmap4);
 
+        var maxp = new MaximumProfileTable()
+        {
+            Version = font.MaximumProfile.Version,
+            NumberOfGlyphs = (ushort)opt.FontExportChars.Length,
+            MaxPoints = font.MaximumProfile.MaxPoints,
+            MaxContours = font.MaximumProfile.MaxContours,
+            MaxCompositePoints = font.MaximumProfile.MaxCompositePoints,
+            MaxCompositeContours = font.MaximumProfile.MaxCompositeContours,
+            MaxZones = font.MaximumProfile.MaxZones,
+            MaxTwilightPoints = font.MaximumProfile.MaxTwilightPoints,
+            MaxStorage = font.MaximumProfile.MaxStorage,
+            MaxFunctionDefs = font.MaximumProfile.MaxFunctionDefs,
+            MaxInstructionDefs = font.MaximumProfile.MaxInstructionDefs,
+            MaxStackElements = font.MaximumProfile.MaxStackElements,
+            MaxSizeOfInstructions = font.MaximumProfile.MaxSizeOfInstructions,
+            MaxComponentElements = font.MaximumProfile.MaxComponentElements,
+            MaxComponentDepth = font.MaximumProfile.MaxComponentDepth,
+        };
+
         var ttf = new TrueTypeFont()
         {
             PostScriptName = font.PostScriptName,
@@ -32,7 +51,7 @@ public static class FontFileExport
             Offset = font.Offset,
             Name = font.Name,
             FontHeader = font.FontHeader,
-            MaximumProfile = font.MaximumProfile,
+            MaximumProfile = maxp,
             PostScript = font.PostScript,
             OS2 = font.OS2,
             HorizontalHeader = font.HorizontalHeader,
