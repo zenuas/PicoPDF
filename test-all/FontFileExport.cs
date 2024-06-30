@@ -100,7 +100,7 @@ public static class FontFileExport
             Glyphs = chars.Select(x => char_glyph[x].Glyph).ToArray(),
         };
 
-        using var stream = File.OpenWrite(opt.OutputFontFile);
+        using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.Write, FileShare.None);
         FontExporter.Export(ttf, stream);
     }
 }
