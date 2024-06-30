@@ -74,8 +74,6 @@ public class CMapFormat4 : ICMapFormat
         };
     }
 
-    public static (char Start, char End)[] CreateStartEnds(Dictionary<char, ushort> char_gid) => CreateStartEnds(char_gid.Keys.Order().ToArray(), char_gid);
-
     public static (char Start, char End)[] CreateStartEnds(Span<char> chars, Dictionary<char, ushort> char_gid)
     {
         var start = chars[0];
