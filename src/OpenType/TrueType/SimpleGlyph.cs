@@ -34,7 +34,7 @@ public class SimpleGlyph : IGlyph
         for (var i = 0; i < lastpoint; i++)
         {
             var flag = flags[i] = stream.ReadUByte();
-            if ((flags[i] & (byte)SimpleGlyphFlags.REPEAT_FLAG) != 0)
+            if ((flag & (byte)SimpleGlyphFlags.REPEAT_FLAG) != 0)
             {
                 var repeat = stream.ReadUByte();
                 Enumerable.Range(0, repeat).Each(_ => flags[++i] = flag);
@@ -87,5 +87,33 @@ public class SimpleGlyph : IGlyph
             XCoordinates = xcoordinates,
             YCoordinates = ycoordinates,
         };
+    }
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+
+        stream.WriteShortByBigEndian((short)EndPointsOfContours.Length);
+        stream.WriteShortByBigEndian(XMin);
+        stream.WriteShortByBigEndian(YMin);
+        stream.WriteShortByBigEndian(XMax);
+        stream.WriteShortByBigEndian(YMax);
+        EndPointsOfContours.Each(stream.WriteUShortByBigEndian);
+        stream.WriteUShortByBigEndian((ushort)Instructions.Length);
+        Instructions.Each(stream.WriteByte);
+
+        Flags.Select(x => (byte)(x
+                & ~(byte)SimpleGlyphFlags.REPEAT_FLAG
+                & ~(byte)SimpleGlyphFlags.X_SHORT_VECTOR
+                & ~(byte)SimpleGlyphFlags.X_IS_SAME_OR_POSITIVE_X_SHORT_VECTOR
+                & ~(byte)SimpleGlyphFlags.Y_SHORT_VECTOR
+                & ~(byte)SimpleGlyphFlags.Y_IS_SAME_OR_POSITIVE_Y_SHORT_VECTOR
+                & 0xFF))
+            .Each(stream.WriteByte);
+
+        XCoordinates.Each(stream.WriteShortByBigEndian);
+        YCoordinates.Each(stream.WriteShortByBigEndian);
+
+        return stream.Position - position;
     }
 }

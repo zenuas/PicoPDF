@@ -1,4 +1,5 @@
 ﻿using PicoPDF.OpenType;
+using PicoPDF.OpenType.TrueType;
 using PicoPDF.Pdf.Font;
 using System;
 using System.IO;

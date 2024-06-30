@@ -118,4 +118,57 @@ public class CompositeGlyph : IGlyph
             Instructions = instructions ?? [],
         };
     }
+
+    public long WriteTo(Stream stream)
+    {
+        var position = stream.Position;
+
+        stream.WriteShortByBigEndian(NumberOfContours);
+        stream.WriteShortByBigEndian(XMin);
+        stream.WriteShortByBigEndian(YMin);
+        stream.WriteShortByBigEndian(XMax);
+        stream.WriteShortByBigEndian(YMax);
+
+        CompositeGlyphRecords.Each(glyph =>
+        {
+            stream.WriteUShortByBigEndian(glyph.Flags);
+            stream.WriteUShortByBigEndian(glyph.GlyphIndex);
+
+            if ((glyph.Flags & (ushort)CompositeGlyphFlags.ARG_1_AND_2_ARE_WORDS) != 0)
+            {
+                stream.WriteUShortByBigEndian((ushort)glyph.Argument1);
+                stream.WriteUShortByBigEndian((ushort)glyph.Argument2);
+            }
+            else
+            {
+                stream.WriteByte((byte)glyph.Argument1);
+                stream.WriteByte((byte)glyph.Argument2);
+            }
+
+            if ((glyph.Flags & (ushort)CompositeGlyphFlags.WE_HAVE_A_SCALE) != 0)
+            {
+                stream.WriteUShortByBigEndian(glyph.Scale);
+            }
+            else if ((glyph.Flags & (ushort)CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE) != 0)
+            {
+                stream.WriteUShortByBigEndian(glyph.XScale);
+                stream.WriteUShortByBigEndian(glyph.YScale);
+            }
+            else if ((glyph.Flags & (ushort)CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO) != 0)
+            {
+                stream.WriteUShortByBigEndian(glyph.XScale);
+                stream.WriteUShortByBigEndian(glyph.Scale01);
+                stream.WriteUShortByBigEndian(glyph.Scale10);
+                stream.WriteUShortByBigEndian(glyph.YScale);
+            }
+        });
+
+        if (Instructions.Length > 0)
+        {
+            stream.WriteUShortByBigEndian((ushort)Instructions.Length);
+            Instructions.Each(stream.WriteByte);
+        }
+
+        return stream.Position - position;
+    }
 }
