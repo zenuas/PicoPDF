@@ -1,5 +1,4 @@
 ﻿using PicoPDF.OpenType;
-using PicoPDF.OpenType.TrueType;
 using PicoPDF.Pdf.Font;
 using System;
 using System.IO;
@@ -24,6 +23,14 @@ public static class FontFileExport
 
         var cmap4 = CMapFormat4.CreateFormat(chars.ToDictionary(x => x, x => char_glyph[x].Index));
         var cmap4_range = FontLoader.CreateCMap4Range(cmap4);
+
+        var name = new NameTable()
+        {
+            Format = 1,
+            Count = 1,
+            StringOffset = 0,
+            NameRecords = [(font.PostScriptName, new() { PlatformID = (ushort)Platforms.Unicode, EncodingID = (ushort)Encodings.Unicode2_0_BMPOnly, LanguageID = 0, NameID = 6, Length = 0, Offset = 0 })],
+        };
 
         var maxp = new MaximumProfileTable()
         {
@@ -79,7 +86,7 @@ public static class FontFileExport
             Position = font.Position,
             TableRecords = font.TableRecords,
             Offset = font.Offset,
-            Name = font.Name,
+            Name = name,
             FontHeader = font.FontHeader,
             MaximumProfile = maxp,
             PostScript = font.PostScript,
@@ -95,6 +102,5 @@ public static class FontFileExport
 
         using var stream = File.OpenWrite(opt.OutputFontFile);
         FontExporter.Export(ttf, stream);
-        stream.Flush();
     }
 }
