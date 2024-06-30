@@ -75,7 +75,7 @@ public class NameTable : IExportable
             stream.WriteUShortByBigEndian(x.NameRecord.EncodingID);
             stream.WriteUShortByBigEndian(x.NameRecord.LanguageID);
             stream.WriteUShortByBigEndian(x.NameRecord.NameID);
-            stream.WriteUShortByBigEndian(x.NameRecord.Length);
+            stream.WriteUShortByBigEndian((ushort)(strings.Position - offset));
             stream.WriteUShortByBigEndian((ushort)offset);
         });
 
