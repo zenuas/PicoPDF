@@ -89,10 +89,8 @@ public class SimpleGlyph : IGlyph
         };
     }
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
-
         stream.WriteShortByBigEndian((short)EndPointsOfContours.Length);
         stream.WriteShortByBigEndian(XMin);
         stream.WriteShortByBigEndian(YMin);
@@ -113,7 +111,5 @@ public class SimpleGlyph : IGlyph
 
         XCoordinates.Each(stream.WriteShortByBigEndian);
         YCoordinates.Each(stream.WriteShortByBigEndian);
-
-        return stream.Position - position;
     }
 }

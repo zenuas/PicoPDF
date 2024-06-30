@@ -24,10 +24,8 @@ public class CMapTable : IExportable
         };
     }
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
-
         var export_cmap_keys = EncodingRecords
             .Where(x => x.Value is { })
             .Select(x => x.Key)
@@ -55,8 +53,6 @@ public class CMapTable : IExportable
 
         cmapformat.Position = 0;
         stream.Write(cmapformat.ToArray());
-
-        return stream.Position - position;
     }
 
     public override string ToString() => $"Version={Version}, NumberOfTables={NumberOfTables}";

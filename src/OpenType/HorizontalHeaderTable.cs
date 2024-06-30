@@ -46,9 +46,8 @@ public class HorizontalHeaderTable : IExportable
         NumberOfHMetrics = stream.ReadUShortByBigEndian(),
     };
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
         stream.WriteUShortByBigEndian(MajorVersion);
         stream.WriteUShortByBigEndian(MinorVersion);
         stream.WriteShortByBigEndian(Ascender);
@@ -67,6 +66,5 @@ public class HorizontalHeaderTable : IExportable
         stream.WriteShortByBigEndian(Reserved4);
         stream.WriteShortByBigEndian(MetricDataFormat);
         stream.WriteUShortByBigEndian(NumberOfHMetrics);
-        return stream.Position - position;
     }
 }

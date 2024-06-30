@@ -14,12 +14,10 @@ public class HorizontalMetrics : IExportable
         LeftSideBearing = stream.ReadShortByBigEndian(),
     };
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
         stream.WriteUShortByBigEndian(AdvanceWidth);
         stream.WriteShortByBigEndian(LeftSideBearing);
-        return stream.Position - position;
     }
 
     public override string ToString() => $"AdvanceWidth={AdvanceWidth}, LeftSideBearing={LeftSideBearing}";

@@ -56,7 +56,9 @@ public static class FontExporter
             .Aggregate(0L, (acc, x) =>
             {
                 glyf_index[x.Index] = acc;
-                return acc + x.Glyph.WriteTo(stream);
+                var position = stream.Position;
+                x.Glyph.WriteTo(stream);
+                return acc + (stream.Position - position);
             });
         tables["glyf"].Length = (uint)(stream.Position - glyf_start);
 
@@ -81,7 +83,9 @@ public static class FontExporter
     public static void ExportTable(Stream stream, long start_stream_position, MutableTableRecord rec, IExportable table)
     {
         rec.Offset = (uint)(stream.Position - start_stream_position);
-        rec.Length = (uint)table.WriteTo(stream);
+        var position = stream.Position;
+        table.WriteTo(stream);
+        rec.Length = (uint)(stream.Position - position);
     }
 
     public static void WriteTableRecord(Stream stream, MutableTableRecord table)

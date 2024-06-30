@@ -20,14 +20,12 @@ public class OffsetTable
         RangeShift = stream.ReadUShortByBigEndian(),
     };
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
         stream.WriteUIntByBigEndian(Version);
         stream.WriteUShortByBigEndian(NumberOfTables);
         stream.WriteUShortByBigEndian(SearchRange);
         stream.WriteUShortByBigEndian(EntrySelector);
         stream.WriteUShortByBigEndian(RangeShift);
-        return stream.Position - position;
     }
 }

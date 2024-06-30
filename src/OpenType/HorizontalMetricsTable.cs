@@ -15,11 +15,9 @@ public class HorizontalMetricsTable : IExportable
         LeftSideBearing = Enumerable.Range(0, number_of_glyphs - number_of_hmetrics).Select(_ => stream.ReadShortByBigEndian()).ToArray(),
     };
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
         Metrics.Each(x => x.WriteTo(stream));
         LeftSideBearing.Each(stream.WriteShortByBigEndian);
-        return stream.Position - position;
     }
 }

@@ -56,10 +56,8 @@ public class NameTable : IExportable
         };
     }
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
-
         var string_offset = 6 + (/* sizeof(NameRecord) */12 * Count) + (/* sizeof(LanguageTagRecord) */4 * LanguageTagCount);
 
         stream.WriteUShortByBigEndian(Format);
@@ -92,8 +90,6 @@ public class NameTable : IExportable
 
         strings.Position = 0;
         stream.Write(strings.ToArray());
-
-        return stream.Position - position;
     }
 
     public override string ToString() => $"Format={Format}, Count={Count}, StringOffset={StringOffset}";

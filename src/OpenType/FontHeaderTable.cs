@@ -46,9 +46,8 @@ public class FontHeaderTable : IExportable
         GlyphDataFormat = stream.ReadShortByBigEndian(),
     };
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
         stream.WriteUShortByBigEndian(MajorVersion);
         stream.WriteUShortByBigEndian(MinorVersion);
         stream.WriteIntByBigEndian(FontRevision);
@@ -67,6 +66,5 @@ public class FontHeaderTable : IExportable
         stream.WriteShortByBigEndian(FontDirectionHint);
         stream.WriteShortByBigEndian(IndexToLocFormat);
         stream.WriteShortByBigEndian(GlyphDataFormat);
-        return stream.Position - position;
     }
 }

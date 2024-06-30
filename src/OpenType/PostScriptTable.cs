@@ -28,9 +28,8 @@ public class PostScriptTable : IExportable
         MaxMemType1 = stream.ReadUIntByBigEndian(),
     };
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
         stream.WriteUIntByBigEndian(Version);
         stream.WriteIntByBigEndian(ItalicAngle);
         stream.WriteShortByBigEndian(UnderlinePosition);
@@ -40,6 +39,5 @@ public class PostScriptTable : IExportable
         stream.WriteUIntByBigEndian(MaxMemType42);
         stream.WriteUIntByBigEndian(MinMemType1);
         stream.WriteUIntByBigEndian(MaxMemType1);
-        return stream.Position - position;
     }
 }

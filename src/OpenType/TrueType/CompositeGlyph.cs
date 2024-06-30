@@ -119,10 +119,8 @@ public class CompositeGlyph : IGlyph
         };
     }
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
-
         stream.WriteShortByBigEndian(NumberOfContours);
         stream.WriteShortByBigEndian(XMin);
         stream.WriteShortByBigEndian(YMin);
@@ -168,7 +166,5 @@ public class CompositeGlyph : IGlyph
             stream.WriteUShortByBigEndian((ushort)Instructions.Length);
             Instructions.Each(stream.WriteByte);
         }
-
-        return stream.Position - position;
     }
 }

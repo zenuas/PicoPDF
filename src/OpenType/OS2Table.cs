@@ -96,9 +96,8 @@ public class OS2Table : IExportable
         };
     }
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
         stream.WriteUShortByBigEndian(Version);
         stream.WriteShortByBigEndian(XAvgCharWidth);
         stream.WriteUShortByBigEndian(UsWeightClass);
@@ -148,7 +147,5 @@ public class OS2Table : IExportable
             stream.WriteUShortByBigEndian(UsLowerOpticalPointSize);
             stream.WriteUShortByBigEndian(UsUpperOpticalPointSize);
         }
-
-        return stream.Position - position;
     }
 }

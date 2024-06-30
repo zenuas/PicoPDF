@@ -4,5 +4,5 @@ namespace PicoPDF.OpenType;
 
 public interface IExportable
 {
-    public long WriteTo(Stream stream);
+    public void WriteTo(Stream stream);
 }

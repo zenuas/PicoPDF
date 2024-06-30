@@ -48,10 +48,8 @@ public class MaximumProfileTable : IExportable
             };
     }
 
-    public long WriteTo(Stream stream)
+    public void WriteTo(Stream stream)
     {
-        var position = stream.Position;
-
         stream.WriteIntByBigEndian(Version);
         stream.WriteUShortByBigEndian(NumberOfGlyphs);
 
@@ -71,7 +69,5 @@ public class MaximumProfileTable : IExportable
             stream.WriteUShortByBigEndian(MaxComponentElements);
             stream.WriteUShortByBigEndian(MaxComponentDepth);
         }
-
-        return stream.Position - position;
     }
 }
