@@ -51,14 +51,15 @@ public class CMapFormat4 : ICMapFormat
 
     public static CMapFormat4 CreateFormat(Dictionary<char, ushort> char_gid)
     {
-        var start_ends = CreateStartEnds(char_gid);
+        var chars = char_gid.Keys.Order().ToArray();
+        var start_ends = CreateStartEnds(chars, char_gid);
         var seg_count = start_ends.Length;
         var serach_range = Math.Pow(2, Math.Floor(Math.Log2(seg_count))) * 2;
 
         return new()
         {
             Format = 4,
-            Length = 0,
+            Length = (ushort)((sizeof(ushort) * 8) + (seg_count * sizeof(ushort) * 4) + (chars.Length * sizeof(ushort))),
             Language = 0,
             SegCountX2 = (ushort)(seg_count * 2),
             SearchRange = (ushort)serach_range,
@@ -69,7 +70,7 @@ public class CMapFormat4 : ICMapFormat
             StartCode = start_ends.Select(x => (ushort)x.Start).ToArray(),
             IdDelta = start_ends.Select(x => (short)(char_gid[x.Start] - x.Start)).ToArray(),
             IdRangeOffsets = Lists.Repeat((ushort)0).Take(seg_count).ToArray(),
-            GlyphIdArray = [],
+            GlyphIdArray = chars.Select(x => char_gid[x]).ToArray(),
         };
     }
 
