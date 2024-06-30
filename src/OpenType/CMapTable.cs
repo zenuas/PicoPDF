@@ -44,7 +44,7 @@ public class CMapTable : IExportable
             .Each(x =>
             {
                 var offset = cmapformat.Position + cmap_offset;
-                x.Value.WriteTo(stream);
+                x.Value.WriteTo(cmapformat);
 
                 stream.WriteUShortByBigEndian(x.Key.PlatformID);
                 stream.WriteUShortByBigEndian(x.Key.EncodingID);
