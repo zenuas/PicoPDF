@@ -2,7 +2,7 @@
 
 namespace PicoPDF.OpenType;
 
-public class FontLoading : IOpenTypeHeader
+public class FontTableRecords : IOpenTypeHeader
 {
     public required string PostScriptName { get; init; }
     public required IFontPath Path { get; init; }

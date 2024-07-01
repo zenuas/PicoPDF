@@ -28,32 +28,32 @@ public class FontRegister
             }
         });
 
-    public IOpenTypeRequiredTables? GetOrNull(string name)
+    public IOpenTypeRequiredTables? LoadRequiredTablesOrNull(string name)
     {
         var font = Fonts.GetValueOrDefault(name);
         if (font is null) return null;
         if (font.Value is IOpenTypeRequiredTables req) return req;
 
-        var fontinfo = FontLoader.DelayLoad(font.Value.Cast<FontLoading>());
+        var fontinfo = FontLoader.LoadRequiredTables(font.Value.Cast<FontTableRecords>());
         Fonts[name].Value = fontinfo;
         return fontinfo;
     }
 
-    public IOpenTypeRequiredTables? GetCompleteOrNull(string name)
+    public IOpenTypeRequiredTables? LoadCompleteOrNull(string name)
     {
-        var font = GetOrNull(name);
+        var font = LoadRequiredTablesOrNull(name);
         if (font is null) return null;
         if (font is not FontRequiredTables req) return font;
 
-        var fontinfo = FontLoader.DelayLoadComplete(req);
+        var fontinfo = FontLoader.LoadComplete(req);
         Fonts[name].Value = fontinfo;
         return fontinfo;
     }
 
-    public IOpenTypeRequiredTables Get(IFontPath path)
+    public IOpenTypeRequiredTables LoadRequiredTables(IFontPath path)
     {
         var name = GetFontFilePath(path);
-        if (GetOrNull(name) is { } font) return font;
+        if (LoadRequiredTablesOrNull(name) is { } font) return font;
 
         if (path is FontCollectionPath)
         {
@@ -63,23 +63,23 @@ public class FontRegister
         {
             AddFont(path.Path);
         }
-        return GetOrNull(name).Try();
+        return LoadRequiredTablesOrNull(name).Try();
     }
 
-    public IOpenTypeRequiredTables GetComplete(IFontPath path)
+    public IOpenTypeRequiredTables LoadComplete(IFontPath path)
     {
-        _ = Get(path);
+        _ = LoadRequiredTables(path);
         var name = GetFontFilePath(path);
-        return GetCompleteOrNull(name).Try();
+        return LoadCompleteOrNull(name).Try();
     }
 
-    public IOpenTypeRequiredTables Get(string name) => Path.GetExtension(name) != "" ?
-        Get(GetFontFilePath(name)) :
-        GetOrNull(name).Try();
+    public IOpenTypeRequiredTables LoadRequiredTables(string name) => Path.GetExtension(name) != "" ?
+        LoadRequiredTables(GetFontFilePath(name)) :
+        LoadRequiredTablesOrNull(name).Try();
 
-    public IOpenTypeRequiredTables GetComplete(string name) => Path.GetExtension(name) != "" ?
-        GetComplete(GetFontFilePath(name)) :
-        GetCompleteOrNull(name).Try();
+    public IOpenTypeRequiredTables LoadComplete(string name) => Path.GetExtension(name) != "" ?
+        LoadComplete(GetFontFilePath(name)) :
+        LoadCompleteOrNull(name).Try();
 
     public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
 
@@ -106,7 +106,7 @@ public class FontRegister
         return true;
     }
 
-    public void AddFont(string path) => Add(FontLoader.Load(path));
+    public void AddFont(string path) => Add(FontLoader.LoadTableRecords(path));
 
-    public void AddFontCollection(string path) => FontLoader.LoadCollection(path).Each(x => Add(x));
+    public void AddFontCollection(string path) => FontLoader.LoadTableRecordsCollection(path).Each(x => Add(x));
 }

@@ -10,19 +10,19 @@ namespace PicoPDF.OpenType;
 
 public static class FontLoader
 {
-    public static FontLoading Load(string path, LoadOption? opt = null)
+    public static FontTableRecords LoadTableRecords(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
-        return Load(new FontPath { Path = path }, stream, 0, opt ?? new());
+        return LoadTableRecords(new FontPath { Path = path }, stream, 0, opt ?? new());
     }
 
-    public static FontLoading[] LoadCollection(string path, LoadOption? opt = null)
+    public static FontTableRecords[] LoadTableRecordsCollection(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
-        return LoadCollection(path, stream, opt ?? new());
+        return LoadTableRecordsCollection(path, stream, opt ?? new());
     }
 
-    public static FontLoading[] LoadCollection(string path, Stream stream, LoadOption opt)
+    public static FontTableRecords[] LoadTableRecordsCollection(string path, Stream stream, LoadOption opt)
     {
         var header = TrueTypeCollectionHeader.ReadFrom(stream);
 
@@ -31,11 +31,11 @@ public static class FontLoader
             : Enumerable.Range(0, (int)header.NumberOfFonts)
                 .Select(_ => stream.ReadUIntByBigEndian())
                 .ToArray()
-                .Select((x, i) => Load(new FontCollectionPath { Path = path, Index = i }, stream, x, opt))
+                .Select((x, i) => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream, x, opt))
                 .ToArray();
     }
 
-    public static FontLoading Load(IFontPath path, Stream stream, long pos, LoadOption opt)
+    public static FontTableRecords LoadTableRecords(IFontPath path, Stream stream, long pos, LoadOption opt)
     {
         stream.Position = pos;
         var offset = OffsetTable.ReadFrom(stream);
@@ -47,14 +47,14 @@ public static class FontLoader
 
         stream.Position = tables["name"].Offset;
         var name = NameTable.ReadFrom(stream);
-        string? namev(ushort nameid) => opt.PlatformIDOrder
+        string namev(ushort nameid) => opt.PlatformIDOrder
             .Select(x => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == (ushort)x && y.NameRecord.NameID == nameid)?.Name)
             .Where(x => x is { })
-            .FirstOrDefault();
+            .FirstOrDefault() ?? "";
 
         return new()
         {
-            PostScriptName = namev(6) ?? "",
+            PostScriptName = namev(6),
             Path = path,
             Position = pos,
             TableRecords = tables,
@@ -63,7 +63,7 @@ public static class FontLoader
         };
     }
 
-    public static FontRequiredTables DelayLoad(FontLoading font)
+    public static FontRequiredTables LoadRequiredTables(FontTableRecords font)
     {
         using var stream = File.OpenRead(font.Path.Path);
 
@@ -107,7 +107,7 @@ public static class FontLoader
         };
     }
 
-    public static IOpenTypeRequiredTables DelayLoadComplete(FontRequiredTables font)
+    public static IOpenTypeRequiredTables LoadComplete(FontRequiredTables font)
     {
         using var stream = File.OpenRead(font.Path.Path);
 
