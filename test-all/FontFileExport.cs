@@ -18,7 +18,7 @@ public static class FontFileExport
     {
         var chars = opt.FontExportChars.Order();
         var char_glyph = chars
-            .Select((c, i) => (Char: c, Index: (ushort)i, GID: font.CharToGIDCached(c)))
+            .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGIDCached(c)))
             .ToDictionary(x => x.Char, x => (x.Index, Glyph: font.Glyphs[x.GID], HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]));
 
         var cmap4 = CMapFormat4.CreateFormat(chars.ToDictionary(x => x, x => char_glyph[x].Index));
@@ -35,7 +35,7 @@ public static class FontFileExport
         var maxp = new MaximumProfileTable()
         {
             Version = font.MaximumProfile.Version,
-            NumberOfGlyphs = (ushort)opt.FontExportChars.Length,
+            NumberOfGlyphs = (ushort)(opt.FontExportChars.Length + 1),
             MaxPoints = font.MaximumProfile.MaxPoints,
             MaxContours = font.MaximumProfile.MaxContours,
             MaxCompositePoints = font.MaximumProfile.MaxCompositePoints,
