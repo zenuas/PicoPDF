@@ -68,7 +68,7 @@ public class CMapFormat4 : ICMapFormat
             EndCode = start_ends.Select(x => (ushort)x.End).ToArray(),
             ReservedPad = 0,
             StartCode = start_ends.Select(x => (ushort)x.Start).ToArray(),
-            IdDelta = start_ends.Select(x => (short)(char_gid[x.Start] - x.Start)).ToArray(),
+            IdDelta = start_ends.Select(x => (short)(x.Start == 0xFFFF ? 1 : char_gid[x.Start] - x.Start)).ToArray(),
             IdRangeOffsets = Lists.Repeat((ushort)0).Take(seg_count).ToArray(),
             GlyphIdArray = chars.Select(x => char_gid[x]).ToArray(),
         };
@@ -85,7 +85,7 @@ public class CMapFormat4 : ICMapFormat
             if (start + i == chars[i] && gid + i == char_gid[chars[i]]) continue;
             return [(start, chars[i - 1]), .. CreateStartEnds(chars[i..], char_gid)];
         }
-        return [(start, chars[^1])];
+        return [(start, chars[^1]), ((char)0xFFFF, (char)0xFFFF)];
     }
 
     public void WriteTo(Stream stream)

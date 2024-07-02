@@ -69,13 +69,11 @@ public static class FontExporter
         {
             stream.WriteUShortByBigEndian(0);
             font.Glyphs.Each((_, i) => stream.WriteUShortByBigEndian((ushort)(glyf_index[i] / 2)));
-            stream.WriteUShortByBigEndian((ushort)(lastposition / 2));
         }
         else
         {
             stream.WriteUIntByBigEndian(0);
             font.Glyphs.Each((_, i) => stream.WriteUIntByBigEndian((uint)(glyf_index[i])));
-            stream.WriteUIntByBigEndian((uint)lastposition);
         }
         tables["loca"].Length = (uint)(stream.Position - loca_start);
 

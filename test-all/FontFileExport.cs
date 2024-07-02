@@ -35,7 +35,7 @@ public static class FontFileExport
         var maxp = new MaximumProfileTable()
         {
             Version = font.MaximumProfile.Version,
-            NumberOfGlyphs = (ushort)(opt.FontExportChars.Length + 1),
+            NumberOfGlyphs = (ushort)opt.FontExportChars.Length,
             MaxPoints = font.MaximumProfile.MaxPoints,
             MaxContours = font.MaximumProfile.MaxContours,
             MaxCompositePoints = font.MaximumProfile.MaxCompositePoints,
