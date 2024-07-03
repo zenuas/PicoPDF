@@ -58,7 +58,14 @@ public static class FontExporter
                 glyf_index[x.Index] = acc;
                 var position = stream.Position;
                 x.Glyph.WriteTo(stream);
-                return acc + (stream.Position - position);
+                var length = stream.Position - position;
+                var padding = (int)(length % 4);
+                if (padding > 0)
+                {
+                    stream.Write(Lists.Repeat((byte)0).Take(4 - padding).ToArray());
+                    length += 4 - padding;
+                }
+                return acc + length;
             });
         tables["glyf"].Length = (uint)(stream.Position - glyf_start);
 
@@ -69,11 +76,13 @@ public static class FontExporter
         {
             stream.WriteUShortByBigEndian(0);
             font.Glyphs.Each((_, i) => stream.WriteUShortByBigEndian((ushort)(glyf_index[i] / 2)));
+            stream.WriteUShortByBigEndian((ushort)(lastposition / 2));
         }
         else
         {
             stream.WriteUIntByBigEndian(0);
             font.Glyphs.Each((_, i) => stream.WriteUIntByBigEndian((uint)(glyf_index[i])));
+            stream.WriteUIntByBigEndian((uint)lastposition);
         }
         tables["loca"].Length = (uint)(stream.Position - loca_start);
 

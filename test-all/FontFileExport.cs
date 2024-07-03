@@ -35,7 +35,7 @@ public static class FontFileExport
         var maxp = new MaximumProfileTable()
         {
             Version = font.MaximumProfile.Version,
-            NumberOfGlyphs = (ushort)opt.FontExportChars.Length,
+            NumberOfGlyphs = (ushort)(opt.FontExportChars.Length + 1),
             MaxPoints = font.MaximumProfile.MaxPoints,
             MaxContours = font.MaximumProfile.MaxContours,
             MaxCompositePoints = font.MaximumProfile.MaxCompositePoints,
@@ -70,12 +70,12 @@ public static class FontFileExport
             Reserved3 = font.HorizontalHeader.Reserved3,
             Reserved4 = font.HorizontalHeader.Reserved4,
             MetricDataFormat = font.HorizontalHeader.MetricDataFormat,
-            NumberOfHMetrics = (ushort)opt.FontExportChars.Length,
+            NumberOfHMetrics = (ushort)(opt.FontExportChars.Length + 1),
         };
 
         var hmtx = new HorizontalMetricsTable()
         {
-            Metrics = chars.Select(x => char_glyph[x].HorizontalMetrics).ToArray(),
+            Metrics = chars.Select(x => char_glyph[x].HorizontalMetrics).Prepend(new HorizontalMetrics { AdvanceWidth = 0, LeftSideBearing = 0 }).ToArray(),
             LeftSideBearing = [],
         };
 
