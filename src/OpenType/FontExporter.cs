@@ -49,6 +49,7 @@ public static class FontExporter
         Debug.Assert(tables["post"].Length == 32);
 
         // glyf table export
+        _ = StreamAlignment(stream);
         var glyf_start = stream.Position;
         var glyf_index = new Dictionary<int, long>();
         tables["glyf"].Offset = (uint)(glyf_start - start_stream_position);
@@ -64,6 +65,7 @@ public static class FontExporter
         tables["glyf"].Length = (uint)(stream.Position - glyf_start);
 
         // loca table export
+        _ = StreamAlignment(stream);
         var loca_start = stream.Position;
         tables["loca"].Offset = (uint)(loca_start - start_stream_position);
         if (font.FontHeader.IndexToLocFormat == 0)
