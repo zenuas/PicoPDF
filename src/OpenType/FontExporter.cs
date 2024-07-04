@@ -59,13 +59,10 @@ public static class FontExporter
                 var position = stream.Position;
                 x.Glyph.WriteTo(stream);
                 var length = stream.Position - position;
-                var padding = (int)(length % 4);
-                if (padding > 0)
-                {
-                    stream.Write(Lists.Repeat((byte)0).Take(4 - padding).ToArray());
-                    length += 4 - padding;
-                }
-                return acc + length;
+                var padding = (int)(4 - (length % 4));
+                if (padding == 4) return acc + length;
+                stream.Write(Lists.Repeat((byte)0).Take(padding).ToArray());
+                return acc + length + padding;
             });
         tables["glyf"].Length = (uint)(stream.Position - glyf_start);
 
