@@ -59,11 +59,7 @@ public static class FontExporter
                 glyf_index[x.Index] = acc;
                 var position = stream.Position;
                 x.Glyph.WriteTo(stream);
-                var length = stream.Position - position;
-                var padding = (int)(4 - (length % 4));
-                if (padding == 4) return acc + length;
-                stream.Write(Lists.Repeat((byte)0).Take(padding).ToArray());
-                return acc + length + padding;
+                return acc + (stream.Position - position) + StreamAlignment(stream);
             });
         tables["glyf"].Length = (uint)(stream.Position - glyf_start);
 
@@ -89,6 +85,7 @@ public static class FontExporter
 
     public static void ExportTable(Stream stream, long start_stream_position, MutableTableRecord rec, IExportable table)
     {
+        _ = StreamAlignment(stream);
         rec.Offset = (uint)(stream.Position - start_stream_position);
         var position = stream.Position;
         table.WriteTo(stream);
@@ -104,8 +101,17 @@ public static class FontExporter
 
     public static void MovePositonAndWriteTableRecord(Stream stream, MutableTableRecord table)
     {
+        Debug.Assert((table.Offset % 4) == 0);
         stream.Position = table.Position;
         WriteTableRecord(stream, table);
+    }
+
+    public static int StreamAlignment(Stream stream, int alignment = 4)
+    {
+        var padding = (int)(alignment - (stream.Position % alignment));
+        if (padding == alignment) return 0;
+        stream.Write(Lists.Repeat((byte)0).Take(padding).ToArray());
+        return padding;
     }
 }
 
