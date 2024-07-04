@@ -103,7 +103,7 @@ public static class FontFileExport
             CMap = new() { Version = 0, NumberOfTables = 1, EncodingRecords = new() { [new() { PlatformID = (ushort)Platforms.Unicode, EncodingID = (ushort)Encodings.Unicode2_0_BMPOnly, Offset = 0 }] = cmap4 } },
             CMap4 = cmap4,
             CMap4Range = cmap4_range,
-            IndexToLocation = font.IndexToLocation,
+            IndexToLocation = null!,
             Glyphs = Lists.RangeTo(1, num_of_glyf).Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.Glyph : new NotdefGlyph()).ToArray(),
         };
 
