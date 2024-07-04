@@ -13,27 +13,27 @@ public class CMapFormat4Test
     [Fact]
     public void CreateStartEndsTest()
     {
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0 }), [('A', 'A')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1 }), [('A', 'B')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2 }), [('A', 'C')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3 }), [('A', 'D')]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0 }), [('A', 'A'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1 }), [('A', 'B'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2 }), [('A', 'C'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3 }), [('A', 'D'), ((char)0xFFFF, (char)0xFFFF)]);
 
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['X'] = 1 }), [('A', 'A'), ('X', 'X')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['X'] = 2 }), [('A', 'B'), ('X', 'X')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['X'] = 3 }), [('A', 'C'), ('X', 'X')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3, ['X'] = 4 }), [('A', 'D'), ('X', 'X')]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['X'] = 1 }), [('A', 'A'), ('X', 'X'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['X'] = 2 }), [('A', 'B'), ('X', 'X'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['X'] = 3 }), [('A', 'C'), ('X', 'X'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3, ['X'] = 4 }), [('A', 'D'), ('X', 'X'), ((char)0xFFFF, (char)0xFFFF)]);
 
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['X'] = 1, ['Y'] = 2 }), [('A', 'A'), ('X', 'Y')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['X'] = 2, ['Y'] = 3 }), [('A', 'B'), ('X', 'Y')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['X'] = 3, ['Y'] = 4 }), [('A', 'C'), ('X', 'Y')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3, ['X'] = 4, ['Y'] = 5 }), [('A', 'D'), ('X', 'Y')]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['X'] = 1, ['Y'] = 2 }), [('A', 'A'), ('X', 'Y'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['X'] = 2, ['Y'] = 3 }), [('A', 'B'), ('X', 'Y'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['X'] = 3, ['Y'] = 4 }), [('A', 'C'), ('X', 'Y'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3, ['X'] = 4, ['Y'] = 5 }), [('A', 'D'), ('X', 'Y'), ((char)0xFFFF, (char)0xFFFF)]);
 
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['X'] = 1, ['Y'] = 2, ['Z'] = 3 }), [('A', 'A'), ('X', 'Z')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['X'] = 2, ['Y'] = 3, ['Z'] = 4 }), [('A', 'B'), ('X', 'Z')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['X'] = 3, ['Y'] = 4, ['Z'] = 5 }), [('A', 'C'), ('X', 'Z')]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3, ['X'] = 4, ['Y'] = 5, ['Z'] = 6 }), [('A', 'D'), ('X', 'Z')]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['X'] = 1, ['Y'] = 2, ['Z'] = 3 }), [('A', 'A'), ('X', 'Z'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['X'] = 2, ['Y'] = 3, ['Z'] = 4 }), [('A', 'B'), ('X', 'Z'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['X'] = 3, ['Y'] = 4, ['Z'] = 5 }), [('A', 'C'), ('X', 'Z'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3, ['X'] = 4, ['Y'] = 5, ['Z'] = 6 }), [('A', 'D'), ('X', 'Z'), ((char)0xFFFF, (char)0xFFFF)]);
 
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 2 }), [('A', 'A'), ('B', 'B')]);
+        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 2 }), [('A', 'A'), ('B', 'B'), ((char)0xFFFF, (char)0xFFFF)]);
     }
 
     [Fact]
