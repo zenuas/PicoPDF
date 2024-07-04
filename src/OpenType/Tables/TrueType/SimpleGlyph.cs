@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace PicoPDF.OpenType.TrueType;
+namespace PicoPDF.OpenType.Tables.TrueType;
 
 public class SimpleGlyph : IGlyph
 {

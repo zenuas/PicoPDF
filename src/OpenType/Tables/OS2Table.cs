@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace PicoPDF.OpenType;
+namespace PicoPDF.OpenType.Tables;
 
 public class OS2Table : IExportable
 {

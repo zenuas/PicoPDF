@@ -1,4 +1,4 @@
-﻿using PicoPDF.OpenType;
+﻿using PicoPDF.OpenType.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,5 @@
-﻿using PicoPDF.OpenType.TrueType;
+﻿using PicoPDF.OpenType.Tables;
+using PicoPDF.OpenType.Tables.TrueType;
 using System.Collections.Generic;
 
 namespace PicoPDF.OpenType;

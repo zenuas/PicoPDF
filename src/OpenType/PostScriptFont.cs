@@ -1,4 +1,5 @@
-﻿using PicoPDF.OpenType.PostScript;
+﻿using PicoPDF.OpenType.Tables;
+using PicoPDF.OpenType.Tables.PostScript;
 using System.Collections.Generic;
 
 namespace PicoPDF.OpenType;

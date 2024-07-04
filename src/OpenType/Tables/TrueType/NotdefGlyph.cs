@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace PicoPDF.OpenType.TrueType;
+namespace PicoPDF.OpenType.Tables.TrueType;
 
 public class NotdefGlyph : IGlyph
 {

@@ -1,7 +1,7 @@
 ﻿using Mina.Extension;
 using System.IO;
 
-namespace PicoPDF.OpenType;
+namespace PicoPDF.OpenType.Tables;
 
 public class NameRecord
 {

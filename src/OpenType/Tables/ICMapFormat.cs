@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.OpenType;
+﻿namespace PicoPDF.OpenType.Tables;
 
 public interface ICMapFormat : IExportable
 {

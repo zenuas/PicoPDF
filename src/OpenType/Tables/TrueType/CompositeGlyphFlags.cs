@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.OpenType.TrueType;
+﻿namespace PicoPDF.OpenType.Tables.TrueType;
 
 public enum CompositeGlyphFlags
 {

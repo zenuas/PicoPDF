@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace PicoPDF.OpenType;
+namespace PicoPDF.OpenType.Tables;
 
 public class HorizontalMetricsTable : IExportable
 {

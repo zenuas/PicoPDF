@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using PicoPDF.OpenType.Tables;
 
 namespace PicoPDF.OpenType;
 

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace PicoPDF.OpenType;
+namespace PicoPDF.OpenType.Tables;
 
 public class NameTable : IExportable
 {
@@ -58,7 +58,7 @@ public class NameTable : IExportable
 
     public void WriteTo(Stream stream)
     {
-        var string_offset = 6 + (/* sizeof(NameRecord) */12 * Count) + (/* sizeof(LanguageTagRecord) */4 * LanguageTagRecords.Length);
+        var string_offset = 6 + /* sizeof(NameRecord) */(12 * Count) + /* sizeof(LanguageTagRecord) */(4 * LanguageTagRecords.Length);
 
         stream.WriteUShortByBigEndian(Format);
         stream.WriteUShortByBigEndian(Count);
