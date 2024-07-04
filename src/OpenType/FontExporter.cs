@@ -12,7 +12,7 @@ public static class FontExporter
 {
     public static void Export(TrueTypeFont font, Stream stream, long start_stream_position = 0)
     {
-        var table_names = new string[] { "name", "head", "maxp", "post", "OS/2", "cmap", "hhea", "hmtx", "loca", "glyf" };
+        var table_names = new string[] { "OS/2", "cmap", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "name", "post" };
         var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
 
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
@@ -33,20 +33,20 @@ public static class FontExporter
             WriteTableRecord(stream, table);
         });
 
-        ExportTable(stream, start_stream_position, tables["name"], font.Name);
-        ExportTable(stream, start_stream_position, tables["head"], font.FontHeader);
-        ExportTable(stream, start_stream_position, tables["maxp"], font.MaximumProfile);
-        ExportTable(stream, start_stream_position, tables["post"], font.PostScript);
         ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
         ExportTable(stream, start_stream_position, tables["cmap"], font.CMap);
+        ExportTable(stream, start_stream_position, tables["head"], font.FontHeader);
         ExportTable(stream, start_stream_position, tables["hhea"], font.HorizontalHeader);
         ExportTable(stream, start_stream_position, tables["hmtx"], font.HorizontalMetrics);
+        ExportTable(stream, start_stream_position, tables["maxp"], font.MaximumProfile);
+        ExportTable(stream, start_stream_position, tables["name"], font.Name);
+        ExportTable(stream, start_stream_position, tables["post"], font.PostScript);
 
+        Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
         Debug.Assert(tables["head"].Length == 54);
+        Debug.Assert(tables["hhea"].Length == 36);
         Debug.Assert(tables["maxp"].Length is 6 or 32);
         Debug.Assert(tables["post"].Length == 32);
-        Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
-        Debug.Assert(tables["hhea"].Length == 36);
 
         // glyf table export
         var glyf_start = stream.Position;
