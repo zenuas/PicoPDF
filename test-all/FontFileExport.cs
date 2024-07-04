@@ -1,4 +1,6 @@
-﻿using PicoPDF.OpenType;
+﻿using Mina.Extension;
+using PicoPDF.OpenType;
+using PicoPDF.OpenType.TrueType;
 using PicoPDF.Pdf.Font;
 using System;
 using System.IO;
@@ -20,6 +22,10 @@ public static class FontFileExport
         var char_glyph = chars
             .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGIDCached(c)))
             .ToDictionary(x => x.Char, x => (x.Index, Glyph: font.Glyphs[x.GID], HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]));
+        var gid_glyf = char_glyph.Values
+            .DistinctBy(x => x.Index)
+            .ToDictionary(x => x.Index, x => (x.Glyph, x.HorizontalMetrics));
+        var num_of_glyf = gid_glyf.Keys.Max();
 
         var cmap4 = CMapFormat4.CreateFormat(chars.ToDictionary(x => x, x => char_glyph[x].Index));
         var cmap4_range = FontLoader.CreateCMap4Range(cmap4);
@@ -35,7 +41,7 @@ public static class FontFileExport
         var maxp = new MaximumProfileTable()
         {
             Version = font.MaximumProfile.Version,
-            NumberOfGlyphs = (ushort)(opt.FontExportChars.Length + 1),
+            NumberOfGlyphs = (ushort)(num_of_glyf + 1),
             MaxPoints = font.MaximumProfile.MaxPoints,
             MaxContours = font.MaximumProfile.MaxContours,
             MaxCompositePoints = font.MaximumProfile.MaxCompositePoints,
@@ -70,12 +76,12 @@ public static class FontFileExport
             Reserved3 = font.HorizontalHeader.Reserved3,
             Reserved4 = font.HorizontalHeader.Reserved4,
             MetricDataFormat = font.HorizontalHeader.MetricDataFormat,
-            NumberOfHMetrics = (ushort)(opt.FontExportChars.Length + 1),
+            NumberOfHMetrics = num_of_glyf,
         };
 
         var hmtx = new HorizontalMetricsTable()
         {
-            Metrics = chars.Select(x => char_glyph[x].HorizontalMetrics).Prepend(new HorizontalMetrics { AdvanceWidth = 0, LeftSideBearing = 0 }).ToArray(),
+            Metrics = Lists.RangeTo(1, num_of_glyf).Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.HorizontalMetrics : new HorizontalMetrics { AdvanceWidth = 0, LeftSideBearing = 0 }).ToArray(),
             LeftSideBearing = [],
         };
 
@@ -97,7 +103,7 @@ public static class FontFileExport
             CMap4 = cmap4,
             CMap4Range = cmap4_range,
             IndexToLocation = font.IndexToLocation,
-            Glyphs = chars.Select(x => char_glyph[x].Glyph).ToArray(),
+            Glyphs = Lists.RangeTo(1, num_of_glyf).Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.Glyph : new NotdefGlyph()).ToArray(),
         };
 
         using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.Write, FileShare.None);

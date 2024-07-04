@@ -146,6 +146,7 @@ public static class FontLoader
                 return Enumerable.Range(0, font.MaximumProfile.NumberOfGlyphs)
                     .Select(i =>
                     {
+                        if (loca.Offsets[i] == loca.Offsets[i + 1]) return new NotdefGlyph();
                         x.Position = position + loca.Offsets[i];
                         var number_of_contours = x.ReadShortByBigEndian();
                         return number_of_contours >= 0

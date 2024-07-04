@@ -72,14 +72,14 @@ public static class FontExporter
         if (font.FontHeader.IndexToLocFormat == 0)
         {
             stream.WriteUShortByBigEndian(0); // Offsets[0] = .notdef
-            font.Glyphs.Each((_, i) => stream.WriteUShortByBigEndian((ushort)(glyf_index[i] / 2))); // Offsets[1 .. font.MaximumProfile.NumberOfGlyphs - 1]
-            stream.WriteUShortByBigEndian((ushort)(lastposition / 2)); // Offsets[font.MaximumProfile.NumberOfGlyphs]
+            font.Glyphs.Each((_, i) => stream.WriteUShortByBigEndian((ushort)(glyf_index[i] / 2)));
+            stream.WriteUShortByBigEndian((ushort)(lastposition / 2)); // Offsets[font.Glyphs.Length]
         }
         else
         {
             stream.WriteUIntByBigEndian(0); // Offsets[0] = .notdef
-            font.Glyphs.Each((_, i) => stream.WriteUIntByBigEndian((uint)(glyf_index[i]))); // Offsets[1 .. font.MaximumProfile.NumberOfGlyphs - 1]
-            stream.WriteUIntByBigEndian((uint)lastposition); // Offsets[font.MaximumProfile.NumberOfGlyphs]
+            font.Glyphs.Each((_, i) => stream.WriteUIntByBigEndian((uint)(glyf_index[i])));
+            stream.WriteUIntByBigEndian((uint)lastposition); // Offsets[font.Glyphs.Length]
         }
         tables["loca"].Length = (uint)(stream.Position - loca_start);
 
