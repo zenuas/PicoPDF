@@ -86,11 +86,9 @@ public class FontRegister
     public static IFontPath GetFontFilePath(string name)
     {
         var ext = Path.GetExtension(name).ToUpper();
-        if (ext.StartsWith(".TTC,") && int.TryParse(ext[5..], out var index))
-        {
-            return new FontCollectionPath { Path = Path.GetFullPath(name[0..^(ext.Length - 4)]), Index = index };
-        }
-        return new FontPath { Path = Path.GetFullPath(name) };
+        return ext.StartsWith(".TTC,") && int.TryParse(ext[5..], out var index)
+            ? new FontCollectionPath { Path = Path.GetFullPath(name[0..^(ext.Length - 4)]), Index = index }
+            : new FontPath { Path = Path.GetFullPath(name) };
     }
 
     public bool Add(IOpenTypeHeader font)
