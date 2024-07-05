@@ -31,13 +31,8 @@ public static class FontFileExport
         var cmap4 = CMapFormat4.CreateFormat(chars.ToDictionary(x => x, x => char_glyph[x].Index));
         var cmap4_range = FontLoader.CreateCMap4Range(cmap4);
 
-        var name = new NameTable()
-        {
-            Format = 1,
-            Count = 1,
-            StringOffset = 0,
-            NameRecords = [(font.PostScriptName, new() { PlatformID = (ushort)Platforms.Unicode, EncodingID = (ushort)Encodings.Unicode2_0_BMPOnly, LanguageID = 0, NameID = 6, Length = 0, Offset = 0 })],
-        };
+        var names = font.Name.NameRecords.Where(x => x.NameRecord.NameID is (ushort)NameIDs.FontFamilyName or (ushort)NameIDs.FontSubfamilyName or (ushort)NameIDs.UniqueFontIdentifier or (ushort)NameIDs.FullFontName).ToArray();
+        var name = new NameTable() { Format = 1, Count = (ushort)names.Length, StringOffset = 0, NameRecords = names, };
 
         var maxp = new MaximumProfileTable()
         {
@@ -100,7 +95,16 @@ public static class FontFileExport
             OS2 = font.OS2,
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
-            CMap = new() { Version = 0, NumberOfTables = 1, EncodingRecords = new() { [new() { PlatformID = (ushort)Platforms.Unicode, EncodingID = (ushort)Encodings.Unicode2_0_BMPOnly, Offset = 0 }] = cmap4 } },
+            CMap = new()
+            {
+                Version = 0,
+                NumberOfTables = 2,
+                EncodingRecords = new()
+                {
+                    [new() { PlatformID = (ushort)Platforms.Unicode, EncodingID = (ushort)Encodings.Unicode2_0_BMPOnly, Offset = 0 }] = cmap4,
+                    [new() { PlatformID = (ushort)Platforms.Windows, EncodingID = (ushort)Encodings.Windows_UnicodeBMP, Offset = 0 }] = cmap4,
+                }
+            },
             CMap4 = cmap4,
             CMap4Range = cmap4_range,
             IndexToLocation = null!,
