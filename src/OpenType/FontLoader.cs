@@ -48,14 +48,14 @@ public static class FontLoader
 
         stream.Position = tables["name"].Offset;
         var name = NameTable.ReadFrom(stream);
-        string namev(ushort nameid) => opt.PlatformIDOrder
-            .Select(x => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == (ushort)x && y.NameRecord.NameID == nameid)?.Name)
+        string namev(NameIDs nameid) => opt.PlatformIDOrder
+            .Select(x => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == (ushort)x && y.NameRecord.NameID == (ushort)nameid)?.Name)
             .Where(x => x is { })
             .FirstOrDefault() ?? "";
 
         return new()
         {
-            PostScriptName = namev(6),
+            PostScriptName = namev(NameIDs.PostScriptName),
             Path = path,
             Position = pos,
             TableRecords = tables,
