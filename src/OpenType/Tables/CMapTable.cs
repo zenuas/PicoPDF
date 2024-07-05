@@ -38,13 +38,15 @@ public class CMapTable : IExportable
         stream.WriteUShortByBigEndian((ushort)export_cmap_keys.Length);
 
         using var cmapformat = new MemoryStream();
+        var cmap_offset_cache = new Dictionary<ICMapFormat, long>();
 
         export_cmap_keys
             .Select(x => (Key: x, Value: EncodingRecords[x]!))
             .Each(x =>
             {
-                var offset = cmapformat.Position + cmap_offset;
-                x.Value.WriteTo(cmapformat);
+                var offset = cmap_offset_cache.TryGetValue(x.Value, out var cache_offset) ? cache_offset : cmapformat.Position + cmap_offset;
+                if (!cmap_offset_cache.ContainsKey(x.Value)) x.Value.WriteTo(cmapformat);
+                cmap_offset_cache[x.Value] = offset;
 
                 stream.WriteUShortByBigEndian(x.Key.PlatformID);
                 stream.WriteUShortByBigEndian(x.Key.EncodingID);
