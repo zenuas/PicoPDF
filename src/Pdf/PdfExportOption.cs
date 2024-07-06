@@ -9,4 +9,5 @@ public class PdfExportOption
     public bool JpegStreamDeflate { get; init; } = true;
     public bool ImageStreamDeflate { get; init; } = true;
     public bool CMapStreamDeflate { get; init; } = true;
+    public bool FontStreamDeflate { get; init; } = true;
 }

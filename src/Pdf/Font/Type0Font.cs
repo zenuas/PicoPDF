@@ -35,7 +35,7 @@ public class Type0Font : PdfObject, IFont
             _ = Elements.TryAdd("BaseFont", $"/ABCDEF+{Font.PostScriptName}");
             var fontfile = new PdfObject();
             RelatedObjects.Add(fontfile);
-            var writer = fontfile.GetWriteStream(true);
+            var writer = fontfile.GetWriteStream(option.FontStreamDeflate);
             var fontdata = FontRegister.LoadComplete(Font);
             if (Font.Offset.ContainTrueType())
             {
