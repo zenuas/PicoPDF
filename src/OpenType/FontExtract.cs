@@ -8,10 +8,9 @@ namespace PicoPDF.OpenType;
 
 public static class FontExtract
 {
-
     public static TrueTypeFont Extract(TrueTypeFont font, FontExtractOption opt)
     {
-        var chars = opt.ExtractChars.Order();
+        var chars = opt.ExtractChars.Order().ToArray();
         var char_glyph = chars
             .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGIDCached(c)))
             .ToDictionary(x => x.Char, x => (x.Index, Glyph: font.Glyphs[x.GID], HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]));
