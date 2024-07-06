@@ -10,6 +10,7 @@ namespace PicoPDF.Pdf.Font;
 public class FontRegister
 {
     public Dictionary<string, PropertyGetSet<IOpenTypeHeader>> Fonts { get; init; } = [];
+    public Dictionary<FontRequiredTables, PropertyGetSet<IOpenTypeRequiredTables>> LoadedFonts { get; init; } = [];
 
     public void RegistDirectory(params string[] paths) => paths
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
@@ -39,17 +40,6 @@ public class FontRegister
         return fontinfo;
     }
 
-    public IOpenTypeRequiredTables? LoadCompleteOrNull(string name)
-    {
-        var font = LoadRequiredTablesOrNull(name);
-        if (font is null) return null;
-        if (font is not FontRequiredTables req) return font;
-
-        var fontinfo = FontLoader.LoadComplete(req);
-        Fonts[name].Value = fontinfo;
-        return fontinfo;
-    }
-
     public IOpenTypeRequiredTables LoadRequiredTables(IFontPath path)
     {
         var name = GetFontFilePath(path);
@@ -66,20 +56,16 @@ public class FontRegister
         return LoadRequiredTablesOrNull(name).Try();
     }
 
-    public IOpenTypeRequiredTables LoadComplete(IFontPath path)
-    {
-        _ = LoadRequiredTables(path);
-        var name = GetFontFilePath(path);
-        return LoadCompleteOrNull(name).Try();
-    }
-
     public IOpenTypeRequiredTables LoadRequiredTables(string name) => Path.GetExtension(name) != "" ?
         LoadRequiredTables(GetFontFilePath(name)) :
         LoadRequiredTablesOrNull(name).Try();
 
-    public IOpenTypeRequiredTables LoadComplete(string name) => Path.GetExtension(name) != "" ?
-        LoadComplete(GetFontFilePath(name)) :
-        LoadCompleteOrNull(name).Try();
+    public IOpenTypeRequiredTables LoadComplete(IOpenTypeRequiredTables otf) => otf is FontRequiredTables req ?
+        (LoadedFonts.TryGetValue(req, out var x) ?
+            x.Value :
+            (LoadedFonts[req] = new() { Value = FontLoader.LoadComplete(req) }).Value
+        ) :
+        otf;
 
     public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
 

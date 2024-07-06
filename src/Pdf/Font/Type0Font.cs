@@ -12,6 +12,7 @@ public class Type0Font : PdfObject, IFont
 {
     public required string Name { get; init; }
     public required IOpenTypeRequiredTables Font { get; init; }
+    public required FontRegister FontRegister { get; init; }
     public required string Encoding { get; init; }
     public CIDFontDictionary FontDictionary { get; init; } = new();
     public HashSet<char> Chars { get; init; } = [];
@@ -35,7 +36,7 @@ public class Type0Font : PdfObject, IFont
             var fontfile = new PdfObject();
             RelatedObjects.Add(fontfile);
             var writer = fontfile.GetWriteStream(true);
-            var fontdata = FontLoader.LoadComplete(Font);
+            var fontdata = FontRegister.LoadComplete(Font);
             if (Font.Offset.ContainTrueType())
             {
                 var ttf = FontExtract.Extract(fontdata.Cast<TrueTypeFont>(), new() { ExtractChars = [.. Chars] });
