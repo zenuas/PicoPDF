@@ -72,12 +72,15 @@ public static class FontExtract
             Reserved3 = font.HorizontalHeader.Reserved3,
             Reserved4 = font.HorizontalHeader.Reserved4,
             MetricDataFormat = font.HorizontalHeader.MetricDataFormat,
-            NumberOfHMetrics = num_of_glyf,
+            NumberOfHMetrics = (ushort)(num_of_glyf + 1),
         };
 
         var hmtx = new HorizontalMetricsTable()
         {
-            Metrics = Lists.RangeTo(1, num_of_glyf).Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.HorizontalMetrics : new HorizontalMetrics { AdvanceWidth = 0, LeftSideBearing = 0 }).ToArray(),
+            Metrics = Lists.RangeTo(1, num_of_glyf)
+                .Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
+                .Prepend(font.HorizontalMetrics.Metrics[0])
+                .ToArray(),
             LeftSideBearing = [],
         };
 
@@ -99,7 +102,10 @@ public static class FontExtract
             CMap4 = cmap4,
             CMap4Range = cmap4_range,
             IndexToLocation = null!,
-            Glyphs = Lists.RangeTo(1, num_of_glyf).Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.Glyph : new NotdefGlyph()).ToArray(),
+            Glyphs = Lists.RangeTo(1, num_of_glyf)
+                .Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.Glyph : new NotdefGlyph())
+                .Prepend(new NotdefGlyph())
+                .ToArray(),
         };
     }
 }

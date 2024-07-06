@@ -70,13 +70,11 @@ public static class FontExporter
         tables["loca"].Offset = (uint)(loca_start - start_stream_position);
         if (font.FontHeader.IndexToLocFormat == 0)
         {
-            stream.WriteUShortByBigEndian(0); // Offsets[0] = .notdef
             font.Glyphs.Each((_, i) => stream.WriteUShortByBigEndian((ushort)(glyf_index[i] / 2)));
             stream.WriteUShortByBigEndian((ushort)(lastposition / 2)); // Offsets[font.Glyphs.Length]
         }
         else
         {
-            stream.WriteUIntByBigEndian(0); // Offsets[0] = .notdef
             font.Glyphs.Each((_, i) => stream.WriteUIntByBigEndian((uint)(glyf_index[i])));
             stream.WriteUIntByBigEndian((uint)lastposition); // Offsets[font.Glyphs.Length]
         }
