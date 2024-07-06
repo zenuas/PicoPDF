@@ -18,7 +18,7 @@ public static class FontFileExport
         FontExporter.Export(FontExtract.Extract(font,
             new()
             {
-                ExtractChars = opt.FontExportChars,
+                ExtractChars = opt.FontExportChars.ToCharArray(),
                 OutputNames = [
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontFamilyName),
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontSubfamilyName),
