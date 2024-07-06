@@ -108,6 +108,8 @@ public static class FontLoader
         };
     }
 
+    public static IOpenTypeRequiredTables LoadComplete(IOpenTypeRequiredTables font) => font is FontRequiredTables x ? LoadComplete(x) : font;
+
     public static IOpenTypeRequiredTables LoadComplete(FontRequiredTables font)
     {
         using var stream = File.OpenRead(font.Path.Path);

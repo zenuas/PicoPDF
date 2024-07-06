@@ -10,6 +10,13 @@ namespace PicoPDF.OpenType;
 
 public static class FontExporter
 {
+    public static byte[] Export(TrueTypeFont font)
+    {
+        using var stream = new MemoryStream();
+        Export(font, stream);
+        return stream.ToArray();
+    }
+
     public static void Export(TrueTypeFont font, Stream stream, long start_stream_position = 0)
     {
         var table_names = new string[] { "OS/2", "cmap", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "name", "post" };
@@ -53,7 +60,7 @@ public static class FontExporter
         var glyf_start = stream.Position;
         var glyf_index = new Dictionary<int, long>();
         tables["glyf"].Offset = (uint)(glyf_start - start_stream_position);
-        var lastposition = font.Glyphs
+        var lastglyf = font.Glyphs
             .Select((x, i) => (Glyph: x, Index: i))
             .Aggregate(0L, (acc, x) =>
             {
@@ -71,16 +78,18 @@ public static class FontExporter
         if (font.FontHeader.IndexToLocFormat == 0)
         {
             font.Glyphs.Each((_, i) => stream.WriteUShortByBigEndian((ushort)(glyf_index[i] / 2)));
-            stream.WriteUShortByBigEndian((ushort)(lastposition / 2)); // Offsets[font.Glyphs.Length]
+            stream.WriteUShortByBigEndian((ushort)(lastglyf / 2)); // Offsets[font.Glyphs.Length]
         }
         else
         {
             font.Glyphs.Each((_, i) => stream.WriteUIntByBigEndian((uint)(glyf_index[i])));
-            stream.WriteUIntByBigEndian((uint)lastposition); // Offsets[font.Glyphs.Length]
+            stream.WriteUIntByBigEndian((uint)lastglyf); // Offsets[font.Glyphs.Length]
         }
         tables["loca"].Length = (uint)(stream.Position - loca_start);
 
+        var lastposition = stream.Position;
         tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
+        stream.Position = lastposition;
     }
 
     public static void ExportTable(Stream stream, long start_stream_position, MutableTableRecord rec, IExportable table)

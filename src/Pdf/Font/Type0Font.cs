@@ -3,7 +3,7 @@ using PicoPDF.OpenType;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Element;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
 
 namespace PicoPDF.Pdf.Font;
@@ -34,19 +34,23 @@ public class Type0Font : PdfObject, IFont
             _ = Elements.TryAdd("BaseFont", $"/ABCDEF+{Font.PostScriptName}");
             var fontfile = new PdfObject();
             RelatedObjects.Add(fontfile);
-            var stream = fontfile.GetWriteStream(true);
-            var fontdata = File.ReadAllBytes(Font.Path.Path);
-            stream.Write(fontdata);
+            var writer = fontfile.GetWriteStream(true);
+            var fontdata = FontLoader.LoadComplete(Font);
             if (Font.Offset.ContainTrueType())
             {
+                var ttf = FontExtract.Extract(fontdata.Cast<TrueTypeFont>(), new() { ExtractChars = [.. Chars] });
+                var export = FontExporter.Export(ttf);
                 _ = descriptor.Elements.TryAdd("FontFile2", fontfile);
-                _ = fontfile.Elements.TryAdd("Length1", fontdata.Length);
+                _ = fontfile.Elements.TryAdd("Length1", export.Length);
+                writer.Write(export);
             }
             else
             {
                 _ = descriptor.Elements.TryAdd("FontFile3", fontfile);
                 _ = fontfile.Elements.TryAdd("Subtype", "/OpenType");
+                Debug.Fail("not support opentype format");
             }
+            writer.Flush();
         }
         else
         {
