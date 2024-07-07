@@ -93,7 +93,6 @@ public class NameTable : IExportable
             });
         }
 
-        strings.Position = 0;
         stream.Write(strings.ToArray());
     }
 

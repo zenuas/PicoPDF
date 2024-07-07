@@ -53,7 +53,6 @@ public class CMapTable : IExportable
                 stream.WriteUIntByBigEndian((uint)offset);
             });
 
-        cmapformat.Position = 0;
         stream.Write(cmapformat.ToArray());
     }
 
