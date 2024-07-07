@@ -124,6 +124,7 @@ public static class FontLoader
         var format = stream.ReadUShortByBigEndian();
         return format switch
         {
+            0 => CMapFormat0.ReadFrom(stream),
             4 => CMapFormat4.ReadFrom(stream),
             _ => null,
         };
