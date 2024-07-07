@@ -19,11 +19,11 @@ public static class FontExtract
             .ToDictionary(x => x.Index, x => (x.Glyph, x.HorizontalMetrics));
         var num_of_glyph = gid_glyph.Keys.Max();
 
-        var names = font.Name.NameRecords.Where(x => opt.OutputNames.Contains(y =>
-                (y.PlatformID is null || ((ushort)y.PlatformID == x.NameRecord.PlatformID)) &&
-                (y.EncodingID is null || ((ushort)y.EncodingID == x.NameRecord.EncodingID)) &&
-                (y.LanguageID is null || (y.LanguageID == x.NameRecord.LanguageID)) &&
-                (y.NameID is null || ((ushort)y.NameID == x.NameRecord.NameID))
+        var names = font.Name.NameRecords.Where(name_record => opt.OutputNames.Contains(x =>
+                (x.PlatformID is null || ((ushort)x.PlatformID == name_record.NameRecord.PlatformID)) &&
+                (x.EncodingID is null || ((ushort)x.EncodingID == name_record.NameRecord.EncodingID)) &&
+                (x.LanguageID is null || (x.LanguageID == name_record.NameRecord.LanguageID)) &&
+                (x.NameID is null || ((ushort)x.NameID == name_record.NameRecord.NameID))
             )).ToArray();
         var name = new NameTable() { Format = 0, Count = (ushort)names.Length, StringOffset = 0, NameRecords = names };
 
