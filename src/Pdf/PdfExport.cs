@@ -1,6 +1,8 @@
 ﻿using Mina.Extension;
+using PicoPDF.Pdf.Font;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace PicoPDF.Pdf;
 
@@ -11,6 +13,7 @@ public static class PdfExport
         stream.Write($"%PDF-{doc.Version / 10}.{doc.Version % 10}\n");
         "%🍣\n\n"u8.ToArray().Each(stream.WriteByte);
 
+        if (option.EmbeddedFont) doc.PdfObjects.OfType<Type0Font>().Each(x => x.CreateEmbeddedFont());
         var xref = new List<long>();
         GetAllReferences(doc, option).Each((x, i) =>
         {

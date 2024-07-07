@@ -12,10 +12,24 @@ public class Type0Font : PdfObject, IFont
 {
     public required string Name { get; init; }
     public required IOpenTypeRequiredTables Font { get; init; }
+    public IOpenTypeRequiredTables? EmbeddedFont { get; private set; }
     public required FontRegister FontRegister { get; init; }
     public required string Encoding { get; init; }
     public CIDFontDictionary FontDictionary { get; init; } = new();
     public HashSet<char> Chars { get; init; } = [];
+
+    public void CreateEmbeddedFont()
+    {
+        var fontdata = FontRegister.LoadComplete(Font);
+        if (Font.Offset.ContainTrueType())
+        {
+            EmbeddedFont = FontExtract.Extract(fontdata.Cast<TrueTypeFont>(), new() { ExtractChars = [.. Chars] });
+        }
+        else
+        {
+            Debug.Fail("not support opentype format");
+        }
+    }
 
     public override void DoExport(PdfExportOption option)
     {
@@ -26,21 +40,19 @@ public class Type0Font : PdfObject, IFont
         _ = Elements.TryAdd("DescendantFonts", new ElementIndirectArray(FontDictionary));
         if (option.AppendCIDToUnicode)
         {
-            var cmap = new CIDToUnicode { Font = Font, Chars = Chars };
+            var cmap = new CIDToUnicode { Font = EmbeddedFont ?? Font, Chars = Chars };
             RelatedObjects.Add(cmap);
             _ = Elements.TryAdd("ToUnicode", cmap);
         }
-        if (option.EmbeddedFont && FontDictionary.FontDescriptor is { } descriptor)
+        if (EmbeddedFont is { } && FontDictionary.FontDescriptor is { } descriptor)
         {
-            _ = Elements.TryAdd("BaseFont", $"/ABCDEF+{Font.PostScriptName}");
+            _ = Elements.TryAdd("BaseFont", $"/ABCDEF+{EmbeddedFont.PostScriptName}");
             var fontfile = new PdfObject();
             RelatedObjects.Add(fontfile);
             var writer = fontfile.GetWriteStream(option.FontStreamDeflate);
-            var fontdata = FontRegister.LoadComplete(Font);
-            if (Font.Offset.ContainTrueType())
+            if (EmbeddedFont.Offset.ContainTrueType())
             {
-                var ttf = FontExtract.Extract(fontdata.Cast<TrueTypeFont>(), new() { ExtractChars = [.. Chars] });
-                var export = FontExporter.Export(ttf);
+                var export = FontExporter.Export(EmbeddedFont.Cast<TrueTypeFont>());
                 _ = descriptor.Elements.TryAdd("FontFile2", fontfile);
                 _ = fontfile.Elements.TryAdd("Length1", export.Length);
                 writer.Write(export);
@@ -74,7 +86,7 @@ public class Type0Font : PdfObject, IFont
     public IEnumerable<byte> CreateTextShowingOperator(string s)
     {
         return s
-            .Select(x => System.Text.Encoding.ASCII.GetBytes($"{Font.CharToGIDCached(x):x4}"))
+            .Select(x => System.Text.Encoding.ASCII.GetBytes($"{(EmbeddedFont ?? Font).CharToGIDCached(x):x4}"))
             .Flatten()
             .Prepend(System.Text.Encoding.ASCII.GetBytes("<")[0])
             .Concat(System.Text.Encoding.ASCII.GetBytes("> Tj"));
