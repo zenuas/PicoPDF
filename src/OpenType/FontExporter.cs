@@ -58,13 +58,13 @@ public static class FontExporter
         // glyf table export
         _ = StreamAlignment(stream);
         var glyf_start = stream.Position;
-        var glyf_index = new Dictionary<int, long>();
+        var glyph_index = new Dictionary<int, long>();
         tables["glyf"].Offset = (uint)(glyf_start - start_stream_position);
-        var lastglyf = font.Glyphs
+        var lastglyph = font.Glyphs
             .Select((x, i) => (Glyph: x, Index: i))
             .Aggregate(0L, (acc, x) =>
             {
-                glyf_index[x.Index] = acc;
+                glyph_index[x.Index] = acc;
                 var position = stream.Position;
                 x.Glyph.WriteTo(stream);
                 return acc + (stream.Position - position) + StreamAlignment(stream);
@@ -77,13 +77,13 @@ public static class FontExporter
         tables["loca"].Offset = (uint)(loca_start - start_stream_position);
         if (font.FontHeader.IndexToLocFormat == 0)
         {
-            font.Glyphs.Each((_, i) => stream.WriteUShortByBigEndian((ushort)(glyf_index[i] / 2)));
-            stream.WriteUShortByBigEndian((ushort)(lastglyf / 2)); // Offsets[font.Glyphs.Length]
+            font.Glyphs.Each((_, i) => stream.WriteUShortByBigEndian((ushort)(glyph_index[i] / 2)));
+            stream.WriteUShortByBigEndian((ushort)(lastglyph / 2)); // Offsets[font.Glyphs.Length]
         }
         else
         {
-            font.Glyphs.Each((_, i) => stream.WriteUIntByBigEndian((uint)(glyf_index[i])));
-            stream.WriteUIntByBigEndian((uint)lastglyf); // Offsets[font.Glyphs.Length]
+            font.Glyphs.Each((_, i) => stream.WriteUIntByBigEndian((uint)(glyph_index[i])));
+            stream.WriteUIntByBigEndian((uint)lastglyph); // Offsets[font.Glyphs.Length]
         }
         tables["loca"].Length = (uint)(stream.Position - loca_start);
 

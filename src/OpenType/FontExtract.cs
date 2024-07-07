@@ -14,10 +14,10 @@ public static class FontExtract
         var char_glyph = chars
             .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGIDCached(c)))
             .ToDictionary(x => x.Char, x => (x.Index, Glyph: font.Glyphs[x.GID], HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]));
-        var gid_glyf = char_glyph.Values
+        var gid_glyph = char_glyph.Values
             .DistinctBy(x => x.Index)
             .ToDictionary(x => x.Index, x => (x.Glyph, x.HorizontalMetrics));
-        var num_of_glyf = gid_glyf.Keys.Max();
+        var num_of_glyph = gid_glyph.Keys.Max();
 
         var names = font.Name.NameRecords.Where(x => opt.OutputNames.Contains(y =>
                 (y.PlatformID is null || ((ushort)y.PlatformID == x.NameRecord.PlatformID)) &&
@@ -31,7 +31,7 @@ public static class FontExtract
         var maxp = new MaximumProfileTable()
         {
             Version = font.MaximumProfile.Version,
-            NumberOfGlyphs = (ushort)(num_of_glyf + 1),
+            NumberOfGlyphs = (ushort)(num_of_glyph + 1),
             MaxPoints = font.MaximumProfile.MaxPoints,
             MaxContours = font.MaximumProfile.MaxContours,
             MaxCompositePoints = font.MaximumProfile.MaxCompositePoints,
@@ -66,13 +66,13 @@ public static class FontExtract
             Reserved3 = font.HorizontalHeader.Reserved3,
             Reserved4 = font.HorizontalHeader.Reserved4,
             MetricDataFormat = font.HorizontalHeader.MetricDataFormat,
-            NumberOfHMetrics = (ushort)(num_of_glyf + 1),
+            NumberOfHMetrics = (ushort)(num_of_glyph + 1),
         };
 
         var hmtx = new HorizontalMetricsTable()
         {
-            Metrics = Lists.RangeTo(1, num_of_glyf)
-                .Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
+            Metrics = Lists.RangeTo(1, num_of_glyph)
+                .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
                 .Prepend(font.HorizontalMetrics.Metrics[0])
                 .ToArray(),
             LeftSideBearing = [],
@@ -90,8 +90,8 @@ public static class FontExtract
             EncodingRecords = cmaps.ToDictionary(x => x, _ => (ICMapFormat?)cmap4)
         };
 
-        var glyf = Lists.RangeTo(1, num_of_glyf)
-            .Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.Glyph : new NotdefGlyph())
+        var glyf = Lists.RangeTo(1, num_of_glyph)
+            .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.Glyph : new NotdefGlyph())
             .Prepend(new NotdefGlyph())
             .ToArray();
 
