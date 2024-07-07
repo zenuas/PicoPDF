@@ -19,9 +19,6 @@ public static class FontExtract
             .ToDictionary(x => x.Index, x => (x.Glyph, x.HorizontalMetrics));
         var num_of_glyf = gid_glyf.Keys.Max();
 
-        var cmap4 = CMapFormat4.CreateFormat(chars.ToDictionary(x => x, x => char_glyph[x].Index));
-        var cmap4_range = FontLoader.CreateCMap4Range(cmap4);
-
         var names = font.Name.NameRecords.Where(x => opt.OutputNames.Contains(y =>
                 (y.PlatformID is null || ((ushort)y.PlatformID == x.NameRecord.PlatformID)) &&
                 (y.EncodingID is null || ((ushort)y.EncodingID == x.NameRecord.EncodingID)) &&
@@ -30,9 +27,6 @@ public static class FontExtract
             )).ToArray();
         var name = new NameTable() { Format = 0, Count = (ushort)names.Length, StringOffset = 0, NameRecords = names };
 
-        var cmaps = opt.OutputCMap
-            .Select(x => new EncodingRecord { PlatformID = (ushort)x.PlatformID, EncodingID = (ushort)x.EncodingID, Offset = 0 })
-            .ToArray();
 
         var maxp = new MaximumProfileTable()
         {
@@ -84,6 +78,23 @@ public static class FontExtract
             LeftSideBearing = [],
         };
 
+        var cmap4 = CMapFormat4.CreateFormat(chars.ToDictionary(x => x, x => char_glyph[x].Index));
+        var cmap4_range = FontLoader.CreateCMap4Range(cmap4);
+        var cmaps = opt.OutputCMap
+            .Select(x => new EncodingRecord { PlatformID = (ushort)x.PlatformID, EncodingID = (ushort)x.EncodingID, Offset = 0 })
+            .ToArray();
+        var cmap = new CMapTable()
+        {
+            Version = 0,
+            NumberOfTables = (ushort)cmaps.Length,
+            EncodingRecords = cmaps.ToDictionary(x => x, _ => (ICMapFormat?)cmap4)
+        };
+
+        var glyf = Lists.RangeTo(1, num_of_glyf)
+            .Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.Glyph : new NotdefGlyph())
+            .Prepend(new NotdefGlyph())
+            .ToArray();
+
         return new()
         {
             PostScriptName = font.PostScriptName,
@@ -98,14 +109,11 @@ public static class FontExtract
             OS2 = font.OS2,
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
-            CMap = new() { Version = 0, NumberOfTables = (ushort)cmaps.Length, EncodingRecords = cmaps.ToDictionary(x => x, _ => (ICMapFormat?)cmap4) },
+            CMap = cmap,
             CMap4 = cmap4,
             CMap4Range = cmap4_range,
             IndexToLocation = null!,
-            Glyphs = Lists.RangeTo(1, num_of_glyf)
-                .Select(x => gid_glyf.TryGetValue((ushort)x, out var glyf) ? glyf.Glyph : new NotdefGlyph())
-                .Prepend(new NotdefGlyph())
-                .ToArray(),
+            Glyphs = glyf,
         };
     }
 }
