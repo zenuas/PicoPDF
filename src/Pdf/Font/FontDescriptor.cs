@@ -2,9 +2,9 @@
 
 public class FontDescriptor : PdfObject
 {
-    public string FontName { get; set; } = "";
-    public FontDescriptorFlags Flags { get; set; }
-    public int? MissingWidth { get; set; }
+    public required string FontName { get; init; }
+    public required FontDescriptorFlags Flags { get; init; }
+    public int? MissingWidth { get; init; }
 
     public override void DoExport(PdfExportOption option)
     {

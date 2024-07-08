@@ -10,21 +10,17 @@ public class Type1Font : PdfObject, IFont
     public required string Name { get; init; }
     public required string BaseFont { get; init; }
     public required string Encoding { get; init; }
-    public FontDescriptor FontDescriptor { get; init; } = new();
+    public required FontDescriptor FontDescriptor { get; init; }
     public required Encoding TextEncoding { get; init; }
-    public int FirstChar { get; set; } = 0;
+    public required int FirstChar { get; init; }
     public int LastChar { get => FirstChar + Widths.Count - 1; }
     public List<long> Widths { get; init; } = [];
     public static readonly byte[] EscapeBytes = System.Text.Encoding.ASCII.GetBytes("()\\");
     public static readonly byte EscapeCharByte = System.Text.Encoding.ASCII.GetBytes("\\")[0];
 
-    public Type1Font()
-    {
-        RelatedObjects.Add(FontDescriptor);
-    }
-
     public override void DoExport(PdfExportOption option)
     {
+        RelatedObjects.Add(FontDescriptor);
         _ = Elements.TryAdd("Type", $"/Font %{Name}");
         _ = Elements.TryAdd("Subtype", $"/Type1");
         _ = Elements.TryAdd("BaseFont", $"/{BaseFont}");

@@ -11,7 +11,7 @@ public class CIDFont : PdfObject, IFont
     public required string Name { get; init; }
     public required string BaseFont { get; init; }
     public required string Encoding { get; init; }
-    public CIDFontDictionary FontDictionary { get; init; } = new();
+    public required CIDFontDictionary FontDictionary { get; init; }
     public required Encoding TextEncoding { get; init; }
     public Dictionary<char, int> Widths { get; init; } = new()
     {

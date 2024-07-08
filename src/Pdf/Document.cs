@@ -57,14 +57,30 @@ public class Document
     public CIDFont AddFont(string name, string basefont, CMap cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
-        var font = new CIDFont() { Name = name, BaseFont = $"{basefont}-{cidsysinfo.Name}", Encoding = cidsysinfo.Name, TextEncoding = enc };
+        var fontdict = new CIDFontDictionary()
+        {
+            Subtype = "CIDFontType0",
+            BaseFont = basefont,
+            CIDSystemInfo = new()
+            {
+                Dictionary =
+                {
+                    ["Registry"] = $"({cidsysinfo.Registry})",
+                    ["Ordering"] = $"({cidsysinfo.Ordering})",
+                    ["Supplement"] = cidsysinfo.Supplement,
+                }
+            },
+            FontDescriptor = new() { FontName = basefont, Flags = flags },
+        };
+        var font = new CIDFont()
+        {
+            Name = name,
+            BaseFont = $"{basefont}-{cidsysinfo.Name}",
+            Encoding = cidsysinfo.Name,
+            TextEncoding = enc,
+            FontDictionary = fontdict,
+        };
         PdfObjects.Add(font);
-
-        font.FontDictionary.BaseFont = basefont;
-        font.FontDictionary.CIDSystemInfo.Dictionary["Registry"] = $"({cidsysinfo.Registry})";
-        font.FontDictionary.CIDSystemInfo.Dictionary["Ordering"] = $"({cidsysinfo.Ordering})";
-        font.FontDictionary.CIDSystemInfo.Dictionary["Supplement"] = cidsysinfo.Supplement;
-        font.FontDictionary.FontDescriptor = new() { FontName = basefont, Flags = flags };
 
         return font;
     }
@@ -86,34 +102,54 @@ public class Document
     {
         var cmap = CMap.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
-        var fontdict = new CIDFontDictionary() { Subtype = font.Offset.ContainTrueType() ? "CIDFontType2" : "CIDFontType0", BaseFont = font.PostScriptName };
-        var type0 = new Type0Font() { Name = name, Font = font, FontRegister = FontRegister, Encoding = cidsysinfo.Name, FontDictionary = fontdict };
+        var fontdict = new CIDFontDictionary()
+        {
+            Subtype = font.Offset.ContainTrueType() ? "CIDFontType2" : "CIDFontType0",
+            BaseFont = font.PostScriptName,
+            CIDSystemInfo = new()
+            {
+                Dictionary =
+                {
+                    ["Registry"] = $"({cidsysinfo.Registry})",
+                    ["Ordering"] = $"({cidsysinfo.Ordering})",
+                    ["Supplement"] = cidsysinfo.Supplement,
+                }
+            },
+            DW = font.FontHeader.UnitsPerEm,
+            FontDescriptor = new() { FontName = font.PostScriptName, Flags = flags },
+        };
+        var type0 = new Type0Font()
+        {
+            Name = name,
+            Font = font,
+            FontRegister = FontRegister,
+            Encoding = cidsysinfo.Name,
+            FontDictionary = fontdict,
+        };
         PdfObjects.Add(type0);
-
-        type0.FontDictionary.W = new(
-                Lists.RangeTo(' ', '~')
-                    .Select(x => (Char: x, GID: font.CharToGIDCached(x)))
-                    .Select(x => $"{x.GID}[{font.MeasureGID(x.GID)}] %{x.Char}\n")
-            );
-        type0.FontDictionary.CIDSystemInfo.Dictionary["Registry"] = $"({cidsysinfo.Registry})";
-        type0.FontDictionary.CIDSystemInfo.Dictionary["Ordering"] = $"({cidsysinfo.Ordering})";
-        type0.FontDictionary.CIDSystemInfo.Dictionary["Supplement"] = cidsysinfo.Supplement;
-        type0.FontDictionary.FontDescriptor = new() { FontName = font.PostScriptName, Flags = flags };
 
         return type0;
     }
 
     public Type1Font AddFont(string name, string basefont, Type1Encoding encoding, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
-        var font = new Type1Font() { Name = name, BaseFont = basefont, Encoding = encoding.ToString(), TextEncoding = enc };
+        var fontdict = new FontDescriptor()
+        {
+            FontName = basefont,
+            Flags = flags,
+            MissingWidth = 500,
+        };
+        var font = new Type1Font()
+        {
+            Name = name,
+            BaseFont = basefont,
+            Encoding = encoding.ToString(),
+            TextEncoding = enc,
+            FontDescriptor = fontdict,
+            FirstChar = 32,
+            Widths = Lists.Repeat(500L).Take(126 - 32 + 1).ToList(),
+        };
         PdfObjects.Add(font);
-
-        font.FontDescriptor.FontName = basefont;
-        font.FontDescriptor.Flags = flags;
-        font.FontDescriptor.MissingWidth = 500;
-
-        font.FirstChar = 32;
-        font.Widths.AddRange(Lists.Repeat(500L).Take(126 - 32 + 1));
 
         return font;
     }

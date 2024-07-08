@@ -15,7 +15,7 @@ public class Type0Font : PdfObject, IFont
     public IOpenTypeRequiredTables? EmbeddedFont { get; set; }
     public required FontRegister FontRegister { get; init; }
     public required string Encoding { get; init; }
-    public CIDFontDictionary FontDictionary { get; init; } = new();
+    public required CIDFontDictionary FontDictionary { get; init; }
     public HashSet<char> Chars { get; init; } = [];
 
     public void CreateEmbeddedFont()
@@ -75,7 +75,7 @@ public class Type0Font : PdfObject, IFont
                 Chars.ToArray()
                     .Order()
                     .Select(x => (Char: x, GID: font.CharToGIDCached(x), Width: font.MeasureGID(font.CharToGIDCached(x))))
-                    .Where(x => x.GID != 0 && x.Width != font.FontHeader.UnitsPerEm)
+                    .Where(x => x.GID != 0 && (FontDictionary.DW is not { } dw || x.Width != dw))
                     .Select(x => $"{x.GID}[{x.Width}] %{x.Char}\n")
             );
     }

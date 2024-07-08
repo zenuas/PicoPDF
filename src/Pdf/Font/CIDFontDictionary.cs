@@ -4,11 +4,12 @@ namespace PicoPDF.Pdf.Font;
 
 public class CIDFontDictionary : PdfObject
 {
-    public string Subtype { get; init; } = "CIDFontType0";
-    public string BaseFont { get; set; } = "";
-    public ElementDictionary CIDSystemInfo { get; init; } = new();
-    public FontDescriptor? FontDescriptor { get; set; }
-    public ElementStringArray? W { get; set; } = null;
+    public required string Subtype { get; init; }
+    public required string BaseFont { get; init; }
+    public required ElementDictionary CIDSystemInfo { get; init; }
+    public required FontDescriptor? FontDescriptor { get; init; }
+    public int? DW { get; init; }
+    public ElementStringArray? W { get; set; }
 
     public override void DoExport(PdfExportOption option)
     {
@@ -20,6 +21,10 @@ public class CIDFontDictionary : PdfObject
         {
             RelatedObjects.Add(descriptor);
             _ = Elements.TryAdd("FontDescriptor", descriptor);
+        }
+        if (DW is { } dw)
+        {
+            _ = Elements.TryAdd("DW", dw);
         }
         if (W is { } w)
         {
