@@ -76,7 +76,7 @@ public class Type0Font : PdfObject, IFont
                     .Order()
                     .Select(x => (Char: x, GID: font.CharToGIDCached(x), Width: font.MeasureGID(font.CharToGIDCached(x))))
                     .Where(x => x.GID != 0 && (FontDictionary.DW is not { } dw || x.Width != dw))
-                    .Select(x => $"{x.GID}[{x.Width}] %{x.Char}\n")
+                    .Select(x => $"{x.GID}[{x.Width}]{(option.Debug ? $" %{x.Char}" : "")}\n")
             );
     }
 
