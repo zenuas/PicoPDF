@@ -32,9 +32,9 @@ public class CompactFontFormat
     public static byte[][] ReadIndexData(Stream stream)
     {
         var count = stream.ReadUShortByBigEndian();
-        var offSize = stream.ReadUByte();
+        var offset_size = stream.ReadUByte();
 
-        Func<Stream, int> offsetRead = offSize switch
+        Func<Stream, int> offset_read = offset_size switch
         {
             1 => (x) => x.ReadUByte(),
             2 => (x) => x.ReadUShortByBigEndian(),
@@ -42,8 +42,8 @@ public class CompactFontFormat
             _ => (x) => (int)x.ReadUIntByBigEndian(),
         };
 
-        var offset = Lists.RangeTo(0, count).Select(_ => offsetRead(stream)).ToArray();
-        return Lists.RangeTo(0, count - 1).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
+        var offset = Lists.RangeTo(0, count).Select(_ => offset_read(stream)).ToArray();
+        return Enumerable.Range(0, count).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
     }
 
     public static Dictionary<string, object> ReadDictData(Stream stream, int length)
