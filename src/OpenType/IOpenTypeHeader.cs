@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using PicoPDF.OpenType.Tables;
+﻿using PicoPDF.OpenType.Tables;
+using System.Collections.Generic;
 
 namespace PicoPDF.OpenType;
 
