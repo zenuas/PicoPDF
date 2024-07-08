@@ -69,6 +69,15 @@ public class Type0Font : PdfObject, IFont
         {
             _ = Elements.TryAdd("BaseFont", $"/{Font.PostScriptName}");
         }
+
+        var font = EmbeddedFont ?? Font;
+        FontDictionary.W = new(
+                Chars.ToArray()
+                    .Order()
+                    .Select(x => (Char: x, GID: font.CharToGIDCached(x), Width: font.MeasureGID(font.CharToGIDCached(x))))
+                    .Where(x => x.GID != 0 && x.Width != font.FontHeader.UnitsPerEm)
+                    .Select(x => $"{x.GID}[{x.Width}] %{x.Char}\n")
+            );
     }
 
     public Position MeasureStringBox(string s)
