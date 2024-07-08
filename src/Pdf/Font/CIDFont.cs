@@ -141,10 +141,10 @@ public class CIDFont : PdfObject, IFont
 
     public static IEnumerable<(string Text, int Width)> SplitWidth(string text, Dictionary<char, int> widths)
     {
-        foreach (var x in text.SplitFor(widths.ContainsKey))
+        foreach (var (values, found, separator) in text.SplitFor(widths.ContainsKey))
         {
-            if (!x.Values.IsEmpty()) yield return (x.Values.ToStringByChars(), 0);
-            if (x.Found) yield return (x.Separator.ToString(), widths[x.Separator]);
+            if (!values.IsEmpty()) yield return (values.ToStringByChars(), 0);
+            if (found) yield return (separator.ToString(), widths[separator]);
         }
     }
 }
