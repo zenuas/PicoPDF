@@ -12,9 +12,8 @@ public class CompactFontFormat
 {
     public required byte Major { get; init; }
     public required byte Minor { get; init; }
-    public required byte HdrSize { get; init; }
-    public required byte OffSize { get; init; }
-
+    public required byte HeaderSize { get; init; }
+    public required byte OffsetSize { get; init; }
     public required string[] NameIndex { get; init; }
     public required Dictionary<string, object>[] TopDictIndex { get; init; }
     public required string[] StringIndex { get; init; }
@@ -23,8 +22,8 @@ public class CompactFontFormat
     {
         Major = stream.ReadUByte(),
         Minor = stream.ReadUByte(),
-        HdrSize = stream.ReadUByte(),
-        OffSize = stream.ReadUByte(),
+        HeaderSize = stream.ReadUByte(),
+        OffsetSize = stream.ReadUByte(),
         NameIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray(),
         TopDictIndex = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).ToArray(),
         StringIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray(),
