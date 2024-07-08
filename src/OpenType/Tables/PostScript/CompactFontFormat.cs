@@ -67,7 +67,7 @@ public class CompactFontFormat
                 kv.Add($"{b0}", values.ToArray());
                 values.Clear();
             }
-            else if (b0 is 28 or 29 or >= 32 and <= 254)
+            else if (b0 is 28 or 29 or (>= 32 and <= 254))
             {
                 values.Add(b0 switch
                 {

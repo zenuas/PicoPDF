@@ -51,22 +51,15 @@ public static class JsonLoader
         var name = json["Name"]!.ToString();
         var height = (int)json["Height"]!.AsValue();
         var viewmode = json["ViewMode"] is { } v ? Enum.Parse<ViewModes>(v.ToString()) : ViewModes.Every;
-        var pagebreak = json["PageBreak"]?.AsValue() is { } pb ? (bool)pb : false;
-        switch (json["Type"]!.ToString())
+        var pagebreak = json["PageBreak"]?.AsValue() is { } pb && (bool)pb;
+        return json["Type"]!.ToString() switch
         {
-            case "HeaderSection":
-                return new HeaderSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements };
-
-            case "DetailSection":
-                return new DetailSection() { Name = name, Height = height, Elements = elements };
-
-            case "TotalSection":
-                return new TotalSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak };
-
-            case "FooterSection":
-                return new FooterSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak };
-        }
-        throw new();
+            "HeaderSection" => new HeaderSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements },
+            "DetailSection" => new DetailSection() { Name = name, Height = height, Elements = elements },
+            "TotalSection" => new TotalSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak },
+            "FooterSection" => new FooterSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak },
+            _ => throw new(),
+        };
     }
 
     public static IElement LoadElement(JsonNode json)

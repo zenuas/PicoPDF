@@ -165,28 +165,15 @@ public class BindSummaryMapper<T>
 
     public void DataBind(T data) => SummaryAction.Each(x => x(data));
 
-    public object GetSummary(SummaryElement x, T data)
+    public object GetSummary(SummaryElement x, T data) => x.SummaryType switch
     {
-        switch (x.SummaryType)
-        {
-            case SummaryType.Summary:
-                return Mapper[x.Bind](data);
-
-            case SummaryType.Count:
-                return (int)Mapper[x.SummaryBind](data);
-
-            case SummaryType.Average:
-                return (dynamic)Mapper[x.Bind](data) / (dynamic)Mapper[x.SummaryBind](data);
-
-            case SummaryType.Maximum:
-            case SummaryType.Minimum:
-                return Mapper[x.SummaryBind](data);
-
-            case SummaryType.PageCount:
-                return SummaryPool["#:PAGECOUNT()"].Value!;
-        }
-        throw new();
-    }
+        SummaryType.Summary => Mapper[x.Bind](data),
+        SummaryType.Count => (int)Mapper[x.SummaryBind](data),
+        SummaryType.Average => (dynamic)Mapper[x.Bind](data) / (dynamic)Mapper[x.SummaryBind](data),
+        SummaryType.Maximum or SummaryType.Minimum => Mapper[x.SummaryBind](data),
+        SummaryType.PageCount => SummaryPool["#:PAGECOUNT()"].Value!,
+        _ => throw new(),
+    };
 
     public static List<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IParentSection section)
     {
