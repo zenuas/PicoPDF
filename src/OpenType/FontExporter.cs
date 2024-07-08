@@ -17,6 +17,13 @@ public static class FontExporter
         return stream.ToArray();
     }
 
+    public static byte[] Export(PostScriptFont font)
+    {
+        using var stream = new MemoryStream();
+        Export(font, stream);
+        return stream.ToArray();
+    }
+
     public static void Export(TrueTypeFont font, Stream stream, long start_stream_position = 0)
     {
         var table_names = new string[] { "OS/2", "cmap", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "name", "post" };
@@ -90,6 +97,11 @@ public static class FontExporter
         var lastposition = stream.Position;
         tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
         stream.Position = lastposition;
+    }
+
+    public static void Export(PostScriptFont font, Stream stream, long start_stream_position = 0)
+    {
+
     }
 
     public static void ExportTable(Stream stream, long start_stream_position, MutableTableRecord rec, IExportable table)

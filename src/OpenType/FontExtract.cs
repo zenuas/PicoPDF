@@ -116,4 +116,9 @@ public static class FontExtract
             Glyphs = glyf,
         };
     }
+
+    public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
+    {
+        return null!;
+    }
 }

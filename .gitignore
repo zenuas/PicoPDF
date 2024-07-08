@@ -345,3 +345,5 @@ healthchecksdb
 test-case/*.pdf
 test-case/*.ttf
 test-case/*.ttc
+test-case/*.otf
+test-case/*.otc
