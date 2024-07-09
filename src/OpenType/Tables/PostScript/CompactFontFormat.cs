@@ -42,7 +42,7 @@ public class CompactFontFormat
             _ => (x) => (int)x.ReadUIntByBigEndian(),
         };
 
-        var offset = Lists.RangeTo(0, count).Select(_ => offset_read(stream)).ToArray();
+        var offset = Enumerable.Range(0, count + 1).Select(_ => offset_read(stream)).ToArray();
         return Enumerable.Range(0, count).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
     }
 
