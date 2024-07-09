@@ -17,9 +17,12 @@ public class CompactFontFormat
     public required string[] NameIndex { get; init; }
     public required Dictionary<string, object[]> TopDictIndex { get; init; }
     public required string[] StringIndex { get; init; }
+    public required ICharsets Charsets { get; init; }
 
     public static CompactFontFormat ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var major = stream.ReadUByte();
         var minor = stream.ReadUByte();
         var header_size = stream.ReadUByte();
@@ -28,8 +31,11 @@ public class CompactFontFormat
         var top_dict_index = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).First();
         var string_index = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
 
-        var charset = top_dict_index.TryGetValue("15", out var xcharset) && xcharset.Length > 0 ? SafeConvert.ToLong(xcharset[0], 0) : 0;
-        var char_strings = top_dict_index.TryGetValue("17", out var xchar_strings) && xchar_strings.Length > 0 ? SafeConvert.ToLong(xchar_strings[0], 0) : 0;
+        var charset_offset = top_dict_index.TryGetValue("15", out var xs1) && xs1.Length > 0 ? SafeConvert.ToLong(xs1[0], 0) : 0;
+        var char_strings_offset = top_dict_index.TryGetValue("17", out var xs2) && xs2.Length > 0 ? SafeConvert.ToLong(xs2[0], 0) : 0;
+
+        stream.Position = position + charset_offset;
+        var charsets = ReadCharsets(stream, (int)char_strings_offset);
 
         return new()
         {
@@ -40,6 +46,7 @@ public class CompactFontFormat
             NameIndex = name_index,
             TopDictIndex = top_dict_index,
             StringIndex = string_index,
+            Charsets = charsets,
         };
     }
 
@@ -147,5 +154,16 @@ public class CompactFontFormat
         }
 
         return sign ? value : -value;
+    }
+
+    public static ICharsets ReadCharsets(Stream stream, int glyph_count)
+    {
+        var format = stream.ReadUByte();
+        return format switch
+        {
+            1 => CharsetsExpert.ReadFrom(stream),
+            2 => CharsetsExpertSubset.ReadFrom(stream),
+            _ => CharsetsISOAdobe.ReadFrom(stream, glyph_count),
+        };
     }
 }
