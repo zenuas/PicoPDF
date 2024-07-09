@@ -15,19 +15,33 @@ public class CompactFontFormat
     public required byte HeaderSize { get; init; }
     public required byte OffsetSize { get; init; }
     public required string[] NameIndex { get; init; }
-    public required Dictionary<string, object>[] TopDictIndex { get; init; }
+    public required Dictionary<string, object[]> TopDictIndex { get; init; }
     public required string[] StringIndex { get; init; }
 
-    public static CompactFontFormat ReadFrom(Stream stream) => new()
+    public static CompactFontFormat ReadFrom(Stream stream)
     {
-        Major = stream.ReadUByte(),
-        Minor = stream.ReadUByte(),
-        HeaderSize = stream.ReadUByte(),
-        OffsetSize = stream.ReadUByte(),
-        NameIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray(),
-        TopDictIndex = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).ToArray(),
-        StringIndex = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray(),
-    };
+        var major = stream.ReadUByte();
+        var minor = stream.ReadUByte();
+        var header_size = stream.ReadUByte();
+        var offset_size = stream.ReadUByte();
+        var name_index = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
+        var top_dict_index = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).First();
+        var string_index = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
+
+        var charset = top_dict_index.TryGetValue("15", out var xcharset) && xcharset.Length > 0 ? SafeConvert.ToLong(xcharset[0], 0) : 0;
+        var char_strings = top_dict_index.TryGetValue("17", out var xchar_strings) && xchar_strings.Length > 0 ? SafeConvert.ToLong(xchar_strings[0], 0) : 0;
+
+        return new()
+        {
+            Major = major,
+            Minor = minor,
+            HeaderSize = header_size,
+            OffsetSize = offset_size,
+            NameIndex = name_index,
+            TopDictIndex = top_dict_index,
+            StringIndex = string_index,
+        };
+    }
 
     public static byte[][] ReadIndexData(Stream stream)
     {
@@ -46,9 +60,9 @@ public class CompactFontFormat
         return Enumerable.Range(0, count).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
     }
 
-    public static Dictionary<string, object> ReadDictData(Stream stream, int length)
+    public static Dictionary<string, object[]> ReadDictData(Stream stream, int length)
     {
-        var kv = new Dictionary<string, object>();
+        var kv = new Dictionary<string, object[]>();
         var values = new List<object>();
         var pos = stream.Position;
         while (stream.Position < pos + length)
@@ -58,12 +72,12 @@ public class CompactFontFormat
             if (b0 is 12)
             {
                 var b1 = stream.ReadUByte();
-                kv.Add($"{b0} {b1}", values.ToArray());
+                kv.Add($"{b0} {b1}", [.. values]);
                 values.Clear();
             }
             else if (b0 is >= 0 and <= 21)
             {
-                kv.Add($"{b0}", values.ToArray());
+                kv.Add($"{b0}", [.. values]);
                 values.Clear();
             }
             else if (b0 is 28 or 29 or (>= 32 and <= 254))
