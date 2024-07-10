@@ -32,8 +32,8 @@ public class CompactFontFormat
         var top_dict_index = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).First();
         var string_index = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
 
-        var charset_offset = top_dict_index.TryGetValue("15", out var xs1) && xs1.Length > 0 ? SafeConvert.ToLong(xs1[0], 0) : 0;
-        var char_strings_offset = top_dict_index.TryGetValue("17", out var xs2) && xs2.Length > 0 ? SafeConvert.ToLong(xs2[0], 0) : 0;
+        var charset_offset = top_dict_index.TryGetValue("15", out var xs1) ? SafeConvert.ToLong(xs1[0], 0) : 0;
+        var char_strings_offset = top_dict_index.TryGetValue("17", out var xs2) ? SafeConvert.ToLong(xs2[0], 0) : 0;
 
         stream.Position = position + char_strings_offset;
         var char_strings = ReadIndexData(stream);
