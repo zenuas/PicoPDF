@@ -17,6 +17,7 @@ public class CompactFontFormat
     public required string[] NameIndex { get; init; }
     public required Dictionary<string, object[]> TopDictIndex { get; init; }
     public required string[] StringIndex { get; init; }
+    public required byte[][] CharStrings { get; init; }
     public required ICharsets Charsets { get; init; }
 
     public static CompactFontFormat ReadFrom(Stream stream)
@@ -34,8 +35,11 @@ public class CompactFontFormat
         var charset_offset = top_dict_index.TryGetValue("15", out var xs1) && xs1.Length > 0 ? SafeConvert.ToLong(xs1[0], 0) : 0;
         var char_strings_offset = top_dict_index.TryGetValue("17", out var xs2) && xs2.Length > 0 ? SafeConvert.ToLong(xs2[0], 0) : 0;
 
+        stream.Position = position + char_strings_offset;
+        var char_strings = ReadIndexData(stream);
+
         stream.Position = position + charset_offset;
-        var charsets = ReadCharsets(stream, (int)char_strings_offset);
+        var charsets = ReadCharsets(stream, char_strings.Length);
 
         return new()
         {
@@ -46,6 +50,7 @@ public class CompactFontFormat
             NameIndex = name_index,
             TopDictIndex = top_dict_index,
             StringIndex = string_index,
+            CharStrings = char_strings,
             Charsets = charsets,
         };
     }
@@ -163,7 +168,7 @@ public class CompactFontFormat
         {
             1 => CharsetsExpert.ReadFrom(stream),
             2 => CharsetsExpertSubset.ReadFrom(stream),
-            _ => CharsetsISOAdobe.ReadFrom(stream, glyph_count),
+            _ => CharsetsISOAdobe.ReadFrom(stream, glyph_count - 1),
         };
     }
 }
