@@ -8,7 +8,7 @@ using System.Text;
 
 namespace PicoPDF.OpenType.Tables.PostScript;
 
-public class CompactFontFormat
+public class CompactFontFormat : IExportable
 {
     public required byte Major { get; init; }
     public required byte Minor { get; init; }
@@ -170,5 +170,9 @@ public class CompactFontFormat
             2 => CharsetsExpertSubset.ReadFrom(stream),
             _ => CharsetsISOAdobe.ReadFrom(stream, glyph_count - 1),
         };
+    }
+
+    public void WriteTo(Stream stream)
+    {
     }
 }
