@@ -30,7 +30,7 @@ public class CompactFontFormatTest
             Assert.Equal(DictDataNumber(i).Value, i);
         }
 
-        // size 2
+        // size 2 positive
         Assert.Equivalent(DictDataNumber(108), new IntBytes(108, [247, 0]));
         Assert.Equivalent(DictDataNumber(109), new IntBytes(109, [247, 1]));
         Assert.Equivalent(DictDataNumber(363), new IntBytes(363, [247, 255]));
@@ -38,6 +38,16 @@ public class CompactFontFormatTest
         Assert.Equivalent(DictDataNumber(1130), new IntBytes(1130, [250, 254]));
         Assert.Equivalent(DictDataNumber(1131), new IntBytes(1131, [250, 255]));
         for (var i = 108; i <= 1131; i++)
+        {
+            Assert.Equal(DictDataNumber(i).Value, i);
+        }
+
+        // size 2 negative
+        Assert.Equivalent(DictDataNumber(-108), new IntBytes(-108, [251, 0]));
+        Assert.Equivalent(DictDataNumber(-109), new IntBytes(-109, [251, 1]));
+        Assert.Equivalent(DictDataNumber(-1130), new IntBytes(-1130, [254, 254]));
+        Assert.Equivalent(DictDataNumber(-1131), new IntBytes(-1131, [254, 255]));
+        for (var i = -1131; i <= -108; i++)
         {
             Assert.Equal(DictDataNumber(i).Value, i);
         }
