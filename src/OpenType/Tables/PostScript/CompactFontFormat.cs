@@ -58,6 +58,7 @@ public class CompactFontFormat : IExportable
     public static byte[][] ReadIndexData(Stream stream)
     {
         var count = stream.ReadUShortByBigEndian();
+        if (count == 0) return [];
         var offset_size = stream.ReadUByte();
 
         Func<Stream, int> offset_read = offset_size switch
