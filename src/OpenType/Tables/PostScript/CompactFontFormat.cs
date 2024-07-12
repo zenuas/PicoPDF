@@ -181,5 +181,15 @@ public class CompactFontFormat : IExportable
         stream.WriteByte(Minor);
         stream.WriteByte(HeaderSize);
         stream.WriteByte(OffsetSize);
+        WriteIndexData(stream, NameIndex.Select(Encoding.UTF8.GetBytes).ToArray());
+    }
+
+    public static void WriteIndexData(Stream stream, byte[][] index)
+    {
+        stream.WriteUShortByBigEndian((ushort)index.Length);
+        if (index.Length == 0) return;
+        stream.WriteByte(4);
+        index.Aggregate<byte[], uint[]>([1], (acc, x) => [.. acc, (uint)(acc.Last() + x.Length)]).Each(stream.WriteUIntByBigEndian);
+        index.Each(x => stream.Write(x));
     }
 }
