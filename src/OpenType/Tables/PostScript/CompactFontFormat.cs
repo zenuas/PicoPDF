@@ -117,7 +117,7 @@ public class CompactFontFormat : IExportable
         >= 32 and <= 246 => b0 - 139,
         >= 247 and <= 250 => ((b0 - 247) * 256) + stream.ReadUByte() + 108,
         >= 251 and <= 254 => (-(b0 - 251) * 256) - stream.ReadUByte() - 108,
-        28 => (stream.ReadUByte() << 8) | stream.ReadUByte(),
+        28 => (short)((stream.ReadUByte() << 8) | stream.ReadUByte()),
         29 => (stream.ReadUByte() << 24) | (stream.ReadUByte() << 16) | (stream.ReadUByte() << 8) | stream.ReadUByte(),
         _ => 0,
     };
@@ -127,6 +127,7 @@ public class CompactFontFormat : IExportable
         if (number is >= -107 and <= 107) return [(byte)(number + 139)];
         if (number is >= 108 and <= 1131) return [(byte)((((number - 108) >> 8) & 0xFF) + 247), (byte)(number - 108)];
         if (number is >= -1131 and <= -108) return [(byte)(((-(number + 108) >> 8) & 0xFF) + 251), (byte)-(number + 108)];
+        if (number is >= -32768 and <= 32767) return [28, (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)];
         return [];
     }
 

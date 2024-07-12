@@ -51,5 +51,11 @@ public class CompactFontFormatTest
         {
             Assert.Equal(DictDataNumber(i).Value, i);
         }
+
+        // size 3
+        Assert.Equivalent(DictDataNumber(-32768), new IntBytes(-32768, [28, 0x80, 0x00]));
+        Assert.Equivalent(DictDataNumber(-32767), new IntBytes(-32767, [28, 0x80, 0x01]));
+        Assert.Equivalent(DictDataNumber(32766), new IntBytes(32766, [28, 0x7F, 0xFE]));
+        Assert.Equivalent(DictDataNumber(32767), new IntBytes(32767, [28, 0x7F, 0xFF]));
     }
 }
