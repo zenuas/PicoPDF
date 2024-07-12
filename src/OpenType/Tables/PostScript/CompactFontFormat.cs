@@ -95,15 +95,7 @@ public class CompactFontFormat : IExportable
             }
             else if (b0 is 28 or 29 or (>= 32 and <= 254))
             {
-                values.Add(b0 switch
-                {
-                    >= 32 and <= 246 => b0 - 139,
-                    >= 247 and <= 250 => ((b0 - 247) * 256) + stream.ReadUByte() + 108,
-                    >= 251 and <= 254 => (-(b0 - 251) * 256) + stream.ReadUByte() - 108,
-                    28 => (stream.ReadUByte() << 8) | stream.ReadUByte(),
-                    29 => (stream.ReadUByte() << 24) | (stream.ReadUByte() << 16) | (stream.ReadUByte() << 8) | stream.ReadUByte(),
-                    _ => 0,
-                });
+                values.Add(ReadDictDataNumber(b0, stream));
             }
             else if (b0 is 30)
             {
@@ -118,6 +110,23 @@ public class CompactFontFormat : IExportable
             }
         }
         return kv;
+    }
+
+    public static int ReadDictDataNumber(byte b0, Stream stream) => b0 switch
+    {
+        >= 32 and <= 246 => b0 - 139,
+        >= 247 and <= 250 => ((b0 - 247) * 256) + stream.ReadUByte() + 108,
+        >= 251 and <= 254 => (-(b0 - 251) * 256) + stream.ReadUByte() - 108,
+        28 => (stream.ReadUByte() << 8) | stream.ReadUByte(),
+        29 => (stream.ReadUByte() << 24) | (stream.ReadUByte() << 16) | (stream.ReadUByte() << 8) | stream.ReadUByte(),
+        _ => 0,
+    };
+
+    public static byte[] DictDataNumberToBytes(int number)
+    {
+        if (number is >= -107 and <= 107) return [(byte)(number + 139)];
+        if (number is >= 108 and <= 1131) return [(byte)((((number - 108) >> 8) & 0xFF) + 247), (byte)(number - 108)];
+        return [];
     }
 
     public static double PackedBCDToDouble(byte[] bytes)
