@@ -112,6 +112,18 @@ public class CompactFontFormat : IExportable
         return kv;
     }
 
+    public static byte[] DictDataTo5Bytes(Dictionary<string, object[]> kv)
+    {
+        using var mem = new MemoryStream();
+        foreach (var (k, vs) in kv)
+        {
+            vs.OfType<int>().Each(x => mem.Write(DictDataNumberTo5Bytes(x)));
+            var separator = k.IndexOf(' ');
+            mem.Write(separator >= 0 ? [byte.Parse(k[0..separator]), byte.Parse(k[(separator + 1)..])] : [byte.Parse(k)]);
+        }
+        return mem.ToArray();
+    }
+
     public static int ReadDictDataNumber(byte b0, Stream stream) => b0 switch
     {
         >= 32 and <= 246 => b0 - 139,
@@ -127,7 +139,9 @@ public class CompactFontFormat : IExportable
         : number is >= 108 and <= 1131 ? ([(byte)((((number - 108) >> 8) & 0xFF) + 247), (byte)(number - 108)])
         : number is >= -1131 and <= -108 ? ([(byte)(((-(number + 108) >> 8) & 0xFF) + 251), (byte)-(number + 108)])
         : number is >= -32768 and <= 32767 ? ([28, (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)])
-        : ([29, (byte)((number >> 24) & 0xFF), (byte)((number >> 16) & 0xFF), (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)]);
+        : DictDataNumberTo5Bytes(number);
+
+    public static byte[] DictDataNumberTo5Bytes(int number) => ([29, (byte)((number >> 24) & 0xFF), (byte)((number >> 16) & 0xFF), (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)]);
 
     public static double PackedBCDToDouble(byte[] bytes)
     {
@@ -191,6 +205,22 @@ public class CompactFontFormat : IExportable
         stream.WriteByte(HeaderSize);
         stream.WriteByte(OffsetSize);
         WriteIndexData(stream, NameIndex.Select(Encoding.UTF8.GetBytes).ToArray());
+
+        var top_dict_start = stream.Position;
+        var top_dict = new Dictionary<string, object[]>
+        {
+            ["17"] = [0]
+        };
+        WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
+        WriteIndexData(stream, StringIndex.Select(Encoding.UTF8.GetBytes).ToArray());
+
+        top_dict["17"] = [stream.Position - position];
+        WriteIndexData(stream, CharStrings);
+
+        var lastposition = stream.Position;
+        stream.Position = top_dict_start;
+        WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
+        stream.Position = lastposition;
     }
 
     public static void WriteIndexData(Stream stream, byte[][] index)
