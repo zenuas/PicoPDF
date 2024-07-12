@@ -174,5 +174,11 @@ public class CompactFontFormat : IExportable
 
     public void WriteTo(Stream stream)
     {
+        var position = stream.Position;
+
+        stream.WriteByte(Major);
+        stream.WriteByte(Minor);
+        stream.WriteByte(HeaderSize);
+        stream.WriteByte(OffsetSize);
     }
 }
