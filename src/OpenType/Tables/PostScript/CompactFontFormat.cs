@@ -189,8 +189,8 @@ public class CompactFontFormat : IExportable
         var format = stream.ReadUByte();
         return format switch
         {
-            1 => CharsetsExpert.ReadFrom(stream),
-            2 => CharsetsExpertSubset.ReadFrom(stream),
+            1 => CharsetsExpert.ReadFrom(stream, glyph_count - 1),
+            2 => CharsetsExpertSubset.ReadFrom(stream, glyph_count - 1),
             _ => CharsetsISOAdobe.ReadFrom(stream, glyph_count - 1),
         };
     }
