@@ -1,6 +1,5 @@
 ﻿using Mina.Extension;
 using System;
-using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -65,7 +64,7 @@ public class CompactFontFormat : IExportable
         {
             1 => (x) => x.ReadUByte(),
             2 => (x) => x.ReadUShortByBigEndian(),
-            3 => (x) => (int)BinaryPrimitives.ReadUInt32BigEndian(x.ReadBytes(3)),
+            3 => (x) => (x.ReadUByte() << 16) | (x.ReadUByte() << 8) | x.ReadUByte(),
             _ => (x) => (int)x.ReadUIntByBigEndian(),
         };
 
