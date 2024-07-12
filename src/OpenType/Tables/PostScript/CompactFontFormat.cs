@@ -128,7 +128,7 @@ public class CompactFontFormat : IExportable
         if (number is >= 108 and <= 1131) return [(byte)((((number - 108) >> 8) & 0xFF) + 247), (byte)(number - 108)];
         if (number is >= -1131 and <= -108) return [(byte)(((-(number + 108) >> 8) & 0xFF) + 251), (byte)-(number + 108)];
         if (number is >= -32768 and <= 32767) return [28, (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)];
-        return [];
+        return [29, (byte)((number >> 24) & 0xFF), (byte)((number >> 16) & 0xFF), (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)];
     }
 
     public static double PackedBCDToDouble(byte[] bytes)
