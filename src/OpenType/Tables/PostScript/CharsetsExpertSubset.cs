@@ -10,7 +10,7 @@ public class CharsetsExpertSubset : ICharsets
     public required byte Format { get; init; }
     public required ushort[] Glyph { get; init; }
 
-    public static CharsetsExpert ReadFrom(Stream stream, int glyph_count)
+    public static CharsetsExpertSubset ReadFrom(Stream stream, int glyph_count)
     {
         var glyph = new List<ushort>();
         while (glyph.Count < glyph_count)
@@ -22,7 +22,7 @@ public class CharsetsExpertSubset : ICharsets
 
         return new()
         {
-            Format = 1,
+            Format = 2,
             Glyph = [.. glyph],
         };
     }
