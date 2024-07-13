@@ -17,7 +17,7 @@ public class CharsetsExpert : ICharsets
         {
             var first = stream.ReadUShortByBigEndian();
             var left = stream.ReadUByte();
-            Enumerable.Repeat(0, left + 1).Each(x => glyph.Add((ushort)(first + x)));
+            Enumerable.Range(0, left + 1).Each(x => glyph.Add((ushort)(first + x)));
         }
 
         return new()
