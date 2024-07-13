@@ -17,7 +17,7 @@ public class CompactFontFormat : IExportable
     public required Dictionary<string, object[]> TopDictIndex { get; init; }
     public required string[] StringIndex { get; init; }
     public required byte[][] CharStrings { get; init; }
-    public required ICharsets Charsets { get; init; }
+    public required Charsets Charsets { get; init; }
 
     public static CompactFontFormat ReadFrom(Stream stream)
     {
@@ -184,15 +184,33 @@ public class CompactFontFormat : IExportable
         return sign ? value : -value;
     }
 
-    public static ICharsets ReadCharsets(Stream stream, int glyph_count)
+    public static Charsets ReadCharsets(Stream stream, int glyph_count)
     {
         var format = stream.ReadUByte();
-        return format switch
+        if (format is 1 or 2)
         {
-            1 => CharsetsExpert.ReadFrom(stream, glyph_count - 1),
-            2 => CharsetsExpertSubset.ReadFrom(stream, glyph_count - 1),
-            _ => CharsetsISOAdobe.ReadFrom(stream, glyph_count - 1),
-        };
+            var glyph = new List<ushort>();
+            while (glyph.Count < glyph_count - 1)
+            {
+                var first = stream.ReadUShortByBigEndian();
+                var left = format == 1 ? stream.ReadUByte() : stream.ReadUShortByBigEndian();
+                Enumerable.Range(0, left + 1).Each(x => glyph.Add((ushort)(first + x)));
+            }
+
+            return new()
+            {
+                Format = format,
+                Glyph = [.. glyph],
+            };
+        }
+        else
+        {
+            return new()
+            {
+                Format = 0,
+                Glyph = Enumerable.Repeat(0, glyph_count - 1).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            };
+        }
     }
 
     public void WriteTo(Stream stream)
