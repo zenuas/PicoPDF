@@ -87,7 +87,7 @@ public static class FontExtract
         {
             Version = 0,
             NumberOfTables = (ushort)cmaps.Length,
-            EncodingRecords = cmaps.ToDictionary(x => x, _ => (ICMapFormat?)cmap4)
+            EncodingRecords = cmaps.ToDictionary(x => x, _ => (ICMapFormat)cmap4)
         };
 
         var glyf = Lists.RangeTo(1, num_of_glyph)
@@ -195,7 +195,7 @@ public static class FontExtract
         {
             Version = 0,
             NumberOfTables = (ushort)cmaps.Length,
-            EncodingRecords = cmaps.ToDictionary(x => x, _ => (ICMapFormat?)cmap4)
+            EncodingRecords = cmaps.ToDictionary(x => x, _ => (ICMapFormat)cmap4)
         };
 
         var char_strings = Lists.RangeTo(1, num_of_glyph)
