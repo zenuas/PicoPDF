@@ -3,4 +3,5 @@
 public interface ICharsets
 {
     public byte Format { get; init; }
+    public ushort[] Glyph { get; init; }
 }
