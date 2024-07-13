@@ -15,6 +15,7 @@ var fontreg = new FontRegister();
 if (opt.RegistSystemFont) fontreg.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
 if (opt.FontFileExport != "") { FontFileExport.Export(fontreg, opt); return; }
 if (opt.FontList) { FontListTest.Preview(fontreg, opt); return; }
+if (opt.CMapList) { CMapListTest.Preview(fontreg, opt); return; }
 
 var export_opt = new PdfExportOption
 {

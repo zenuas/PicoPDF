@@ -9,18 +9,41 @@ public class CMapTable : IExportable
 {
     public required ushort Version { get; init; }
     public required ushort NumberOfTables { get; init; }
-    public required Dictionary<EncodingRecord, ICMapFormat?> EncodingRecords { get; init; }
+    public required Dictionary<EncodingRecord, ICMapFormat> EncodingRecords { get; init; }
 
     public static CMapTable ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var ver = stream.ReadUShortByBigEndian();
         var num_of_tables = stream.ReadUShortByBigEndian();
+
+        var offset_cmap = new Dictionary<uint, ICMapFormat>();
 
         return new()
         {
             Version = ver,
             NumberOfTables = num_of_tables,
-            EncodingRecords = Enumerable.Range(0, num_of_tables).Select(_ => EncodingRecord.ReadFrom(stream)).ToDictionary(x => x, _ => (ICMapFormat?)null),
+            EncodingRecords = Enumerable.Range(0, num_of_tables)
+                .Select(_ => EncodingRecord.ReadFrom(stream))
+                .ToArray()
+                .ToDictionary(x => x, x =>
+                {
+                    if (offset_cmap.TryGetValue(x.Offset, out var cmap)) return cmap;
+                    stream.Position = position + x.Offset;
+                    return offset_cmap[x.Offset] = ReadCMapFormat(stream);
+                }),
+        };
+    }
+
+    public static ICMapFormat ReadCMapFormat(Stream stream)
+    {
+        var format = stream.ReadUShortByBigEndian();
+        return format switch
+        {
+            0 => CMapFormat0.ReadFrom(stream),
+            4 => CMapFormat4.ReadFrom(stream),
+            _ => new CMapFormatN { Format = format },
         };
     }
 

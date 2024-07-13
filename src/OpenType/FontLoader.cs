@@ -76,16 +76,7 @@ public static class FontLoader
         var hhea = ReadTableRecprds(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
         var hmtx = ReadTableRecprds(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
-        var cmap_offset = font.TableRecords["cmap"].Offset;
-        var cmap4 = cmap.EncodingRecords.Keys
-            .ToArray()
-            .Select(x =>
-            {
-                stream.Position = cmap_offset + x.Offset;
-                return cmap.EncodingRecords[x] = ReadCMapFormat(stream);
-            })
-            .OfType<CMapFormat4>()
-            .First();
+        var cmap4 = cmap.EncodingRecords.Values.OfType<CMapFormat4>().First();
         var cmap4_range = CreateCMap4Range(cmap4);
 
         return new()
@@ -117,17 +108,6 @@ public static class FontLoader
         return font.Offset.ContainTrueType() ?
             LoadTrueTypeFont(stream, font) :
             LoadPostScriptFont(stream, font);
-    }
-
-    public static ICMapFormat? ReadCMapFormat(Stream stream)
-    {
-        var format = stream.ReadUShortByBigEndian();
-        return format switch
-        {
-            0 => CMapFormat0.ReadFrom(stream),
-            4 => CMapFormat4.ReadFrom(stream),
-            _ => null,
-        };
     }
 
     public static List<(int Start, int End)> CreateCMap4Range(CMapFormat4 cmap4)
