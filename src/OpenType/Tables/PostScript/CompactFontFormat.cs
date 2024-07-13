@@ -68,7 +68,7 @@ public class CompactFontFormat : IExportable
             _ => (x) => (int)x.ReadUIntByBigEndian(),
         };
 
-        var offset = Enumerable.Range(0, count + 1).Select(_ => offset_read(stream)).ToArray();
+        var offset = Enumerable.Repeat(0, count + 1).Select(_ => offset_read(stream)).ToArray();
         return Enumerable.Range(0, count).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
     }
 

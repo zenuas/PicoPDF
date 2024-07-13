@@ -40,12 +40,12 @@ public class CMapFormat4 : ICMapFormat
             SearchRange = stream.ReadUShortByBigEndian(),
             EntrySelector = stream.ReadUShortByBigEndian(),
             RangeShift = stream.ReadUShortByBigEndian(),
-            EndCode = Enumerable.Range(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            EndCode = Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
             ReservedPad = stream.ReadUShortByBigEndian(),
-            StartCode = Enumerable.Range(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
-            IdDelta = Enumerable.Range(0, seg_count).Select(_ => stream.ReadShortByBigEndian()).ToArray(),
-            IdRangeOffsets = Enumerable.Range(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
-            GlyphIdArray = Enumerable.Range(0, glyph_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            StartCode = Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            IdDelta = Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadShortByBigEndian()).ToArray(),
+            IdRangeOffsets = Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            GlyphIdArray = Enumerable.Repeat(0, glyph_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
         };
     }
 

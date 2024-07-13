@@ -24,7 +24,7 @@ public class CMapTable : IExportable
         {
             Version = ver,
             NumberOfTables = num_of_tables,
-            EncodingRecords = Enumerable.Range(0, num_of_tables)
+            EncodingRecords = Enumerable.Repeat(0, num_of_tables)
                 .Select(_ => EncodingRecord.ReadFrom(stream))
                 .ToArray()
                 .ToDictionary(x => x, x =>
