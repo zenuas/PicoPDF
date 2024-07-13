@@ -38,7 +38,7 @@ public class CompactFontFormat : IExportable
         var char_strings = ReadIndexData(stream);
 
         stream.Position = position + charset_offset;
-        var charsets = ReadCharsets(stream, char_strings.Length);
+        var charsets = ReadCharsets(stream, char_strings.Length - 1);
 
         return new()
         {
@@ -184,13 +184,13 @@ public class CompactFontFormat : IExportable
         return sign ? value : -value;
     }
 
-    public static Charsets ReadCharsets(Stream stream, int glyph_count)
+    public static Charsets ReadCharsets(Stream stream, int glyph_count_without_notdef)
     {
         var format = stream.ReadUByte();
         if (format is 1 or 2)
         {
             var glyph = new List<ushort>();
-            while (glyph.Count < glyph_count - 1)
+            while (glyph.Count < glyph_count_without_notdef)
             {
                 var first = stream.ReadUShortByBigEndian();
                 var left = format == 1 ? stream.ReadUByte() : stream.ReadUShortByBigEndian();
@@ -208,7 +208,7 @@ public class CompactFontFormat : IExportable
             return new()
             {
                 Format = 0,
-                Glyph = Enumerable.Repeat(0, glyph_count - 1).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+                Glyph = Enumerable.Repeat(0, glyph_count_without_notdef).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
             };
         }
     }
