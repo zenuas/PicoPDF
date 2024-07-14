@@ -14,7 +14,7 @@ public class CompactFontFormat : IExportable
     public required byte HeaderSize { get; init; }
     public required byte OffsetSize { get; init; }
     public required string[] NameIndex { get; init; }
-    public required Dictionary<string, object[]> TopDictIndex { get; init; }
+    public required Dictionary<int, object[]> TopDictIndex { get; init; }
     public required string[] StringIndex { get; init; }
     public required byte[][] CharStrings { get; init; }
     public required Charsets Charsets { get; init; }
@@ -31,8 +31,8 @@ public class CompactFontFormat : IExportable
         var top_dict_index = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).First();
         var string_index = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
 
-        var charset_offset = top_dict_index.TryGetValue("15", out var xs1) ? SafeConvert.ToLong(xs1[0], 0) : 0;
-        var char_strings_offset = top_dict_index.TryGetValue("17", out var xs2) ? SafeConvert.ToLong(xs2[0], 0) : 0;
+        var charset_offset = top_dict_index.TryGetValue(15, out var xs1) ? SafeConvert.ToLong(xs1[0], 0) : 0;
+        var char_strings_offset = top_dict_index.TryGetValue(17, out var xs2) ? SafeConvert.ToLong(xs2[0], 0) : 0;
 
         stream.Position = position + char_strings_offset;
         var char_strings = ReadIndexData(stream);
@@ -72,9 +72,9 @@ public class CompactFontFormat : IExportable
         return Enumerable.Range(0, count).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
     }
 
-    public static Dictionary<string, object[]> ReadDictData(Stream stream, int length)
+    public static Dictionary<int, object[]> ReadDictData(Stream stream, int length)
     {
-        var kv = new Dictionary<string, object[]>();
+        var kv = new Dictionary<int, object[]>();
         var values = new List<object>();
         var pos = stream.Position;
         while (stream.Position < pos + length)
@@ -84,12 +84,12 @@ public class CompactFontFormat : IExportable
             if (b0 is 12)
             {
                 var b1 = stream.ReadUByte();
-                kv.Add($"{b0} {b1}", [.. values]);
+                kv.Add((b0 * 100) + b1, [.. values]);
                 values.Clear();
             }
             else if (b0 is >= 0 and <= 21)
             {
-                kv.Add($"{b0}", [.. values]);
+                kv.Add(b0, [.. values]);
                 values.Clear();
             }
             else if (b0 is 28 or 29 or (>= 32 and <= 254))
@@ -111,14 +111,13 @@ public class CompactFontFormat : IExportable
         return kv;
     }
 
-    public static byte[] DictDataTo5Bytes(Dictionary<string, object[]> kv)
+    public static byte[] DictDataTo5Bytes(Dictionary<int, object[]> kv)
     {
         using var mem = new MemoryStream();
         foreach (var (k, vs) in kv)
         {
             vs.OfType<int>().Each(x => mem.Write(DictDataNumberTo5Bytes(x)));
-            var separator = k.IndexOf(' ');
-            mem.Write(separator >= 0 ? [byte.Parse(k[0..separator]), byte.Parse(k[(separator + 1)..])] : [byte.Parse(k)]);
+            mem.Write(k >= 100 ? [(byte)(k / 100), (byte)(k % 100)] : [(byte)k]);
         }
         return mem.ToArray();
     }
@@ -224,14 +223,14 @@ public class CompactFontFormat : IExportable
         WriteIndexData(stream, NameIndex.Select(Encoding.UTF8.GetBytes).ToArray());
 
         var top_dict_start = stream.Position;
-        var top_dict = new Dictionary<string, object[]>
+        var top_dict = new Dictionary<int, object[]>
         {
-            ["17"] = [0],
+            [17] = [0],
         };
         WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
         WriteIndexData(stream, StringIndex.Select(Encoding.UTF8.GetBytes).ToArray());
 
-        top_dict["17"] = [(int)(stream.Position - position)];
+        top_dict[17] = [(int)(stream.Position - position)];
         WriteIndexData(stream, CharStrings);
 
         var lastposition = stream.Position;
