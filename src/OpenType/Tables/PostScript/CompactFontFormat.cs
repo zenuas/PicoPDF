@@ -226,12 +226,12 @@ public class CompactFontFormat : IExportable
         var top_dict_start = stream.Position;
         var top_dict = new Dictionary<string, object[]>
         {
-            ["17"] = [0]
+            ["17"] = [0],
         };
         WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
         WriteIndexData(stream, StringIndex.Select(Encoding.UTF8.GetBytes).ToArray());
 
-        top_dict["17"] = [stream.Position - position];
+        top_dict["17"] = [(int)(stream.Position - position)];
         WriteIndexData(stream, CharStrings);
 
         var lastposition = stream.Position;
