@@ -13,9 +13,9 @@ public class CompactFontFormat : IExportable
     public required byte Minor { get; init; }
     public required byte HeaderSize { get; init; }
     public required byte OffsetSize { get; init; }
-    public required string[] NameIndex { get; init; }
-    public required Dictionary<int, object[]> TopDictIndex { get; init; }
-    public required string[] StringIndex { get; init; }
+    public required string[] Names { get; init; }
+    public required Dictionary<int, object[]> TopDict { get; init; }
+    public required string[] Strings { get; init; }
     public required byte[][] CharStrings { get; init; }
     public required Charsets Charsets { get; init; }
     public required Dictionary<int, object[]> PrivateDict { get; init; }
@@ -28,13 +28,13 @@ public class CompactFontFormat : IExportable
         var minor = stream.ReadUByte();
         var header_size = stream.ReadUByte();
         var offset_size = stream.ReadUByte();
-        var name_index = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
-        var top_dict_index = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).First();
-        var string_index = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
+        var names = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
+        var top_dict = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).First();
+        var strings = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
 
-        var charset_offset = top_dict_index.TryGetValue(15, out var xs1) ? SafeConvert.ToLong(xs1[0], 0) : 0;
-        var char_strings_offset = top_dict_index.TryGetValue(17, out var xs2) ? SafeConvert.ToLong(xs2[0], 0) : 0;
-        var (private_dict_size, private_dict_offset) = top_dict_index.TryGetValue(18, out var xs3) ? (SafeConvert.ToInt(xs3[0], 0), SafeConvert.ToInt(xs3[1], 0)) : (0, 0);
+        var charset_offset = top_dict.TryGetValue(15, out var xs1) ? SafeConvert.ToLong(xs1[0], 0) : 0;
+        var char_strings_offset = top_dict.TryGetValue(17, out var xs2) ? SafeConvert.ToLong(xs2[0], 0) : 0;
+        var (private_dict_size, private_dict_offset) = top_dict.TryGetValue(18, out var xs3) ? (SafeConvert.ToInt(xs3[0], 0), SafeConvert.ToInt(xs3[1], 0)) : (0, 0);
 
         stream.Position = position + char_strings_offset;
         var char_strings = ReadIndexData(stream);
@@ -51,9 +51,9 @@ public class CompactFontFormat : IExportable
             Minor = minor,
             HeaderSize = header_size,
             OffsetSize = offset_size,
-            NameIndex = name_index,
-            TopDictIndex = top_dict_index,
-            StringIndex = string_index,
+            Names = names,
+            TopDict = top_dict,
+            Strings = strings,
             CharStrings = char_strings,
             Charsets = charsets,
             PrivateDict = private_dict,
@@ -226,7 +226,7 @@ public class CompactFontFormat : IExportable
         stream.WriteByte(Minor);
         stream.WriteByte(HeaderSize);
         stream.WriteByte(OffsetSize);
-        WriteIndexData(stream, NameIndex.Select(Encoding.UTF8.GetBytes).ToArray());
+        WriteIndexData(stream, Names.Select(Encoding.UTF8.GetBytes).ToArray());
 
         var top_dict_start = stream.Position;
         var top_dict = new Dictionary<int, object[]>
@@ -236,7 +236,7 @@ public class CompactFontFormat : IExportable
             [18] = [0, 0], // Private DICT
         };
         WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
-        WriteIndexData(stream, StringIndex.Select(Encoding.UTF8.GetBytes).ToArray());
+        WriteIndexData(stream, Strings.Select(Encoding.UTF8.GetBytes).ToArray());
 
         top_dict[15][0] = (int)(stream.Position - position);
         WriteCharsets(stream, Charsets);
