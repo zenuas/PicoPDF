@@ -214,6 +214,7 @@ public static class FontExtract
             StringIndex = font.CompactFontFormat.StringIndex,
             CharStrings = char_strings,
             Charsets = font.CompactFontFormat.Charsets,
+            PrivateDict = font.CompactFontFormat.PrivateDict,
         };
 
         return new()
