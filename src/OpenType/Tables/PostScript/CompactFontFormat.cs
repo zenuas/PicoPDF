@@ -104,14 +104,13 @@ public class CompactFontFormat : IExportable
             }
             else if (b0 is 30)
             {
-                var value = PackedBCDToDouble(Lists.Repeat(stream)
+                values.Add(PackedBCDToDouble(Lists.Repeat(stream)
                         .Select(x => x.ReadUByte())
                         .Select(x => new byte[] { (byte)(x >> 4), (byte)(x & 0x0f) })
                         .Flatten()
                         .TakeWhile(x => x != 0x0f)
                         .ToArray()
-                    );
-                values.Add(value);
+                    ));
             }
         }
         return kv;
