@@ -101,7 +101,7 @@ public static class FontExporter
 
     public static void Export(PostScriptFont font, Stream stream, long start_stream_position = 0)
     {
-        var table_names = new string[] { "CFF ", "OS/2", "cmap", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "name", "post" };
+        var table_names = new string[] { "CFF ", "OS/2", "cmap", "head", "hhea", "hmtx", "maxp", "name", "post" };
         var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
 
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
