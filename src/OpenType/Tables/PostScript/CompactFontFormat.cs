@@ -229,21 +229,17 @@ public class CompactFontFormat : IExportable
         WriteIndexData(stream, Names.Select(Encoding.UTF8.GetBytes).ToArray());
 
         var top_dict_start = stream.Position;
-        var top_dict = new Dictionary<int, IntOrDouble[]>
-        {
-            [15] = [0], // charset
-            [17] = [0], // CharString
-            [18] = [0, 0], // Private DICT
-        };
+        var top_dict = TopDict.ToDictionary();
         WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
         WriteIndexData(stream, Strings.Select(Encoding.UTF8.GetBytes).ToArray());
 
-        top_dict[15][0] = stream.Position - position;
+        top_dict[15] = [stream.Position - position];
         WriteCharsets(stream, Charsets);
 
-        top_dict[17][0] = stream.Position - position;
+        top_dict[17] = [stream.Position - position];
         WriteIndexData(stream, CharStrings);
 
+        top_dict[18] = [0, 0];
         top_dict[18][1] = stream.Position - position;
         var private_dict = DictDataTo5Bytes(PrivateDict);
         stream.Write(private_dict);
