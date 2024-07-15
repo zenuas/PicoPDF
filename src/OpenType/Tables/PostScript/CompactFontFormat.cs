@@ -43,7 +43,7 @@ public class CompactFontFormat : IExportable
         var charsets = ReadCharsets(stream, char_strings.Length - 1);
 
         stream.Position = position + private_dict_offset;
-        var private_dict = ReadDictData(new MemoryStream(stream.ReadBytes(private_dict_offset)), private_dict_size);
+        var private_dict = ReadDictData(new MemoryStream(stream.ReadBytes(private_dict_size)), private_dict_size);
 
         return new()
         {
