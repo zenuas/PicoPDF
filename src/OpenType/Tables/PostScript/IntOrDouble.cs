@@ -24,4 +24,6 @@ public class IntOrDouble
     public bool IsInt() => Value is int;
 
     public bool IsDouble() => Value is double;
+
+    public override string ToString() => IsInt() ? $"{ToInt()}" : $"{ToDouble()}";
 }
