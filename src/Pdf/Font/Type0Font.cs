@@ -20,14 +20,9 @@ public class Type0Font : PdfObject, IFont
     public void CreateEmbeddedFont()
     {
         var fontdata = FontRegister.LoadComplete(Font);
-        if (Font.Offset.ContainTrueType())
-        {
-            EmbeddedFont = FontExtract.Extract(fontdata.Cast<TrueTypeFont>(), new() { ExtractChars = [.. Chars] });
-        }
-        else
-        {
-            EmbeddedFont = FontExtract.Extract(fontdata.Cast<PostScriptFont>(), new() { ExtractChars = [.. Chars] });
-        }
+        EmbeddedFont = Font.Offset.ContainTrueType()
+            ? FontExtract.Extract(fontdata.Cast<TrueTypeFont>(), new() { ExtractChars = [.. Chars] })
+            : FontExtract.Extract(fontdata.Cast<PostScriptFont>(), new() { ExtractChars = [.. Chars] });
     }
 
     public override void DoExport(PdfExportOption option)
