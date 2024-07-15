@@ -14,11 +14,11 @@ public class CompactFontFormat : IExportable
     public required byte HeaderSize { get; init; }
     public required byte OffsetSize { get; init; }
     public required string[] Names { get; init; }
-    public required Dictionary<int, object[]> TopDict { get; init; }
+    public required Dictionary<int, IntOrDouble[]> TopDict { get; init; }
     public required string[] Strings { get; init; }
     public required byte[][] CharStrings { get; init; }
     public required Charsets Charsets { get; init; }
-    public required Dictionary<int, object[]> PrivateDict { get; init; }
+    public required Dictionary<int, IntOrDouble[]> PrivateDict { get; init; }
 
     public static CompactFontFormat ReadFrom(Stream stream)
     {
@@ -32,9 +32,9 @@ public class CompactFontFormat : IExportable
         var top_dict = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).First();
         var strings = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
 
-        var charset_offset = top_dict.TryGetValue(15, out var xs1) ? SafeConvert.ToLong(xs1[0], 0) : 0;
-        var char_strings_offset = top_dict.TryGetValue(17, out var xs2) ? SafeConvert.ToLong(xs2[0], 0) : 0;
-        var (private_dict_size, private_dict_offset) = top_dict.TryGetValue(18, out var xs3) ? (SafeConvert.ToInt(xs3[0], 0), SafeConvert.ToInt(xs3[1], 0)) : (0, 0);
+        var charset_offset = top_dict.TryGetValue(15, out var xs1) ? xs1[0].ToInt() : 0;
+        var char_strings_offset = top_dict.TryGetValue(17, out var xs2) ? xs2[0].ToInt() : 0;
+        var (private_dict_size, private_dict_offset) = top_dict.TryGetValue(18, out var xs3) ? (xs3[0].ToInt(), xs3[1].ToInt()) : (0, 0);
 
         stream.Position = position + char_strings_offset;
         var char_strings = ReadIndexData(stream);
@@ -78,10 +78,10 @@ public class CompactFontFormat : IExportable
         return Enumerable.Range(0, count).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
     }
 
-    public static Dictionary<int, object[]> ReadDictData(Stream stream, int length)
+    public static Dictionary<int, IntOrDouble[]> ReadDictData(Stream stream, int length)
     {
-        var kv = new Dictionary<int, object[]>();
-        var values = new List<object>();
+        var kv = new Dictionary<int, IntOrDouble[]>();
+        var values = new List<IntOrDouble>();
         var pos = stream.Position;
         while (stream.Position < pos + length)
         {
@@ -117,12 +117,12 @@ public class CompactFontFormat : IExportable
         return kv;
     }
 
-    public static byte[] DictDataTo5Bytes(Dictionary<int, object[]> kv)
+    public static byte[] DictDataTo5Bytes(Dictionary<int, IntOrDouble[]> kv)
     {
         using var mem = new MemoryStream();
         foreach (var (k, vs) in kv)
         {
-            vs.OfType<int>().Each(x => mem.Write(DictDataNumberTo5Bytes(x)));
+            vs.Each(x => mem.Write(DictDataNumberTo5Bytes(x.ToInt())));
             mem.Write(k >= 100 ? [(byte)(k / 100), (byte)(k % 100)] : [(byte)k]);
         }
         return mem.ToArray();
@@ -229,7 +229,7 @@ public class CompactFontFormat : IExportable
         WriteIndexData(stream, Names.Select(Encoding.UTF8.GetBytes).ToArray());
 
         var top_dict_start = stream.Position;
-        var top_dict = new Dictionary<int, object[]>
+        var top_dict = new Dictionary<int, IntOrDouble[]>
         {
             [15] = [0], // charset
             [17] = [0], // CharString
@@ -238,13 +238,13 @@ public class CompactFontFormat : IExportable
         WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
         WriteIndexData(stream, Strings.Select(Encoding.UTF8.GetBytes).ToArray());
 
-        top_dict[15][0] = (int)(stream.Position - position);
+        top_dict[15][0] = stream.Position - position;
         WriteCharsets(stream, Charsets);
 
-        top_dict[17][0] = (int)(stream.Position - position);
+        top_dict[17][0] = stream.Position - position;
         WriteIndexData(stream, CharStrings);
 
-        top_dict[18][1] = (int)(stream.Position - position);
+        top_dict[18][1] = stream.Position - position;
         var private_dict = DictDataTo5Bytes(PrivateDict);
         stream.Write(private_dict);
         top_dict[18][0] = private_dict.Length;
