@@ -75,7 +75,7 @@ public static class FontExtract
             .ToDictionary(x => x.Char, x => (
                     x.Index,
                     Glyph: font.CompactFontFormat.CharStrings[x.GID],
-                    Charset: font.CompactFontFormat.Charsets.Glyph[x.GID],
+                    Charset: font.CompactFontFormat.Charsets.Glyph[x.GID - 1],
                     HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
                 ));
         var gid_glyph = char_glyph.Values
