@@ -3,7 +3,6 @@ using PicoPDF.OpenType;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Element;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace PicoPDF.Pdf.Font;
@@ -27,7 +26,7 @@ public class Type0Font : PdfObject, IFont
         }
         else
         {
-            Debug.Fail("not support opentype format");
+            EmbeddedFont = FontExtract.Extract(fontdata.Cast<PostScriptFont>(), new() { ExtractChars = [.. Chars] });
         }
     }
 
@@ -59,9 +58,10 @@ public class Type0Font : PdfObject, IFont
             }
             else
             {
+                var export = FontExporter.Export(EmbeddedFont.Cast<PostScriptFont>());
                 _ = descriptor.Elements.TryAdd("FontFile3", fontfile);
                 _ = fontfile.Elements.TryAdd("Subtype", "/OpenType");
-                Debug.Fail("not support opentype format");
+                writer.Write(export);
             }
             writer.Flush();
         }
