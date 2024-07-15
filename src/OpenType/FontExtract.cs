@@ -14,7 +14,11 @@ public static class FontExtract
         var chars = opt.ExtractChars.Order().ToArray();
         var char_glyph = chars
             .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGIDCached(c)))
-            .ToDictionary(x => x.Char, x => (x.Index, Glyph: font.Glyphs[x.GID], HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]));
+            .ToDictionary(x => x.Char, x => (
+                    x.Index,
+                    Glyph: font.Glyphs[x.GID],
+                    HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
+                ));
         var gid_glyph = char_glyph.Values
             .DistinctBy(x => x.Index)
             .ToDictionary(x => x.Index, x => (x.Glyph, x.HorizontalMetrics));
@@ -68,10 +72,15 @@ public static class FontExtract
         var chars = opt.ExtractChars.Order().ToArray();
         var char_glyph = chars
             .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGIDCached(c)))
-            .ToDictionary(x => x.Char, x => (x.Index, Glyph: font.CompactFontFormat.CharStrings[x.GID], HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]));
+            .ToDictionary(x => x.Char, x => (
+                    x.Index,
+                    Glyph: font.CompactFontFormat.CharStrings[x.GID],
+                    Charset: font.CompactFontFormat.Charsets.Glyph[x.GID],
+                    HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
+                ));
         var gid_glyph = char_glyph.Values
             .DistinctBy(x => x.Index)
-            .ToDictionary(x => x.Index, x => (x.Glyph, x.HorizontalMetrics));
+            .ToDictionary(x => x.Index, x => (x.Glyph, x.Charset, x.HorizontalMetrics));
         var num_of_glyph = gid_glyph.Keys.Max();
 
         var name = ExtractNameTable(font.Name, opt);
@@ -95,6 +104,14 @@ public static class FontExtract
             .Prepend(font.CompactFontFormat.CharStrings[0])
             .ToArray();
 
+        var charsets = new Charsets()
+        {
+            Format = 0,
+            Glyph = Lists.RangeTo(1, num_of_glyph)
+                .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.Charset : (ushort)0)
+                .ToArray(),
+        };
+
         var cff = new CompactFontFormat()
         {
             Major = font.CompactFontFormat.Major,
@@ -105,7 +122,7 @@ public static class FontExtract
             TopDict = font.CompactFontFormat.TopDict,
             Strings = font.CompactFontFormat.Strings,
             CharStrings = char_strings,
-            Charsets = font.CompactFontFormat.Charsets,
+            Charsets = charsets,
             PrivateDict = font.CompactFontFormat.PrivateDict,
         };
 
