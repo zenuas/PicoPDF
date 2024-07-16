@@ -121,6 +121,7 @@ public static class FontExtract
             Names = font.CompactFontFormat.Names,
             TopDict = font.CompactFontFormat.TopDict,
             Strings = font.CompactFontFormat.Strings,
+            GlobalSubroutines = font.CompactFontFormat.GlobalSubroutines,
             CharStrings = char_strings,
             Charsets = charsets,
             PrivateDict = font.CompactFontFormat.PrivateDict,

@@ -16,6 +16,7 @@ public class CompactFontFormat : IExportable
     public required string[] Names { get; init; }
     public required Dictionary<int, IntOrDouble[]> TopDict { get; init; }
     public required string[] Strings { get; init; }
+    public required byte[][] GlobalSubroutines { get; init; }
     public required byte[][] CharStrings { get; init; }
     public required Charsets Charsets { get; init; }
     public required Dictionary<int, IntOrDouble[]> PrivateDict { get; init; }
@@ -31,6 +32,7 @@ public class CompactFontFormat : IExportable
         var names = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
         var top_dict = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).First();
         var strings = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
+        var global_subr = ReadIndexData(stream);
 
         var charset_offset = top_dict.TryGetValue(15, out var xs1) ? xs1[0].ToInt() : 0;
         var char_strings_offset = top_dict.TryGetValue(17, out var xs2) ? xs2[0].ToInt() : 0;
@@ -54,6 +56,7 @@ public class CompactFontFormat : IExportable
             Names = names,
             TopDict = top_dict,
             Strings = strings,
+            GlobalSubroutines = global_subr,
             CharStrings = char_strings,
             Charsets = charsets,
             PrivateDict = private_dict,
@@ -231,6 +234,7 @@ public class CompactFontFormat : IExportable
         var top_dict = TopDict.ToDictionary();
         WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
         WriteIndexData(stream, Strings.Select(Encoding.UTF8.GetBytes).ToArray());
+        WriteIndexData(stream, GlobalSubroutines);
 
         top_dict[15] = [stream.Position - position];
         WriteCharsets(stream, Charsets);
