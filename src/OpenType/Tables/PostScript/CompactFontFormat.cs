@@ -20,6 +20,8 @@ public class CompactFontFormat : IExportable
     public required byte[][] CharStrings { get; init; }
     public required Charsets Charsets { get; init; }
     public required Dictionary<int, IntOrDouble[]> PrivateDict { get; init; }
+    public required Dictionary<int, IntOrDouble[]>[] FontDictArray { get; init; }
+    public required byte[] FontDictSelect { get; init; }
 
     public static CompactFontFormat ReadFrom(Stream stream)
     {
@@ -47,6 +49,20 @@ public class CompactFontFormat : IExportable
         stream.Position = position + private_dict_offset;
         var private_dict = ReadDictData(new MemoryStream(stream.ReadBytes(private_dict_size)), private_dict_size);
 
+        Dictionary<int, IntOrDouble[]>[]? fdarray = null;
+        byte[]? fdselect = null;
+        if (top_dict.ContainsKey(1230))
+        {
+            var fdarray_offset = top_dict.TryGetValue(1236, out var xs4) ? xs4[0].ToInt() : 0;
+            var fdselect_offset = top_dict.TryGetValue(1237, out var xs5) ? xs5[0].ToInt() : 0;
+
+            stream.Position = position + fdarray_offset;
+            fdarray = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).ToArray();
+
+            stream.Position = position + fdselect_offset;
+            fdselect = ReadFDSelect(stream, char_strings.Length);
+        }
+
         return new()
         {
             Major = major,
@@ -60,6 +76,8 @@ public class CompactFontFormat : IExportable
             CharStrings = char_strings,
             Charsets = charsets,
             PrivateDict = private_dict,
+            FontDictArray = fdarray ?? [],
+            FontDictSelect = fdselect ?? [],
         };
     }
 
@@ -217,6 +235,29 @@ public class CompactFontFormat : IExportable
                 Format = 0,
                 Glyph = Enumerable.Repeat(0, glyph_count_without_notdef).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
             };
+        }
+    }
+
+    public static byte[] ReadFDSelect(Stream stream, int glyph_count_with_notdef)
+    {
+        var format = stream.ReadUByte();
+        if (format == 3)
+        {
+            var fdselect = new List<byte>();
+            var ranges = stream.ReadUShortByBigEndian();
+            var first = stream.ReadUShortByBigEndian();
+            for (var i = 0; i < ranges; i++)
+            {
+                var fd = stream.ReadUByte();
+                var sentinel = stream.ReadUShortByBigEndian();
+                Lists.RangeTo(first, sentinel - 1).Each(_ => fdselect.Add(fd));
+                first = sentinel;
+            }
+            return [.. fdselect];
+        }
+        else
+        {
+            return Enumerable.Repeat(0, glyph_count_with_notdef).Select(_ => stream.ReadUByte()).ToArray();
         }
     }
 

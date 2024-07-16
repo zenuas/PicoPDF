@@ -125,6 +125,8 @@ public static class FontExtract
             CharStrings = char_strings,
             Charsets = charsets,
             PrivateDict = font.CompactFontFormat.PrivateDict,
+            FontDictArray = font.CompactFontFormat.FontDictArray,
+            FontDictSelect = font.CompactFontFormat.FontDictSelect,
         };
 
         return new()
