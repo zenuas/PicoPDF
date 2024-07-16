@@ -288,6 +288,12 @@ public class CompactFontFormat : IExportable
         stream.Write(private_dict);
         top_dict[18][0] = private_dict.Length;
 
+        if (top_dict.ContainsKey(1230))
+        {
+            top_dict[1237] = [stream.Position - position];
+            WriteFDSelect(stream, FontDictSelect);
+        }
+
         var lastposition = stream.Position;
         stream.Position = top_dict_start;
         WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
@@ -307,5 +313,11 @@ public class CompactFontFormat : IExportable
     {
         stream.WriteByte(0);
         charsets.Glyph.Each(stream.WriteUShortByBigEndian);
+    }
+
+    public static void WriteFDSelect(Stream stream, byte[] fdselect)
+    {
+        stream.WriteByte(0);
+        fdselect.Each(stream.WriteByte);
     }
 }
