@@ -39,6 +39,6 @@ public class CMapFormat4Test
     [Fact]
     public void CreateStartEndsErrorTest()
     {
-        Assert.Throws<IndexOutOfRangeException>(() => CreateStartEnds([]));
+        _ = Assert.Throws<IndexOutOfRangeException>(() => CreateStartEnds([]));
     }
 }
