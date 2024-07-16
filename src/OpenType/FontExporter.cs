@@ -49,7 +49,7 @@ public static class FontExporter
 
         ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
         ExportTable(stream, start_stream_position, tables["cmap"], font.CMap);
-        ExportTable(stream, start_stream_position, tables["head"], font.FontHeader);
+        ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0));
         ExportTable(stream, start_stream_position, tables["hhea"], font.HorizontalHeader);
         ExportTable(stream, start_stream_position, tables["hmtx"], font.HorizontalMetrics);
         ExportTable(stream, start_stream_position, tables["maxp"], font.MaximumProfile);
@@ -96,6 +96,9 @@ public static class FontExporter
 
         var lastposition = stream.Position;
         tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
+        stream.Position = start_stream_position;
+        var checksum = CalcChecksum(stream, (uint)(lastposition - start_stream_position));
+        ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0xB1B0AFBA - checksum));
         stream.Position = lastposition;
     }
 
@@ -125,7 +128,7 @@ public static class FontExporter
         ExportTable(stream, start_stream_position, tables["CFF "], font.CompactFontFormat);
         ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
         ExportTable(stream, start_stream_position, tables["cmap"], font.CMap);
-        ExportTable(stream, start_stream_position, tables["head"], font.FontHeader);
+        ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0));
         ExportTable(stream, start_stream_position, tables["hhea"], font.HorizontalHeader);
         ExportTable(stream, start_stream_position, tables["hmtx"], font.HorizontalMetrics);
         ExportTable(stream, start_stream_position, tables["maxp"], font.MaximumProfile);
@@ -140,15 +143,20 @@ public static class FontExporter
 
         var lastposition = stream.Position;
         tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
+        stream.Position = start_stream_position;
+        var checksum = CalcChecksum(stream, (uint)(lastposition - start_stream_position));
+        ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0xB1B0AFBA - checksum));
         stream.Position = lastposition;
     }
 
-    public static void ExportTable(Stream stream, long start_stream_position, MutableTableRecord rec, IExportable table)
+    public static void ExportTable(Stream stream, long start_stream_position, MutableTableRecord rec, IExportable table) => ExportTable(stream, start_stream_position, rec, table.WriteTo);
+
+    public static void ExportTable(Stream stream, long start_stream_position, MutableTableRecord rec, Action<Stream> f)
     {
         _ = StreamAlignment(stream);
         rec.Offset = (uint)(stream.Position - start_stream_position);
         var position = stream.Position;
-        table.WriteTo(stream);
+        f(stream);
         rec.Length = (uint)(stream.Position - position);
     }
 
@@ -162,8 +170,20 @@ public static class FontExporter
     public static void MovePositonAndWriteTableRecord(Stream stream, MutableTableRecord table)
     {
         Debug.Assert((table.Offset % 4) == 0);
+        stream.Position = table.Offset;
+        table.Checksum = CalcChecksum(stream, table.Length);
         stream.Position = table.Position;
         WriteTableRecord(stream, table);
+    }
+
+    public static uint CalcChecksum(Stream stream, uint length)
+    {
+        uint sum = 0U;
+        for (var i = 0U; i < length; i += sizeof(uint))
+        {
+            sum += stream.ReadUIntByBigEndian();
+        }
+        return sum;
     }
 
     public static int StreamAlignment(Stream stream, int alignment = 4)

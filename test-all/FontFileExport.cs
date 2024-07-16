@@ -15,7 +15,7 @@ public static class FontFileExport
 
     public static void Export(TrueTypeFont font, Option opt)
     {
-        using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.Write, FileShare.None);
+        using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
         FontExporter.Export(FontExtract.Extract(font,
             new()
             {
@@ -35,7 +35,7 @@ public static class FontFileExport
 
     public static void Export(PostScriptFont font, Option opt)
     {
-        using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.Write, FileShare.None);
+        using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
         FontExporter.Export(FontExtract.Extract(font,
             new()
             {

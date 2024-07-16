@@ -46,12 +46,14 @@ public class FontHeaderTable : IExportable
         GlyphDataFormat = stream.ReadShortByBigEndian(),
     };
 
-    public void WriteTo(Stream stream)
+    public void WriteTo(Stream stream) => WriteTo(stream, ChecksumAdjustment);
+
+    public void WriteTo(Stream stream, uint checksum)
     {
         stream.WriteUShortByBigEndian(MajorVersion);
         stream.WriteUShortByBigEndian(MinorVersion);
         stream.WriteIntByBigEndian(FontRevision);
-        stream.WriteUIntByBigEndian(ChecksumAdjustment);
+        stream.WriteUIntByBigEndian(checksum);
         stream.WriteUIntByBigEndian(MagicNumber);
         stream.WriteUShortByBigEndian(Flags);
         stream.WriteUShortByBigEndian(UnitsPerEm);
