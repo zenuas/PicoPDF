@@ -45,6 +45,8 @@ public static class FontFileExport
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontSubfamilyName),
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.UniqueFontIdentifier),
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FullFontName),
+                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.Version),
+                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.PostScriptName),
                 ],
                 OutputCMap = [
                     new(Platforms.Unicode, Encodings.Unicode2_0_BMPOnly),
