@@ -20,7 +20,7 @@ public class CompactFontFormat : IExportable
     public required byte[][] CharStrings { get; init; }
     public required Charsets Charsets { get; init; }
     public required Dictionary<int, IntOrDouble[]> PrivateDict { get; init; }
-    public required Dictionary<int, IntOrDouble[]>[] FontDictArray { get; init; }
+    public required (IntOrDouble FontName, byte[] Private)[] FontDictArray { get; init; }
     public required byte[] FontDictSelect { get; init; }
 
     public static CompactFontFormat ReadFrom(Stream stream)
@@ -46,10 +46,9 @@ public class CompactFontFormat : IExportable
         stream.Position = position + charset_offset;
         var charsets = ReadCharsets(stream, char_strings.Length - 1);
 
-        stream.Position = position + private_dict_offset;
-        var private_dict = ReadDictData(new MemoryStream(stream.ReadBytes(private_dict_size)), private_dict_size);
+        var private_dict = ReadDictData(stream, position + private_dict_offset, private_dict_size);
 
-        Dictionary<int, IntOrDouble[]>[]? fdarray = null;
+        (IntOrDouble, byte[])[]? fdarray = null;
         byte[]? fdselect = null;
         if (top_dict.ContainsKey(1230))
         {
@@ -57,7 +56,11 @@ public class CompactFontFormat : IExportable
             var fdselect_offset = top_dict.TryGetValue(1237, out var xs5) ? xs5[0].ToInt() : 0;
 
             stream.Position = position + fdarray_offset;
-            fdarray = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).ToArray();
+            fdarray = ReadIndexData(stream).Select(x =>
+                {
+                    var dict = ReadDictData(new MemoryStream(x), x.Length);
+                    return (dict[1238][0], stream.ReadPositionBytes(dict[18][1].ToInt(), dict[18][0].ToInt()));
+                }).ToArray();
 
             stream.Position = position + fdselect_offset;
             fdselect = ReadFDSelect(stream, char_strings.Length);
@@ -99,6 +102,8 @@ public class CompactFontFormat : IExportable
         return Enumerable.Range(0, count).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
     }
 
+    public static Dictionary<int, IntOrDouble[]> ReadDictData(Stream stream, long offset, int length) => ReadDictData(new MemoryStream(stream.ReadPositionBytes(offset, length)), length);
+
     public static Dictionary<int, IntOrDouble[]> ReadDictData(Stream stream, int length)
     {
         var kv = new Dictionary<int, IntOrDouble[]>();
@@ -135,6 +140,17 @@ public class CompactFontFormat : IExportable
             }
         }
         return kv;
+    }
+
+    public static byte[] DictDataToBytes(Dictionary<int, IntOrDouble[]> kv)
+    {
+        using var mem = new MemoryStream();
+        foreach (var (k, vs) in kv)
+        {
+            vs.Each(x => mem.Write(DictDataNumberToBytes(x.ToInt())));
+            mem.Write(k >= 100 ? [(byte)(k / 100), (byte)(k % 100)] : [(byte)k]);
+        }
+        return mem.ToArray();
     }
 
     public static byte[] DictDataTo5Bytes(Dictionary<int, IntOrDouble[]> kv)
@@ -290,6 +306,19 @@ public class CompactFontFormat : IExportable
 
         if (top_dict.ContainsKey(1230))
         {
+            var fdarray = new List<byte[]>();
+            var fdarray_dict = new Dictionary<int, IntOrDouble[]>();
+            foreach (var (fontname, private_data) in FontDictArray)
+            {
+                fdarray_dict[1238] = [fontname];
+                fdarray_dict[18] = [private_data.Length, stream.Position - position];
+                stream.Write(private_data);
+                fdarray.Add(DictDataToBytes(fdarray_dict));
+                fdarray_dict.Clear();
+            }
+            top_dict[1236] = [stream.Position - position];
+            WriteIndexData(stream, [.. fdarray]);
+
             top_dict[1237] = [stream.Position - position];
             WriteFDSelect(stream, FontDictSelect);
         }
