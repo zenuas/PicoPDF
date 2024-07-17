@@ -20,7 +20,7 @@ public class CompactFontFormat : IExportable
     public required byte[][] CharStrings { get; init; }
     public required Charsets Charsets { get; init; }
     public required Dictionary<int, IntOrDouble[]> PrivateDict { get; init; }
-    public required (IntOrDouble FontName, byte[] Private)[] FontDictArray { get; init; }
+    public required (IntOrDouble FontName, Dictionary<int, IntOrDouble[]> Private)[] FontDictArray { get; init; }
     public required byte[] FontDictSelect { get; init; }
 
     public static CompactFontFormat ReadFrom(Stream stream)
@@ -48,7 +48,7 @@ public class CompactFontFormat : IExportable
 
         var private_dict = ReadDictData(stream, position + private_dict_offset, private_dict_size);
 
-        (IntOrDouble, byte[])[]? fdarray = null;
+        (IntOrDouble, Dictionary<int, IntOrDouble[]>)[]? fdarray = null;
         byte[]? fdselect = null;
         if (top_dict.ContainsKey(1230))
         {
@@ -59,7 +59,7 @@ public class CompactFontFormat : IExportable
             fdarray = ReadIndexData(stream).Select(x =>
                 {
                     var dict = ReadDictData(new MemoryStream(x), x.Length);
-                    return (dict[1238][0], stream.ReadPositionBytes(position + dict[18][1].ToInt(), dict[18][0].ToInt()));
+                    return (dict[1238][0], ReadDictData(stream, position + dict[18][1].ToInt(), dict[18][0].ToInt()));
                 }).ToArray();
 
             stream.Position = position + fdselect_offset;
@@ -307,11 +307,12 @@ public class CompactFontFormat : IExportable
         {
             var fdarray = new List<byte[]>();
             var fdarray_dict = new Dictionary<int, IntOrDouble[]>();
-            foreach (var (fontname, private_data) in FontDictArray)
+            foreach (var (fontname, fd_private_dict) in FontDictArray)
             {
+                var fd_private_data = DictDataToBytes(fd_private_dict);
                 fdarray_dict[1238] = [fontname];
-                fdarray_dict[18] = [private_data.Length, stream.Position - position];
-                stream.Write(private_data);
+                fdarray_dict[18] = [fd_private_data.Length, stream.Position - position];
+                stream.Write(fd_private_data);
                 fdarray.Add(DictDataToBytes(fdarray_dict));
                 fdarray_dict.Clear();
             }
