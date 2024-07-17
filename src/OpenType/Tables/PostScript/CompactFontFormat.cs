@@ -59,7 +59,7 @@ public class CompactFontFormat : IExportable
             fdarray = ReadIndexData(stream).Select(x =>
                 {
                     var dict = ReadDictData(new MemoryStream(x), x.Length);
-                    return (dict[1238][0], stream.ReadPositionBytes(dict[18][1].ToInt(), dict[18][0].ToInt()));
+                    return (dict[1238][0], stream.ReadPositionBytes(position + dict[18][1].ToInt(), dict[18][0].ToInt()));
                 }).ToArray();
 
             stream.Position = position + fdselect_offset;
