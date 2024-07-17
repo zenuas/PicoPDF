@@ -8,6 +8,8 @@ public class FontExtractOption
         new(null, null, null, NameIDs.FontSubfamilyName),
         new(null, null, null, NameIDs.UniqueFontIdentifier),
         new(null, null, null, NameIDs.FullFontName),
+        new(null, null, null, NameIDs.Version),
+        new(null, null, null, NameIDs.PostScriptName),
     ];
     public (Platforms PlatformID, Encodings EncodingID)[] OutputCMap { get; init; } = [
         new(Platforms.Unicode, Encodings.Unicode2_0_BMPOnly),
