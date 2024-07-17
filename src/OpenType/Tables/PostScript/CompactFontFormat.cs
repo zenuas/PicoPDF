@@ -300,8 +300,11 @@ public class CompactFontFormat : IExportable
         WriteIndexData(stream, CharStrings);
 
         var private_dict = DictDataToBytes(PrivateDict);
-        top_dict[18] = [private_dict.Length, stream.Position - position];
-        stream.Write(private_dict);
+        if (private_dict.Length > 0)
+        {
+            top_dict[18] = [private_dict.Length, stream.Position - position];
+            stream.Write(private_dict);
+        }
 
         if (top_dict.ContainsKey(1230))
         {
