@@ -20,7 +20,7 @@ public class CompactFontFormat : IExportable
     public required byte[][] CharStrings { get; init; }
     public required Charsets Charsets { get; init; }
     public required Dictionary<int, IntOrDouble[]> PrivateDict { get; init; }
-    public required (IntOrDouble FontName, Dictionary<int, IntOrDouble[]> Private)[] FontDictArray { get; init; }
+    public required (IntOrDouble FontName, Dictionary<int, IntOrDouble[]> Private, byte[][] LocalSubroutines)[] FontDictArray { get; init; }
     public required byte[] FontDictSelect { get; init; }
 
     public static CompactFontFormat ReadFrom(Stream stream)
@@ -40,26 +40,27 @@ public class CompactFontFormat : IExportable
         var char_strings_offset = top_dict.TryGetValue(17, out var xs2) ? xs2[0].ToInt() : 0;
         var (private_dict_size, private_dict_offset) = top_dict.TryGetValue(18, out var xs3) ? (xs3[0].ToInt(), xs3[1].ToInt()) : (0, 0);
 
-        stream.Position = position + char_strings_offset;
-        var char_strings = ReadIndexData(stream);
+        var char_strings = ReadIndexData(stream, position + char_strings_offset);
 
         stream.Position = position + charset_offset;
         var charsets = ReadCharsets(stream, char_strings.Length - 1);
 
         var private_dict = ReadDictData(stream, position + private_dict_offset, private_dict_size);
 
-        (IntOrDouble, Dictionary<int, IntOrDouble[]>)[]? fdarray = null;
+        (IntOrDouble, Dictionary<int, IntOrDouble[]>, byte[][])[]? fdarray = null;
         byte[]? fdselect = null;
         if (top_dict.ContainsKey(1230))
         {
             var fdarray_offset = top_dict.TryGetValue(1236, out var xs4) ? xs4[0].ToInt() : 0;
             var fdselect_offset = top_dict.TryGetValue(1237, out var xs5) ? xs5[0].ToInt() : 0;
 
-            stream.Position = position + fdarray_offset;
-            fdarray = ReadIndexData(stream).Select(x =>
+            fdarray = ReadIndexData(stream, position + fdarray_offset).Select(x =>
                 {
                     var dict = ReadDictData(new MemoryStream(x), x.Length);
-                    return (dict[1238][0], ReadDictData(stream, position + dict[18][1].ToInt(), dict[18][0].ToInt()));
+                    var fd_private_offset = position + dict[18][1].ToInt();
+                    var fd_private_dict = ReadDictData(stream, fd_private_offset, dict[18][0].ToInt());
+                    var subr = fd_private_dict.TryGetValue(19, out var xs5) ? ReadIndexData(stream, fd_private_offset + xs5[0].ToInt()) : [];
+                    return (dict[1238][0], fd_private_dict, subr);
                 }).ToArray();
 
             stream.Position = position + fdselect_offset;
@@ -82,6 +83,12 @@ public class CompactFontFormat : IExportable
             FontDictArray = fdarray ?? [],
             FontDictSelect = fdselect ?? [],
         };
+    }
+
+    public static byte[][] ReadIndexData(Stream stream, long position)
+    {
+        stream.Position = position;
+        return ReadIndexData(stream);
     }
 
     public static byte[][] ReadIndexData(Stream stream)
@@ -310,12 +317,22 @@ public class CompactFontFormat : IExportable
         {
             var fdarray = new List<byte[]>();
             var fdarray_dict = new Dictionary<int, IntOrDouble[]>();
-            foreach (var (fontname, fd_private_dict) in FontDictArray)
+            foreach (var (fontname, fd_private_dict, subr) in FontDictArray)
             {
-                var fd_private_data = DictDataToBytes(fd_private_dict);
+                var fd_private_offset = stream.Position;
+                var fd_private_data = DictDataTo5Bytes(fd_private_dict);
                 fdarray_dict[1238] = [fontname];
-                fdarray_dict[18] = [fd_private_data.Length, stream.Position - position];
+                fdarray_dict[18] = [fd_private_data.Length, fd_private_offset - position];
                 stream.Write(fd_private_data);
+                if (subr.Length > 0)
+                {
+                    fd_private_dict[19] = [stream.Position - fd_private_offset];
+                    WriteIndexData(stream, subr);
+                    var subr_lastposition = stream.Position;
+                    stream.Position = fd_private_offset;
+                    stream.Write(DictDataTo5Bytes(fd_private_dict));
+                    stream.Position = subr_lastposition;
+                }
                 fdarray.Add(DictDataToBytes(fdarray_dict));
                 fdarray_dict.Clear();
             }
