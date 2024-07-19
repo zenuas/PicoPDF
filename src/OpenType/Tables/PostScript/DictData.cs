@@ -16,7 +16,7 @@ public class DictData : Dictionary<int, IntOrDouble[]>
     public string FullName { get => TryGetValue(2, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
     public string FamilyName { get => TryGetValue(3, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
     public string Weight { get => TryGetValue(4, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
-    public bool IsFixedPitch { get => TryGetValue(1201, out var xs) ? xs[0].ToInt() != 0 : false; }
+    public bool IsFixedPitch { get => TryGetValue(1201, out var xs) && xs[0].ToInt() != 0; }
     public IntOrDouble ItalicAngle { get => TryGetValue(1202, out var xs) ? xs[0] : 0; }
     public IntOrDouble UnderlinePosition { get => TryGetValue(1203, out var xs) ? xs[0] : -100; }
     public IntOrDouble UnderlineThickness { get => TryGetValue(1204, out var xs) ? xs[0] : 50; }
@@ -56,7 +56,7 @@ public class DictData : Dictionary<int, IntOrDouble[]>
     public IntOrDouble? StdVW { get => TryGetValue(11, out var xs) ? xs[0] : null; }
     public IntOrDouble[]? StemSnapH { get => TryGetValue(1212, out var xs) ? xs : null; }
     public IntOrDouble[]? StemSnapV { get => TryGetValue(1213, out var xs) ? xs : null; }
-    public bool ForceBold { get => TryGetValue(1214, out var xs) ? xs[0].ToInt() != 0 : false; }
+    public bool ForceBold { get => TryGetValue(1214, out var xs) && xs[0].ToInt() != 0; }
     public IntOrDouble LanguageGroup { get => TryGetValue(1211, out var xs) ? xs[0] : 0; }
     public IntOrDouble ExpansionFactor { get => TryGetValue(1211, out var xs) ? xs[0] : 0.06; }
     public IntOrDouble InitialRandomSeed { get => TryGetValue(1211, out var xs) ? xs[0] : 0; }
