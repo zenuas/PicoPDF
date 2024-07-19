@@ -11,7 +11,7 @@ public class CompactFontFormatTest
     public static IntBytes DictDataNumber(int number)
     {
         var bytes = CompactFontFormat.DictDataNumberToBytes(number);
-        return new(CompactFontFormat.ReadDictDataNumber(bytes[0], bytes[1..].AsSpan()), bytes);
+        return new(DictData.ReadDictDataNumber(bytes[0], bytes[1..].AsSpan()), bytes);
     }
 
     [Fact]
