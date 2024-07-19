@@ -36,30 +36,27 @@ public class CompactFontFormat : IExportable
         var strings = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
         var global_subr = ReadIndexData(stream);
 
-        var charset_offset = top_dict.TryGetValue(15, out var xs1) ? xs1[0].ToInt() : 0;
-        var char_strings_offset = top_dict.TryGetValue(17, out var xs2) ? xs2[0].ToInt() : 0;
-        var (private_dict_size, private_dict_offset) = top_dict.TryGetValue(18, out var xs3) ? (xs3[0].ToInt(), xs3[1].ToInt()) : (0, 0);
+        var char_strings = top_dict.CharStrings is { } char_strings_offset ? ReadIndexData(stream, position + char_strings_offset) : [];
 
-        var char_strings = ReadIndexData(stream, position + char_strings_offset);
-
-        stream.Position = position + charset_offset;
+        stream.Position = position + top_dict.Charset;
         var charsets = ReadCharsets(stream, char_strings.Length - 1);
 
-        var private_dict = DictData.ReadFrom(stream.ReadPositionBytes(position + private_dict_offset, private_dict_size));
+        var private_dict = top_dict.Private is { } private_size_offset ? DictData.ReadFrom(stream.ReadPositionBytes(position + private_size_offset.Offset, private_size_offset.Size)) : [];
 
         (IntOrDouble, DictData, byte[][])[]? fdarray = null;
         byte[]? fdselect = null;
-        if (top_dict.ContainsKey(1230))
+        if (top_dict.IsCIDFont)
         {
-            var fdarray_offset = top_dict.TryGetValue(1236, out var xs4) ? xs4[0].ToInt() : 0;
-            var fdselect_offset = top_dict.TryGetValue(1237, out var xs5) ? xs5[0].ToInt() : 0;
+            var fdarray_offset = top_dict.FDArray is { } xfdarray ? xfdarray : throw new();
+            var fdselect_offset = top_dict.FDSelect is { } xfdselect ? xfdselect : throw new();
 
             fdarray = ReadIndexData(stream, position + fdarray_offset).Select(x =>
                 {
                     var dict = DictData.ReadFrom(x);
-                    var fd_private_offset = position + dict[18][1].ToInt();
-                    var fd_private_dict = DictData.ReadFrom(stream.ReadPositionBytes(fd_private_offset, dict[18][0].ToInt()));
-                    var subr = fd_private_dict.TryGetValue(19, out var xs5) ? ReadIndexData(stream, fd_private_offset + xs5[0].ToInt()) : [];
+                    var (private_size, private_offset) = dict.Private is { } xprivate ? xprivate : throw new();
+                    var fd_private_offset = position + private_offset;
+                    var fd_private_dict = DictData.ReadFrom(stream.ReadPositionBytes(fd_private_offset, private_size));
+                    var subr = fd_private_dict.Subrs is { } subr_offset ? ReadIndexData(stream, fd_private_offset + subr_offset) : [];
                     return (dict[1238][0], fd_private_dict, subr);
                 }).ToArray();
 
