@@ -4,7 +4,7 @@ namespace PicoPDF.OpenType.Tables.PostScript;
 
 public static class SID
 {
-    public static Dictionary<int, string> StandardStrings = new()
+    public static readonly Dictionary<int, string> StandardStrings = new()
     {
         [0] = ".notdef",
         [1] = "space",
