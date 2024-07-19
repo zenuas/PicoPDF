@@ -32,7 +32,7 @@ public class CompactFontFormat : IExportable
         var header_size = stream.ReadUByte();
         var offset_size = stream.ReadUByte();
         var names = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
-        var top_dict = ReadIndexData(stream).Select(x => ReadDictData(new MemoryStream(x), x.Length)).First();
+        var top_dict = ReadIndexData(stream).Select(ReadDictData).First();
         var strings = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
         var global_subr = ReadIndexData(stream);
 
@@ -45,7 +45,7 @@ public class CompactFontFormat : IExportable
         stream.Position = position + charset_offset;
         var charsets = ReadCharsets(stream, char_strings.Length - 1);
 
-        var private_dict = ReadDictData(stream, position + private_dict_offset, private_dict_size);
+        var private_dict = ReadDictData(stream.ReadPositionBytes(position + private_dict_offset, private_dict_size));
 
         (IntOrDouble, Dictionary<int, IntOrDouble[]>, byte[][])[]? fdarray = null;
         byte[]? fdselect = null;
@@ -56,9 +56,9 @@ public class CompactFontFormat : IExportable
 
             fdarray = ReadIndexData(stream, position + fdarray_offset).Select(x =>
                 {
-                    var dict = ReadDictData(new MemoryStream(x), x.Length);
+                    var dict = ReadDictData(x);
                     var fd_private_offset = position + dict[18][1].ToInt();
-                    var fd_private_dict = ReadDictData(stream, fd_private_offset, dict[18][0].ToInt());
+                    var fd_private_dict = ReadDictData(stream.ReadPositionBytes(fd_private_offset, dict[18][0].ToInt()));
                     var subr = fd_private_dict.TryGetValue(19, out var xs5) ? ReadIndexData(stream, fd_private_offset + xs5[0].ToInt()) : [];
                     return (dict[1238][0], fd_private_dict, subr);
                 }).ToArray();
@@ -109,20 +109,17 @@ public class CompactFontFormat : IExportable
         return Enumerable.Range(0, count).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
     }
 
-    public static Dictionary<int, IntOrDouble[]> ReadDictData(Stream stream, long offset, int length) => ReadDictData(new MemoryStream(stream.ReadPositionBytes(offset, length)), length);
-
-    public static Dictionary<int, IntOrDouble[]> ReadDictData(Stream stream, int length)
+    public static Dictionary<int, IntOrDouble[]> ReadDictData(byte[] bytes)
     {
         var kv = new Dictionary<int, IntOrDouble[]>();
         var values = new List<IntOrDouble>();
-        var pos = stream.Position;
-        while (stream.Position < pos + length)
+        for (var i = 0; i < bytes.Length; i++)
         {
-            var b0 = stream.ReadUByte();
+            var b0 = bytes[i];
 
             if (b0 is 12)
             {
-                var b1 = stream.ReadUByte();
+                var b1 = bytes[++i];
                 kv.Add((b0 * 100) + b1, [.. values]);
                 values.Clear();
             }
@@ -133,12 +130,13 @@ public class CompactFontFormat : IExportable
             }
             else if (b0 is 28 or 29 or (>= 32 and <= 254))
             {
-                values.Add(ReadDictDataNumber(b0, stream));
+                values.Add(ReadDictDataNumber(b0, bytes[(i + 1)..].AsSpan()));
+                i += DictDataNumberSize(b0);
             }
             else if (b0 is 30)
             {
-                values.Add(PackedBCDToDouble(Lists.Repeat(stream)
-                        .Select(x => x.ReadUByte())
+                values.Add(PackedBCDToDouble(Lists.Repeat(0)
+                        .Select(_ => bytes[++i])
                         .Select(x => new byte[] { (byte)(x >> 4), (byte)(x & 0x0f) })
                         .Flatten()
                         .TakeWhile(x => x != 0x0f)
@@ -171,13 +169,23 @@ public class CompactFontFormat : IExportable
         return mem.ToArray();
     }
 
-    public static int ReadDictDataNumber(byte b0, Stream stream) => b0 switch
+    public static int ReadDictDataNumber(byte b0, Span<byte> bytes) => b0 switch
     {
         >= 32 and <= 246 => b0 - 139,
-        >= 247 and <= 250 => ((b0 - 247) * 256) + stream.ReadUByte() + 108,
-        >= 251 and <= 254 => (-(b0 - 251) * 256) - stream.ReadUByte() - 108,
-        28 => (short)((stream.ReadUByte() << 8) | stream.ReadUByte()),
-        29 => (stream.ReadUByte() << 24) | (stream.ReadUByte() << 16) | (stream.ReadUByte() << 8) | stream.ReadUByte(),
+        >= 247 and <= 250 => ((b0 - 247) * 256) + bytes[0] + 108,
+        >= 251 and <= 254 => (-(b0 - 251) * 256) - bytes[0] - 108,
+        28 => (short)((bytes[0] << 8) | bytes[1]),
+        29 => (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3],
+        _ => 0,
+    };
+
+    public static int DictDataNumberSize(byte b0) => b0 switch
+    {
+        >= 32 and <= 246 => 0,
+        >= 247 and <= 250 => 1,
+        >= 251 and <= 254 => 1,
+        28 => 2,
+        29 => 4,
         _ => 0,
     };
 

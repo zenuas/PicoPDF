@@ -1,5 +1,5 @@
 ﻿using PicoPDF.OpenType.Tables.PostScript;
-using System.IO;
+using System;
 using Xunit;
 
 namespace PicoPDF.Test;
@@ -11,8 +11,7 @@ public class CompactFontFormatTest
     public static IntBytes DictDataNumber(int number)
     {
         var bytes = CompactFontFormat.DictDataNumberToBytes(number);
-        using var mem = new MemoryStream(bytes[1..]);
-        return new(CompactFontFormat.ReadDictDataNumber(bytes[0], mem), bytes);
+        return new(CompactFontFormat.ReadDictDataNumber(bytes[0], bytes[1..].AsSpan()), bytes);
     }
 
     [Fact]
