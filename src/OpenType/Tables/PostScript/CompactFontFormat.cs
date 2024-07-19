@@ -47,13 +47,13 @@ public class CompactFontFormat : IExportable
         byte[]? fdselect = null;
         if (top_dict.IsCIDFont)
         {
-            var fdarray_offset = top_dict.FDArray is { } xfdarray ? xfdarray : throw new();
-            var fdselect_offset = top_dict.FDSelect is { } xfdselect ? xfdselect : throw new();
+            var fdarray_offset = top_dict.FDArray.Try();
+            var fdselect_offset = top_dict.FDSelect.Try();
 
             fdarray = ReadIndexData(stream, position + fdarray_offset).Select(x =>
                 {
                     var dict = DictData.ReadFrom(x);
-                    var (private_size, private_offset) = dict.Private is { } xprivate ? xprivate : throw new();
+                    var (private_size, private_offset) = dict.Private.Try();
                     var fd_private_offset = position + private_offset;
                     var fd_private_dict = DictData.ReadFrom(stream.ReadPositionBytes(fd_private_offset, private_size));
                     var subr = fd_private_dict.Subrs is { } subr_offset ? ReadIndexData(stream, fd_private_offset + subr_offset) : [];
