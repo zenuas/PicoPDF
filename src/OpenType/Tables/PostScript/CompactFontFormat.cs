@@ -106,37 +106,6 @@ public class CompactFontFormat : IExportable
         return Enumerable.Range(0, count).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
     }
 
-    public static byte[] DictDataToBytes(Dictionary<int, IntOrDouble[]> kv)
-    {
-        using var mem = new MemoryStream();
-        foreach (var (k, vs) in kv)
-        {
-            vs.Each(x => mem.Write(DictDataNumberToBytes(x.ToInt())));
-            mem.Write(k >= 100 ? [(byte)(k / 100), (byte)(k % 100)] : [(byte)k]);
-        }
-        return mem.ToArray();
-    }
-
-    public static byte[] DictDataTo5Bytes(Dictionary<int, IntOrDouble[]> kv)
-    {
-        using var mem = new MemoryStream();
-        foreach (var (k, vs) in kv)
-        {
-            vs.Each(x => mem.Write(DictDataNumberTo5Bytes(x.ToInt())));
-            mem.Write(k >= 100 ? [(byte)(k / 100), (byte)(k % 100)] : [(byte)k]);
-        }
-        return mem.ToArray();
-    }
-
-    public static byte[] DictDataNumberToBytes(int number) =>
-        number is >= -107 and <= 107 ? ([(byte)(number + 139)])
-        : number is >= 108 and <= 1131 ? ([(byte)((((number - 108) >> 8) & 0xFF) + 247), (byte)(number - 108)])
-        : number is >= -1131 and <= -108 ? ([(byte)(((-(number + 108) >> 8) & 0xFF) + 251), (byte)-(number + 108)])
-        : number is >= -32768 and <= 32767 ? ([28, (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)])
-        : DictDataNumberTo5Bytes(number);
-
-    public static byte[] DictDataNumberTo5Bytes(int number) => ([29, (byte)((number >> 24) & 0xFF), (byte)((number >> 16) & 0xFF), (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)]);
-
     public static Charsets ReadCharsets(Stream stream, int glyph_count_without_notdef)
     {
         var format = stream.ReadUByte();
@@ -201,7 +170,7 @@ public class CompactFontFormat : IExportable
 
         var top_dict_start = stream.Position;
         var top_dict = TopDict.ToDictionary();
-        WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
+        WriteIndexData(stream, [DictData.DictDataTo5Bytes(top_dict)]);
         WriteIndexData(stream, Strings.Select(Encoding.UTF8.GetBytes).ToArray());
         WriteIndexData(stream, GlobalSubroutines);
 
@@ -213,7 +182,7 @@ public class CompactFontFormat : IExportable
 
         if (PrivateDict.Count > 0)
         {
-            var private_dict = DictDataToBytes(PrivateDict);
+            var private_dict = DictData.DictDataToBytes(PrivateDict);
             top_dict[18] = [private_dict.Length, stream.Position - position];
             stream.Write(private_dict);
         }
@@ -225,7 +194,7 @@ public class CompactFontFormat : IExportable
             foreach (var (fontname, fd_private_dict, subr) in FontDictArray)
             {
                 var fd_private_offset = stream.Position;
-                var fd_private_data = DictDataTo5Bytes(fd_private_dict);
+                var fd_private_data = DictData.DictDataTo5Bytes(fd_private_dict);
                 fdarray_dict[1238] = [fontname];
                 fdarray_dict[18] = [fd_private_data.Length, fd_private_offset - position];
                 stream.Write(fd_private_data);
@@ -235,10 +204,10 @@ public class CompactFontFormat : IExportable
                     WriteIndexData(stream, subr);
                     var subr_lastposition = stream.Position;
                     stream.Position = fd_private_offset;
-                    stream.Write(DictDataTo5Bytes(fd_private_dict));
+                    stream.Write(DictData.DictDataTo5Bytes(fd_private_dict));
                     stream.Position = subr_lastposition;
                 }
-                fdarray.Add(DictDataToBytes(fdarray_dict));
+                fdarray.Add(DictData.DictDataToBytes(fdarray_dict));
                 fdarray_dict.Clear();
             }
             top_dict[1236] = [stream.Position - position];
@@ -250,7 +219,7 @@ public class CompactFontFormat : IExportable
 
         var lastposition = stream.Position;
         stream.Position = top_dict_start;
-        WriteIndexData(stream, [DictDataTo5Bytes(top_dict)]);
+        WriteIndexData(stream, [DictData.DictDataTo5Bytes(top_dict)]);
         stream.Position = lastposition;
     }
 
