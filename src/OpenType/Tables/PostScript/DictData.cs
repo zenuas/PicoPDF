@@ -96,7 +96,6 @@ public class DictData : Dictionary<int, IntOrDouble[]>
                         .Select(x => new byte[] { (byte)(x >> 4), (byte)(x & 0x0f) })
                         .Flatten()
                         .TakeWhile(x => x != 0x0f)
-                        .ToArray()
                     ));
             }
         }
@@ -123,7 +122,7 @@ public class DictData : Dictionary<int, IntOrDouble[]>
         _ => 0,
     };
 
-    public static double PackedBCDToDouble(byte[] bytes) => bytes
+    public static double PackedBCDToDouble(IEnumerable<byte> bytes) => bytes
         .Select(x => x switch
         {
             0x00 => "0",
@@ -145,6 +144,28 @@ public class DictData : Dictionary<int, IntOrDouble[]>
         .Join()
         .To(x => double.Parse(x));
 
+    public static IEnumerable<byte> DoubleToPackedBCD(double d) => d.ToString()
+        .Replace("E-", "e")
+        .Replace("E+", "E")
+        .Select(x => x switch
+        {
+            '0' => (byte)0x00,
+            '1' => (byte)0x01,
+            '2' => (byte)0x02,
+            '3' => (byte)0x03,
+            '4' => (byte)0x04,
+            '5' => (byte)0x05,
+            '6' => (byte)0x06,
+            '7' => (byte)0x07,
+            '8' => (byte)0x08,
+            '9' => (byte)0x09,
+            '.' => (byte)0x0a,
+            'E' => (byte)0x0b, // E is e+
+            'e' => (byte)0x0c, // e is e-
+            '-' => (byte)0x0e,
+            _ => throw new(),
+        });
+
     public static byte[] DictDataToBytes(Dictionary<int, IntOrDouble[]> kv)
     {
         using var mem = new MemoryStream();
@@ -157,9 +178,21 @@ public class DictData : Dictionary<int, IntOrDouble[]>
                     // offset will be changed later, so output fixed 5 bytes.
                     mem.Write(DictDataNumberTo5Bytes(vs[i].ToInt()));
                 }
-                else
+                else if (vs[i].IsInt())
                 {
                     mem.Write(DictDataNumberToBytes(vs[i].ToInt()));
+                }
+                else
+                {
+                    mem.WriteByte(30);
+                    mem.Write(DoubleToPackedBCD(vs[i].ToDouble())
+                            .Concat((byte)0x0f)
+                            .Concat((byte)0x0f)
+                            .Chunk(2)
+                            .Where(x => x.Length == 2)
+                            .Select(x => (byte)((x[0] << 4) + x[1]))
+                            .ToArray()
+                        );
                 }
             }
             mem.Write(k >= 100 ? [(byte)(k / 100), (byte)(k % 100)] : [(byte)k]);
