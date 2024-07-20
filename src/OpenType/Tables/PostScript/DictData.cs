@@ -150,18 +150,18 @@ public class DictData : Dictionary<int, IntOrDouble[]>
         using var mem = new MemoryStream();
         foreach (var (k, vs) in kv)
         {
-            vs.Each(x => mem.Write(DictDataNumberToBytes(x.ToInt())));
-            mem.Write(k >= 100 ? [(byte)(k / 100), (byte)(k % 100)] : [(byte)k]);
-        }
-        return mem.ToArray();
-    }
-
-    public static byte[] DictDataTo5Bytes(Dictionary<int, IntOrDouble[]> kv)
-    {
-        using var mem = new MemoryStream();
-        foreach (var (k, vs) in kv)
-        {
-            vs.Each(x => mem.Write(DictDataNumberTo5Bytes(x.ToInt())));
+            for (var i = 0; i < vs.Length; i++)
+            {
+                if (k is 15 or 16 or 17 or 1236 or 1237 or 19 || (k == 18 && i == 1))
+                {
+                    // offset will be changed later, so output fixed 5 bytes.
+                    mem.Write(DictDataNumberTo5Bytes(vs[i].ToInt()));
+                }
+                else
+                {
+                    mem.Write(DictDataNumberToBytes(vs[i].ToInt()));
+                }
+            }
             mem.Write(k >= 100 ? [(byte)(k / 100), (byte)(k % 100)] : [(byte)k]);
         }
         return mem.ToArray();

@@ -170,7 +170,7 @@ public class CompactFontFormat : IExportable
 
         var top_dict_start = stream.Position;
         var top_dict = TopDict.ToDictionary();
-        WriteIndexData(stream, [DictData.DictDataTo5Bytes(top_dict)]);
+        WriteIndexData(stream, [DictData.DictDataToBytes(top_dict)]);
         WriteIndexData(stream, Strings.Select(Encoding.UTF8.GetBytes).ToArray());
         WriteIndexData(stream, GlobalSubroutines);
 
@@ -194,7 +194,7 @@ public class CompactFontFormat : IExportable
             foreach (var (fontname, fd_private_dict, subr) in FontDictArray)
             {
                 var fd_private_offset = stream.Position;
-                var fd_private_data = DictData.DictDataTo5Bytes(fd_private_dict);
+                var fd_private_data = DictData.DictDataToBytes(fd_private_dict);
                 fdarray_dict[1238] = [fontname];
                 fdarray_dict[18] = [fd_private_data.Length, fd_private_offset - position];
                 stream.Write(fd_private_data);
@@ -204,7 +204,7 @@ public class CompactFontFormat : IExportable
                     WriteIndexData(stream, subr);
                     var subr_lastposition = stream.Position;
                     stream.Position = fd_private_offset;
-                    stream.Write(DictData.DictDataTo5Bytes(fd_private_dict));
+                    stream.Write(DictData.DictDataToBytes(fd_private_dict));
                     stream.Position = subr_lastposition;
                 }
                 fdarray.Add(DictData.DictDataToBytes(fdarray_dict));
@@ -219,7 +219,7 @@ public class CompactFontFormat : IExportable
 
         var lastposition = stream.Position;
         stream.Position = top_dict_start;
-        WriteIndexData(stream, [DictData.DictDataTo5Bytes(top_dict)]);
+        WriteIndexData(stream, [DictData.DictDataToBytes(top_dict)]);
         stream.Position = lastposition;
     }
 
