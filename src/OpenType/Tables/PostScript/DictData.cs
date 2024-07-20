@@ -123,47 +123,27 @@ public class DictData : Dictionary<int, IntOrDouble[]>
         _ => 0,
     };
 
-    public static double PackedBCDToDouble(byte[] bytes)
-    {
-        var value = 0d;
-        var i = 0;
-        var sign = true;
-
-        if (i < bytes.Length && bytes[i] == 0x0e)
+    public static double PackedBCDToDouble(byte[] bytes) => bytes
+        .Select(x => x switch
         {
-            sign = false;
-            i++;
-        }
-
-        for (; i < bytes.Length && bytes[i] <= 9; i++)
-        {
-            value = (value * 10) + bytes[i];
-        }
-
-        if (i < bytes.Length && bytes[i] == 0x0a)
-        {
-            i++;
-            var dec = 0.1;
-            for (; i < bytes.Length && bytes[i] <= 9; i++, dec /= 10)
-            {
-                value += bytes[i] * dec;
-            }
-        }
-
-        if (i < bytes.Length && bytes[i] is 0x0b or 0x0c)
-        {
-            var esign = bytes[i] == 0x0b;
-            i++;
-            var e = 0;
-            for (; i < bytes.Length && bytes[i] <= 9; i++)
-            {
-                e = (e * 10) + bytes[i];
-            }
-            value *= Math.Pow(10, esign ? e : -e);
-        }
-
-        return sign ? value : -value;
-    }
+            0x00 => "0",
+            0x01 => "1",
+            0x02 => "2",
+            0x03 => "3",
+            0x04 => "4",
+            0x05 => "5",
+            0x06 => "6",
+            0x07 => "7",
+            0x08 => "8",
+            0x09 => "9",
+            0x0a => ".",
+            0x0b => "e",
+            0x0c => "e-",
+            0x0e => "-",
+            _ => throw new(),
+        })
+        .Join()
+        .To(x => double.Parse(x));
 
     public static byte[] DictDataToBytes(Dictionary<int, IntOrDouble[]> kv)
     {

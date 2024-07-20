@@ -1,5 +1,6 @@
 ﻿using PicoPDF.OpenType.Tables.PostScript;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace PicoPDF.Test;
@@ -62,5 +63,35 @@ public class CompactFontFormatTest
         Assert.Equivalent(DictDataNumber(-2147483647), new IntBytes(-2147483647, [29, 0x80, 0x00, 0x00, 0x01]));
         Assert.Equivalent(DictDataNumber(2147483646), new IntBytes(2147483646, [29, 0x7F, 0xFF, 0xFF, 0xFE]));
         Assert.Equivalent(DictDataNumber(2147483647), new IntBytes(2147483647, [29, 0x7F, 0xFF, 0xFF, 0xFF]));
+    }
+
+    public byte[] DoubleStringToPackedBCD(string s) => s
+        .Select(x => x switch
+        {
+            '0' => 0x00,
+            '1' => 0x01,
+            '2' => 0x02,
+            '3' => 0x03,
+            '4' => 0x04,
+            '5' => 0x05,
+            '6' => 0x06,
+            '7' => 0x07,
+            '8' => 0x08,
+            '9' => 0x09,
+            '.' => 0x0a,
+            'E' => 0x0b, // E is e+
+            'e' => 0x0c, // e is e-
+            '-' => 0x0e,
+            _ => throw new(),
+        })
+        .Select(x => (byte)x)
+        .ToArray();
+
+    [Fact]
+    public void PackedBCDToDoubleTest()
+    {
+        Assert.Equal(DictData.PackedBCDToDouble(DoubleStringToPackedBCD("0")), 0);
+        Assert.Equal(DictData.PackedBCDToDouble(DoubleStringToPackedBCD("0.140541e3")), 0.140541e-3);
+        Assert.Equal(DictData.PackedBCDToDouble(DoubleStringToPackedBCD("0.140541E3")), 0.140541e3);
     }
 }
