@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -10,6 +11,12 @@ public class DictData
 {
     public string[] Strings { get; init; } = [];
     public required Dictionary<int, IntOrDouble[]> Dict { get; init; }
+    public byte[][] CharStrings { get; init; } = [];
+    public Charsets? Charsets { get; init; }
+    public DictData? PrivateDict { get; init; }
+    public byte[][] LocalSubroutines { get; init; } = [];
+    public DictData[] FontDictArray { get; init; } = [];
+    public byte[] FontDictSelect { get; init; } = [];
 
     public string Version { get => Dict.TryGetValue(0, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
     public string Notice { get => Dict.TryGetValue(1, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
@@ -28,10 +35,10 @@ public class DictData
     public IntOrDouble[] FontBBox { get => Dict.TryGetValue(5, out var xs) ? xs : [0, 0, 0, 0]; }
     public IntOrDouble StrokeWidth { get => Dict.TryGetValue(1208, out var xs) ? xs[0] : 0; }
     public IntOrDouble[]? XUID { get => Dict.TryGetValue(14, out var xs) ? xs : null; }
-    public int Charset { get => Dict.TryGetValue(15, out var xs) ? xs[0].ToInt() : 0; }
-    public int Encoding { get => Dict.TryGetValue(16, out var xs) ? xs[0].ToInt() : 0; }
-    public int? CharStrings { get => Dict.TryGetValue(17, out var xs) ? xs[0].ToInt() : null; }
-    public (int Size, int Offset)? Private { get => Dict.TryGetValue(18, out var xs) ? (xs[0].ToInt(), xs[1].ToInt()) : null; }
+    public int CharsetOffset { get => Dict.TryGetValue(15, out var xs) ? xs[0].ToInt() : 0; }
+    public int EncodingOffset { get => Dict.TryGetValue(16, out var xs) ? xs[0].ToInt() : 0; }
+    public int? CharStringsOffset { get => Dict.TryGetValue(17, out var xs) ? xs[0].ToInt() : null; }
+    public (int Size, int Offset)? PrivateOffset { get => Dict.TryGetValue(18, out var xs) ? (xs[0].ToInt(), xs[1].ToInt()) : null; }
     public int? SyntheticBase { get => Dict.TryGetValue(1220, out var xs) ? xs[0].ToInt() : null; }
     public string PostScript { get => Dict.TryGetValue(1221, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
     public string BaseFontName { get => Dict.TryGetValue(1222, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
@@ -43,8 +50,8 @@ public class DictData
     public IntOrDouble CIDFontType { get => Dict.TryGetValue(1233, out var xs) ? xs[0] : 0; }
     public IntOrDouble CIDCount { get => Dict.TryGetValue(1234, out var xs) ? xs[0] : 8720; }
     public IntOrDouble? UIDBase { get => Dict.TryGetValue(1235, out var xs) ? xs[0] : null; }
-    public int? FDArray { get => Dict.TryGetValue(1236, out var xs) ? xs[0].ToInt() : null; }
-    public int? FDSelect { get => Dict.TryGetValue(1237, out var xs) ? xs[0].ToInt() : null; }
+    public int? FDArrayOffset { get => Dict.TryGetValue(1236, out var xs) ? xs[0].ToInt() : null; }
+    public int? FDSelectOffset { get => Dict.TryGetValue(1237, out var xs) ? xs[0].ToInt() : null; }
     public string FontName { get => Dict.TryGetValue(1238, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
     public IntOrDouble[]? BlueValues { get => Dict.TryGetValue(6, out var xs) ? xs : null; }
     public IntOrDouble[]? OtherBlues { get => Dict.TryGetValue(7, out var xs) ? xs : null; }
@@ -61,7 +68,7 @@ public class DictData
     public IntOrDouble LanguageGroup { get => Dict.TryGetValue(1211, out var xs) ? xs[0] : 0; }
     public IntOrDouble ExpansionFactor { get => Dict.TryGetValue(1211, out var xs) ? xs[0] : 0.06; }
     public IntOrDouble InitialRandomSeed { get => Dict.TryGetValue(1211, out var xs) ? xs[0] : 0; }
-    public int? Subrs { get => Dict.TryGetValue(19, out var xs) ? xs[0].ToInt() : null; }
+    public int? SubrsOffset { get => Dict.TryGetValue(19, out var xs) ? xs[0].ToInt() : null; }
     public int DefaultWidthX { get => Dict.TryGetValue(20, out var xs) ? xs[0].ToInt() : 0; }
     public int NominalWidthX { get => Dict.TryGetValue(21, out var xs) ? xs[0].ToInt() : 0; }
 
@@ -70,7 +77,48 @@ public class DictData
 
     public static DictData ReadFrom(byte[] bytes) => new() { Dict = BytesToDict(bytes) };
 
-    public DictData Clone() => new() { Strings = Strings, Dict = Dict.ToDictionary() };
+    public static DictData ReadFrom(byte[] bytes, string[] strings, Stream stream, long offset)
+    {
+        var dict = ReadFrom(bytes);
+
+        var char_strings = dict.CharStringsOffset is { } char_strings_offset ? CompactFontFormat.ReadIndexData(stream, offset + char_strings_offset) : [];
+        var charsets = dict.CharsetOffset > 0 ? ReadCharsets(stream, char_strings.Length - 1, offset + dict.CharsetOffset) : null;
+        var private_dict = dict.PrivateOffset is { } private_size_offset ? ReadFrom(stream.ReadPositionBytes(offset + private_size_offset.Offset, private_size_offset.Size), strings, stream, offset + private_size_offset.Offset) : null;
+        var subr = dict.SubrsOffset is { } subr_offset ? CompactFontFormat.ReadIndexData(stream, offset + subr_offset) : [];
+
+        DictData[]? fdarray = null;
+        byte[]? fdselect = null;
+        if (dict.IsCIDFont)
+        {
+            var fd_array_offset = offset + dict.FDArrayOffset.Try();
+            fdarray = CompactFontFormat.ReadIndexData(stream, fd_array_offset).Select(x => ReadFrom(x, strings, stream, offset)).ToArray();
+            fdselect = ReadFDSelect(stream, char_strings.Length, offset + dict.FDSelectOffset.Try());
+        }
+
+        return new()
+        {
+            Strings = strings,
+            Dict = dict.Dict,
+            CharStrings = char_strings,
+            Charsets = charsets,
+            PrivateDict = private_dict,
+            LocalSubroutines = subr,
+            FontDictArray = fdarray ?? [],
+            FontDictSelect = fdselect ?? [],
+        };
+    }
+
+    public DictData Clone() => new()
+    {
+        Strings = Strings,
+        Dict = Dict.ToDictionary(),
+        CharStrings = CharStrings,
+        Charsets = Charsets,
+        PrivateDict = PrivateDict?.Clone(),
+        LocalSubroutines = LocalSubroutines,
+        FontDictArray = FontDictArray,
+        FontDictSelect = FontDictSelect,
+    };
 
     public static Dictionary<int, IntOrDouble[]> BytesToDict(byte[] bytes)
     {
@@ -173,6 +221,127 @@ public class DictData
             _ => throw new(),
         });
 
+    public static Charsets ReadCharsets(Stream stream, int glyph_count_without_notdef, long position)
+    {
+        stream.Position = position;
+        return ReadCharsets(stream, glyph_count_without_notdef);
+    }
+
+    public static Charsets ReadCharsets(Stream stream, int glyph_count_without_notdef)
+    {
+        var format = stream.ReadUByte();
+        if (format is 1 or 2)
+        {
+            var glyph = new List<ushort>();
+            while (glyph.Count < glyph_count_without_notdef)
+            {
+                var first = stream.ReadUShortByBigEndian();
+                var left = format == 1 ? stream.ReadUByte() : stream.ReadUShortByBigEndian();
+                Enumerable.Range(0, left + 1).Each(x => glyph.Add((ushort)(first + x)));
+            }
+
+            return new()
+            {
+                Format = format,
+                Glyph = [.. glyph],
+            };
+        }
+        else
+        {
+            return new()
+            {
+                Format = 0,
+                Glyph = Enumerable.Repeat(0, glyph_count_without_notdef).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            };
+        }
+    }
+
+    public static byte[] ReadFDSelect(Stream stream, int glyph_count_with_notdef, long position)
+    {
+        stream.Position = position;
+        return ReadFDSelect(stream, glyph_count_with_notdef);
+    }
+
+    public static byte[] ReadFDSelect(Stream stream, int glyph_count_with_notdef)
+    {
+        var format = stream.ReadUByte();
+        if (format == 3)
+        {
+            var fdselect = new List<byte>();
+            var ranges = stream.ReadUShortByBigEndian();
+            var first = stream.ReadUShortByBigEndian();
+            for (var i = 0; i < ranges; i++)
+            {
+                var fd = stream.ReadUByte();
+                var sentinel = stream.ReadUShortByBigEndian();
+                Lists.RangeTo(first, sentinel - 1).Each(_ => fdselect.Add(fd));
+                first = sentinel;
+            }
+            return [.. fdselect];
+        }
+        else
+        {
+            return Enumerable.Repeat(0, glyph_count_with_notdef).Select(_ => stream.ReadUByte()).ToArray();
+        }
+    }
+
+    public void WriteToAndOffsetUpdate(Stream stream, long offset)
+    {
+        var position = stream.Position;
+        WriteToDict(stream);
+        WriteToDataAndOffsetUpdate(stream, offset);
+        var lastposition = stream.Position;
+
+        stream.Position = position;
+        WriteToDict(stream);
+        stream.Position = lastposition;
+    }
+
+    public void WriteToDict(Stream stream) => stream.Write(DictDataToBytes(Dict));
+
+    public void WriteToDataAndOffsetUpdate(Stream stream, long offset) => WriteToDataAndOffsetUpdate(stream, offset, CharStrings, Charsets, PrivateDict, LocalSubroutines, FontDictArray, FontDictSelect);
+
+    public void WriteToDataAndOffsetUpdate(Stream stream, long offset, byte[][] char_strings, Charsets? charsets, DictData? private_dict, byte[][] subr, DictData[] fdarray, byte[] fdselect)
+    {
+        if (Dict.ContainsKey(15))
+        {
+            Dict[15] = [stream.Position - offset];
+            WriteCharsets(stream, charsets!);
+        }
+        if (Dict.ContainsKey(16))
+        {
+            Debug.Fail("Encoding not support");
+        }
+        if (Dict.ContainsKey(17))
+        {
+            Dict[17] = [stream.Position - offset];
+            CompactFontFormat.WriteIndexData(stream, char_strings);
+        }
+        if (Dict.ContainsKey(18))
+        {
+            var private_position = stream.Position;
+            Dict[18] = [DictDataToBytes(private_dict!.Dict).Length, private_position - offset];
+            private_dict!.WriteToAndOffsetUpdate(stream, private_position);
+        }
+        if (IsCIDFont)
+        {
+            Debug.Assert(Dict.ContainsKey(1236));
+            Debug.Assert(Dict.ContainsKey(1237));
+
+            fdarray.Each(x => x.WriteToDataAndOffsetUpdate(stream, offset));
+            Dict[1236] = [stream.Position - offset];
+            CompactFontFormat.WriteIndexData(stream, fdarray.Select(x => DictDataToBytes(x.Dict)).ToArray());
+
+            Dict[1237] = [stream.Position - offset];
+            WriteFDSelect(stream, fdselect);
+        }
+        if (Dict.ContainsKey(19))
+        {
+            Dict[19] = [stream.Position - offset];
+            CompactFontFormat.WriteIndexData(stream, subr);
+        }
+    }
+
     public static byte[] DictDataToBytes(Dictionary<int, IntOrDouble[]> kv)
     {
         using var mem = new MemoryStream();
@@ -216,4 +385,15 @@ public class DictData
 
     public static byte[] DictDataNumberTo5Bytes(int number) => ([29, (byte)((number >> 24) & 0xFF), (byte)((number >> 16) & 0xFF), (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)]);
 
+    public static void WriteCharsets(Stream stream, Charsets charsets)
+    {
+        stream.WriteByte(0);
+        charsets.Glyph.Each(stream.WriteUShortByBigEndian);
+    }
+
+    public static void WriteFDSelect(Stream stream, byte[] fdselect)
+    {
+        stream.WriteByte(0);
+        fdselect.Each(stream.WriteByte);
+    }
 }
