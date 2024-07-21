@@ -88,8 +88,11 @@ public static class FontExtract
             .Order()
             .Select((x, i) => (FontDictSelect: x, Index: i + 1))
             .ToDictionary(x => x.FontDictSelect, x => (byte)x.Index);
-        gid_glyph[0] = (font.CompactFontFormat.CharStrings[0], 0, font.HorizontalMetrics.Metrics[0], font.CompactFontFormat.FontDictSelect[0]);
-        fdselect_index[font.CompactFontFormat.FontDictSelect[0]] = 0;
+        if (font.CompactFontFormat.FontDictSelect.Length > 0)
+        {
+            gid_glyph[0] = (font.CompactFontFormat.CharStrings[0], 0, font.HorizontalMetrics.Metrics[0], font.CompactFontFormat.FontDictSelect[0]);
+            fdselect_index[font.CompactFontFormat.FontDictSelect[0]] = 0;
+        }
         var num_of_glyph = gid_glyph.Keys.Max();
 
         var name = ExtractNameTable(font.Name, opt);
@@ -121,7 +124,7 @@ public static class FontExtract
                 .ToArray(),
         };
 
-        var fdselect = Lists.RangeTo(0, num_of_glyph)
+        var fdselect = font.CompactFontFormat.FontDictSelect.Length == 0 ? [] : Lists.RangeTo(0, num_of_glyph)
             .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.FontDictSelect : (byte)0)
             .ToArray();
 
