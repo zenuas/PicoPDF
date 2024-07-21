@@ -73,8 +73,6 @@ public class DictData
     public int NominalWidthX { get => Dict.TryGetValue(21, out var xs) ? xs[0].ToInt() : 0; }
 
 
-    public static DictData Empty() => new() { Dict = [] };
-
     public static DictData ReadFrom(byte[] bytes) => new() { Dict = BytesToDict(bytes) };
 
     public static DictData ReadFrom(byte[] bytes, string[] strings, Stream stream, long offset)
