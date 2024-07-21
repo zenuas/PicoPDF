@@ -285,20 +285,6 @@ public class DictData
         }
     }
 
-    public void WriteToAndOffsetUpdate(Stream stream, long offset)
-    {
-        var position = stream.Position;
-        WriteToDict(stream);
-        WriteToDataAndOffsetUpdate(stream, offset);
-        var lastposition = stream.Position;
-
-        stream.Position = position;
-        WriteToDict(stream);
-        stream.Position = lastposition;
-    }
-
-    public void WriteToDict(Stream stream) => stream.Write(DictDataToBytes(Dict));
-
     public void WriteToDataAndOffsetUpdate(Stream stream, long offset) => WriteToDataAndOffsetUpdate(stream, offset, CharStrings, Charsets, PrivateDict, LocalSubroutines, FontDictArray, FontDictSelect);
 
     public void WriteToDataAndOffsetUpdate(Stream stream, long offset, byte[][] char_strings, Charsets? charsets, DictData? private_dict, byte[][] subr, DictData[] fdarray, byte[] fdselect)
@@ -320,8 +306,16 @@ public class DictData
         if (Dict.ContainsKey(18))
         {
             var private_position = stream.Position;
-            Dict[18] = [DictDataToBytes(private_dict!.Dict).Length, private_position - offset];
-            private_dict!.WriteToAndOffsetUpdate(stream, private_position);
+            var private_data = DictDataToBytes(private_dict!.Dict);
+            Dict[18] = [private_data.Length, private_position - offset];
+
+            stream.Position += private_data.Length;
+            private_dict!.WriteToDataAndOffsetUpdate(stream, private_position);
+
+            var lastposition = stream.Position;
+            stream.Position = private_position;
+            stream.Write(DictDataToBytes(private_dict!.Dict));
+            stream.Position = lastposition;
         }
         if (IsCIDFont)
         {
