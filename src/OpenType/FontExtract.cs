@@ -148,7 +148,7 @@ public static class FontExtract
             Charsets = charsets,
             PrivateDict = font.CompactFontFormat.PrivateDict,
             FontDictArray = fdarray,
-            FontDictSelect = fdselect.Select(x => x == 0 ? (byte)0 : fdselect_index[x]).ToArray(),
+            FontDictSelect = fdselect.Select(x => fdselect_index[x]).ToArray(),
         };
 
         return new()
