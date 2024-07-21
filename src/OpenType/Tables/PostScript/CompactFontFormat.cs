@@ -41,7 +41,7 @@ public class CompactFontFormat : IExportable
         stream.Position = position + top_dict.Charset;
         var charsets = ReadCharsets(stream, char_strings.Length - 1);
 
-        var private_dict = top_dict.Private is { } private_size_offset ? DictData.ReadFrom(stream.ReadPositionBytes(position + private_size_offset.Offset, private_size_offset.Size)) : [];
+        var private_dict = top_dict.Private is { } private_size_offset ? DictData.ReadFrom(stream.ReadPositionBytes(position + private_size_offset.Offset, private_size_offset.Size)) : DictData.Empty();
 
         (IntOrDouble, DictData, byte[][])[]? fdarray = null;
         byte[]? fdselect = null;
@@ -57,7 +57,7 @@ public class CompactFontFormat : IExportable
                     var fd_private_offset = position + private_offset;
                     var fd_private_dict = DictData.ReadFrom(stream.ReadPositionBytes(fd_private_offset, private_size));
                     var subr = fd_private_dict.Subrs is { } subr_offset ? ReadIndexData(stream, fd_private_offset + subr_offset) : [];
-                    return (dict[1238][0], fd_private_dict, subr);
+                    return (dict.Dict[1238][0], fd_private_dict, subr);
                 }).ToArray();
 
             stream.Position = position + fdselect_offset;
@@ -169,57 +169,57 @@ public class CompactFontFormat : IExportable
         WriteIndexData(stream, Names.Select(Encoding.UTF8.GetBytes).ToArray());
 
         var top_dict_start = stream.Position;
-        var top_dict = TopDict.ToDictionary();
-        WriteIndexData(stream, [DictData.DictDataToBytes(top_dict)]);
+        var top_dict = TopDict.Clone();
+        WriteIndexData(stream, [DictData.DictDataToBytes(top_dict.Dict)]);
         WriteIndexData(stream, Strings.Select(Encoding.UTF8.GetBytes).ToArray());
         WriteIndexData(stream, GlobalSubroutines);
 
-        top_dict[15] = [stream.Position - position];
+        top_dict.Dict[15] = [stream.Position - position];
         WriteCharsets(stream, Charsets);
 
-        top_dict[17] = [stream.Position - position];
+        top_dict.Dict[17] = [stream.Position - position];
         WriteIndexData(stream, CharStrings);
 
-        if (PrivateDict.Count > 0)
+        if (PrivateDict.Dict.Count > 0)
         {
-            var private_dict = DictData.DictDataToBytes(PrivateDict);
-            top_dict[18] = [private_dict.Length, stream.Position - position];
+            var private_dict = DictData.DictDataToBytes(PrivateDict.Dict);
+            top_dict.Dict[18] = [private_dict.Length, stream.Position - position];
             stream.Write(private_dict);
         }
 
-        if (top_dict.ContainsKey(1230))
+        if (top_dict.IsCIDFont)
         {
             var fdarray = new List<byte[]>();
             var fdarray_dict = new Dictionary<int, IntOrDouble[]>();
             foreach (var (fontname, fd_private_dict, subr) in FontDictArray)
             {
                 var fd_private_offset = stream.Position;
-                var fd_private_data = DictData.DictDataToBytes(fd_private_dict);
+                var fd_private_data = DictData.DictDataToBytes(fd_private_dict.Dict);
                 fdarray_dict[1238] = [fontname];
                 fdarray_dict[18] = [fd_private_data.Length, fd_private_offset - position];
                 stream.Write(fd_private_data);
                 if (subr.Length > 0)
                 {
-                    fd_private_dict[19] = [stream.Position - fd_private_offset];
+                    fd_private_dict.Dict[19] = [stream.Position - fd_private_offset];
                     WriteIndexData(stream, subr);
                     var subr_lastposition = stream.Position;
                     stream.Position = fd_private_offset;
-                    stream.Write(DictData.DictDataToBytes(fd_private_dict));
+                    stream.Write(DictData.DictDataToBytes(fd_private_dict.Dict));
                     stream.Position = subr_lastposition;
                 }
                 fdarray.Add(DictData.DictDataToBytes(fdarray_dict));
                 fdarray_dict.Clear();
             }
-            top_dict[1236] = [stream.Position - position];
+            top_dict.Dict[1236] = [stream.Position - position];
             WriteIndexData(stream, [.. fdarray]);
 
-            top_dict[1237] = [stream.Position - position];
+            top_dict.Dict[1237] = [stream.Position - position];
             WriteFDSelect(stream, FontDictSelect);
         }
 
         var lastposition = stream.Position;
         stream.Position = top_dict_start;
-        WriteIndexData(stream, [DictData.DictDataToBytes(top_dict)]);
+        WriteIndexData(stream, [DictData.DictDataToBytes(top_dict.Dict)]);
         stream.Position = lastposition;
     }
 
