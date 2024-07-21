@@ -75,8 +75,8 @@ public class CompactFontFormatTest
     [Fact]
     public void PackedBCDToDoubleTest()
     {
-        Assert.Equal(DictData.PackedBCDToDouble(DictData.DoubleToPackedBCD(0)), 0);
-        Assert.Equal(DictData.PackedBCDToDouble(DictData.DoubleToPackedBCD(0.140541e-3)), 0.140541e-3);
-        Assert.Equal(DictData.PackedBCDToDouble(DictData.DoubleToPackedBCD(0.140541e3)), 0.140541e3);
+        Assert.Equal(DictData.PackedBCDToDouble([0x00]), 0);
+        Assert.Equal(DictData.PackedBCDToDouble([0x00, 0x0a, 0x01, 0x04, 0x00, 0x05, 0x04, 0x01, 0x0c, 0x03]), 0.140541e-3);
+        Assert.Equal(DictData.PackedBCDToDouble([0x00, 0x0a, 0x01, 0x04, 0x00, 0x05, 0x04, 0x01, 0x0b, 0x03]), 0.140541e3);
     }
 }
