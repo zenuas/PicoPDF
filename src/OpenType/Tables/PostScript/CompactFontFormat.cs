@@ -93,7 +93,7 @@ public class CompactFontFormat : IExportable
         WriteIndexData(stream, Strings.Select(Encoding.UTF8.GetBytes).ToArray());
         WriteIndexData(stream, GlobalSubroutines);
 
-        TopDict.WriteToDataAndOffsetUpdate(stream, position, CharStrings, Charsets, PrivateDict, TopDict.LocalSubroutines, FontDictArray, FontDictSelect);
+        TopDict.WriteWithoutDictAndOffsetUpdate(stream, position, CharStrings, Charsets, PrivateDict, TopDict.LocalSubroutines, FontDictArray, FontDictSelect);
 
         var lastposition = stream.Position;
         stream.Position = top_dict_start;
