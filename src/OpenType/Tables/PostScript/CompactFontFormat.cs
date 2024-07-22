@@ -44,12 +44,6 @@ public class CompactFontFormat : IExportable
         };
     }
 
-    public static byte[][] ReadIndexData(Stream stream, long position)
-    {
-        stream.Position = position;
-        return ReadIndexData(stream);
-    }
-
     public static byte[][] ReadIndexData(Stream stream)
     {
         var count = stream.ReadUShortByBigEndian();
@@ -88,8 +82,7 @@ public class CompactFontFormat : IExportable
         TopDict.WriteWithoutDictAndOffsetUpdate(stream, position);
 
         var lastposition = stream.Position;
-        stream.Position = top_dict_start;
-        WriteIndexData(stream, [DictData.DictDataToBytes(TopDict.Dict)]);
+        WriteIndexData(stream.SeekTo(top_dict_start), [DictData.DictDataToBytes(TopDict.Dict)]);
         stream.Position = lastposition;
     }
 

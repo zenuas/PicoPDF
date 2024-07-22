@@ -25,9 +25,7 @@ public static class ImageLoader
     {
         var position = stream.Position;
         var type = TypeCheck(stream);
-        stream.Position = position;
-
-        return FromStream(stream, type);
+        return FromStream(stream.SeekTo(position), type);
     }
 
     public static IImage? FromStream(Stream stream, ImageTypes type)

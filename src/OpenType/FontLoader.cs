@@ -14,7 +14,7 @@ public static class FontLoader
     public static FontTableRecords LoadTableRecords(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
-        return LoadTableRecords(new FontPath { Path = path }, stream, 0, opt ?? new());
+        return LoadTableRecords(new FontPath { Path = path }, stream, opt ?? new());
     }
 
     public static FontTableRecords[] LoadTableRecordsCollection(string path, LoadOption? opt = null)
@@ -32,13 +32,13 @@ public static class FontLoader
             : Enumerable.Repeat(0, (int)header.NumberOfFonts)
                 .Select(_ => stream.ReadUIntByBigEndian())
                 .ToArray()
-                .Select((x, i) => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream, x, opt))
+                .Select((x, i) => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream.SeekTo(x), opt))
                 .ToArray();
     }
 
-    public static FontTableRecords LoadTableRecords(IFontPath path, Stream stream, long pos, LoadOption opt)
+    public static FontTableRecords LoadTableRecords(IFontPath path, Stream stream, LoadOption opt)
     {
-        stream.Position = pos;
+        var position = stream.Position;
         var offset = OffsetTable.ReadFrom(stream);
         if (!offset.ContainTrueType() && !offset.ContainCFF()) throw new InvalidOperationException();
 
@@ -46,8 +46,7 @@ public static class FontLoader
             .Select(_ => TableRecord.ReadFrom(stream))
             .ToDictionary(x => x.TableTag, x => x);
 
-        stream.Position = tables["name"].Offset;
-        var name = NameTable.ReadFrom(stream);
+        var name = NameTable.ReadFrom(stream.SeekTo(tables["name"].Offset));
         string namev(NameIDs nameid) => opt.PlatformIDOrder
             .Select(x => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == (ushort)x && y.NameRecord.NameID == (ushort)nameid)?.Name)
             .Where(x => x is { })
@@ -57,7 +56,7 @@ public static class FontLoader
         {
             PostScriptName = namev(NameIDs.PostScriptName),
             Path = path,
-            Position = pos,
+            Position = position,
             TableRecords = tables,
             Offset = offset,
             Name = name,
@@ -131,8 +130,7 @@ public static class FontLoader
                     .Select(i =>
                     {
                         if (loca.Offsets[i] == loca.Offsets[i + 1]) return new NotdefGlyph();
-                        x.Position = position + loca.Offsets[i];
-                        var number_of_contours = x.ReadShortByBigEndian();
+                        var number_of_contours = x.SeekTo(position + loca.Offsets[i]).ReadShortByBigEndian();
                         return number_of_contours >= 0
                             ? SimpleGlyph.ReadFrom(x, number_of_contours).Cast<IGlyph>()
                             : CompositeGlyph.ReadFrom(x, number_of_contours);
@@ -190,7 +188,6 @@ public static class FontLoader
     public static T? ReadTableRecprds<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f)
     {
         if (!font.TableRecords.TryGetValue(name, out var record)) return default;
-        stream.Position = record.Offset;
-        return f(stream);
+        return f(stream.SeekTo(record.Offset));
     }
 }

@@ -96,8 +96,7 @@ public static class FontExporter
 
         var lastposition = stream.Position;
         tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
-        stream.Position = start_stream_position;
-        var checksum = CalcChecksum(stream, (uint)(lastposition - start_stream_position));
+        var checksum = CalcChecksum(stream.SeekTo(start_stream_position), (uint)(lastposition - start_stream_position));
         ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0xB1B0AFBA - checksum));
         stream.Position = lastposition;
     }
@@ -143,8 +142,7 @@ public static class FontExporter
 
         var lastposition = stream.Position;
         tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
-        stream.Position = start_stream_position;
-        var checksum = CalcChecksum(stream, (uint)(lastposition - start_stream_position));
+        var checksum = CalcChecksum(stream.SeekTo(start_stream_position), (uint)(lastposition - start_stream_position));
         ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0xB1B0AFBA - checksum));
         stream.Position = lastposition;
     }
@@ -170,10 +168,8 @@ public static class FontExporter
     public static void MovePositonAndWriteTableRecord(Stream stream, MutableTableRecord table)
     {
         Debug.Assert((table.Offset % 4) == 0);
-        stream.Position = table.Offset;
-        table.Checksum = CalcChecksum(stream, table.Length);
-        stream.Position = table.Position;
-        WriteTableRecord(stream, table);
+        table.Checksum = CalcChecksum(stream.SeekTo(table.Offset), table.Length);
+        WriteTableRecord(stream.SeekTo(table.Position), table);
     }
 
     public static uint CalcChecksum(Stream stream, uint length)

@@ -30,8 +30,7 @@ public class CMapTable : IExportable
                 .ToDictionary(x => x, x =>
                 {
                     if (offset_cmap.TryGetValue(x.Offset, out var cmap)) return cmap;
-                    stream.Position = position + x.Offset;
-                    return offset_cmap[x.Offset] = ReadCMapFormat(stream);
+                    return offset_cmap[x.Offset] = ReadCMapFormat(stream.SeekTo(position + x.Offset));
                 }),
         };
     }

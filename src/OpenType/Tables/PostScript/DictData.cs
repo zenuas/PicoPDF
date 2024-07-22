@@ -80,17 +80,17 @@ public class DictData
     {
         var dict = ReadFrom(bytes);
 
-        var char_strings = dict.CharStringsOffset is { } char_strings_offset ? CompactFontFormat.ReadIndexData(stream, offset + char_strings_offset) : [];
-        var charsets = dict.CharsetOffset > 0 ? ReadCharsets(stream, char_strings.Length - 1, offset + dict.CharsetOffset) : null;
+        var char_strings = dict.CharStringsOffset is { } char_strings_offset ? CompactFontFormat.ReadIndexData(stream.SeekTo(offset + char_strings_offset)) : [];
+        var charsets = dict.CharsetOffset > 0 ? ReadCharsets(stream.SeekTo(offset + dict.CharsetOffset), char_strings.Length - 1) : null;
         var private_dict = dict.PrivateOffset is { } private_size_offset ? ReadFrom(stream.SeekTo(offset + private_size_offset.Offset).ReadExactly(private_size_offset.Size), strings, stream, offset + private_size_offset.Offset) : null;
-        var subr = dict.SubrsOffset is { } subr_offset ? CompactFontFormat.ReadIndexData(stream, offset + subr_offset) : [];
+        var subr = dict.SubrsOffset is { } subr_offset ? CompactFontFormat.ReadIndexData(stream.SeekTo(offset + subr_offset)) : [];
 
         DictData[]? fdarray = null;
         byte[]? fdselect = null;
         if (dict.IsCIDFont)
         {
-            fdarray = CompactFontFormat.ReadIndexData(stream, offset + dict.FDArrayOffset.Try()).Select(x => ReadFrom(x, strings, stream, offset)).ToArray();
-            fdselect = ReadFDSelect(stream, char_strings.Length, offset + dict.FDSelectOffset.Try());
+            fdarray = CompactFontFormat.ReadIndexData(stream.SeekTo(offset + dict.FDArrayOffset.Try())).Select(x => ReadFrom(x, strings, stream, offset)).ToArray();
+            fdselect = ReadFDSelect(stream.SeekTo(offset + dict.FDSelectOffset.Try()), char_strings.Length);
         }
 
         return new()
@@ -219,12 +219,6 @@ public class DictData
             _ => throw new(),
         });
 
-    public static Charsets ReadCharsets(Stream stream, int glyph_count_without_notdef, long position)
-    {
-        stream.Position = position;
-        return ReadCharsets(stream, glyph_count_without_notdef);
-    }
-
     public static Charsets ReadCharsets(Stream stream, int glyph_count_without_notdef)
     {
         var format = stream.ReadUByte();
@@ -252,12 +246,6 @@ public class DictData
                 Glyph = Enumerable.Repeat(0, glyph_count_without_notdef).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
             };
         }
-    }
-
-    public static byte[] ReadFDSelect(Stream stream, int glyph_count_with_notdef, long position)
-    {
-        stream.Position = position;
-        return ReadFDSelect(stream, glyph_count_with_notdef);
     }
 
     public static byte[] ReadFDSelect(Stream stream, int glyph_count_with_notdef)
@@ -305,12 +293,10 @@ public class DictData
             var private_data = DictDataToBytes(PrivateDict!.Dict);
             Dict[18] = [private_data.Length, private_position - offset];
 
-            stream.Position += private_data.Length;
-            PrivateDict!.WriteWithoutDictAndOffsetUpdate(stream, private_position);
+            PrivateDict!.WriteWithoutDictAndOffsetUpdate(stream.SeekTo(private_data.Length, SeekOrigin.Current), private_position);
 
             var lastposition = stream.Position;
-            stream.Position = private_position;
-            stream.Write(DictDataToBytes(PrivateDict!.Dict));
+            stream.SeekTo(private_position).Write(DictDataToBytes(PrivateDict!.Dict));
             stream.Position = lastposition;
         }
         if (IsCIDFont)
