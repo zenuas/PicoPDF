@@ -283,14 +283,12 @@ public class DictData
         }
     }
 
-    public void WriteWithoutDictAndOffsetUpdate(Stream stream, long offset) => WriteWithoutDictAndOffsetUpdate(stream, offset, CharStrings, Charsets, PrivateDict, LocalSubroutines, FontDictArray, FontDictSelect);
-
-    public void WriteWithoutDictAndOffsetUpdate(Stream stream, long offset, byte[][] char_strings, Charsets? charsets, DictData? private_dict, byte[][] subr, DictData[] fdarray, byte[] fdselect)
+    public void WriteWithoutDictAndOffsetUpdate(Stream stream, long offset)
     {
         if (Dict.ContainsKey(15))
         {
             Dict[15] = [stream.Position - offset];
-            WriteCharsets(stream, charsets!);
+            WriteCharsets(stream, Charsets!);
         }
         if (Dict.ContainsKey(16))
         {
@@ -299,20 +297,20 @@ public class DictData
         if (Dict.ContainsKey(17))
         {
             Dict[17] = [stream.Position - offset];
-            CompactFontFormat.WriteIndexData(stream, char_strings);
+            CompactFontFormat.WriteIndexData(stream, CharStrings);
         }
         if (Dict.ContainsKey(18))
         {
             var private_position = stream.Position;
-            var private_data = DictDataToBytes(private_dict!.Dict);
+            var private_data = DictDataToBytes(PrivateDict!.Dict);
             Dict[18] = [private_data.Length, private_position - offset];
 
             stream.Position += private_data.Length;
-            private_dict!.WriteWithoutDictAndOffsetUpdate(stream, private_position);
+            PrivateDict!.WriteWithoutDictAndOffsetUpdate(stream, private_position);
 
             var lastposition = stream.Position;
             stream.Position = private_position;
-            stream.Write(DictDataToBytes(private_dict!.Dict));
+            stream.Write(DictDataToBytes(PrivateDict!.Dict));
             stream.Position = lastposition;
         }
         if (IsCIDFont)
@@ -320,17 +318,17 @@ public class DictData
             Debug.Assert(Dict.ContainsKey(1236));
             Debug.Assert(Dict.ContainsKey(1237));
 
-            fdarray.Each(x => x.WriteWithoutDictAndOffsetUpdate(stream, offset));
+            FontDictArray.Each(x => x.WriteWithoutDictAndOffsetUpdate(stream, offset));
             Dict[1236] = [stream.Position - offset];
-            CompactFontFormat.WriteIndexData(stream, fdarray.Select(x => DictDataToBytes(x.Dict)).ToArray());
+            CompactFontFormat.WriteIndexData(stream, FontDictArray.Select(x => DictDataToBytes(x.Dict)).ToArray());
 
             Dict[1237] = [stream.Position - offset];
-            WriteFDSelect(stream, fdselect);
+            WriteFDSelect(stream, FontDictSelect);
         }
         if (Dict.ContainsKey(19))
         {
             Dict[19] = [stream.Position - offset];
-            CompactFontFormat.WriteIndexData(stream, subr);
+            CompactFontFormat.WriteIndexData(stream, LocalSubroutines);
         }
     }
 
