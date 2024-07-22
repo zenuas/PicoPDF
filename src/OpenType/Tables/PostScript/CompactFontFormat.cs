@@ -16,11 +16,6 @@ public class CompactFontFormat : IExportable
     public required DictData TopDict { get; init; }
     public required string[] Strings { get; init; }
     public required byte[][] GlobalSubroutines { get; init; }
-    public required byte[][] CharStrings { get; init; }
-    public required Charsets Charsets { get; init; }
-    public required DictData? PrivateDict { get; init; }
-    public required DictData[] FontDictArray { get; init; }
-    public required byte[] FontDictSelect { get; init; }
 
     public static CompactFontFormat ReadFrom(Stream stream)
     {
@@ -46,11 +41,6 @@ public class CompactFontFormat : IExportable
             TopDict = top_dict,
             Strings = strings,
             GlobalSubroutines = global_subr,
-            CharStrings = top_dict.CharStrings,
-            Charsets = top_dict.Charsets.Try(),
-            PrivateDict = top_dict.PrivateDict,
-            FontDictArray = top_dict.FontDictArray,
-            FontDictSelect = top_dict.FontDictSelect,
         };
     }
 
@@ -93,7 +83,7 @@ public class CompactFontFormat : IExportable
         WriteIndexData(stream, Strings.Select(Encoding.UTF8.GetBytes).ToArray());
         WriteIndexData(stream, GlobalSubroutines);
 
-        TopDict.WriteWithoutDictAndOffsetUpdate(stream, position, CharStrings, Charsets, PrivateDict, TopDict.LocalSubroutines, FontDictArray, FontDictSelect);
+        TopDict.WriteWithoutDictAndOffsetUpdate(stream, position);
 
         var lastposition = stream.Position;
         stream.Position = top_dict_start;

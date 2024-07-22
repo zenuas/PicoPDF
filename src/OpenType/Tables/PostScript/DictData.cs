@@ -106,6 +106,18 @@ public class DictData
         };
     }
 
+    public DictData Clone() => new()
+    {
+        Strings = Strings,
+        Dict = Dict.ToDictionary(),
+        CharStrings = CharStrings,
+        Charsets = Charsets,
+        PrivateDict = PrivateDict?.Clone(),
+        LocalSubroutines = LocalSubroutines,
+        FontDictArray = [.. FontDictArray.Select(x => x.Clone())],
+        FontDictSelect = [.. FontDictSelect],
+    };
+
     public static Dictionary<int, IntOrDouble[]> BytesToDict(byte[] bytes)
     {
         var kv = new Dictionary<int, IntOrDouble[]>();
