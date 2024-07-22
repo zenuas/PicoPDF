@@ -24,7 +24,6 @@ public static class PdfExport
             if (input is { })
             {
                 x.Elements.Add("Length", input.Length);
-                input.Position = 0;
             }
             x.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString()}\n"));
             stream.Write($">>\n");
