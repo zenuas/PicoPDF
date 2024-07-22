@@ -185,9 +185,5 @@ public static class FontLoader
         };
     }
 
-    public static T? ReadTableRecprds<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f)
-    {
-        if (!font.TableRecords.TryGetValue(name, out var record)) return default;
-        return f(stream.SeekTo(record.Offset));
-    }
+    public static T? ReadTableRecprds<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f) => !font.TableRecords.TryGetValue(name, out var record) ? default : f(stream.SeekTo(record.Offset));
 }

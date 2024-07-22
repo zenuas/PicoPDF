@@ -27,11 +27,7 @@ public class CMapTable : IExportable
             EncodingRecords = Enumerable.Repeat(0, num_of_tables)
                 .Select(_ => EncodingRecord.ReadFrom(stream))
                 .ToArray()
-                .ToDictionary(x => x, x =>
-                {
-                    if (offset_cmap.TryGetValue(x.Offset, out var cmap)) return cmap;
-                    return offset_cmap[x.Offset] = ReadCMapFormat(stream.SeekTo(position + x.Offset));
-                }),
+                .ToDictionary(x => x, x => offset_cmap.TryGetValue(x.Offset, out var cmap) ? cmap : (offset_cmap[x.Offset] = ReadCMapFormat(stream.SeekTo(position + x.Offset)))),
         };
     }
 

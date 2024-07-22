@@ -38,10 +38,9 @@ public static class ImageLoader
         var header = stream.ReadExactly(9);
         stream.Position = position;
 
-        if (header.Length >= JpegFile.MagicNumber.Length && header.Take(JpegFile.MagicNumber.Length).SequenceEqual(JpegFile.MagicNumber)) return ImageTypes.Jpeg;
-        if (header.Length >= PngFile.MagicNumber.Length && header.Take(PngFile.MagicNumber.Length).SequenceEqual(PngFile.MagicNumber)) return ImageTypes.Png;
-        if (header.Length >= BmpFile.MagicNumber.Length && header.Take(BmpFile.MagicNumber.Length).SequenceEqual(BmpFile.MagicNumber)) return ImageTypes.Bmp;
-
-        return ImageTypes.Unknown;
+        return header.Length >= JpegFile.MagicNumber.Length && header.Take(JpegFile.MagicNumber.Length).SequenceEqual(JpegFile.MagicNumber) ? ImageTypes.Jpeg
+            : header.Length >= PngFile.MagicNumber.Length && header.Take(PngFile.MagicNumber.Length).SequenceEqual(PngFile.MagicNumber) ? ImageTypes.Png
+            : header.Length >= BmpFile.MagicNumber.Length && header.Take(BmpFile.MagicNumber.Length).SequenceEqual(BmpFile.MagicNumber) ? ImageTypes.Bmp
+            : ImageTypes.Unknown;
     }
 }
