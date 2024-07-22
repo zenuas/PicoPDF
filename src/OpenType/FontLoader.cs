@@ -104,9 +104,9 @@ public static class FontLoader
     {
         using var stream = File.OpenRead(font.Path.Path);
 
-        return font.Offset.ContainTrueType() ?
-            LoadTrueTypeFont(stream, font) :
-            LoadPostScriptFont(stream, font);
+        return font.Offset.ContainTrueType()
+            ? LoadTrueTypeFont(stream, font)
+            : LoadPostScriptFont(stream, font);
     }
 
     public static List<(int Start, int End)> CreateCMap4Range(CMapFormat4 cmap4)
