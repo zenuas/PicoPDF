@@ -18,16 +18,16 @@ public class BufferedEnumeratorTest
         Assert.True(xs.Next(2, out var i2) && i2 == 3);
         Assert.False(xs.Next(3, out _));
 
-        Assert.Equal(xs.GetRange(1), [1]);
+        Assert.Equal(xs.GetRange(1).AsSpan(), [1]);
         Assert.True(xs.Next(0, out var i6) && i6 == 2);
         Assert.True(xs.Next(1, out var i7) && i7 == 3);
         Assert.False(xs.Next(2, out _));
 
-        Assert.Equal(xs.GetRange(1), [2]);
+        Assert.Equal(xs.GetRange(1).AsSpan(), [2]);
         Assert.True(xs.Next(0, out var i8) && i8 == 3);
         Assert.False(xs.Next(1, out _));
 
-        Assert.Equal(xs.GetRange(1), [3]);
+        Assert.Equal(xs.GetRange(1).AsSpan(), [3]);
         Assert.False(xs.Next(0, out _));
 
         _ = Assert.Throws<IndexOutOfRangeException>(() => xs.GetRange(1));
