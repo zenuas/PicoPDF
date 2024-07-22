@@ -21,12 +21,7 @@ public static class ImageLoader
         return FromStream(stream, type);
     }
 
-    public static IImage? FromStream(Stream stream)
-    {
-        var position = stream.Position;
-        var type = TypeCheck(stream);
-        return FromStream(stream.SeekTo(position), type);
-    }
+    public static IImage? FromStream(Stream stream) => FromStream(stream, TypeCheck(stream));
 
     public static IImage? FromStream(Stream stream, ImageTypes type) => type switch
     {
@@ -35,11 +30,7 @@ public static class ImageLoader
         _ => null,
     };
 
-    public static ImageTypes TypeCheck(string path)
-    {
-        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        return TypeCheck(stream);
-    }
+    public static ImageTypes TypeCheck(string path) => new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read).Using(TypeCheck);
 
     public static ImageTypes TypeCheck(Stream stream)
     {
