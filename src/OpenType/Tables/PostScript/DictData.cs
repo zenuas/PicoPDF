@@ -82,7 +82,7 @@ public class DictData
 
         var char_strings = dict.CharStringsOffset is { } char_strings_offset ? CompactFontFormat.ReadIndexData(stream, offset + char_strings_offset) : [];
         var charsets = dict.CharsetOffset > 0 ? ReadCharsets(stream, char_strings.Length - 1, offset + dict.CharsetOffset) : null;
-        var private_dict = dict.PrivateOffset is { } private_size_offset ? ReadFrom(stream.ReadPositionBytes(offset + private_size_offset.Offset, private_size_offset.Size), strings, stream, offset + private_size_offset.Offset) : null;
+        var private_dict = dict.PrivateOffset is { } private_size_offset ? ReadFrom(stream.SeekTo(offset + private_size_offset.Offset).ReadExactly(private_size_offset.Size), strings, stream, offset + private_size_offset.Offset) : null;
         var subr = dict.SubrsOffset is { } subr_offset ? CompactFontFormat.ReadIndexData(stream, offset + subr_offset) : [];
 
         DictData[]? fdarray = null;

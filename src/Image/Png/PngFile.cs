@@ -19,7 +19,7 @@ public class PngFile : IImageCanvas
 
     public static PngFile FromStream(Stream stream)
     {
-        var signature = stream.ReadBytes(8);
+        var signature = stream.ReadExactly(8);
         Debug.Assert(MagicNumber.SequenceEqual(signature));
 
         var width = 0;
@@ -34,12 +34,12 @@ public class PngFile : IImageCanvas
 
         while (true)
         {
-            var chunk = stream.ReadBytes(8).AsSpan();
+            var chunk = stream.ReadExactly(8).AsSpan();
             if (chunk.Length < 8) break;
 
             var length = BinaryPrimitives.ReadInt32BigEndian(chunk[0..4]);
             var type = BinaryPrimitives.ReadUInt32BigEndian(chunk[4..8]);
-            var chunkdataraw = stream.ReadBytes(length);
+            var chunkdataraw = stream.ReadExactly(length);
             var chunkdata = chunkdataraw.AsSpan();
             stream.Position += 4;
             switch (type)

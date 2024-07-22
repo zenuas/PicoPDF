@@ -16,12 +16,12 @@ public class JpegFile : IImage
 
     public static JpegFile FromStream(Stream stream)
     {
-        var signature = stream.ReadBytes(2);
+        var signature = stream.ReadExactly(2);
         Debug.Assert(MagicNumber.SequenceEqual(signature));
 
         while (true)
         {
-            var header = stream.ReadBytes(4).AsSpan();
+            var header = stream.ReadExactly(4).AsSpan();
             if (header.Length < 4) break;
 
             var maeker = BinaryPrimitives.ReadUInt16BigEndian(header[0..2]);
@@ -43,7 +43,7 @@ public class JpegFile : IImage
                     (ushort)SegmentTypes.SOF15
                 )
             {
-                var sof = stream.ReadBytes(5).AsSpan();
+                var sof = stream.ReadExactly(5).AsSpan();
                 var precision = sof[0];
                 var height = BinaryPrimitives.ReadUInt16BigEndian(sof[1..3]);
                 var width = BinaryPrimitives.ReadUInt16BigEndian(sof[3..5]);

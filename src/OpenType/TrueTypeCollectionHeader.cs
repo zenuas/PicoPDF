@@ -13,7 +13,7 @@ public class TrueTypeCollectionHeader
 
     public static TrueTypeCollectionHeader ReadFrom(Stream stream) => new()
     {
-        TTCTag = Encoding.ASCII.GetString(stream.ReadBytes(4)),
+        TTCTag = Encoding.ASCII.GetString(stream.ReadExactly(4)),
         MajorVersion = stream.ReadUShortByBigEndian(),
         MinorVersion = stream.ReadUShortByBigEndian(),
         NumberOfFonts = stream.ReadUIntByBigEndian(),

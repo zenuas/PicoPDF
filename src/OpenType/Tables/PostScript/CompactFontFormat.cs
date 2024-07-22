@@ -67,7 +67,7 @@ public class CompactFontFormat : IExportable
         };
 
         var offset = Enumerable.Repeat(0, count + 1).Select(_ => offset_read(stream)).ToArray();
-        return Enumerable.Range(0, count).Select(i => stream.ReadBytes(offset[i + 1] - offset[i])).ToArray();
+        return Enumerable.Range(0, count).Select(i => stream.ReadExactly(offset[i + 1] - offset[i])).ToArray();
     }
 
     public void WriteTo(Stream stream)

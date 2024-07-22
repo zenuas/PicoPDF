@@ -52,7 +52,7 @@ public static class ImageLoader
     public static ImageTypes TypeCheck(Stream stream)
     {
         var position = stream.Position;
-        var header = stream.ReadBytes(9);
+        var header = stream.ReadExactly(9);
         stream.Position = position;
 
         if (header.Length >= JpegFile.MagicNumber.Length && header.Take(JpegFile.MagicNumber.Length).SequenceEqual(JpegFile.MagicNumber)) return ImageTypes.Jpeg;

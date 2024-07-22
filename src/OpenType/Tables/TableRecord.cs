@@ -13,7 +13,7 @@ public class TableRecord
 
     public static TableRecord ReadFrom(Stream stream) => new()
     {
-        TableTag = Encoding.ASCII.GetString(stream.ReadBytes(4)),
+        TableTag = Encoding.ASCII.GetString(stream.ReadExactly(4)),
         CheckSum = stream.ReadUIntByBigEndian(),
         Offset = stream.ReadUIntByBigEndian(),
         Length = stream.ReadUIntByBigEndian(),
