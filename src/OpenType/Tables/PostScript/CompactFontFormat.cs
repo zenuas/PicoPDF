@@ -109,16 +109,4 @@ public class CompactFontFormat : IExportable
         index.Aggregate<byte[], uint[]>([1], (acc, x) => [.. acc, (uint)(acc.Last() + x.Length)]).Each(stream.WriteUIntByBigEndian);
         index.Each(x => stream.Write(x));
     }
-
-    public static void WriteCharsets(Stream stream, Charsets charsets)
-    {
-        stream.WriteByte(0);
-        charsets.Glyph.Each(stream.WriteUShortByBigEndian);
-    }
-
-    public static void WriteFDSelect(Stream stream, byte[] fdselect)
-    {
-        stream.WriteByte(0);
-        fdselect.Each(stream.WriteByte);
-    }
 }
