@@ -89,8 +89,7 @@ public class DictData
         byte[]? fdselect = null;
         if (dict.IsCIDFont)
         {
-            var fd_array_offset = offset + dict.FDArrayOffset.Try();
-            fdarray = CompactFontFormat.ReadIndexData(stream, fd_array_offset).Select(x => ReadFrom(x, strings, stream, offset)).ToArray();
+            fdarray = CompactFontFormat.ReadIndexData(stream, offset + dict.FDArrayOffset.Try()).Select(x => ReadFrom(x, strings, stream, offset)).ToArray();
             fdselect = ReadFDSelect(stream, char_strings.Length, offset + dict.FDSelectOffset.Try());
         }
 
