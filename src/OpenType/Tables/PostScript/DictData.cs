@@ -335,7 +335,7 @@ public class DictData
 
     public static byte[] DictDataToBytes(Dictionary<int, IntOrDouble[]> kv)
     {
-        using var mem = new MemoryStream();
+        var xs = new List<byte>();
         foreach (var (k, vs) in kv)
         {
             for (var i = 0; i < vs.Length; i++)
@@ -343,16 +343,16 @@ public class DictData
                 if (k is 15 or 16 or 17 or 1236 or 1237 or 19 || (k == 18 && i == 1))
                 {
                     // offset will be changed later, so output fixed 5 bytes.
-                    mem.Write(DictDataNumberTo5Bytes(vs[i].ToInt()));
+                    xs.AddRange(DictDataNumberTo5Bytes(vs[i].ToInt()));
                 }
                 else if (vs[i].IsInt())
                 {
-                    mem.Write(DictDataNumberToBytes(vs[i].ToInt()));
+                    xs.AddRange(DictDataNumberToBytes(vs[i].ToInt()));
                 }
                 else
                 {
-                    mem.WriteByte(30);
-                    mem.Write(DoubleToPackedBCD(vs[i].ToDouble())
+                    xs.Add(30);
+                    xs.AddRange(DoubleToPackedBCD(vs[i].ToDouble())
                             .Concat((byte)0x0f)
                             .Concat((byte)0x0f)
                             .Chunk(2)
@@ -362,9 +362,9 @@ public class DictData
                         );
                 }
             }
-            mem.Write(k >= 100 ? [(byte)(k / 100), (byte)(k % 100)] : [(byte)k]);
+            xs.AddRange(k >= 100 ? [(byte)(k / 100), (byte)(k % 100)] : [(byte)k]);
         }
-        return mem.ToArray();
+        return [.. xs];
     }
 
     public static byte[] DictDataNumberToBytes(int number) =>
