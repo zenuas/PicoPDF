@@ -28,18 +28,12 @@ public static class ImageLoader
         return FromStream(stream.SeekTo(position), type);
     }
 
-    public static IImage? FromStream(Stream stream, ImageTypes type)
+    public static IImage? FromStream(Stream stream, ImageTypes type) => type switch
     {
-        switch (type)
-        {
-            case ImageTypes.Jpeg:
-                return JpegFile.FromStream(stream);
-
-            case ImageTypes.Png:
-                return PngFile.FromStream(stream);
-        }
-        return null;
-    }
+        ImageTypes.Jpeg => JpegFile.FromStream(stream),
+        ImageTypes.Png => PngFile.FromStream(stream),
+        _ => null,
+    };
 
     public static ImageTypes TypeCheck(string path)
     {
