@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -197,7 +198,7 @@ public class DictData
         .Join()
         .To(x => double.Parse(x));
 
-    public static IEnumerable<byte> DoubleToPackedBCD(double d) => d.ToString()
+    public static IEnumerable<byte> DoubleToPackedBCD(double d) => d.ToString(CultureInfo.InvariantCulture)
         .Replace("E-", "e")
         .Replace("E+", "E")
         .Select(x => x switch
