@@ -132,7 +132,7 @@ public static class FontExtract
             Strings = font.CompactFontFormat.TopDict.Strings,
             Dict = font.CompactFontFormat.TopDict.Dict.ToDictionary(),
             CharStrings = char_strings,
-            Charsets = new Charsets()
+            Charsets = new()
             {
                 Format = 0,
                 Glyph = Lists.RangeTo(1, num_of_glyph)
