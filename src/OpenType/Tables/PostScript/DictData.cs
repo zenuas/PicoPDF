@@ -74,11 +74,9 @@ public class DictData
     public int NominalWidthX { get => Dict.TryGetValue(21, out var xs) ? xs[0].ToInt() : 0; }
 
 
-    public static DictData ReadFrom(byte[] bytes) => new() { Dict = BytesToDict(bytes) };
-
     public static DictData ReadFrom(byte[] bytes, string[] strings, Stream stream, long offset)
     {
-        var dict = ReadFrom(bytes);
+        var dict = new DictData() { Dict = BytesToDict(bytes) };
 
         var char_strings = dict.CharStringsOffset is { } char_strings_offset ? CompactFontFormat.ReadIndexData(stream.SeekTo(offset + char_strings_offset)) : [];
         var charsets = dict.CharsetOffset > 0 ? ReadCharsets(stream.SeekTo(offset + dict.CharsetOffset), char_strings.Length - 1) : null;
