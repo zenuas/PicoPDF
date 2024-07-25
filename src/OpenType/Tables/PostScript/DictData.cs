@@ -79,7 +79,11 @@ public class DictData
         var dict = new DictData() { Dict = BytesToDict(bytes) };
 
         var char_strings = dict.CharStringsOffset is { } char_strings_offset ? CompactFontFormat.ReadIndexData(stream.SeekTo(offset + char_strings_offset)) : [];
-        var charsets = dict.CharsetOffset > 0 ? ReadCharsets(stream.SeekTo(offset + dict.CharsetOffset), char_strings.Length - 1) : null;
+        var charsets = dict.Dict.ContainsKey(15)
+            ? (dict.CharsetOffset is 0 or 1 or 2
+                ? ReadDefinedCharsets(dict.CharsetOffset)
+                : ReadCharsets(stream.SeekTo(offset + dict.CharsetOffset), char_strings.Length - 1))
+            : null;
         var private_dict = dict.PrivateOffset is { } private_size_offset ? ReadFrom(stream.SeekTo(offset + private_size_offset.Offset).ReadExactly(private_size_offset.Size), strings, stream, offset + private_size_offset.Offset) : null;
         var subr = dict.SubrsOffset is { } subr_offset ? CompactFontFormat.ReadIndexData(stream.SeekTo(offset + subr_offset)) : [];
 
@@ -216,6 +220,8 @@ public class DictData
             '-' => (byte)0x0e,
             _ => throw new(),
         });
+
+    public static Charsets ReadDefinedCharsets(int charset) => throw new();
 
     public static Charsets ReadCharsets(Stream stream, int glyph_count_without_notdef)
     {
