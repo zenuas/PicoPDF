@@ -11,8 +11,8 @@ public class StandardType1Font : PdfObject, IFont
     public required string Name { get; init; }
     public required StandardType1Fonts Font { get; init; }
     public required Encoding TextEncoding { get; init; }
-    public static byte[] EscapeBytes = Encoding.ASCII.GetBytes("()\\");
-    public static byte EscapeCharByte = Encoding.ASCII.GetBytes("\\")[0];
+    public static readonly byte[] EscapeBytes = Encoding.ASCII.GetBytes("()\\");
+    public static readonly byte EscapeCharByte = Encoding.ASCII.GetBytes("\\")[0];
 
     public override void DoExport(PdfExportOption option)
     {
