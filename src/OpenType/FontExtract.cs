@@ -117,9 +117,11 @@ public static class FontExtract
             .Prepend(font.CompactFontFormat.TopDict.CharStrings[0])
             .ToArray();
 
-        var fdselect = font.CompactFontFormat.TopDict.FontDictSelect.Length == 0 ? [] : Lists.RangeTo(0, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.FontDictSelect : (byte)0)
-            .ToArray();
+        var fdselect = font.CompactFontFormat.TopDict.FontDictSelect.Length == 0
+            ? []
+            : Lists.RangeTo(0, num_of_glyph)
+                .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.FontDictSelect : (byte)0)
+                .ToArray();
 
         var fdarray = fdselect
             .Order()
