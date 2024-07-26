@@ -174,7 +174,7 @@ public static class FontExporter
 
     public static uint CalcChecksum(Stream stream, uint length)
     {
-        uint sum = 0U;
+        var sum = 0U;
         for (var i = 0U; i < length; i += sizeof(uint))
         {
             sum += stream.ReadUIntByBigEndian();
