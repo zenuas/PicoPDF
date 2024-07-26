@@ -85,12 +85,12 @@ public static class FontExporter
         if (font.FontHeader.IndexToLocFormat == 0)
         {
             font.Glyphs.Each((_, i) => stream.WriteUShortByBigEndian((ushort)(glyph_index[i] / 2)));
-            stream.WriteUShortByBigEndian((ushort)(lastglyph / 2)); // Offsets[font.Glyphs.Length]
+            stream.WriteUShortByBigEndian((ushort)(lastglyph / 2));
         }
         else
         {
             font.Glyphs.Each((_, i) => stream.WriteUIntByBigEndian((uint)(glyph_index[i])));
-            stream.WriteUIntByBigEndian((uint)lastglyph); // Offsets[font.Glyphs.Length]
+            stream.WriteUIntByBigEndian((uint)lastglyph);
         }
         tables["loca"].Length = (uint)(stream.Position - loca_start);
 
