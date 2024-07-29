@@ -243,10 +243,14 @@ public static class FontExtract
             .Select(x => font.CompactFontFormat.TopDict.FontDictArray[x].Clone())
             .ToArray();
 
+        var dict_data = font.CompactFontFormat.TopDict.Dict.ToDictionary();
+        var strings = font.CompactFontFormat.Strings.ToList();
+        dict_data[1230] = [SID.AddSID(strings, "Adobe"), SID.AddSID(strings, "Identity"), 0];
+
         var top_dict = new DictData
         {
-            Strings = font.CompactFontFormat.TopDict.Strings,
-            Dict = font.CompactFontFormat.TopDict.Dict.ToDictionary(),
+            Strings = [.. strings],
+            Dict = dict_data,
             CharStrings = char_strings,
             Charsets = new()
             {

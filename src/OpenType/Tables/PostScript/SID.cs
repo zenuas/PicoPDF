@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Mina.Extension;
+using System.Collections.Generic;
 
 namespace PicoPDF.OpenType.Tables.PostScript;
 
@@ -405,4 +406,9 @@ public static class SID
         StandardStrings.TryGetValue(sid, out var x) ? x :
         strings.Length <= sid - 391 ? "" :
         strings[sid - 391];
+
+    public static int AddSID(List<string> strings, string s) =>
+        StandardStrings.FindFirstOrNullValue(kv => kv.Value == s) is { } kv ? kv.Key :
+        strings.FindFirstIndex(x => x == s) is { } index && index >= 0 ? index + 391 :
+        strings.Return(x => x.Add(s)).Count + 390;
 }
