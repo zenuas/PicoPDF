@@ -48,4 +48,10 @@ public class Option
 
     [CommandOption("cmap-list")]
     public bool CMapList { get; init; } = false;
+
+    [CommandOption("input-deflate")]
+    public string InputDeflate { get; init; } = "";
+
+    [CommandOption("output"), CommandOption('o')]
+    public string Output { get; init; } = "";
 }
