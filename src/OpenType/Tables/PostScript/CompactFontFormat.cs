@@ -54,9 +54,7 @@ public class CompactFontFormat : IExportable
         {
             1 => (x) => x.ReadUByte(),
             2 => (x) => x.ReadUShortByBigEndian(),
-            3 => (x) => BitConverter.IsLittleEndian
-                ? (x.ReadUByte() << 16) | (x.ReadUByte() << 8) | x.ReadUByte()
-                : x.ReadUByte() | (x.ReadUByte() << 8) | (x.ReadUByte() << 16),
+            3 => (x) => (x.ReadUByte() << 16) | (x.ReadUByte() << 8) | x.ReadUByte(),
             _ => (x) => (int)x.ReadUIntByBigEndian(),
         };
 
