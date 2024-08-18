@@ -46,6 +46,9 @@ public class Option
     [CommandOption("regist-system-font")]
     public bool RegistSystemFont { get; init; } = true;
 
+    [CommandOption("regist-user-font")]
+    public string RegistUserFont { get; init; } = "";
+
     [CommandOption("cmap-list")]
     public bool CMapList { get; init; } = false;
 
