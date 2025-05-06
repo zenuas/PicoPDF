@@ -90,7 +90,10 @@ public class FontRegister
         return true;
     }
 
-    public void AddFont(string path) => Add(FontLoader.LoadTableRecords(path));
+    public void AddFont(string path)
+    {
+        if (Objects.Catch(() => FontLoader.LoadTableRecords(path), out var r) is null) Add(r);
+    }
 
     public void AddFontCollection(string path) => FontLoader.LoadTableRecordsCollection(path).Each(x => Add(x));
 }

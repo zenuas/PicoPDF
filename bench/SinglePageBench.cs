@@ -19,7 +19,7 @@ public class SinglePageBench
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
-	"DefaultFont": "Meiryo-Bold",
+	"DefaultFont": "Meiryo Bold",
 	"Padding": [15, 10, 15],
 	
 	"Header": "PageHeader",

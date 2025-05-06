@@ -32,7 +32,8 @@ public static class FontLoader
             : Enumerable.Repeat(0, (int)header.NumberOfFonts)
                 .Select(_ => stream.ReadUIntByBigEndian())
                 .ToArray()
-                .Select((x, i) => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream.SeekTo(x), opt))
+                .Select((x, i) => Objects.Catch(() => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream.SeekTo(x), opt), out var r) is null ? r : null)
+                .OfType<FontTableRecords>()
                 .ToArray();
     }
 
