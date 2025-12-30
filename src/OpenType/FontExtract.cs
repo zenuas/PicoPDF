@@ -67,9 +67,7 @@ public static class FontExtract
         };
     }
 
-    public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt) => font.CompactFontFormat.TopDict.IsCIDFont ? ExtractCIDFont(font, opt) : ExtractCffFont(font, opt);
-
-    public static PostScriptFont ExtractCffFont(PostScriptFont font, FontExtractOption opt)
+    public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
     {
         var chars = opt.ExtractChars.Order().ToArray();
         var charsets = font.CompactFontFormat.TopDict.Charsets.Try();
@@ -119,106 +117,6 @@ public static class FontExtract
         {
             Strings = font.CompactFontFormat.TopDict.Strings,
             Dict = font.CompactFontFormat.TopDict.Dict.ToDictionary(),
-            CharStrings = char_strings,
-            Charsets = new()
-            {
-                Format = 0,
-                Glyph = Lists.RangeTo(1, num_of_glyph)
-                    .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.Charset : (ushort)0)
-                    .ToArray(),
-            },
-            PrivateDict = font.CompactFontFormat.TopDict.PrivateDict,
-            FontDictArray = fdarray,
-            FontDictSelect = fdselect.Select(x => fdselect_index[x]).ToArray(),
-        };
-
-        var cff = new CompactFontFormat
-        {
-            Major = font.CompactFontFormat.Major,
-            Minor = font.CompactFontFormat.Minor,
-            HeaderSize = font.CompactFontFormat.HeaderSize,
-            OffsetSize = font.CompactFontFormat.OffsetSize,
-            Names = font.CompactFontFormat.Names,
-            TopDict = top_dict,
-            Strings = font.CompactFontFormat.Strings,
-            GlobalSubroutines = font.CompactFontFormat.GlobalSubroutines,
-        };
-
-        return new()
-        {
-            PostScriptName = font.PostScriptName,
-            Path = font.Path,
-            Position = font.Position,
-            TableRecords = font.TableRecords,
-            Offset = font.Offset,
-            Name = font.Name,
-            FontHeader = font.FontHeader,
-            MaximumProfile = font.MaximumProfile,
-            PostScript = font.PostScript,
-            OS2 = font.OS2,
-            HorizontalHeader = font.HorizontalHeader,
-            HorizontalMetrics = font.HorizontalMetrics,
-            CMap = font.CMap,
-            CMap4 = font.CMap4,
-            CMap4Range = font.CMap4Range,
-            CompactFontFormat = cff,
-        };
-    }
-
-    public static PostScriptFont ExtractCIDFont(PostScriptFont font, FontExtractOption opt)
-    {
-        var chars = opt.ExtractChars.Order().ToArray();
-        var charsets = font.CompactFontFormat.TopDict.Charsets.Try();
-        var char_glyph = chars
-            .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGIDCached(c)))
-            .ToDictionary(x => x.Char, x => (
-                    x.Index,
-                    Glyph: font.CompactFontFormat.TopDict.CharStrings[x.GID],
-                    Charset: x.GID == 0 ? (ushort)0 : charsets.Glyph[x.GID - 1],
-                    HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)],
-                    FontDictSelect: x.GID >= font.CompactFontFormat.TopDict.FontDictSelect.Length ? (byte)0 : font.CompactFontFormat.TopDict.FontDictSelect[x.GID]
-                ));
-        var gid_glyph = char_glyph.Values
-            .DistinctBy(x => x.Index)
-            .ToDictionary(x => x.Index, x => (x.Glyph, x.Charset, x.HorizontalMetrics, x.FontDictSelect));
-        var fdselect_index = char_glyph.Values
-            .Select(x => x.FontDictSelect)
-            .Distinct()
-            .Order()
-            .Select((x, i) => (FontDictSelect: x, Index: i + 1))
-            .ToDictionary(x => x.FontDictSelect, x => (byte)x.Index);
-        if (font.CompactFontFormat.TopDict.FontDictSelect.Length > 0)
-        {
-            gid_glyph[0] = (font.CompactFontFormat.TopDict.CharStrings[0], 0, font.HorizontalMetrics.Metrics[0], font.CompactFontFormat.TopDict.FontDictSelect[0]);
-            fdselect_index[font.CompactFontFormat.TopDict.FontDictSelect[0]] = 0;
-        }
-        var num_of_glyph = gid_glyph.Keys.Max();
-
-        var char_strings = Lists.RangeTo(1, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.Glyph : font.CompactFontFormat.TopDict.CharStrings[0])
-            .Prepend(font.CompactFontFormat.TopDict.CharStrings[0])
-            .ToArray();
-
-        var fdselect = font.CompactFontFormat.TopDict.FontDictSelect.Length == 0
-            ? []
-            : Lists.RangeTo(0, num_of_glyph)
-                .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.FontDictSelect : (byte)0)
-                .ToArray();
-
-        var fdarray = fdselect
-            .Order()
-            .Distinct()
-            .Select(x => font.CompactFontFormat.TopDict.FontDictArray[x].Clone())
-            .ToArray();
-
-        var dict_data = font.CompactFontFormat.TopDict.Dict.ToDictionary();
-        var strings = font.CompactFontFormat.Strings.ToList();
-        dict_data[1230] = [SID.AddSID(strings, "Adobe"), SID.AddSID(strings, "Identity"), 0];
-
-        var top_dict = new DictData
-        {
-            Strings = [.. strings],
-            Dict = dict_data,
             CharStrings = char_strings,
             Charsets = new()
             {
