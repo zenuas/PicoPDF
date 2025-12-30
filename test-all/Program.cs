@@ -1,5 +1,6 @@
 ﻿using Mina.Command;
 using Mina.Extension;
+using PicoPDF.OpenType;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
 using PicoPDF.TestAll;
@@ -55,7 +56,19 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
         datacache.Add(dataname, table);
     }
 
-    PdfUtility.Create(fontreg, json, table).Save(pdfname, export_opt);
+    var doc = PdfUtility.Create(fontreg, json, table);
+    doc.Save(pdfname, export_opt);
+
+    if(opt.EmbeddedFont && opt.OutputFontFile != "")
+    {
+        foreach(var x in doc.PdfObjects.OfType<Type0Font>())
+        {
+            var font = x.EmbeddedFont;
+            var opt2 = new Option() { OutputFontFile = opt.OutputFontFile, FontExportChars = x.Chars.ToStringByChars() };
+            if (font is TrueTypeFont ttf) FontFileExport.Export(ttf, opt2);
+            else if (font is PostScriptFont otf) FontFileExport.Export(otf, opt2);
+        }
+    }
 }
 
 static object autoconv(string s) =>
