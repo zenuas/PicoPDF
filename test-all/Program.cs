@@ -63,10 +63,7 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
     {
         foreach(var x in doc.PdfObjects.OfType<Type0Font>())
         {
-            var font = x.EmbeddedFont;
-            var opt2 = new Option() { OutputFontFile = opt.OutputFontFile, FontExportChars = x.Chars.ToStringByChars() };
-            if (font is TrueTypeFont ttf) FontFileExport.Export(ttf, opt2);
-            else if (font is PostScriptFont otf) FontFileExport.Export(otf, opt2);
+            FontFileExport.Export(x.EmbeddedFont!, new Option() { OutputFontFile = opt.OutputFontFile, FontExportChars = x.Chars.ToStringByChars() });
         }
     }
 }

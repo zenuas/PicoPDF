@@ -9,14 +9,18 @@ public static class FontFileExport
     public static void Export(FontRegister fontreg, Option opt)
     {
         var font = fontreg.LoadComplete(fontreg.LoadRequiredTables(opt.FontFileExport));
-        if (font is TrueTypeFont ttf) Export(ttf, opt);
-        else if (font is PostScriptFont otf) Export(otf, opt);
+        if (font is TrueTypeFont ttf) Export(Extract(ttf, opt), opt);
+        else if (font is PostScriptFont otf) Export(Extract(otf, opt), opt);
     }
 
-    public static void Export(TrueTypeFont font, Option opt)
+    public static void Export(IOpenTypeRequiredTables font, Option opt)
     {
         using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-        FontExporter.Export(FontExtract.Extract(font,
+        if (font is TrueTypeFont ttf) FontExporter.Export(ttf, stream);
+        else if (font is PostScriptFont otf) FontExporter.Export(otf, stream);
+    }
+
+    public static TrueTypeFont Extract(TrueTypeFont font, Option opt) => FontExtract.Extract(font,
             new()
             {
                 ExtractChars = opt.FontExportChars.ToCharArray(),
@@ -30,13 +34,9 @@ public static class FontFileExport
                     new(Platforms.Unicode, Encodings.Unicode2_0_BMPOnly),
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP),
                 ],
-            }), stream);
-    }
+            });
 
-    public static void Export(PostScriptFont font, Option opt)
-    {
-        using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-        FontExporter.Export(FontExtract.Extract(font,
+    public static PostScriptFont Extract(PostScriptFont font, Option opt) => FontExtract.Extract(font,
             new()
             {
                 ExtractChars = opt.FontExportChars.ToCharArray(),
@@ -52,6 +52,5 @@ public static class FontFileExport
                     new(Platforms.Unicode, Encodings.Unicode2_0_BMPOnly),
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP),
                 ],
-            }), stream);
-    }
+            });
 }
