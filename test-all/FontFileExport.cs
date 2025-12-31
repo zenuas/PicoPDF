@@ -8,7 +8,7 @@ public static class FontFileExport
 {
     public static void Export(FontRegister fontreg, Option opt)
     {
-        var font = fontreg.LoadComplete(fontreg.LoadRequiredTables(opt.FontFileExport));
+        var font = fontreg.LoadComplete(fontreg.LoadRequiredTables(opt.FontFileExport, true));
         if (font is TrueTypeFont ttf) Export(Extract(ttf, opt), opt);
         else if (font is PostScriptFont otf) Export(Extract(otf, opt), opt);
     }
