@@ -58,11 +58,11 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
     var doc = PdfUtility.Create(fontreg, json, table);
     doc.Save(pdfname, export_opt);
 
-    if(opt.EmbeddedFont && opt.OutputFontFile != "")
+    if (opt.OutputFontFile != "")
     {
-        foreach(var x in doc.PdfObjects.OfType<Type0Font>())
+        foreach (var x in doc.PdfObjects.OfType<Type0Font>())
         {
-            FontFileExport.Export(x.EmbeddedFont!, new Option() { OutputFontFile = opt.OutputFontFile, FontExportChars = x.Chars.ToStringByChars() });
+            if (x.EmbeddedFont is { }) FontFileExport.Export(x.EmbeddedFont, new Option() { OutputFontFile = opt.OutputFontFile, FontExportChars = x.Chars.ToStringByChars() });
         }
     }
 }
