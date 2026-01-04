@@ -87,7 +87,7 @@ public class Document
 
     public Type0Font AddFont(string name, IOpenTypeRequiredTables font)
     {
-        FontDescriptorFlags flag = font.CMap.EncodingRecords.Contains(x => x.Key.PlatformEncoding == PlatformEncodings.Windows_Symbol) ?
+        var flag = font.CMap.EncodingRecords.Contains(x => x.Key.PlatformEncoding == PlatformEncodings.Windows_Symbol) ?
             FontDescriptorFlags.Symbolic :
             FontDescriptorFlags.Nonsymbolic;
 
