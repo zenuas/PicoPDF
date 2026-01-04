@@ -85,6 +85,21 @@ public class SectionBinder3SectionTest
     };
 
     [Fact]
+    public void Line0()
+    {
+        var i = 0;
+        var models = CreatePageModel(MakeSectionData("a", "a", 1, 0));
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Count, 6);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1//");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2//");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+    }
+
+    [Fact]
     public void Line1()
     {
         var i = 0;

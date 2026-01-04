@@ -55,6 +55,17 @@ public class SectionBinderSingleTest
     };
 
     [Fact]
+    public void Line0()
+    {
+        var i = 0;
+        var models = CreatePageModel(Lists.RangeTo(1, 0));
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Count, 2);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+    }
+
+    [Fact]
     public void Line1()
     {
         var i = 0;

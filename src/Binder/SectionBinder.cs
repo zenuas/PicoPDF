@@ -46,17 +46,27 @@ public static class SectionBinder
         var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => (x.Section.BreakKey, x.BreakKeyHierarchy, Section: (ISection)x.Section.Footer!)).ToArray();
         var keys = sections.OfType<Section>().Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
 
-        var pages = new List<List<SectionModel>>();
-        var models = new List<SectionModel>();
         var bind = new BindSummaryMapper<T>() { Mapper = mapper };
         bind.CreatePool(page, keys);
         bind.CreateSummaryGoBack(keys.Length);
 
+        T lastdata = default!;
+
+        var models = new List<SectionModel>();
+        if (datas.IsLast)
+        {
+            bind.SetPageCount(1);
+            headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
+            footers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
+            if (page.Footer is ISection lastfooter) models.Add(new() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page, [], keys) });
+            bind.LastBreak(lastdata);
+            return [models];
+        }
+
+        var pages = new List<List<SectionModel>>();
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
         var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
-        T lastdata = default!;
-
         while (!datas.IsLast)
         {
             bind.SetPageCount(pages.Count + 1);

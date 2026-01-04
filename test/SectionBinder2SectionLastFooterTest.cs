@@ -69,6 +69,19 @@ public class SectionBinder2SectionLastFooterTest
     };
 
     [Fact]
+    public void Line0()
+    {
+        var i = 0;
+        var models = CreatePageModel(MakeSectionData(100, 1, 0));
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Count, 4);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/0");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+    }
+
+    [Fact]
     public void Line1()
     {
         var i = 0;
