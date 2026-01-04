@@ -61,12 +61,7 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
 
     public static IEnumerable<(int, int)> MakeSectionData(int key1, int from, int to) => Lists.RangeTo(from, to).Select(x => (x, key1));
 
-    public static string ToSectionString(SectionModel section) => section.Section switch
-    {
-        ISection a when a is HeaderSection => $"{a.Name}/{(section.Elements[0] is TextModel t ? t.Text : "")}",
-        ISection a when a is DetailSection => $"{a.Name}/{(section.Elements[0] is TextModel t ? t.Text : "")}",
-        _ => section.Section.Name,
-    };
+    public static string ToSectionString(SectionModel section) => $"{section.Section.Name}/{section.Elements.OfType<TextModel>().Select(x => x.Text).Join("/")}";
 
     [Fact]
     public void Line0()
@@ -77,8 +72,8 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(models[0].Models.Count, 4);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/0");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/0");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/1///1");
     }
 
     [Fact]
@@ -91,8 +86,8 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/1///1");
     }
 
     [Fact]
@@ -106,8 +101,8 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/2");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/1///1");
     }
 
     [Fact]
@@ -122,11 +117,11 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/1///1");
     }
 
     [Fact]
@@ -145,11 +140,11 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/3");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/4");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/1///1");
     }
 
     [Fact]
@@ -169,16 +164,16 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/4");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Count, 5);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/2///2");
     }
 
     [Fact]
@@ -199,16 +194,16 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Count, 5);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/2///2");
     }
 
     [Fact]
@@ -230,16 +225,16 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/8");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Count, 5);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/2///2");
     }
 
     [Fact]
@@ -261,17 +256,17 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/8");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Count, 7);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/9");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/100");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/2///2");
     }
 
     [Fact]
@@ -294,16 +289,16 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/8");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/9");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Count, 7);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/10");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/100");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/2///2");
     }
 }
