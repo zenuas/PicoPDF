@@ -31,11 +31,11 @@ public static class SectionBinder
 
     public static PageModel[] Bind(PageSection page, DataTable table) => Bind(page,
         table.Rows.GetIterator().OfType<DataRow>(),
-        table.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRow, object>>(x => x.ColumnName, x => (row) => row[x]));
+        table.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRow, object>>(x => x.ColumnName, x => (row) => row?[x]!));
 
     public static PageModel[] Bind(PageSection page, DataView view) => Bind(page,
         view.GetIterator().OfType<DataRowView>(),
-        view.Table!.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRowView, object>>(x => x.ColumnName, x => (row) => row[x.ColumnName]));
+        view.Table!.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRowView, object>>(x => x.ColumnName, x => (row) => row?[x.ColumnName]!));
 
     public static List<List<SectionModel>> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
     {

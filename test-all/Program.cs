@@ -46,7 +46,7 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
         var lines = File.ReadAllLines(dataname);
         table = new DataTable();
         var header = lines[0].Split(',');
-        var firstfields = lines[1].Split(',');
+        var firstfields = (lines.Length > 1 ? lines[1] : Lists.Repeat(',').Take(header.Length - 1).ToStringByChars()).Split(',');
         header.Zip(firstfields).Each(x => table.Columns.Add(x.First, autoconv(x.Second).GetType()));
         lines
             .Skip(1)
