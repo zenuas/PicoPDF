@@ -167,7 +167,7 @@ public static class SectionBinder
             case SummaryElement x:
                 {
                     var keycount = x.BreakKey == "" ? keys.Length - 1 : allkeys.FindLastIndex(y => y == x.BreakKey);
-                    var model = CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format), page);
+                    var model = CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format, x.NaN), page);
                     bind.AddSummaryGoBack(x, model, keycount);
                     return model;
                 }

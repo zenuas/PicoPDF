@@ -6,8 +6,9 @@ public class SummaryElement : ITextElement
 {
     public required int X { get; init; }
     public required int Y { get; init; }
-    public required string Bind { get; set; }
+    public required string Bind { get; init; }
     public string SummaryBind { get; set; } = "";
+    public string SummaryCount { get; set; } = "";
     public string Format { get; init; } = "";
     public required int Size { get; init; }
     public string Font { get; init; } = "";
@@ -18,4 +19,5 @@ public class SummaryElement : ITextElement
     public SummaryType SummaryType { get; init; } = SummaryType.Summary;
     public SummaryMethod SummaryMethod { get; init; } = SummaryMethod.Increment;
     public string BreakKey { get; init; } = "";
+    public object NaN { get; init; } = "NaN";
 }
