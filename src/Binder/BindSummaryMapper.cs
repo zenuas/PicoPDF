@@ -24,6 +24,7 @@ public class BindSummaryMapper<T>
             var breakpoint =
                 sr.SummaryElement.SummaryMethod == SummaryMethod.All ? "#" :
                 sr.SummaryElement.SummaryMethod == SummaryMethod.Page ? $"&{keys.Join(".")}" :
+                sr.SummaryElement.SummaryMethod == SummaryMethod.CrossSectionPage ? $"%{keys.Join(".")}" :
                 $"${keys.Join(".")}";
             var bind = sr.SummaryElement.Bind;
             switch (sr.SummaryElement.SummaryType)
@@ -97,7 +98,7 @@ public class BindSummaryMapper<T>
         });
     }
 
-    public void CreateSummaryGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count + 1).Each(_ => SummaryGoBack.Add([]));
+    public void CreateSummaryGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count + 2).Each(_ => SummaryGoBack.Add([]));
 
     public void AddSummaryGoBack(SummaryElement summary, TextModel model, int hierarchy_count)
     {
@@ -111,17 +112,30 @@ public class BindSummaryMapper<T>
                 SummaryGoBack[1].Add((summary, model));
                 break;
 
+            case SummaryMethod.CrossSectionPage:
+                SummaryGoBack[2].Add((summary, model));
+                break;
+
             case SummaryMethod.Group:
-                SummaryGoBack[hierarchy_count + 2].Add((summary, model));
+                SummaryGoBack[hierarchy_count + 3].Add((summary, model));
                 break;
         }
     }
 
-    public void PageBreak(T data)
+    public void SectionBreak(T data)
     {
         SummaryGoBack[1].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.NaN));
         SummaryGoBack[1].Clear();
         SummaryPool.Keys.Where(x => x.StartsWith('&')).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
+    }
+
+    public void PageBreak(T data)
+    {
+        SectionBreak(data);
+
+        SummaryGoBack[2].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.NaN));
+        SummaryGoBack[2].Clear();
+        SummaryPool.Keys.Where(x => x.StartsWith('%')).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
     public void KeyBreak(T data, int hierarchy_count, string[] allkeys)

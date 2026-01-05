@@ -4,6 +4,7 @@ public enum SummaryMethod
 {
     Increment,
     Page,
+    CrossSectionPage,
     Group,
     All,
 }
