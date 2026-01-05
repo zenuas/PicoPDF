@@ -17,7 +17,7 @@ public class SummaryElement : ITextElement
     public int Width { get; init; }
     public Color? Color { get; init; } = null;
     public SummaryType SummaryType { get; init; } = SummaryType.Summary;
-    public SummaryMethod SummaryMethod { get; init; } = SummaryMethod.Increment;
+    public SummaryMethod SummaryMethod { get; init; } = SummaryMethod.Group;
     public string BreakKey { get; init; } = "";
     public object NaN { get; init; } = "NaN";
 }

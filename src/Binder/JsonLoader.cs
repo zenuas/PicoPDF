@@ -117,7 +117,7 @@ public static class JsonLoader
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
                         SummaryType = sumtype,
-                        SummaryMethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethod>(method.ToString()) : (sumtype == SummaryType.PageCount ? SummaryMethod.Increment : SummaryMethod.Group),
+                        SummaryMethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethod>(method.ToString()) : (sumtype == SummaryType.PageCount ? SummaryMethod.Page : SummaryMethod.Group),
                         BreakKey = json["BreakKey"]?.ToString() ?? "",
                     };
                 }

@@ -60,7 +60,6 @@
 		]},
 		{"Type": "TotalSection", "Name": "Total2", "Height": 20, "Elements": [
 			{"Type": "TextElement",    "Text": "都道府県計", "Size": 10, "X": 10,  "Y": 0},
-			{"Type": "SummaryElement", "Bind": "Number",     "Size": 10, "X": 100, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryMethod": "Increment",  "BreakKey": "Todouhuken"},
 			{"Type": "RectangleElement", "X": 10,  "Y": 0, "Width": 450, "Height": 10, "Color": "#FF0000"},
 			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 180, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Tiiki"},
 			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 230, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Todouhuken"},

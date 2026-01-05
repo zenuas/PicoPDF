@@ -236,14 +236,14 @@ public static class SectionBinder
     {
         if (subsection is DetailSection detail)
         {
-            foreach (var e in detail.GetSummaryNotIncrement()) yield return (keys, e);
+            foreach (var e in detail.Elements.OfType<SummaryElement>()) yield return (keys, e);
         }
         else if (subsection is Section section)
         {
             var newkeys = section.BreakKey == "" ? keys : [.. keys, section.BreakKey];
 
-            foreach (var e in section.Header?.GetSummaryNotIncrement() ?? []) yield return (newkeys, e);
-            foreach (var e in section.Footer?.GetSummaryNotIncrement() ?? []) yield return (newkeys, e);
+            foreach (var e in section.Header?.Elements.OfType<SummaryElement>() ?? []) yield return (newkeys, e);
+            foreach (var e in section.Footer?.Elements.OfType<SummaryElement>() ?? []) yield return (newkeys, e);
 
             if (section.SubSection is { })
             {
@@ -251,8 +251,6 @@ public static class SectionBinder
             }
         }
     }
-
-    public static IEnumerable<SummaryElement> GetSummaryNotIncrement(this ISection section) => section.Elements.OfType<SummaryElement>().Where(x => x.SummaryMethod != SummaryMethod.Increment);
 
     public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> SkipWhileOrPageFirst(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> self, Func<(string BreakKey, string[] BreakKeyHierarchy, ISection Section), bool> f)
     {
