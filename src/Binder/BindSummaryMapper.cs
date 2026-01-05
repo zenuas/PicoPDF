@@ -133,14 +133,9 @@ public class BindSummaryMapper<T>
         }
 
         var nobreak = allkeys.Take(hierarchy_count).Join(".");
-        var pagekey_prefix = $"&{(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
-
-        _ = SummaryGoBack[1].RemoveAll(x =>
-        {
-            var found = x.SummaryElement.Bind.StartsWith(pagekey_prefix) || x.SummaryElement.SummaryBind.StartsWith(pagekey_prefix);
-            if (found) x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.NaN);
-            return found;
-        });
+        var sumkey_via_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
+        var sumkey_direct_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}:" : nobreak)}";
+        SummaryPool.Keys.Where(x => x.StartsWith(sumkey_via_prefix) || x.StartsWith(sumkey_direct_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
     public void LastBreak(T data)
@@ -171,16 +166,6 @@ public class BindSummaryMapper<T>
     }
 
     public void SetPageCount(int pagecount) => SummaryPool["#:PAGECOUNT()"].Value = pagecount;
-
-    public void Clear(string[] nobreaks)
-    {
-        var nobreak = nobreaks.Join(".");
-        var sumkey_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
-        SummaryPool.Keys.Where(x => x.StartsWith(sumkey_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
-
-        var pagekey_prefix = $"&{(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
-        SummaryPool.Keys.Where(x => x.StartsWith(pagekey_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
-    }
 
     public void DataBind(T data) => SummaryAction.Each(x => x(data));
 

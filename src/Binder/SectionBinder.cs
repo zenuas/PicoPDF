@@ -91,7 +91,6 @@ public static class SectionBinder
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys);
                     break;
                 }
-                bind.Clear(keys.TakeWhile(x => bind.Mapper[x](lastdata).Equals(bind.Mapper[x](current))).ToArray());
 
                 var existnext = datas.Next(count, out var next);
                 breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next))).Count() : 0);
