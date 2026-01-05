@@ -82,7 +82,6 @@ public static class SectionBinder
             while (true)
             {
                 _ = datas.Next(0, out var current);
-                bind.Clear(keys.TakeWhile(x => bind.Mapper[x](lastdata).Equals(bind.Mapper[x](current))).ToArray());
                 var breakheader = page_first ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
                 var height = pageheight_minus_everypagefooter - (breakheader?.Select(x => x.Section.Height).Sum() ?? 0) - models.Select(x => x.Section.Height).Sum();
                 var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
@@ -92,6 +91,7 @@ public static class SectionBinder
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys);
                     break;
                 }
+                bind.Clear(keys.TakeWhile(x => bind.Mapper[x](lastdata).Equals(bind.Mapper[x](current))).ToArray());
 
                 var existnext = datas.Next(count, out var next);
                 breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next))).Count() : 0);
