@@ -108,6 +108,7 @@ public static class SectionBinder
                     breakcount = 0;
                     breakfooter = footers.SkipWhileOrEveryPage(_ => false).FooterSort().ToArray();
                 }
+                if (!page_first) bind.PageBreak(lastdata);
                 breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
 
                 _ = datas.Next(count - 1, out lastdata);

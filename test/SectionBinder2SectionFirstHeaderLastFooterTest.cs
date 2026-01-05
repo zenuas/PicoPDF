@@ -137,11 +137,11 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=2/P-Cnt=2/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200/P-Sum=2/P-Cnt=2/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=2/P-Cnt=2/P-Avg=1/P-Max=1/P-Min=1/A-Sum=2/A-Cnt=2/A-Avg=1/A-Max=1/A-Min=1/1///1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/A-Sum=2/A-Cnt=2/A-Avg=1/A-Max=1/A-Min=1/1///1");
     }
 
     [Fact]
@@ -160,11 +160,11 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/3");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/4");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=16/P-Cnt=6/P-Avg=2/P-Max=5/P-Min=1/G-Sum=15/G-Cnt=5/G-Avg=3/G-Max=5/G-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=15/P-Cnt=5/P-Avg=3/P-Max=5/P-Min=1/G-Sum=15/G-Cnt=5/G-Avg=3/G-Max=5/G-Min=1");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200/P-Sum=16/P-Cnt=6/P-Avg=2/P-Max=5/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=16/P-Cnt=6/P-Avg=2/P-Max=5/P-Min=1/A-Sum=16/A-Cnt=6/A-Avg=2/A-Max=5/A-Min=1/1///1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/A-Sum=16/A-Cnt=6/A-Avg=2/A-Max=5/A-Min=1/1///1");
     }
 
     [Fact]
@@ -282,11 +282,11 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(models[1].Models.Count, 7);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/9");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/100/P-Sum=10/P-Cnt=2/P-Avg=5/P-Max=9/P-Min=1/G-Sum=45/G-Cnt=9/G-Avg=5/G-Max=9/G-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/100/P-Sum=9/P-Cnt=1/P-Avg=9/P-Max=9/P-Min=9/G-Sum=45/G-Cnt=9/G-Avg=5/G-Max=9/G-Min=1");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/P-Sum=10/P-Cnt=2/P-Avg=5/P-Max=9/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/P-Sum=10/P-Cnt=2/P-Avg=5/P-Max=9/P-Min=1/A-Sum=46/A-Cnt=10/A-Avg=4/A-Max=9/A-Min=1/2///2");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/A-Sum=46/A-Cnt=10/A-Avg=4/A-Max=9/A-Min=1/2///2");
     }
 
     [Fact]
@@ -315,10 +315,10 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
         Assert.Equal(models[1].Models.Count, 7);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/10");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/100/P-Sum=11/P-Cnt=2/P-Avg=5/P-Max=10/P-Min=1/G-Sum=55/G-Cnt=10/G-Avg=5/G-Max=10/G-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/100/P-Sum=10/P-Cnt=1/P-Avg=10/P-Max=10/P-Min=10/G-Sum=55/G-Cnt=10/G-Avg=5/G-Max=10/G-Min=1");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/P-Sum=11/P-Cnt=2/P-Avg=5/P-Max=10/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/P-Sum=11/P-Cnt=2/P-Avg=5/P-Max=10/P-Min=1/A-Sum=56/A-Cnt=11/A-Avg=5/A-Max=10/A-Min=1/2///2");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/A-Sum=56/A-Cnt=11/A-Avg=5/A-Max=10/A-Min=1/2///2");
     }
 }
