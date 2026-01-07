@@ -77,7 +77,7 @@ json定義ファイルには以下の4つのセクションとブレークキー
   画像を出力する。  
   jpegとpngとbmpのみに対応。(一部フォーマットのみ対応)  
 
-合計・カウント・平均・最小・最大・ページ数の集計方法はSummaryElementのプロパティで設定する。  
+SummaryElementの集計方法はSummaryMethodプロパティで設定する。  
 
 * Page  
   ページ内を集計対象とする。  
@@ -90,6 +90,20 @@ json定義ファイルには以下の4つのセクションとブレークキー
   ページをまたいで集計する。  
 * All  
   全ページの全セクションを集計対象とする。  
+
+DetailSectionには専用の集計方法をSummaryMethodプロパティで設定できる。  
+
+* PageIncremental  
+  ページ内の現在行までを集計対象とする。  
+  セクションをまたがない。  
+* CrossSectionPageIncremental  
+  ページ内の現在行までを集計対象とする。  
+  セクションをまたいで集計する。  
+* GroupIncremental  
+  同一セクション内の現在行までを集計対象とする。  
+  ページをまたいで集計する。  
+* AllIncremental  
+  全ページの全セクションの現在行までを集計対象とする。  
 
 ## Think about
 

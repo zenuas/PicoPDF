@@ -24,7 +24,9 @@ public class BindSummaryMapper<T>
             var breakpoint =
                 sr.SummaryElement.SummaryMethod == SummaryMethod.All ? "#" :
                 sr.SummaryElement.SummaryMethod == SummaryMethod.Page ? $"&{keys.Join(".")}" :
+                sr.SummaryElement.SummaryMethod == SummaryMethod.PageIncremental ? $"&{keys.Join(".")}" :
                 sr.SummaryElement.SummaryMethod == SummaryMethod.CrossSectionPage ? $"%{keys.Join(".")}" :
+                sr.SummaryElement.SummaryMethod == SummaryMethod.CrossSectionPageIncremental ? $"%{keys.Join(".")}" :
                 $"${keys.Join(".")}";
             var bind = sr.SummaryElement.Bind;
             switch (sr.SummaryElement.SummaryType)
