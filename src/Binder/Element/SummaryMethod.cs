@@ -9,4 +9,5 @@ public enum SummaryMethod
     Group,
     GroupIncremental,
     All,
+    AllIncremental,
 }

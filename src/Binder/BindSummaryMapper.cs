@@ -23,6 +23,7 @@ public class BindSummaryMapper<T>
             var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : allkeys.Take(allkeys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1).ToArray();
             var breakpoint =
                 sr.SummaryElement.SummaryMethod == SummaryMethod.All ? "#" :
+                sr.SummaryElement.SummaryMethod == SummaryMethod.AllIncremental ? "#" :
                 sr.SummaryElement.SummaryMethod == SummaryMethod.Page ? $"&{keys.Join(".")}" :
                 sr.SummaryElement.SummaryMethod == SummaryMethod.PageIncremental ? $"&{keys.Join(".")}" :
                 sr.SummaryElement.SummaryMethod == SummaryMethod.CrossSectionPage ? $"%{keys.Join(".")}" :
