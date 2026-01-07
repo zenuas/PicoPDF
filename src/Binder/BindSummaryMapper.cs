@@ -146,7 +146,7 @@ public class BindSummaryMapper<T>
             SummaryGoBack[i].Clear();
         }
 
-        var nobreak = allkeys.Take(hierarchy_count).Join(".");
+        var nobreak = allkeys.Take(allkeys.Length - hierarchy_count + 1).Join(".");
         var sumkey_via_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
         var sumkey_direct_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}:" : nobreak)}";
         SummaryPool.Keys.Where(x => x.StartsWith(sumkey_via_prefix) || x.StartsWith(sumkey_direct_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
