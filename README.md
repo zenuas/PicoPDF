@@ -85,23 +85,20 @@ SummaryElementの集計方法はSummaryMethodプロパティで設定する。
 * CrossSectionPage  
   ページ内を集計対象とする。  
   セクションをまたいで集計する。  
-* Group  
-  同一セクション内を集計対象とする。  
-  ページをまたいで集計する。  
-* All  
-  全ページの全セクションを集計対象とする。  
-
-DetailSectionには専用の集計方法をSummaryMethodプロパティで設定できる。  
-
 * PageIncremental  
   ページ内の現在行までを集計対象とする。  
   セクションをまたがない。  
 * CrossSectionPageIncremental  
   ページ内の現在行までを集計対象とする。  
-  セクションをまたいで集計する。  
+* Group  
+  同一セクション内を集計対象とする。  
+  ページをまたいで集計する。  
 * GroupIncremental  
   同一セクション内の現在行までを集計対象とする。  
   ページをまたいで集計する。  
+* All  
+  全ページの全セクションを集計対象とする。  
+  セクションをまたいで集計する。  
 * AllIncremental  
   全ページの全セクションの現在行までを集計対象とする。  
 
