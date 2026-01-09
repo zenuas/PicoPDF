@@ -42,16 +42,26 @@ public class SectionBinder2IncrementalTest
 		]},
 		{"Type": "FooterSection", "Name": "PageFooter", "Height": 30, "Elements": [
 			{"Type": "TextElement", "Text": "PageFooter", "Size": 20, "X": 10,  "Y": 0, "Font": "HGMinchoB"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 100, "Y": 0, "Format": "P-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPage"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 110, "Y": 0, "Format": "P-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPage"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 120, "Y": 0, "Format": "P-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPage"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 130, "Y": 0, "Format": "P-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPage"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 140, "Y": 0, "Format": "P-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPage"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 200, "Y": 0, "Format": "A-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "All"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 210, "Y": 0, "Format": "A-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "All"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 220, "Y": 0, "Format": "A-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "All"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 230, "Y": 0, "Format": "A-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "All"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 240, "Y": 0, "Format": "A-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "All"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 100, "Y": 0, "Format": "PI-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "PageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 110, "Y": 0, "Format": "PI-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "PageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 120, "Y": 0, "Format": "PI-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "PageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 130, "Y": 0, "Format": "PI-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "PageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 140, "Y": 0, "Format": "PI-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "PageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 150, "Y": 0, "Format": "Px-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 160, "Y": 0, "Format": "Px-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 170, "Y": 0, "Format": "Px-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 180, "Y": 0, "Format": "Px-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 190, "Y": 0, "Format": "Px-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 200, "Y": 0, "Format": "GI-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "GroupIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 210, "Y": 0, "Format": "GI-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "GroupIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 220, "Y": 0, "Format": "GI-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "GroupIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 230, "Y": 0, "Format": "GI-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "GroupIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 240, "Y": 0, "Format": "GI-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "GroupIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 250, "Y": 0, "Format": "AI-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "AllIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 260, "Y": 0, "Format": "AI-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "AllIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 270, "Y": 0, "Format": "AI-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "AllIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 280, "Y": 0, "Format": "AI-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "AllIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 290, "Y": 0, "Format": "AI-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "AllIncremental"},
 			{"Type": "SummaryElement",                "Size": 10, "X": 300, "Y": 0, "Format": "#,0", "SummaryType": "PageCount", "Alignment": "End",   "Width": 50},
 			{"Type": "TextElement", "Text": "/", "Size": 10, "X": 352, "Y": 0},
 			{"Type": "SummaryElement",                "Size": 10, "X": 360, "Y": 0, "Format": "#,0", "SummaryType": "PageCount", "Alignment": "Start", "Width": 50, "SummaryMethod": "All"},
@@ -61,16 +71,26 @@ public class SectionBinder2IncrementalTest
 		]},
 		{"Type": "FooterSection", "Name": "Footer1", "Height": 70, "Elements": [
 			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 100, "Y": 0, "Format": "P-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPage"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 110, "Y": 0, "Format": "P-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPage"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 120, "Y": 0, "Format": "P-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPage"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 130, "Y": 0, "Format": "P-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPage"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 140, "Y": 0, "Format": "P-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPage"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 200, "Y": 0, "Format": "G-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "Group"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 210, "Y": 0, "Format": "G-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "Group"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 220, "Y": 0, "Format": "G-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "Group"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 230, "Y": 0, "Format": "G-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "Group"},
-			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 240, "Y": 0, "Format": "G-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "Group"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 100, "Y": 0, "Format": "PI-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "PageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 110, "Y": 0, "Format": "PI-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "PageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 120, "Y": 0, "Format": "PI-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "PageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 130, "Y": 0, "Format": "PI-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "PageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 140, "Y": 0, "Format": "PI-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "PageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 150, "Y": 0, "Format": "Px-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 160, "Y": 0, "Format": "Px-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 170, "Y": 0, "Format": "Px-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 180, "Y": 0, "Format": "Px-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 190, "Y": 0, "Format": "Px-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "CrossSectionPageIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 200, "Y": 0, "Format": "GI-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "GroupIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 210, "Y": 0, "Format": "GI-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "GroupIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 220, "Y": 0, "Format": "GI-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "GroupIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 230, "Y": 0, "Format": "GI-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "GroupIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 240, "Y": 0, "Format": "GI-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "GroupIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 250, "Y": 0, "Format": "AI-Sum=#,0", "SummaryType": "Summary",   "Alignment": "End",   "Width": 50, "SummaryMethod": "AllIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 260, "Y": 0, "Format": "AI-Cnt=#,0", "SummaryType": "Count",     "Alignment": "End",   "Width": 50, "SummaryMethod": "AllIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 270, "Y": 0, "Format": "AI-Avg=#,0", "SummaryType": "Average",   "Alignment": "End",   "Width": 50, "SummaryMethod": "AllIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 280, "Y": 0, "Format": "AI-Max=#,0", "SummaryType": "Maximum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "AllIncremental"},
+			{"Type": "SummaryElement", "Bind": "Foo", "Size": 10, "X": 290, "Y": 0, "Format": "AI-Min=#,0", "SummaryType": "Minimum",   "Alignment": "End",   "Width": 50, "SummaryMethod": "AllIncremental"},
 		]},
 	],
 }
@@ -95,8 +115,8 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(models[0].Models.Count, 4);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/0");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/0/P-Sum=0/P-Cnt=0/NaN///G-Sum=0/G-Cnt=0/NaN//");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=0/P-Cnt=0/NaN///A-Sum=0/A-Cnt=0/NaN///1///1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/0/PI-Sum=0/PI-Cnt=0/NaN///Px-Sum=0/Px-Cnt=0/NaN///GI-Sum=0/GI-Cnt=0/NaN///AI-Sum=0/AI-Cnt=0/NaN//");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=0/PI-Cnt=0/NaN///Px-Sum=0/Px-Cnt=0/NaN///GI-Sum=0/GI-Cnt=0/NaN///AI-Sum=0/AI-Cnt=0/NaN///1///1");
     }
 
     [Fact]
@@ -109,8 +129,8 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/A-Sum=1/A-Cnt=1/A-Avg=1/A-Max=1/A-Min=1/1///1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=1/Px-Cnt=1/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=1/GI-Cnt=1/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=1/AI-Cnt=1/AI-Avg=1/AI-Max=1/AI-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=1/Px-Cnt=1/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=1/GI-Cnt=1/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=1/AI-Cnt=1/AI-Avg=1/AI-Max=1/AI-Min=1/1///1");
     }
 
     [Fact]
@@ -124,8 +144,8 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/2/PI-Sum=3/PI-Cnt=2/Px-Cnt=2/GI-Cnt=2/AI-Cnt=2");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=3/P-Cnt=2/P-Avg=1/P-Max=2/P-Min=1/G-Sum=3/G-Cnt=2/G-Avg=1/G-Max=2/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=3/P-Cnt=2/P-Avg=1/P-Max=2/P-Min=1/A-Sum=3/A-Cnt=2/A-Avg=1/A-Max=2/A-Min=1/1///1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/PI-Sum=3/PI-Cnt=2/PI-Avg=1/PI-Max=2/PI-Min=1/Px-Sum=3/Px-Cnt=2/Px-Avg=1/Px-Max=2/Px-Min=1/GI-Sum=3/GI-Cnt=2/GI-Avg=1/GI-Max=2/GI-Min=1/AI-Sum=3/AI-Cnt=2/AI-Avg=1/AI-Max=2/AI-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=3/PI-Cnt=2/PI-Avg=1/PI-Max=2/PI-Min=1/Px-Sum=3/Px-Cnt=2/Px-Avg=1/Px-Max=2/Px-Min=1/GI-Sum=3/GI-Cnt=2/GI-Avg=1/GI-Max=2/GI-Min=1/AI-Sum=3/AI-Cnt=2/AI-Avg=1/AI-Max=2/AI-Min=1/1///1");
     }
 
     [Fact]
@@ -140,11 +160,11 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=2/P-Cnt=2/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=1/Px-Cnt=1/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=1/GI-Cnt=1/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=1/AI-Cnt=1/AI-Avg=1/AI-Max=1/AI-Min=1");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=2/GI-Cnt=1/AI-Cnt=2");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200/P-Sum=2/P-Cnt=2/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=2/P-Cnt=2/P-Avg=1/P-Max=1/P-Min=1/A-Sum=2/A-Cnt=2/A-Avg=1/A-Max=1/A-Min=1/1///1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=2/Px-Cnt=2/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=1/GI-Cnt=1/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=2/AI-Cnt=2/AI-Avg=1/AI-Max=1/AI-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=2/Px-Cnt=2/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=2/GI-Cnt=2/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=2/AI-Cnt=2/AI-Avg=1/AI-Max=1/AI-Min=1/1///1");
     }
 
     [Fact]
@@ -163,11 +183,11 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/3/PI-Sum=6/PI-Cnt=3/Px-Cnt=3/GI-Cnt=3/AI-Cnt=3");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/4/PI-Sum=10/PI-Cnt=4/Px-Cnt=4/GI-Cnt=4/AI-Cnt=4");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5/PI-Sum=15/PI-Cnt=5/Px-Cnt=5/GI-Cnt=5/AI-Cnt=5");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=16/P-Cnt=6/P-Avg=2/P-Max=5/P-Min=1/G-Sum=15/G-Cnt=5/G-Avg=3/G-Max=5/G-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/PI-Sum=15/PI-Cnt=5/PI-Avg=3/PI-Max=5/PI-Min=1/Px-Sum=15/Px-Cnt=5/Px-Avg=3/Px-Max=5/Px-Min=1/GI-Sum=15/GI-Cnt=5/GI-Avg=3/GI-Max=5/GI-Min=1/AI-Sum=15/AI-Cnt=5/AI-Avg=3/AI-Max=5/AI-Min=1");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=6/GI-Cnt=1/AI-Cnt=6");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200/P-Sum=16/P-Cnt=6/P-Avg=2/P-Max=5/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=16/P-Cnt=6/P-Avg=2/P-Max=5/P-Min=1/A-Sum=16/A-Cnt=6/A-Avg=2/A-Max=5/A-Min=1/1///1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=16/Px-Cnt=6/Px-Avg=2/Px-Max=5/Px-Min=1/GI-Sum=1/GI-Cnt=1/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=16/AI-Cnt=6/AI-Avg=2/AI-Max=5/AI-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=16/Px-Cnt=6/Px-Avg=2/Px-Max=5/Px-Min=1/GI-Sum=16/GI-Cnt=6/GI-Avg=2/GI-Max=5/GI-Min=1/AI-Sum=16/AI-Cnt=6/AI-Avg=2/AI-Max=5/AI-Min=1/1///1");
     }
 
     [Fact]
@@ -187,16 +207,16 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/4/PI-Sum=10/PI-Cnt=4/Px-Cnt=4/GI-Cnt=4/AI-Cnt=4");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5/PI-Sum=15/PI-Cnt=5/Px-Cnt=5/GI-Cnt=5/AI-Cnt=5");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6/PI-Sum=21/PI-Cnt=6/Px-Cnt=6/GI-Cnt=6/AI-Cnt=6");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=21/P-Cnt=6/P-Avg=3/P-Max=6/P-Min=1/G-Sum=21/G-Cnt=6/G-Avg=3/G-Max=6/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=21/P-Cnt=6/P-Avg=3/P-Max=6/P-Min=1/A-Sum=22/A-Cnt=7/A-Avg=3/A-Max=6/A-Min=1/1///2");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/PI-Sum=21/PI-Cnt=6/PI-Avg=3/PI-Max=6/PI-Min=1/Px-Sum=21/Px-Cnt=6/Px-Avg=3/Px-Max=6/Px-Min=1/GI-Sum=21/GI-Cnt=6/GI-Avg=3/GI-Max=6/GI-Min=1/AI-Sum=21/AI-Cnt=6/AI-Avg=3/AI-Max=6/AI-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=21/PI-Cnt=6/PI-Avg=3/PI-Max=6/PI-Min=1/Px-Sum=21/Px-Cnt=6/Px-Avg=3/Px-Max=6/Px-Min=1/GI-Sum=21/GI-Cnt=6/GI-Avg=3/GI-Max=6/GI-Min=1/AI-Sum=21/AI-Cnt=6/AI-Avg=3/AI-Max=6/AI-Min=1/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Count, 5);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=7");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/A-Sum=22/A-Cnt=7/A-Avg=3/A-Max=6/A-Min=1/2///2");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=1/Px-Cnt=1/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=1/GI-Cnt=1/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=22/AI-Cnt=7/AI-Avg=3/AI-Max=6/AI-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=1/Px-Cnt=1/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=22/GI-Cnt=7/GI-Avg=3/GI-Max=6/GI-Min=1/AI-Sum=22/AI-Cnt=7/AI-Avg=3/AI-Max=6/AI-Min=1/2///2");
     }
 
     [Fact]
@@ -217,16 +237,16 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5/PI-Sum=15/PI-Cnt=5/Px-Cnt=5/GI-Cnt=5/AI-Cnt=5");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6/PI-Sum=21/PI-Cnt=6/Px-Cnt=6/GI-Cnt=6/AI-Cnt=6");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7/PI-Sum=28/PI-Cnt=7/Px-Cnt=7/GI-Cnt=7/AI-Cnt=7");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=28/P-Cnt=7/P-Avg=4/P-Max=7/P-Min=1/G-Sum=28/G-Cnt=7/G-Avg=4/G-Max=7/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=28/P-Cnt=7/P-Avg=4/P-Max=7/P-Min=1/A-Sum=29/A-Cnt=8/A-Avg=3/A-Max=7/A-Min=1/1///2");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/PI-Sum=28/PI-Cnt=7/PI-Avg=4/PI-Max=7/PI-Min=1/Px-Sum=28/Px-Cnt=7/Px-Avg=4/Px-Max=7/Px-Min=1/GI-Sum=28/GI-Cnt=7/GI-Avg=4/GI-Max=7/GI-Min=1/AI-Sum=28/AI-Cnt=7/AI-Avg=4/AI-Max=7/AI-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=28/PI-Cnt=7/PI-Avg=4/PI-Max=7/PI-Min=1/Px-Sum=28/Px-Cnt=7/Px-Avg=4/Px-Max=7/Px-Min=1/GI-Sum=28/GI-Cnt=7/GI-Avg=4/GI-Max=7/GI-Min=1/AI-Sum=28/AI-Cnt=7/AI-Avg=4/AI-Max=7/AI-Min=1/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Count, 5);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=8");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/A-Sum=29/A-Cnt=8/A-Avg=3/A-Max=7/A-Min=1/2///2");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=1/Px-Cnt=1/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=1/GI-Cnt=1/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=29/AI-Cnt=8/AI-Avg=3/AI-Max=7/AI-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=1/Px-Cnt=1/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=29/GI-Cnt=8/GI-Avg=3/GI-Max=7/GI-Min=1/AI-Sum=29/AI-Cnt=8/AI-Avg=3/AI-Max=7/AI-Min=1/2///2");
     }
 
     [Fact]
@@ -248,16 +268,16 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6/PI-Sum=21/PI-Cnt=6/Px-Cnt=6/GI-Cnt=6/AI-Cnt=6");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7/PI-Sum=28/PI-Cnt=7/Px-Cnt=7/GI-Cnt=7/AI-Cnt=7");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/8/PI-Sum=36/PI-Cnt=8/Px-Cnt=8/GI-Cnt=8/AI-Cnt=8");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=36/P-Cnt=8/P-Avg=4/P-Max=8/P-Min=1/G-Sum=36/G-Cnt=8/G-Avg=4/G-Max=8/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=36/P-Cnt=8/P-Avg=4/P-Max=8/P-Min=1/A-Sum=37/A-Cnt=9/A-Avg=4/A-Max=8/A-Min=1/1///2");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/PI-Sum=36/PI-Cnt=8/PI-Avg=4/PI-Max=8/PI-Min=1/Px-Sum=36/Px-Cnt=8/Px-Avg=4/Px-Max=8/Px-Min=1/GI-Sum=36/GI-Cnt=8/GI-Avg=4/GI-Max=8/GI-Min=1/AI-Sum=36/AI-Cnt=8/AI-Avg=4/AI-Max=8/AI-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=36/PI-Cnt=8/PI-Avg=4/PI-Max=8/PI-Min=1/Px-Sum=36/Px-Cnt=8/Px-Avg=4/Px-Max=8/Px-Min=1/GI-Sum=36/GI-Cnt=8/GI-Avg=4/GI-Max=8/GI-Min=1/AI-Sum=36/AI-Cnt=8/AI-Avg=4/AI-Max=8/AI-Min=1/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Count, 5);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=9");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/A-Sum=37/A-Cnt=9/A-Avg=4/A-Max=8/A-Min=1/2///2");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=1/Px-Cnt=1/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=1/GI-Cnt=1/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=37/AI-Cnt=9/AI-Avg=4/AI-Max=8/AI-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=1/Px-Cnt=1/Px-Avg=1/Px-Max=1/Px-Min=1/GI-Sum=37/GI-Cnt=9/GI-Avg=4/GI-Max=8/GI-Min=1/AI-Sum=37/AI-Cnt=9/AI-Avg=4/AI-Max=8/AI-Min=1/2///2");
     }
 
     [Fact]
@@ -279,19 +299,19 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6/PI-Sum=21/PI-Cnt=6/Px-Cnt=6/GI-Cnt=6/AI-Cnt=6");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7/PI-Sum=28/PI-Cnt=7/Px-Cnt=7/GI-Cnt=7/AI-Cnt=7");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/8/PI-Sum=36/PI-Cnt=8/Px-Cnt=8/GI-Cnt=8/AI-Cnt=8");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=36/P-Cnt=8/P-Avg=4/P-Max=8/P-Min=1/G-Sum=45/G-Cnt=9/G-Avg=5/G-Max=9/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=36/P-Cnt=8/P-Avg=4/P-Max=8/P-Min=1/A-Sum=46/A-Cnt=10/A-Avg=4/A-Max=9/A-Min=1/1///2");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/PI-Sum=36/PI-Cnt=8/PI-Avg=4/PI-Max=8/PI-Min=1/Px-Sum=36/Px-Cnt=8/Px-Avg=4/Px-Max=8/Px-Min=1/GI-Sum=36/GI-Cnt=8/GI-Avg=4/GI-Max=8/GI-Min=1/AI-Sum=36/AI-Cnt=8/AI-Avg=4/AI-Max=8/AI-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=36/PI-Cnt=8/PI-Avg=4/PI-Max=8/PI-Min=1/Px-Sum=36/Px-Cnt=8/Px-Avg=4/Px-Max=8/Px-Min=1/GI-Sum=36/GI-Cnt=8/GI-Avg=4/GI-Max=8/GI-Min=1/AI-Sum=36/AI-Cnt=8/AI-Avg=4/AI-Max=8/AI-Min=1/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Count, 8);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/9/PI-Sum=9/PI-Cnt=1/Px-Cnt=1/GI-Cnt=9/AI-Cnt=9");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/100/P-Sum=10/P-Cnt=2/P-Avg=5/P-Max=9/P-Min=1/G-Sum=45/G-Cnt=9/G-Avg=5/G-Max=9/G-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/100/PI-Sum=9/PI-Cnt=1/PI-Avg=9/PI-Max=9/PI-Min=9/Px-Sum=9/Px-Cnt=1/Px-Avg=9/Px-Max=9/Px-Min=9/GI-Sum=45/GI-Cnt=9/GI-Avg=5/GI-Max=9/GI-Min=1/AI-Sum=45/AI-Cnt=9/AI-Avg=5/AI-Max=9/AI-Min=1");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=2/GI-Cnt=1/AI-Cnt=10");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/P-Sum=10/P-Cnt=2/P-Avg=5/P-Max=9/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/P-Sum=10/P-Cnt=2/P-Avg=5/P-Max=9/P-Min=1/A-Sum=46/A-Cnt=10/A-Avg=4/A-Max=9/A-Min=1/2///2");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=10/Px-Cnt=2/Px-Avg=5/Px-Max=9/Px-Min=1/GI-Sum=1/GI-Cnt=1/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=46/AI-Cnt=10/AI-Avg=4/AI-Max=9/AI-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=10/Px-Cnt=2/Px-Avg=5/Px-Max=9/Px-Min=1/GI-Sum=46/GI-Cnt=10/GI-Avg=4/GI-Max=9/GI-Min=1/AI-Sum=46/AI-Cnt=10/AI-Avg=4/AI-Max=9/AI-Min=1/2///2");
     }
 
     [Fact]
@@ -313,8 +333,8 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/6/PI-Sum=21/PI-Cnt=6/Px-Cnt=6/GI-Cnt=6/AI-Cnt=6");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/7/PI-Sum=28/PI-Cnt=7/Px-Cnt=7/GI-Cnt=7/AI-Cnt=7");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/8/PI-Sum=36/PI-Cnt=8/Px-Cnt=8/GI-Cnt=8/AI-Cnt=8");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/P-Sum=36/P-Cnt=8/P-Avg=4/P-Max=8/P-Min=1/G-Sum=55/G-Cnt=10/G-Avg=5/G-Max=10/G-Min=1");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=36/P-Cnt=8/P-Avg=4/P-Max=8/P-Min=1/A-Sum=56/A-Cnt=11/A-Avg=5/A-Max=10/A-Min=1/1///2");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/100/PI-Sum=36/PI-Cnt=8/PI-Avg=4/PI-Max=8/PI-Min=1/Px-Sum=36/Px-Cnt=8/Px-Avg=4/Px-Max=8/Px-Min=1/GI-Sum=36/GI-Cnt=8/GI-Avg=4/GI-Max=8/GI-Min=1/AI-Sum=36/AI-Cnt=8/AI-Avg=4/AI-Max=8/AI-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=36/PI-Cnt=8/PI-Avg=4/PI-Max=8/PI-Min=1/Px-Sum=36/Px-Cnt=8/Px-Avg=4/Px-Max=8/Px-Min=1/GI-Sum=36/GI-Cnt=8/GI-Avg=4/GI-Max=8/GI-Min=1/AI-Sum=36/AI-Cnt=8/AI-Avg=4/AI-Max=8/AI-Min=1/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Count, 9);
@@ -322,10 +342,10 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/9/PI-Sum=9/PI-Cnt=1/Px-Cnt=1/GI-Cnt=9/AI-Cnt=9");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/10/PI-Sum=19/PI-Cnt=2/Px-Cnt=2/GI-Cnt=10/AI-Cnt=10");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/100/P-Sum=20/P-Cnt=3/P-Avg=6/P-Max=10/P-Min=1/G-Sum=55/G-Cnt=10/G-Avg=5/G-Max=10/G-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/100/PI-Sum=19/PI-Cnt=2/PI-Avg=9/PI-Max=10/PI-Min=9/Px-Sum=19/Px-Cnt=2/Px-Avg=9/Px-Max=10/Px-Min=9/GI-Sum=55/GI-Cnt=10/GI-Avg=5/GI-Max=10/GI-Min=1/AI-Sum=55/AI-Cnt=10/AI-Avg=5/AI-Max=10/AI-Min=1");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=3/GI-Cnt=1/AI-Cnt=11");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/P-Sum=20/P-Cnt=3/P-Avg=6/P-Max=10/P-Min=1/G-Sum=1/G-Cnt=1/G-Avg=1/G-Max=1/G-Min=1");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/P-Sum=20/P-Cnt=3/P-Avg=6/P-Max=10/P-Min=1/A-Sum=56/A-Cnt=11/A-Avg=5/A-Max=10/A-Min=1/2///2");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1/200/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=20/Px-Cnt=3/Px-Avg=6/Px-Max=10/Px-Min=1/GI-Sum=1/GI-Cnt=1/GI-Avg=1/GI-Max=1/GI-Min=1/AI-Sum=56/AI-Cnt=11/AI-Avg=5/AI-Max=10/AI-Min=1");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/PI-Sum=1/PI-Cnt=1/PI-Avg=1/PI-Max=1/PI-Min=1/Px-Sum=20/Px-Cnt=3/Px-Avg=6/Px-Max=10/Px-Min=1/GI-Sum=56/GI-Cnt=11/GI-Avg=5/GI-Max=10/GI-Min=1/AI-Sum=56/AI-Cnt=11/AI-Avg=5/AI-Max=10/AI-Min=1/2///2");
     }
 }
