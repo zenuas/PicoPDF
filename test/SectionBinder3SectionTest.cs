@@ -26,9 +26,7 @@ public class SectionBinder3SectionTest
 	    "Detail": {
             "BreakKey": "Key2",
 	        "Header": "Header2",
-	        "Detail": {
-			        "Detail": "Detail",
-		        },
+	        "Detail": "Detail",
 	        "Footer": "Footer2",
 		    },
 	    "Footer": "Footer1",

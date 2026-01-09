@@ -20,9 +20,7 @@ public class SectionBinderSingleTest
 	"Padding": [15, 10, 15],
 	
 	"Header": "PageHeader",
-	"Detail": {
-			"Detail": "Detail",
-		},
+	"Detail": "Detail",
 	"Footer": "PageFooter",
 	
 	"Sections": [

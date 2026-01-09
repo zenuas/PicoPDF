@@ -23,9 +23,7 @@ public class SectionBinder2SectionLastFooterTest
 	"Detail": {
         "BreakKey": "Key1",
 	    "Header": "Header1",
-	    "Detail": {
-			    "Detail": "Detail",
-		    },
+	    "Detail": "Detail",
 	    "Footer": "Footer1",
 		},
 	"Footer": "PageFooter",
