@@ -161,7 +161,7 @@ public class BindSummaryMapper<T>
         SummaryGoBack[0].Clear();
     }
 
-    public static string BindFormat(object? o, string format) => (format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(format, null)) ?? "";
+    public static string BindFormat(object? o, string format) => (format != "" && o is IFormattable formattable ? formattable.ToString(format, null) : o?.ToString()) ?? "";
 
     public static string BindFormat(object? o, string format, object nan)
     {
