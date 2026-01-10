@@ -40,12 +40,12 @@ public class CMapFormat4 : ICMapFormat
             SearchRange = stream.ReadUShortByBigEndian(),
             EntrySelector = stream.ReadUShortByBigEndian(),
             RangeShift = stream.ReadUShortByBigEndian(),
-            EndCode = Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            EndCode = [.. Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian())],
             ReservedPad = stream.ReadUShortByBigEndian(),
-            StartCode = Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
-            IdDelta = Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadShortByBigEndian()).ToArray(),
-            IdRangeOffsets = Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
-            GlyphIdArray = Enumerable.Repeat(0, glyph_count).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+            StartCode = [.. Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian())],
+            IdDelta = [.. Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadShortByBigEndian())],
+            IdRangeOffsets = [.. Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian())],
+            GlyphIdArray = [.. Enumerable.Repeat(0, glyph_count).Select(_ => stream.ReadUShortByBigEndian())],
         };
     }
 
@@ -65,12 +65,12 @@ public class CMapFormat4 : ICMapFormat
             SearchRange = (ushort)serach_range,
             EntrySelector = (ushort)Math.Log2(serach_range / 2),
             RangeShift = (ushort)((seg_count * 2) - serach_range),
-            EndCode = start_ends.Select(x => (ushort)x.End).ToArray(),
+            EndCode = [.. start_ends.Select(x => (ushort)x.End)],
             ReservedPad = 0,
-            StartCode = start_ends.Select(x => (ushort)x.Start).ToArray(),
-            IdDelta = start_ends.Select(x => (short)(x.Start == 0xFFFF ? 1 : char_gid[x.Start] - x.Start)).ToArray(),
-            IdRangeOffsets = Lists.Repeat((ushort)0).Take(seg_count).ToArray(),
-            GlyphIdArray = chars.Select(x => char_gid[x]).ToArray(),
+            StartCode = [.. start_ends.Select(x => (ushort)x.Start)],
+            IdDelta = [.. start_ends.Select(x => (short)(x.Start == 0xFFFF ? 1 : char_gid[x.Start] - x.Start))],
+            IdRangeOffsets = [.. Lists.Repeat((ushort)0).Take(seg_count)],
+            GlyphIdArray = [.. chars.Select(x => char_gid[x])],
         };
     }
 

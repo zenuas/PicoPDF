@@ -29,12 +29,11 @@ public static class FontLoader
 
         return header.TTCTag != "ttcf"
             ? throw new InvalidOperationException()
-            : Enumerable.Repeat(0, (int)header.NumberOfFonts)
+            : [.. Enumerable.Repeat(0, (int)header.NumberOfFonts)
                 .Select(_ => stream.ReadUIntByBigEndian())
                 .ToArray()
                 .Select((x, i) => Objects.Catch(() => LoadTableRecords(new FontCollectionPath { Path = path, Index = i, ForceEmbedded = opt.ForceEmbedded }, stream.SeekTo(x), opt), out var r) is null ? r : null)
-                .OfType<FontTableRecords>()
-                .ToArray();
+                .OfType<FontTableRecords>()];
     }
 
     public static FontTableRecords LoadTableRecords(IFontPath path, Stream stream, LoadOption opt)

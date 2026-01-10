@@ -59,7 +59,7 @@ public class CompactFontFormat : IExportable
         };
 
         var offset = Enumerable.Repeat(0, count + 1).Select(_ => offset_read(stream)).ToArray();
-        return Enumerable.Range(0, count).Select(i => stream.ReadExactly(offset[i + 1] - offset[i])).ToArray();
+        return [.. Enumerable.Range(0, count).Select(i => stream.ReadExactly(offset[i + 1] - offset[i]))];
     }
 
     public void WriteTo(Stream stream)
@@ -70,11 +70,11 @@ public class CompactFontFormat : IExportable
         stream.WriteByte(Minor);
         stream.WriteByte(HeaderSize);
         stream.WriteByte(OffsetSize);
-        WriteIndexData(stream, Names.Select(Encoding.UTF8.GetBytes).ToArray());
+        WriteIndexData(stream, [.. Names.Select(Encoding.UTF8.GetBytes)]);
 
         var top_dict_start = stream.Position;
         WriteIndexData(stream, [DictData.DictDataToBytes(TopDict.Dict)]);
-        WriteIndexData(stream, Strings.Select(Encoding.UTF8.GetBytes).ToArray());
+        WriteIndexData(stream, [.. Strings.Select(Encoding.UTF8.GetBytes)]);
         WriteIndexData(stream, GlobalSubroutines);
 
         TopDict.WriteWithoutDictAndOffsetUpdate(stream, position);

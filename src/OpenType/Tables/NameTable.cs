@@ -32,9 +32,7 @@ public class NameTable : IExportable
         {
             lang_tag_count = stream.ReadUShortByBigEndian();
 
-            tags = Enumerable.Repeat(0, lang_tag_count)
-                .Select(_ => LanguageTagRecord.ReadFrom(stream))
-                .ToArray();
+            tags = [.. Enumerable.Repeat(0, lang_tag_count).Select(_ => LanguageTagRecord.ReadFrom(stream))];
         }
 
         var name_records = records

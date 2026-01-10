@@ -20,7 +20,7 @@ public class BindSummaryMapper<T>
         SummaryPool.Add("#:PAGECOUNT()", new() { Value = 1, Clear = _ => { } });
         TraversSummaryElement([], page).Each(sr =>
         {
-            var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : allkeys.Take(allkeys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1).ToArray();
+            var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : [.. allkeys.Take(allkeys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1)];
             var breakpoint =
                 sr.SummaryElement.SummaryMethod == SummaryMethod.All ? "#" :
                 sr.SummaryElement.SummaryMethod == SummaryMethod.AllIncremental ? "#" :

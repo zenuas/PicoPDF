@@ -147,7 +147,7 @@ public class Document
             TextEncoding = enc,
             FontDescriptor = fontdict,
             FirstChar = 32,
-            Widths = Lists.Repeat(500L).Take(126 - 32 + 1).ToList(),
+            Widths = [.. Lists.Repeat(500L).Take(126 - 32 + 1)],
         };
         PdfObjects.Add(font);
 

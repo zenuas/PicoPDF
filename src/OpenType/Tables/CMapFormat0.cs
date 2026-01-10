@@ -16,7 +16,7 @@ public class CMapFormat0 : ICMapFormat
         Format = 0,
         Length = stream.ReadUShortByBigEndian(),
         Language = stream.ReadUShortByBigEndian(),
-        GlyphIdArray = Enumerable.Repeat(0, 256).Select(_ => stream.ReadUByte()).ToArray(),
+        GlyphIdArray = [.. Enumerable.Repeat(0, 256).Select(_ => stream.ReadUByte())],
     };
 
     public void WriteTo(Stream stream)

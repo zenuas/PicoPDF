@@ -33,10 +33,9 @@ public static class FontExtract
 
         var hmtx = new HorizontalMetricsTable()
         {
-            Metrics = Lists.RangeTo(1, num_of_glyph)
+            Metrics = [.. Lists.RangeTo(1, num_of_glyph)
                 .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
-                .Prepend(font.HorizontalMetrics.Metrics[0])
-                .ToArray(),
+                .Prepend(font.HorizontalMetrics.Metrics[0])],
             LeftSideBearing = [],
         };
 
@@ -121,13 +120,11 @@ public static class FontExtract
             Charsets = new()
             {
                 Format = 0,
-                Glyph = Lists.RangeTo(1, num_of_glyph)
-                    .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.Charset : (ushort)0)
-                    .ToArray(),
+                Glyph = [.. Lists.RangeTo(1, num_of_glyph).Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.Charset : (ushort)0)],
             },
             PrivateDict = font.CompactFontFormat.TopDict.PrivateDict,
             FontDictArray = fdarray,
-            FontDictSelect = fdselect.Select(x => fdselect_index[x]).ToArray(),
+            FontDictSelect = [.. fdselect.Select(x => fdselect_index[x])],
         };
 
         var cff = new CompactFontFormat

@@ -11,8 +11,8 @@ public class HorizontalMetricsTable : IExportable
 
     public static HorizontalMetricsTable ReadFrom(Stream stream, ushort number_of_hmetrics, ushort number_of_glyphs) => new()
     {
-        Metrics = Enumerable.Repeat(0, number_of_hmetrics).Select(_ => HorizontalMetrics.ReadFrom(stream)).ToArray(),
-        LeftSideBearing = Enumerable.Repeat(0, number_of_glyphs - number_of_hmetrics).Select(_ => stream.ReadShortByBigEndian()).ToArray(),
+        Metrics = [.. Enumerable.Repeat(0, number_of_hmetrics).Select(_ => HorizontalMetrics.ReadFrom(stream))],
+        LeftSideBearing = [.. Enumerable.Repeat(0, number_of_glyphs - number_of_hmetrics).Select(_ => stream.ReadShortByBigEndian())],
     };
 
     public void WriteTo(Stream stream)

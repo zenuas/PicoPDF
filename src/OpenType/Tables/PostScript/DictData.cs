@@ -91,7 +91,7 @@ public class DictData
         byte[]? fdselect = null;
         if (dict.IsCIDFont)
         {
-            fdarray = CompactFontFormat.ReadIndexData(stream.SeekTo(offset + dict.FDArrayOffset.Try())).Select(x => ReadFrom(x, strings, stream, offset)).ToArray();
+            fdarray = [.. CompactFontFormat.ReadIndexData(stream.SeekTo(offset + dict.FDArrayOffset.Try())).Select(x => ReadFrom(x, strings, stream, offset))];
             fdselect = ReadFDSelect(stream.SeekTo(offset + dict.FDSelectOffset.Try()), char_strings.Length);
         }
 
@@ -247,7 +247,7 @@ public class DictData
             return new()
             {
                 Format = 0,
-                Glyph = Enumerable.Repeat(0, glyph_count_without_notdef).Select(_ => stream.ReadUShortByBigEndian()).ToArray(),
+                Glyph = [.. Enumerable.Repeat(0, glyph_count_without_notdef).Select(_ => stream.ReadUShortByBigEndian())],
             };
         }
     }
@@ -271,7 +271,7 @@ public class DictData
         }
         else
         {
-            return Enumerable.Repeat(0, glyph_count_with_notdef).Select(_ => stream.ReadUByte()).ToArray();
+            return [.. Enumerable.Repeat(0, glyph_count_with_notdef).Select(_ => stream.ReadUByte())];
         }
     }
 
@@ -310,7 +310,7 @@ public class DictData
 
             FontDictArray.Each(x => x.WriteWithoutDictAndOffsetUpdate(stream, offset));
             Dict[1236] = [stream.Position - offset];
-            CompactFontFormat.WriteIndexData(stream, FontDictArray.Select(x => DictDataToBytes(x.Dict)).ToArray());
+            CompactFontFormat.WriteIndexData(stream, [.. FontDictArray.Select(x => DictDataToBytes(x.Dict))]);
 
             Dict[1237] = [stream.Position - offset];
             WriteFDSelect(stream, FontDictSelect);

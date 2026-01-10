@@ -14,7 +14,7 @@ namespace PicoPDF.Binder;
 
 public static class SectionBinder
 {
-    public static PageModel[] Bind<T>(PageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => BindPageModels(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? InstanceMapper.CreateGetMapper<T>())
+    public static PageModel[] Bind<T>(PageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => [.. BindPageModels(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? InstanceMapper.CreateGetMapper<T>())
         .Select(models =>
         {
             // header or detail top-down order
@@ -26,8 +26,7 @@ public static class SectionBinder
             models.Where(x => x.Section is FooterSection).Reverse().Each(x => x.Top = bottom -= x.Section.Height);
 
             return new PageModel() { Size = page.Size, Orientation = page.Orientation, Models = models };
-        })
-        .ToArray();
+        })];
 
     public static PageModel[] Bind(PageSection page, DataTable table) => Bind(page,
         table.Rows.GetIterator().OfType<DataRow>(),
@@ -106,7 +105,7 @@ public static class SectionBinder
                         break;
                     }
                     breakcount = 0;
-                    breakfooter = footers.SkipWhileOrEveryPage(_ => false).FooterSort().ToArray();
+                    breakfooter = [.. footers.SkipWhileOrEveryPage(_ => false).FooterSort()];
                 }
                 if (!page_first) bind.SectionBreak(lastdata, page);
                 breakheader?.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, current, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
@@ -153,7 +152,7 @@ public static class SectionBinder
         return maxcount;
     }
 
-    public static List<IModelElement> BindElements<T>(List<IElement> elements, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys) => elements.Select(x => BindElement(x, data, bind, page, keys, allkeys)).ToList();
+    public static List<IModelElement> BindElements<T>(List<IElement> elements, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys) => [.. elements.Select(x => BindElement(x, data, bind, page, keys, allkeys))];
 
     public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys)
     {

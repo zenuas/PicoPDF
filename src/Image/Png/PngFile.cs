@@ -106,10 +106,9 @@ public class PngFile : IImageCanvas
         {
             Width = width,
             Height = height,
-            Canvas = data
+            Canvas = [.. data
                 .Chunk(row_byte)
-                .Select(xs => xs.Skip(1).Chunk(byte_per_pixel).Select(makecolor).ToArray())
-                .ToArray(),
+                .Select(xs => xs.Skip(1).Chunk(byte_per_pixel).Select(makecolor).ToArray())],
         };
     }
 
