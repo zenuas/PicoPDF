@@ -100,6 +100,7 @@ public static class JsonLoader
                         Style = json["Style"] is { } style ? Enum.Parse<TextStyle>(style.ToString()) : TextStyle.None,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+                        Culture = json["Culture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
                     };
                 }
 
@@ -121,6 +122,7 @@ public static class JsonLoader
                         SummaryType = sumtype,
                         SummaryMethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethod>(method.ToString()) : (sumtype == SummaryType.PageCount ? SummaryMethod.Page : SummaryMethod.Group),
                         BreakKey = json["BreakKey"]?.ToString() ?? "",
+                        Culture = json["Culture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
                     };
                 }
 
