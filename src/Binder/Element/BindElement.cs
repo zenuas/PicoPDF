@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Globalization;
 
 namespace PicoPDF.Binder.Element;
 
@@ -14,4 +15,5 @@ public class BindElement : ITextElement
     public TextStyle Style { get; init; } = TextStyle.None;
     public int Width { get; init; }
     public Color? Color { get; init; } = null;
+    public CultureInfo? Culture { get; init; } = null;
 }

@@ -125,27 +125,27 @@ public class BindSummaryMapper<T>
         }
     }
 
-    public void SectionBreak(T data)
+    public void SectionBreak(T data, PageSection page)
     {
-        SummaryGoBack[1].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.NaN));
+        SummaryGoBack[1].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
         SummaryGoBack[1].Clear();
         SummaryPool.Keys.Where(x => x.StartsWith('&')).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
-    public void PageBreak(T data)
+    public void PageBreak(T data, PageSection page)
     {
-        SectionBreak(data);
+        SectionBreak(data, page);
 
-        SummaryGoBack[2].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.NaN));
+        SummaryGoBack[2].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
         SummaryGoBack[2].Clear();
         SummaryPool.Keys.Where(x => x.StartsWith('%')).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
-    public void KeyBreak(T data, int hierarchy_count, string[] allkeys)
+    public void KeyBreak(T data, int hierarchy_count, string[] allkeys, PageSection page)
     {
         for (int i = SummaryGoBack.Count - hierarchy_count; i < SummaryGoBack.Count; i++)
         {
-            SummaryGoBack[i].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.NaN));
+            SummaryGoBack[i].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
             SummaryGoBack[i].Clear();
         }
 
@@ -155,25 +155,25 @@ public class BindSummaryMapper<T>
         SummaryPool.Keys.Where(x => x.StartsWith(sumkey_via_prefix) || x.StartsWith(sumkey_direct_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
-    public void LastBreak(T data)
+    public void LastBreak(T data, PageSection page)
     {
-        SummaryGoBack[0].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.NaN));
+        SummaryGoBack[0].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
         SummaryGoBack[0].Clear();
     }
 
-    public static string BindFormat(object? o, string format) => (format != "" && o is IFormattable formattable ? formattable.ToString(format, null) : o?.ToString()) ?? "";
+    public static string BindFormat(object? o, string format, IFormatProvider provider) => (format != "" && o is IFormattable formattable ? formattable.ToString(format, provider) : o?.ToString()) ?? "";
 
-    public static string BindFormat(object? o, string format, object nan)
+    public static string BindFormat(object? o, string format, IFormatProvider provider, object nan)
     {
         try
         {
-            return (format == "" ? o?.ToString() : o?.Cast<IFormattable>()?.ToString(format, null)) ?? "";
+            return (format != "" && o is IFormattable formattable ? formattable.ToString(format, provider) : o?.ToString()) ?? "";
         }
         catch
         {
             try
             {
-                return nan.Cast<IFormattable>()?.ToString(format, null) ?? nan.ToString()!;
+                return nan.Cast<IFormattable>()?.ToString(format, provider) ?? nan.ToString()!;
             }
             catch
             {

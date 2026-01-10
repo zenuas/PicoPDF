@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Globalization;
 
 namespace PicoPDF.Binder.Element;
 
@@ -20,4 +21,5 @@ public class SummaryElement : ITextElement
     public SummaryMethod SummaryMethod { get; init; } = SummaryMethod.Group;
     public string BreakKey { get; init; } = "";
     public object NaN { get; init; } = "NaN";
+    public CultureInfo? Culture { get; init; } = null;
 }
