@@ -2,6 +2,7 @@
 
 namespace PicoPDF.Pdf.Font;
 
+[AttributeUsage(AttributeTargets.Field)]
 public class CIDSystemInfoAttribute(string name, string registry, string ordering, int supplement) : Attribute
 {
     public string Name { get; init; } = name;
