@@ -92,7 +92,7 @@ public class Type0Font : PdfObject, IFont
         return s
             .Select(x => System.Text.Encoding.ASCII.GetBytes($"{(EmbeddedFont ?? Font).CharToGIDCached(x):x4}"))
             .Flatten()
-            .Prepend(System.Text.Encoding.ASCII.GetBytes("<")[0])
+            .Prepend((byte)'<')
             .Concat(System.Text.Encoding.ASCII.GetBytes("> Tj"));
     }
 }

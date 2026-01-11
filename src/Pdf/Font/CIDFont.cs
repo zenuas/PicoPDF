@@ -127,7 +127,7 @@ public class CIDFont : PdfObject, IFont
         return SplitWidth(s, Widths)
             .Select(x => PdfUtility.ToStringEscapeBytes(s, TextEncoding).Concat(System.Text.Encoding.ASCII.GetBytes($"{x.Width} ")))
             .Flatten()
-            .Prepend(System.Text.Encoding.ASCII.GetBytes("[")[0])
+            .Prepend((byte)'[')
             .Concat(System.Text.Encoding.ASCII.GetBytes("] TJ"));
     }
 
