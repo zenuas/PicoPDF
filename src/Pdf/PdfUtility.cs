@@ -7,6 +7,8 @@ using PicoPDF.Pdf.Font;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Text;
 
 namespace PicoPDF.Pdf;
 
@@ -46,6 +48,20 @@ public static class PdfUtility
     public static double PointToCentimeter(double v) => v / 72 * 2.54;
     public static double PointToMillimeter(double v) => v / 72 * 25.4;
     [Obsolete("use SI")] public static double PointToInch(double v) => v / 72;
+
+    public static readonly byte[] EscapeBytes = Encoding.ASCII.GetBytes("()\\");
+
+    public static IEnumerable<byte> ToStringEscapeBytes(string s) => Encoding.UTF8.GetBytes(s).Length == s.Length
+        ? ToStringEscapeBytes(s, Encoding.ASCII)
+        : [
+            (byte)'(',
+            .. Encoding.BigEndianUnicode.GetPreamble(),
+            .. ToEscapeBytes(Encoding.BigEndianUnicode.GetBytes(s)),
+            (byte)')'
+        ];
+    public static IEnumerable<byte> ToStringEscapeBytes(string s, Encoding encoding) => ToStringEscapeBytes(encoding.GetBytes(s));
+    public static IEnumerable<byte> ToStringEscapeBytes(byte[] bytes) => [(byte)'(', .. ToEscapeBytes(bytes), (byte)')'];
+    public static IEnumerable<byte> ToEscapeBytes(byte[] bytes) => [.. bytes.Select<byte, byte[]>(x => x.In(EscapeBytes) ? [(byte)'\\', x] : [x]).Flatten()];
 
     public static DeviceRGB ToDeviceRGB(this System.Drawing.Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
 

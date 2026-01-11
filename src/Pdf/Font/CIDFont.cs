@@ -111,8 +111,6 @@ public class CIDFont : PdfObject, IFont
         {'}', 500},  // }
         {'~', 500},  // ~
     };
-    public static readonly byte[] EscapeBytes = System.Text.Encoding.ASCII.GetBytes("()\\");
-    public static readonly byte EscapeCharByte = System.Text.Encoding.ASCII.GetBytes("\\")[0];
 
     public override void DoExport(PdfExportOption option)
     {
@@ -127,13 +125,7 @@ public class CIDFont : PdfObject, IFont
     public IEnumerable<byte> CreateTextShowingOperator(string s)
     {
         return SplitWidth(s, Widths)
-            .Select(x => TextEncoding
-                .GetBytes(x.Text)
-                .Select<byte, byte[]>(x => x.In(EscapeBytes) ? [EscapeCharByte, x] : [x])
-                .Flatten()
-                .Prepend(System.Text.Encoding.ASCII.GetBytes("(")[0])
-                .Concat(System.Text.Encoding.ASCII.GetBytes($") {x.Width} "))
-                )
+            .Select(x => PdfUtility.ToStringEscapeBytes(s, TextEncoding).Concat(System.Text.Encoding.ASCII.GetBytes($"{x.Width} ")))
             .Flatten()
             .Prepend(System.Text.Encoding.ASCII.GetBytes("[")[0])
             .Concat(System.Text.Encoding.ASCII.GetBytes("] TJ"));

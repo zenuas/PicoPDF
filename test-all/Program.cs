@@ -57,7 +57,8 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
 
     var doc = PdfUtility.Create(fontreg, json, table);
     doc.AddInfo(
-        title: $"({fname})",
+        title: fname,
+        producer: "PicoPDF for 🍣 (susi edition)",
         creation_date: DateTime.Now,
         mod_date: DateTime.Now,
         trapped: "/False"

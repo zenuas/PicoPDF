@@ -34,4 +34,6 @@ public abstract class ElementValue
     public static implicit operator ElementValue(ElementIndirectObject[] xs) => new ElementIndirectArray(xs);
 
     public static implicit operator ElementValue(List<ElementIndirectObject> xs) => new ElementIndirectArray(xs);
+
+    public static implicit operator ElementValue(byte[] xs) => new ElementBytes() { Bytes = xs };
 }
