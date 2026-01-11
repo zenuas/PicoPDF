@@ -15,7 +15,7 @@ public static class PdfExport
 
         foreach (var font in doc.PdfObjects.OfType<Type0Font>())
         {
-            if(option.EmbeddedFont || font.Font.Path.ForceEmbedded) font.CreateEmbeddedFont();
+            if (option.EmbeddedFont || font.Font.Path.ForceEmbedded) font.CreateEmbeddedFont();
         }
         var xref = new List<long>();
         GetAllReferences(doc, option).Each((x, i) =>
@@ -51,6 +51,7 @@ public static class PdfExport
         stream.Write($"<<\n");
         stream.Write($"  /Size {xref.Count + 1}\n");
         stream.Write($"  /Root {doc.Catalog.IndirectIndex} 0 R\n");
+        if (doc.Info is { }) stream.Write($"  /Info {doc.Info.IndirectIndex} 0 R\n");
         stream.Write($">>\n");
         stream.Write($"startxref\n");
         stream.Write($"{startxref}\n");

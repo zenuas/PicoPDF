@@ -5,6 +5,7 @@ using PicoPDF.OpenType;
 using PicoPDF.Pdf.Element;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -33,6 +34,7 @@ public class Document
             { "Kids", new ElementIndirectArray() },
         }
     };
+    public DocumentInformation? Info { get; set; }
     public FontRegister FontRegister { get; init; } = new();
 
     public Document()
@@ -173,6 +175,40 @@ public class Document
         PdfObjects.Add(image.Cast<PdfObject>());
 
         return image;
+    }
+
+    public DocumentInformation AddInfo(
+            string? title = null,
+            string? author = null,
+            string? subject = null,
+            string? keywords = null,
+            string? creator = null,
+            string? producer = null,
+            DateTime? creation_date = null,
+            DateTime? mod_date = null,
+            string? trapped = null
+        )
+    {
+        AddInfo(new()
+        {
+            Title = title,
+            Author = author,
+            Subject = subject,
+            Keywords = keywords,
+            Creator = creator,
+            Producer = producer,
+            CreationDate = creation_date,
+            ModDate = mod_date,
+            Trapped = trapped,
+        });
+        return Info!;
+    }
+
+    public void AddInfo(DocumentInformation info)
+    {
+        if (Info is { }) PdfObjects.Remove(Info);
+        Info = info;
+        PdfObjects.Add(Info = info);
     }
 
     public void Save(string path, PdfExportOption? option = null)
