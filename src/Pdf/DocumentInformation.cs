@@ -25,6 +25,6 @@ public class DocumentInformation : PdfObject
         if (Producer is { }) _ = Elements.TryAdd("Producer", PdfUtility.ToStringEscapeBytes(Producer).ToArray());
         if (CreationDate is { }) _ = Elements.TryAdd("CreationDate", CreationDate);
         if (ModDate is { }) _ = Elements.TryAdd("ModDate", ModDate);
-        if (Trapped is { }) _ = Elements.TryAdd("Trapped", PdfUtility.ToStringEscapeBytes(Trapped).ToArray());
+        if (Trapped is { }) _ = Elements.TryAdd("Trapped", Trapped);
     }
 }
