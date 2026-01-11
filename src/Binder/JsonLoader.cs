@@ -139,6 +139,19 @@ public static class JsonLoader
                     };
                 }
 
+            case "CrossSectionLineElement":
+                {
+                    return new CrossSectionLineElement()
+                    {
+                        X = posx,
+                        Y = posy,
+                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
+                    };
+                }
+
             case "RectangleElement":
                 {
                     return new RectangleElement()
