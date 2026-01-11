@@ -34,7 +34,7 @@ public class Document
             { "Kids", new ElementIndirectArray() },
         }
     };
-    public DocumentInformation? Info { get; set; }
+    public PdfObject? Info { get; set; }
     public FontRegister FontRegister { get; init; } = new();
 
     public Document()
@@ -177,7 +177,7 @@ public class Document
         return image;
     }
 
-    public DocumentInformation AddInfo(
+    public PdfObject AddInfo(
             string? title = null,
             string? author = null,
             string? subject = null,
@@ -189,26 +189,18 @@ public class Document
             string? trapped = null
         )
     {
-        AddInfo(new()
-        {
-            Title = title,
-            Author = author,
-            Subject = subject,
-            Keywords = keywords,
-            Creator = creator,
-            Producer = producer,
-            CreationDate = creation_date,
-            ModDate = mod_date,
-            Trapped = trapped,
-        });
-        return Info!;
-    }
-
-    public void AddInfo(DocumentInformation info)
-    {
         if (Info is { }) PdfObjects.Remove(Info);
-        Info = info;
-        PdfObjects.Add(Info = info);
+        PdfObjects.Add(Info = new());
+        if (title is { }) _ = Info.Elements.TryAdd("Title", PdfUtility.ToStringEscapeBytes(title).ToArray());
+        if (author is { }) _ = Info.Elements.TryAdd("Author", PdfUtility.ToStringEscapeBytes(author).ToArray());
+        if (subject is { }) _ = Info.Elements.TryAdd("Subject", PdfUtility.ToStringEscapeBytes(subject).ToArray());
+        if (keywords is { }) _ = Info.Elements.TryAdd("Keywords", PdfUtility.ToStringEscapeBytes(keywords).ToArray());
+        if (creator is { }) _ = Info.Elements.TryAdd("Creator", PdfUtility.ToStringEscapeBytes(creator).ToArray());
+        if (producer is { }) _ = Info.Elements.TryAdd("Producer", PdfUtility.ToStringEscapeBytes(producer).ToArray());
+        if (creation_date is { }) _ = Info.Elements.TryAdd("CreationDate", creation_date);
+        if (mod_date is { }) _ = Info.Elements.TryAdd("ModDate", mod_date);
+        if (trapped is { }) _ = Info.Elements.TryAdd("Trapped", trapped);
+        return Info;
     }
 
     public void Save(string path, PdfExportOption? option = null)
