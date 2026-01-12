@@ -26,7 +26,7 @@ public static class PdfExport
             var input = x.Stream;
             if (input is { })
             {
-                x.Elements.Add("Length", input.Length);
+                x.Elements["Length"] = input.Length;
             }
             x.Elements.Each(x =>
             {
