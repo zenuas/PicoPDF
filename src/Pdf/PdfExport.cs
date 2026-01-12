@@ -24,10 +24,7 @@ public static class PdfExport
             stream.Write($"{x.IndirectIndex} 0 obj\n");
             stream.Write($"<<\n");
             var input = x.Stream;
-            if (input is { })
-            {
-                x.Elements["Length"] = input.Length;
-            }
+            if (input is { }) x.Elements["Length"] = input.Length;
             x.Elements.Each(x =>
             {
                 stream.Write($"  /{x.Key} ");
