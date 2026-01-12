@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using PicoPDF.Pdf.Element;
 using PicoPDF.Pdf.Font;
 using System.Collections.Generic;
 using System.IO;
@@ -31,16 +30,9 @@ public static class PdfExport
             }
             x.Elements.Each(x =>
             {
-                if (x.Value is ElementBytes bytes)
-                {
-                    stream.Write($"  /{x.Key} ");
-                    stream.Write(bytes.Bytes);
-                    stream.Write($"\n");
-                }
-                else
-                {
-                    stream.Write($"  /{x.Key} {x.Value.ToElementString()}\n");
-                }
+                stream.Write($"  /{x.Key} ");
+                stream.Write(x.Value.ToElementBytes());
+                stream.Write($"\n");
             });
             stream.Write($">>\n");
             if (input is { })
