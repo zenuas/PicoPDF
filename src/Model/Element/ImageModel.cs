@@ -1,7 +1,10 @@
-﻿namespace PicoPDF.Model.Element;
+﻿using PicoPDF.Binder.Element;
+
+namespace PicoPDF.Model.Element;
 
 public class ImageModel : IModelElement
 {
+    public required IElement Element { get; init; }
     public required int X { get; init; }
     public required int Y { get; init; }
     public required string Path { get; init; }

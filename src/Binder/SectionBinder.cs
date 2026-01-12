@@ -174,6 +174,19 @@ public static class SectionBinder
             case LineElement x:
                 return new LineModel()
                 {
+                    Element = x,
+                    X = posx,
+                    Y = x.Y,
+                    Width = x.Width,
+                    Height = x.Height,
+                    Color = x.Color?.ToDeviceRGB(),
+                    LineWidth = x.LineWidth,
+                };
+
+            case CrossSectionLineElement x:
+                return new LineModel()
+                {
+                    Element = x,
                     X = posx,
                     Y = x.Y,
                     Width = x.Width,
@@ -185,6 +198,7 @@ public static class SectionBinder
             case RectangleElement x:
                 return new RectangleModel()
                 {
+                    Element = x,
                     X = posx,
                     Y = x.Y,
                     Width = x.Width,
@@ -196,6 +210,7 @@ public static class SectionBinder
             case FillRectangleElement x:
                 return new FillRectangleModel()
                 {
+                    Element = x,
                     X = posx,
                     Y = x.Y,
                     Width = x.Width,
@@ -208,6 +223,7 @@ public static class SectionBinder
             case ImageElement x:
                 return new ImageModel()
                 {
+                    Element = x,
                     X = posx,
                     Y = x.Y,
                     Path = x.Bind == "" ? x.Path : bind.Mapper[x.Bind](data).ToString()!,
@@ -220,6 +236,7 @@ public static class SectionBinder
 
     public static TextModel CreateTextModel(ITextElement element, string text, PageSection page) => new()
     {
+        Element = element,
         X = element.X + page.Padding.Left,
         Y = element.Y,
         Text = text,
