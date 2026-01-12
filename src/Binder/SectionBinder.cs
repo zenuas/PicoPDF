@@ -38,12 +38,12 @@ public static class SectionBinder
 
     public static List<List<SectionModel>> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
     {
-        var sections = page.SubSection.Travers(x => x is Section s ? [s.SubSection] : []).ToArray();
-        var detail = sections.OfType<DetailSection>().First();
-        var hierarchy = sections.OfType<Section>().AppendHierarchy().ToArray();
-        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => (x.Section.BreakKey, x.BreakKeyHierarchy, Section: (ISection)x.Section.Header!)).PrependIf(page.Header).ToArray();
-        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => (x.Section.BreakKey, x.BreakKeyHierarchy, Section: (ISection)x.Section.Footer!)).ToArray();
-        var keys = sections.OfType<Section>().Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
+        var sections = (Section: page.SubSection, Level: 1).Travers(x => x.Section is Section s ? [(s.SubSection, x.Level + 1)] : []).ToArray();
+        var detail = sections.Select(x => x.Section).OfType<DetailSection>().First();
+        var hierarchy = sections.Where(x => x.Section is Section).Select(x => (x.Section.Cast<Section>(), x.Level)).AppendHierarchy().ToArray();
+        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => (x.Section.BreakKey, x.BreakKeyHierarchy, Section: (ISection)x.Section.Header!, x.Level)).PrependIf(page.Header, 0).ToArray();
+        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => (x.Section.BreakKey, x.BreakKeyHierarchy, Section: (ISection)x.Section.Footer!, x.Level)).ToArray();
+        var keys = sections.Select(x => x.Section).OfType<Section>().Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
 
         var bind = new BindSummaryMapper<T>() { Mapper = mapper };
         bind.CreatePool(page, keys);
@@ -251,7 +251,7 @@ public static class SectionBinder
         }
     }
 
-    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> SkipWhileOrPageFirst(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> self, Func<(string BreakKey, string[] BreakKeyHierarchy, ISection Section), bool> f)
+    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level)> SkipWhileOrPageFirst(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level)> self, Func<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level), bool> f)
     {
         var found = false;
         foreach (var x in self)
@@ -264,7 +264,7 @@ public static class SectionBinder
         }
     }
 
-    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> SkipWhileOrEveryPage(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> self, Func<(string BreakKey, string[] BreakKeyHierarchy, ISection Section), bool> f)
+    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level)> SkipWhileOrEveryPage(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level)> self, Func<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level), bool> f)
     {
         var found = false;
         foreach (var x in self)
@@ -277,7 +277,7 @@ public static class SectionBinder
         }
     }
 
-    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> FooterSort(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> self)
+    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level)> FooterSort(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level)> self)
     {
         var footer = self.ToArray();
         return footer
@@ -286,15 +286,15 @@ public static class SectionBinder
             .Concat(footer.Where(x => x.Section is FooterSection));
     }
 
-    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> PrependIf(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)> self, ISection? section) => section is { } ? (IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section)>)self.Prepend(("", [], section)) : self;
+    public static IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level)> PrependIf(this IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level)> self, ISection? section, int level) => section is { } ? (IEnumerable<(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level)>)self.Prepend(("", [], section, level)) : self;
 
-    public static IEnumerable<(string[] BreakKeyHierarchy, Section Section)> AppendHierarchy(this IEnumerable<Section> self)
+    public static IEnumerable<(string[] BreakKeyHierarchy, Section Section, int Level)> AppendHierarchy(this IEnumerable<(Section Section, int Level)> self)
     {
         var keys = new List<string>();
         foreach (var x in self)
         {
-            if (x.BreakKey != "") keys.Add(x.BreakKey);
-            yield return ([.. keys], x);
+            if (x.Section.BreakKey != "") keys.Add(x.Section.BreakKey);
+            yield return ([.. keys], x.Section, x.Level);
         }
     }
 }
