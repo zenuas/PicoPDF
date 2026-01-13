@@ -45,8 +45,8 @@ public static class PdfExport
         var startxref = stream.Position;
         stream.Write($"xref\n");
         stream.Write($"0 {xref.Count + 1}\n");
-        stream.Write($"0000000000 65535 f\n");
-        xref.Each(x => stream.Write($"{x:0000000000} 00000 n\n"));
+        stream.Write($"0000000000 65535 f\r\n");
+        xref.Each(x => stream.Write($"{x:0000000000} 00000 n\r\n"));
         stream.Write($"\n");
 
         stream.Write($"trailer\n");
