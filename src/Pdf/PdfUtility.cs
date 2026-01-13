@@ -51,7 +51,7 @@ public static class PdfUtility
 
     public static readonly byte[] EscapeBytes = Encoding.ASCII.GetBytes("()\\");
 
-    public static IEnumerable<byte> ToStringEscapeBytes(string s) => Encoding.UTF8.GetBytes(s).Length == s.Length
+    public static IEnumerable<byte> ToStringEscapeBytes(string s) => s.All(char.IsAscii)
         ? ToStringEscapeBytes(s, Encoding.ASCII)
         : [
             (byte)'(',
