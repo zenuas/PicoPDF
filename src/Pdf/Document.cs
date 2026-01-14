@@ -191,12 +191,12 @@ public class Document
     {
         if (Info is { }) PdfObjects.Remove(Info);
         PdfObjects.Add(Info = new());
-        if (title is { }) _ = Info.Elements.TryAdd("Title", PdfUtility.ToStringEscapeBytes(title).ToArray());
-        if (author is { }) _ = Info.Elements.TryAdd("Author", PdfUtility.ToStringEscapeBytes(author).ToArray());
-        if (subject is { }) _ = Info.Elements.TryAdd("Subject", PdfUtility.ToStringEscapeBytes(subject).ToArray());
-        if (keywords is { }) _ = Info.Elements.TryAdd("Keywords", PdfUtility.ToStringEscapeBytes(keywords).ToArray());
-        if (creator is { }) _ = Info.Elements.TryAdd("Creator", PdfUtility.ToStringEscapeBytes(creator).ToArray());
-        if (producer is { }) _ = Info.Elements.TryAdd("Producer", PdfUtility.ToStringEscapeBytes(producer).ToArray());
+        if (title is { }) _ = Info.Elements.TryAdd("Title", PdfUtility.ToStringEscapeBytes(title));
+        if (author is { }) _ = Info.Elements.TryAdd("Author", PdfUtility.ToStringEscapeBytes(author));
+        if (subject is { }) _ = Info.Elements.TryAdd("Subject", PdfUtility.ToStringEscapeBytes(subject));
+        if (keywords is { }) _ = Info.Elements.TryAdd("Keywords", PdfUtility.ToStringEscapeBytes(keywords));
+        if (creator is { }) _ = Info.Elements.TryAdd("Creator", PdfUtility.ToStringEscapeBytes(creator));
+        if (producer is { }) _ = Info.Elements.TryAdd("Producer", PdfUtility.ToStringEscapeBytes(producer));
         if (creation_date is { }) _ = Info.Elements.TryAdd("CreationDate", creation_date);
         if (mod_date is { }) _ = Info.Elements.TryAdd("ModDate", mod_date);
         if (trapped is { }) _ = Info.Elements.TryAdd("Trapped", trapped);

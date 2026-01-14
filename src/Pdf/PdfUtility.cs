@@ -51,17 +51,11 @@ public static class PdfUtility
 
     public static readonly byte[] EscapeBytes = Encoding.ASCII.GetBytes("()\\");
 
-    public static IEnumerable<byte> ToStringEscapeBytes(string s) => s.All(char.IsAscii)
-        ? ToStringEscapeBytes(s, Encoding.ASCII)
-        : [
-            (byte)'(',
-            .. Encoding.BigEndianUnicode.GetPreamble(),
-            .. ToEscapeBytes(Encoding.BigEndianUnicode.GetBytes(s)),
-            (byte)')'
-        ];
+    public static string ToStringEscapeBytes(string s) => s.All(char.IsAscii)
+        ? Encoding.ASCII.GetString([.. ToStringEscapeBytes(s, Encoding.ASCII)])
+        : $"<{Convert.ToHexString([.. Encoding.BigEndianUnicode.GetPreamble(), .. Encoding.BigEndianUnicode.GetBytes(s)])}>";
     public static IEnumerable<byte> ToStringEscapeBytes(string s, Encoding encoding) => ToStringEscapeBytes(encoding.GetBytes(s));
-    public static IEnumerable<byte> ToStringEscapeBytes(byte[] bytes) => [(byte)'(', .. ToEscapeBytes(bytes), (byte)')'];
-    public static IEnumerable<byte> ToEscapeBytes(byte[] bytes) => [.. bytes.Select<byte, byte[]>(x => x.In(EscapeBytes) ? [(byte)'\\', x] : [x]).Flatten()];
+    public static IEnumerable<byte> ToStringEscapeBytes(byte[] bytes) => [(byte)'(', .. bytes.Select<byte, byte[]>(x => x.In(EscapeBytes) ? [(byte)'\\', x] : [x]).Flatten(), (byte)')'];
 
     public static DeviceRGB ToDeviceRGB(this System.Drawing.Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
 

@@ -25,12 +25,7 @@ public static class PdfExport
             stream.Write($"<<\n");
             var input = x.Stream;
             if (input is { }) x.Elements["Length"] = input.Length;
-            x.Elements.Each(x =>
-            {
-                stream.Write($"  /{x.Key} ");
-                stream.Write(x.Value.ToElementBytes());
-                stream.Write($"\n");
-            });
+            x.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString()}\n"));
             stream.Write($">>\n");
             if (input is { })
             {

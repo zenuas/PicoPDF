@@ -2,13 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PicoPDF.Pdf.Element;
 
 public abstract class ElementValue
 {
-    public virtual byte[] ToElementBytes() => Encoding.UTF8.GetBytes(ToElementString());
     public abstract string ToElementString();
 
     public static implicit operator ElementValue(int x) => new ElementInteger() { Value = x };
@@ -36,6 +34,4 @@ public abstract class ElementValue
     public static implicit operator ElementValue(ElementIndirectObject[] xs) => new ElementIndirectArray(xs);
 
     public static implicit operator ElementValue(List<ElementIndirectObject> xs) => new ElementIndirectArray(xs);
-
-    public static implicit operator ElementValue(byte[] xs) => new ElementBytes() { Bytes = xs };
 }
