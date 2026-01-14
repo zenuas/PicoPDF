@@ -53,7 +53,7 @@ public static class PdfUtility
 
     public static string ToStringEscapeBytes(string s) => s.All(char.IsAscii)
         ? Encoding.ASCII.GetString([.. ToStringEscapeBytes(s, Encoding.ASCII)])
-        : $"<{Convert.ToHexString([.. Encoding.BigEndianUnicode.GetPreamble(), .. Encoding.BigEndianUnicode.GetBytes(s)])}>";
+        : $"<{Convert.ToHexStringLower([.. Encoding.BigEndianUnicode.GetPreamble(), .. Encoding.BigEndianUnicode.GetBytes(s)])}>";
     public static IEnumerable<byte> ToStringEscapeBytes(string s, Encoding encoding) => ToStringEscapeBytes(encoding.GetBytes(s));
     public static IEnumerable<byte> ToStringEscapeBytes(byte[] bytes) => [(byte)'(', .. bytes.Select<byte, byte[]>(x => x.In(EscapeBytes) ? [(byte)'\\', x] : [x]).Flatten(), (byte)')'];
 

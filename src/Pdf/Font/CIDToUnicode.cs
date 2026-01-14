@@ -16,7 +16,7 @@ public class CIDToUnicode : PdfObject
     {
         var bfchar = Chars
             .Order()
-            .Select(x => $"        <{Font.CharToGID(x):x4}> <{Convert.ToHexString(Encoding.BigEndianUnicode.GetBytes(x.ToString()))}>{(option.Debug ? $" %{x}" : "")}")
+            .Select(x => $"        <{Font.CharToGID(x):x4}> <{Convert.ToHexStringLower(Encoding.BigEndianUnicode.GetBytes(x.ToString()))}>{(option.Debug ? $" %{x}" : "")}")
             .Join("\n");
 
         var writer = GetWriteStream(option.CMapStreamDeflate);
