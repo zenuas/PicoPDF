@@ -128,6 +128,10 @@ public static class ModelMapping
                 page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color, x.LineWidth);
                 return;
 
+            case MutableLineModel x:
+                page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color, x.LineWidth);
+                return;
+
             case RectangleModel x:
                 page.Contents.DrawRectangle(posx, posy, x.Width, x.Height, x.Color, x.LineWidth);
                 return;

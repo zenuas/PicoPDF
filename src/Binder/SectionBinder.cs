@@ -184,7 +184,7 @@ public static class SectionBinder
                 };
 
             case CrossSectionLineElement x:
-                return new LineModel()
+                return new MutableLineModel()
                 {
                     Element = x,
                     X = posx,
