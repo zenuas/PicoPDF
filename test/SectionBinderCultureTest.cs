@@ -56,7 +56,7 @@ public class SectionBinderCultureTest
         return SectionBinder.Bind(PageSection, datas, mapper);
     }
 
-    public static string ToSectionString(SectionModel section) => $"{section.Section.Name}/{section.Elements.OfType<TextModel>().Select(x => x.Text).Join("|")}";
+    public static string ToSectionString(SectionModel section) => $"{section.Section.Name}/{section.Elements.OfType<ITextModel>().Select(x => x.Text).Join("|")}";
 
     [Fact]
     public void Line0()

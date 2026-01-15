@@ -53,7 +53,7 @@ public static class ModelMapping
         double posy = model.Y + top;
         switch (model)
         {
-            case TextModel x:
+            case ITextModel x:
                 {
                     var font = fontget(x.Font);
                     var box = font.MeasureStringBox(x.Text);
@@ -124,11 +124,7 @@ public static class ModelMapping
                 }
                 return;
 
-            case LineModel x:
-                page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color, x.LineWidth);
-                return;
-
-            case MutableLineModel x:
+            case ILineModel x:
                 page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color, x.LineWidth);
                 return;
 

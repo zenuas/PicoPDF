@@ -3,12 +3,12 @@ using PicoPDF.Pdf.Color;
 
 namespace PicoPDF.Model.Element;
 
-public class TextModel : ITextModel
+public class MutableTextModel : ITextModel
 {
     public required IElement Element { get; init; }
     public required int X { get; init; }
     public required int Y { get; init; }
-    public required string Text { get; init; }
+    public required string Text { get; set; }
     public required int Size { get; init; }
     public string Font { get; init; } = "";
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;

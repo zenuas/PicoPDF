@@ -166,7 +166,7 @@ public static class SectionBinder
             case SummaryElement x:
                 {
                     var keycount = x.BreakKey == "" ? keys.Length - 1 : allkeys.FindLastIndex(y => y == x.BreakKey);
-                    var model = CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format, x.Culture ?? page.DefaultCulture, x.NaN), page);
+                    var model = CreateMutableTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format, x.Culture ?? page.DefaultCulture, x.NaN), page);
                     bind.AddSummaryGoBack(x, model, keycount);
                     return model;
                 }
@@ -235,6 +235,20 @@ public static class SectionBinder
     }
 
     public static TextModel CreateTextModel(ITextElement element, string text, PageSection page) => new()
+    {
+        Element = element,
+        X = element.X + page.Padding.Left,
+        Y = element.Y,
+        Text = text,
+        Font = element.Font != "" ? element.Font : page.DefaultFont,
+        Size = element.Size,
+        Alignment = element.Alignment,
+        Style = element.Style,
+        Width = element.Width,
+        Color = element.Color?.ToDeviceRGB(),
+    };
+
+    public static MutableTextModel CreateMutableTextModel(ITextElement element, string text, PageSection page) => new()
     {
         Element = element,
         X = element.X + page.Padding.Left,

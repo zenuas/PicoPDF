@@ -105,7 +105,7 @@ public class SectionBinder3SectionTest
 
     public static IEnumerable<(int, string, string)> MakeSectionData(string key1, string key2, int from, int to) => Lists.RangeTo(from, to).Select(x => (x, key1, key2));
 
-    public static string ToSectionString(SectionModel section) => $"{section.Section.Name}/{section.Elements.OfType<TextModel>().Select(x => x.Text).Join("/")}";
+    public static string ToSectionString(SectionModel section) => $"{section.Section.Name}/{section.Elements.OfType<ITextModel>().Select(x => x.Text).Join("/")}";
 
     [Fact]
     public void Line0()

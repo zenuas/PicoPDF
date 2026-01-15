@@ -3,7 +3,7 @@ using PicoPDF.Pdf.Color;
 
 namespace PicoPDF.Model.Element;
 
-public class MutableLineModel : IModelElement
+public class MutableLineModel : ILineModel
 {
     public required IElement Element { get; init; }
     public SectionModel? TargetModel { get; set; }

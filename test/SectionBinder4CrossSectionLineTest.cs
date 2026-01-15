@@ -89,7 +89,7 @@ public class SectionBinder4CrossSectionLineTest
 
     public static IEnumerable<(int, string, string, string)> MakeSectionData(string key1, string key2, string key3, int from, int to) => Lists.RangeTo(from, to).Select(x => (x, key1, key2, key3));
 
-    public static string ToSectionString(SectionModel section) => $"{section.Section.Name},top={section.Top}/{section.Elements.OfType<TextModel>().Select(x => x.Text).Join("/")}|{section.Elements.OfType<MutableLineModel>().Select(x => $"x={x.X},y={x.Y},width={x.Width},height={x.Height}").Join("/")}";
+    public static string ToSectionString(SectionModel section) => $"{section.Section.Name},top={section.Top}/{section.Elements.OfType<ITextModel>().Select(x => x.Text).Join("/")}|{section.Elements.OfType<ILineModel>().Select(x => $"x={x.X},y={x.Y},width={x.Width},height={x.Height}").Join("/")}";
 
     [Fact]
     public void Line2()
