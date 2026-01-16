@@ -22,12 +22,9 @@ public class BindSummaryMapper<T>
         {
             var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : [.. allkeys.Take(allkeys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1)];
             var breakpoint =
-                sr.SummaryElement.SummaryMethod == SummaryMethod.All ? "#" :
-                sr.SummaryElement.SummaryMethod == SummaryMethod.AllIncremental ? "#" :
-                sr.SummaryElement.SummaryMethod == SummaryMethod.Page ? $"&{keys.Join(".")}" :
-                sr.SummaryElement.SummaryMethod == SummaryMethod.PageIncremental ? $"&{keys.Join(".")}" :
-                sr.SummaryElement.SummaryMethod == SummaryMethod.CrossSectionPage ? $"%{keys.Join(".")}" :
-                sr.SummaryElement.SummaryMethod == SummaryMethod.CrossSectionPageIncremental ? $"%{keys.Join(".")}" :
+                sr.SummaryElement.SummaryMethod is SummaryMethod.All or SummaryMethod.AllIncremental ? "#" :
+                sr.SummaryElement.SummaryMethod is SummaryMethod.Page or SummaryMethod.PageIncremental ? $"&{keys.Join(".")}" :
+                sr.SummaryElement.SummaryMethod is SummaryMethod.CrossSectionPage or SummaryMethod.CrossSectionPageIncremental ? $"%{keys.Join(".")}" :
                 $"${keys.Join(".")}";
             var bind = sr.SummaryElement.Bind;
             switch (sr.SummaryElement.SummaryType)
