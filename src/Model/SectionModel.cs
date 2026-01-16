@@ -7,7 +7,7 @@ namespace PicoPDF.Model;
 public class SectionModel
 {
     public required ISection Section { get; init; }
-    public required int? Level { get; init; }
+    public required int? Depth { get; init; }
     public int Top { get; set; }
     public List<IModelElement> Elements { get; init; } = [];
 

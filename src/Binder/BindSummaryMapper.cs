@@ -126,7 +126,7 @@ public class BindSummaryMapper<T>
         }
     }
 
-    public void AddCrossSectionGoBack(ICrossSectionModel model, int level) => CrossSectionGoBack[level].Add(model);
+    public void AddCrossSectionGoBack(ICrossSectionModel model, int depth) => CrossSectionGoBack[depth].Add(model);
 
     public void SectionBreak(T data, PageSection page)
     {
@@ -166,9 +166,9 @@ public class BindSummaryMapper<T>
 
     public void BreakSection(SectionModel model)
     {
-        var level = model.Level ?? throw new();
-        CrossSectionGoBack[level].Each(x => x.TargetModel = model);
-        CrossSectionGoBack[level].Clear();
+        var depth = model.Depth ?? throw new();
+        CrossSectionGoBack[depth].Each(x => x.TargetModel = model);
+        CrossSectionGoBack[depth].Clear();
     }
 
     public void PageBreakSection(SectionModel model)
@@ -227,10 +227,4 @@ public class BindSummaryMapper<T>
     }
 
     public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, List<IElement> elements) => elements.OfType<SummaryElement>().Select(x => (keys, x));
-
-    public static IEnumerable<(int Level, ICrossSectionElement SummaryElement)> TraversCrossSectionElement(int level, IParentSection section)
-    {
-        if (section.Header is ISection header) foreach (var x in header.Elements.OfType<ICrossSectionElement>()) yield return (level, x);
-        if (section.SubSection is IParentSection subsection) foreach (var x in TraversCrossSectionElement(level + 1, subsection)) yield return x;
-    }
 }

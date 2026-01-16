@@ -2,4 +2,4 @@
 
 namespace PicoPDF.Binder;
 
-public record class SectionInfo(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Level);
+public record class SectionInfo(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Depth);

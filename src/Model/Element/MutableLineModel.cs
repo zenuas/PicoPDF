@@ -17,7 +17,7 @@ public class MutableLineModel : ILineModel, ICrossSectionModel
     public void UpdatePosition(SectionModel current)
     {
         if (current.Section.Height > current.Top + Y + Height) return;
-        if (TargetModel!.Level is { })
+        if (TargetModel!.Depth is { })
         {
             Height = Height - current.Section.Height + TargetModel.Top - current.Top;
         }
