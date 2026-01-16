@@ -84,15 +84,15 @@ public static class ModelMapping
                         var topleft = model.Y + top;
                         var bottomleft = (int)(model.Y + top + (box.Height * size));
 
-                        if (x.Style.HasFlag(TextStyle.UnderLine))
+                        if (x.Style.HasFlag(TextStyle.Underline))
                         {
                             page.Contents.DrawLine(posx, posy, posx + width, posy, x.Color);
                         }
-                        if (x.Style.HasFlag(TextStyle.UnderLine2))
+                        if (x.Style.HasFlag(TextStyle.DoubleUnderline))
                         {
                             page.Contents.DrawLine(posx, posy + 2, posx + width, posy + 2, x.Color);
                         }
-                        if (x.Style.HasFlag(TextStyle.LineThrough))
+                        if (x.Style.HasFlag(TextStyle.Strikethrough))
                         {
                             var center = (int)(topleft + (box.Height * size / 2));
                             page.Contents.DrawLine(posx, center, posx + width, center, x.Color);
