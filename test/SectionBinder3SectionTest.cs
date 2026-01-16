@@ -117,8 +117,8 @@ public class SectionBinder3SectionTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1//");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2//");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1///P-Sum=0/P-Cnt=0/NaN///G-Sum=0/G-Cnt=0/NaN//");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2///P-Sum=0/P-Cnt=0/NaN///G-Sum=0/G-Cnt=0/NaN//");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1///P-Sum=0/P-Cnt=0/NaN///G-Sum=0/G-Cnt=0/NaN//");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=0/P-Cnt=0/NaN///A-Sum=0/A-Cnt=0/NaN///1///1");
     }
 

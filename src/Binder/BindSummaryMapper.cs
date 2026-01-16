@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using PicoPDF.Binder.Data;
 using PicoPDF.Binder.Element;
+using PicoPDF.Model;
 using PicoPDF.Model.Element;
 using System;
 using System.Collections.Generic;
@@ -161,6 +162,22 @@ public class BindSummaryMapper<T>
     {
         SummaryGoBack[0].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
         SummaryGoBack[0].Clear();
+    }
+
+    public void BreakSection(SectionModel model)
+    {
+        var level = model.Level ?? throw new();
+        CrossSectionGoBack[level].Each(x => x.TargetModel = model);
+        CrossSectionGoBack[level].Clear();
+    }
+
+    public void PageBreakSection(SectionModel model)
+    {
+        for (var i = 0; i < CrossSectionGoBack.Count; i++)
+        {
+            CrossSectionGoBack[i].Each(x => x.TargetModel = model);
+            CrossSectionGoBack[i].Clear();
+        }
     }
 
     public static string BindFormat(object? o, string format, IFormatProvider provider) => (format != "" && o is IFormattable formattable ? formattable.ToString(format, provider) : o?.ToString()) ?? "";
