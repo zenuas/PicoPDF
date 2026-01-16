@@ -37,6 +37,7 @@
 			{"Type": "TextElement", "Text": "G-地域", "Size": 10, "X": 280, "Y": 0, "Alignment": "End", "Width": 50},
 			{"Type": "TextElement", "Text": "G-県",   "Size": 10, "X": 330, "Y": 0, "Alignment": "End", "Width": 50},
 			{"Type": "TextElement", "Text": "All",    "Size": 10, "X": 380, "Y": 0, "Alignment": "End", "Width": 50},
+			{"Type": "CrossSectionLineElement", "X": 100, "Y": 10, "Width": 0, "Height": 25, "Color": "green"},
 		]},
 		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
 			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 10, "Y": 0},
