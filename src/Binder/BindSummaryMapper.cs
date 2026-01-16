@@ -216,25 +216,21 @@ public class BindSummaryMapper<T>
         }
     }
 
-    public static List<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IParentSection section)
+    public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IParentSection section)
     {
-        if (section is Section x && x.BreakKey != "") keys = [.. keys, x.BreakKey];
+        if (section is Section sec && sec.BreakKey != "") keys = [.. keys, sec.BreakKey];
 
-        var results = new List<(string[] BreakKeys, SummaryElement SummaryElement)>();
-        if (section.Header is ISection header) results.AddRange(TraversSummaryElement(keys, header.Elements));
-        if (section.SubSection is ISection detail) results.AddRange(TraversSummaryElement(keys, detail.Elements));
-        if (section.SubSection is IParentSection subsection) results.AddRange(TraversSummaryElement(keys, subsection));
-        if (section.Footer is ISection footer) results.AddRange(TraversSummaryElement(keys, footer.Elements));
-        return results;
+        if (section.Header is ISection header) foreach (var x in TraversSummaryElement(keys, header.Elements)) yield return x;
+        if (section.SubSection is ISection detail) foreach (var x in TraversSummaryElement(keys, detail.Elements)) yield return x;
+        if (section.SubSection is IParentSection subsection) foreach (var x in TraversSummaryElement(keys, subsection)) yield return x;
+        if (section.Footer is ISection footer) foreach (var x in TraversSummaryElement(keys, footer.Elements)) yield return x;
     }
 
     public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, List<IElement> elements) => elements.OfType<SummaryElement>().Select(x => (keys, x));
 
-    public static List<(int Level, ICrossSectionElement SummaryElement)> TraversCrossSectionElement(int level, IParentSection section)
+    public static IEnumerable<(int Level, ICrossSectionElement SummaryElement)> TraversCrossSectionElement(int level, IParentSection section)
     {
-        var results = new List<(int Level, ICrossSectionElement SummaryElement)>();
-        if (section.Header is ISection header) header.Elements.OfType<ICrossSectionElement>().Each(x => results.Add((level, x)));
-        if (section.SubSection is IParentSection subsection) results.AddRange(TraversCrossSectionElement(level + 1, subsection));
-        return results;
+        if (section.Header is ISection header) foreach (var x in header.Elements.OfType<ICrossSectionElement>()) yield return (level, x);
+        if (section.SubSection is IParentSection subsection) foreach (var x in TraversCrossSectionElement(level + 1, subsection)) yield return x;
     }
 }
