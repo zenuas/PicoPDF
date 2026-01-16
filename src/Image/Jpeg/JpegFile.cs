@@ -24,9 +24,9 @@ public class JpegFile : IImage
             var header = stream.ReadExactly(4).AsSpan();
             if (header.Length < 4) break;
 
-            var maeker = BinaryPrimitives.ReadUInt16BigEndian(header[0..2]);
+            var marker = BinaryPrimitives.ReadUInt16BigEndian(header[0..2]);
             var length = BinaryPrimitives.ReadUInt16BigEndian(header[2..4]) - 2;
-            if (maeker is
+            if (marker is
                     (ushort)SegmentTypes.SOF0 or
                     (ushort)SegmentTypes.SOF1 or
                     (ushort)SegmentTypes.SOF2 or
