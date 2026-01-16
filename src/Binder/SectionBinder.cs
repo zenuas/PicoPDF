@@ -58,6 +58,8 @@ public static class SectionBinder
             headers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
             footers.Select(x => new SectionModel() { Section = x.Section, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy, keys) }).Each(models.Add);
             if (page.Footer is ISection lastfooter) models.Add(new() { Section = lastfooter, Elements = BindElements(lastfooter.Elements, lastdata, bind, page, [], keys) });
+            bind.KeyBreak(lastdata, keys.Length, keys, page);
+            bind.PageBreak(lastdata, page);
             bind.LastBreak(lastdata, page);
             return [models];
         }
