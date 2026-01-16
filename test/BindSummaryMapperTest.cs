@@ -81,4 +81,32 @@ public class BindSummaryMapperTest
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "d", culture), "31/12/4321");
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "D", culture), "samedi 31 décembre 4321");
     }
+
+    [Fact]
+    public void BindFormatNaNTest()
+    {
+        var culture = CultureInfo.InvariantCulture;
+
+        var d = DateTime.Parse("4321-12-31T12:34:56", CultureInfo.InvariantCulture);
+        Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, 1), "1");
+        Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, 999), "999");
+        Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, 1_000), "1000");
+        Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, 1_234_567), "1234567");
+        Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, 1_234_567.89), "1234568");
+
+        Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, "NaN"), "NaN");
+        Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, "NaN"), "NaN");
+        Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, "NaN"), "NaN");
+        Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, "NaN"), "NaN");
+        Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, "NaN"), "NaN");
+    }
+
+    [Fact]
+    public void BindFormatNaNBadTest()
+    {
+        var culture = CultureInfo.InvariantCulture;
+
+        var d = DateTime.Parse("4321-12-31T12:34:56", CultureInfo.InvariantCulture);
+        Assert.Throws<FormatException>(() => BindSummaryMapper<int>.BindFormat(d, "#", culture, d));
+    }
 }
