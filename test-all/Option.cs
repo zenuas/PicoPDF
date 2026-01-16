@@ -43,11 +43,11 @@ public class Option
     [CommandOption("font-export-chars")]
     public string FontExportChars { get; init; } = "a";
 
-    [CommandOption("regist-system-font")]
-    public bool RegistSystemFont { get; init; } = true;
+    [CommandOption("register-system-font")]
+    public bool RegisterSystemFont { get; init; } = true;
 
-    [CommandOption("regist-user-font")]
-    public string RegistUserFont { get; init; } = "";
+    [CommandOption("register-user-font")]
+    public string RegisterUserFont { get; init; } = "";
 
     [CommandOption("cmap-list")]
     public bool CMapList { get; init; } = false;

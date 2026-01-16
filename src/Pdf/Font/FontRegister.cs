@@ -12,7 +12,7 @@ public class FontRegister
     public Dictionary<string, PropertyGetSet<IOpenTypeHeader>> Fonts { get; init; } = [];
     public Dictionary<FontRequiredTables, PropertyGetSet<IOpenTypeRequiredTables>> LoadedFonts { get; init; } = [];
 
-    public void RegistDirectory(LoadOption? opt = null, params string[] paths) => paths
+    public void RegisterDirectory(LoadOption? opt = null, params string[] paths) => paths
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
         .Flatten()
         .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
@@ -29,7 +29,7 @@ public class FontRegister
             }
         });
 
-    public void RegistDirectory(params string[] paths) => RegistDirectory(null, paths);
+    public void RegisterDirectory(params string[] paths) => RegisterDirectory(null, paths);
 
     public IOpenTypeRequiredTables? LoadRequiredTablesOrNull(string name)
     {

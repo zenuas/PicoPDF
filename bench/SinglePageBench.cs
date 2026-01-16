@@ -52,7 +52,7 @@ public class SinglePageBench
         public required string Baz { get; init; }
     }
 
-    public static FontRegister FontRegister { get; } = new FontRegister().Return(x => x.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts")));
+    public static FontRegister FontRegister { get; } = new FontRegister().Return(x => x.RegisterDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts")));
 
     public static Document CreateSinglePage<T>(IEnumerable<T> datas, Dictionary<string, Func<T, object>> mapper)
     {
