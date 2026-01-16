@@ -164,18 +164,11 @@ public class BindSummaryMapper<T>
     {
         try
         {
-            return (format != "" && o is IFormattable formattable ? formattable.ToString(format, provider) : o?.ToString()) ?? "";
+            return BindFormat(o, format, provider);
         }
         catch
         {
-            try
-            {
-                return nan.Cast<IFormattable>()?.ToString(format, provider) ?? nan.ToString()!;
-            }
-            catch
-            {
-                return nan.ToString()!;
-            }
+            return BindFormat(nan, format, provider);
         }
     }
 
