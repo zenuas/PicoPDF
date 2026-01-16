@@ -14,6 +14,7 @@ public class BindSummaryMapper<T>
     public Dictionary<string, ClearableDynamicValue> SummaryPool { get; init; } = [];
     public List<Action<T>> SummaryAction { get; init; } = [];
     public List<List<(SummaryElement SummaryElement, MutableTextModel TextModel)>> SummaryGoBack { get; init; } = [];
+    public List<List<ICrossSectionModel>> CrossSectionGoBack { get; init; } = [];
 
     public void CreatePool(PageSection page, string[] allkeys)
     {
@@ -99,6 +100,8 @@ public class BindSummaryMapper<T>
     }
 
     public void CreateSummaryGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count + 2).Each(_ => SummaryGoBack.Add([]));
+
+    public void CreateCrossSectionGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count).Each(_ => CrossSectionGoBack.Add([]));
 
     public void AddSummaryGoBack(SummaryElement summary, MutableTextModel model, int hierarchy_count)
     {
@@ -207,4 +210,14 @@ public class BindSummaryMapper<T>
     }
 
     public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, List<IElement> elements) => elements.OfType<SummaryElement>().Select(x => (keys, x));
+
+    public static List<(int Level, ICrossSectionElement SummaryElement)> TraversCrossSectionElement(int level, IParentSection section)
+    {
+        var results = new List<(int Level, ICrossSectionElement SummaryElement)>();
+        if (section.Header is ISection header) results.AddRange(TraversCrossSectionElement(level, header.Elements));
+        if (section.SubSection is IParentSection subsection) results.AddRange(TraversCrossSectionElement(level + 1, subsection));
+        return results;
+    }
+
+    public static IEnumerable<(int Level, ICrossSectionElement SummaryElement)> TraversCrossSectionElement(int level, List<IElement> elements) => elements.OfType<ICrossSectionElement>().Select(x => (level, x));
 }

@@ -3,7 +3,7 @@ using PicoPDF.Pdf.Color;
 
 namespace PicoPDF.Model.Element;
 
-public class MutableLineModel : ILineModel
+public class MutableLineModel : ILineModel, ICrossSectionModel
 {
     public required IElement Element { get; init; }
     public SectionModel? TargetModel { get; set; }
@@ -13,6 +13,11 @@ public class MutableLineModel : ILineModel
     public required int Height { get; set; }
     public IColor? Color { get; init; }
     public int LineWidth { get; init; }
+
+    public void UpdatePosition(SectionModel current)
+    {
+        if (current.Section.Height < current.Top + Y + Height) Height = Height - current.Section.Height + TargetModel!.Top - current.Top;
+    }
 
     public override string ToString() => $"MutableLine, X={X}, Y={Y}, Width={Width}, Height={Height}";
 }

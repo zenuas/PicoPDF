@@ -2,7 +2,7 @@
 
 namespace PicoPDF.Binder.Element;
 
-public class CrossSectionLineElement : IElement
+public class CrossSectionLineElement : ICrossSectionElement
 {
     public required int X { get; init; }
     public required int Y { get; init; }
