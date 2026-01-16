@@ -208,7 +208,7 @@ public static class SectionBinder
                         Color = x.Color?.ToDeviceRGB(),
                         LineWidth = x.LineWidth,
                     };
-                    if (level is { } lv) bind.CrossSectionGoBack[lv].Add(model);
+                    if (level is { } lv) bind.AddCrossSectionGoBack(model, lv);
                     return model;
                 }
 

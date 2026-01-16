@@ -125,6 +125,8 @@ public class BindSummaryMapper<T>
         }
     }
 
+    public void AddCrossSectionGoBack(ICrossSectionModel model, int level) => CrossSectionGoBack[level].Add(model);
+
     public void SectionBreak(T data, PageSection page)
     {
         SummaryGoBack[1].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
