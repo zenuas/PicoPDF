@@ -233,10 +233,8 @@ public class BindSummaryMapper<T>
     public static List<(int Level, ICrossSectionElement SummaryElement)> TraversCrossSectionElement(int level, IParentSection section)
     {
         var results = new List<(int Level, ICrossSectionElement SummaryElement)>();
-        if (section.Header is ISection header) results.AddRange(TraversCrossSectionElement(level, header.Elements));
+        if (section.Header is ISection header) header.Elements.OfType<ICrossSectionElement>().Each(x => results.Add((level, x)));
         if (section.SubSection is IParentSection subsection) results.AddRange(TraversCrossSectionElement(level + 1, subsection));
         return results;
     }
-
-    public static IEnumerable<(int Level, ICrossSectionElement SummaryElement)> TraversCrossSectionElement(int level, List<IElement> elements) => elements.OfType<ICrossSectionElement>().Select(x => (level, x));
 }
