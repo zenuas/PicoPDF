@@ -158,4 +158,412 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1,top=375/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
+
+    public static PageSection PageSectionAf { get; } = JsonLoader.LoadJsonString("""
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": "Meiryo-Bold",
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": {
+        "BreakKey": "Key1",
+	    "Header": "Header1",
+	    "Detail": {
+            "BreakKey": "Key2",
+	        "Header": "Header2",
+	        "Detail": {
+                "BreakKey": "Key3",
+	            "Header": "Header3",
+	            "Detail": "Detail",
+	            "Footer": "Footer3",
+		        },
+	        "Footer": "Footer2",
+		    },
+	    "Footer": "Footer1",
+		},
+	"Footer": "PageFooter",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 10, "ViewMode": "PageFirst", "Elements": [
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 300, "Elements": [
+			{"Type": "BindElement", "Bind": "Foo",  "Size": 10, "X": 10, "Y": 0},
+		]},
+		{"Type": "FooterSection", "Name": "PageFooter", "Height": 10, "Elements": [
+		]},
+		{"Type": "HeaderSection", "Name": "Header1", "Height": 10, "ViewMode": "First", "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "TotalSection", "Name": "Footer1", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "HeaderSection", "Name": "Header2", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+			{"Type": "CrossSectionLineElement", "X": 50, "Y": 5, "Width": 100, "Height": 10},
+		]},
+		{"Type": "TotalSection", "Name": "Footer2", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "HeaderSection", "Name": "Header3", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "TotalSection", "Name": "Footer3", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+	],
+}
+""");
+
+
+    [Fact]
+    public void LineAf0()
+    {
+        var i = 0;
+        var models = CreatePageModel(PageSectionAf, MakeSectionData("a", "b", "c", 1, 0));
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x=60,y=5,width=100,height=30");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=55///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=65///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1,top=75///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
+    }
+
+    [Fact]
+    public void LineAf2()
+    {
+        var i = 0;
+        var models = CreatePageModel(PageSectionAf, MakeSectionData("a", "b", "c", 1, 2));
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=655/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=665/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1,top=675/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
+    }
+
+    [Fact]
+    public void LineAf3()
+    {
+        var i = 0;
+        var models = CreatePageModel(PageSectionAf, MakeSectionData("a", "b", "c", 1, 3));
+        Assert.Equal(models.Length, 2);
+        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=655/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=665/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1,top=675/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
+
+        i = 0;
+        Assert.Equal(models[1].Models.Count, 8);
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=25/a/b/c|x=60,y=5,width=100,height=330");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header3,top=35/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail,top=45/3|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer3,top=345/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer2,top=355/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1,top=365/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
+    }
+
+    public static PageSection PageSectionBf { get; } = JsonLoader.LoadJsonString("""
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": "Meiryo-Bold",
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": {
+        "BreakKey": "Key1",
+	    "Header": "Header1",
+	    "Detail": {
+            "BreakKey": "Key2",
+	        "Header": "Header2",
+	        "Detail": {
+                "BreakKey": "Key3",
+	            "Header": "Header3",
+	            "Detail": "Detail",
+	            "Footer": "Footer3",
+		        },
+	        "Footer": "Footer2",
+		    },
+	    "Footer": "Footer1",
+		},
+	"Footer": "PageFooter",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 10, "ViewMode": "PageFirst", "Elements": [
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 300, "Elements": [
+			{"Type": "BindElement", "Bind": "Foo",  "Size": 10, "X": 10, "Y": 0},
+		]},
+		{"Type": "FooterSection", "Name": "PageFooter", "Height": 10, "Elements": [
+		]},
+		{"Type": "HeaderSection", "Name": "Header1", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "TotalSection", "Name": "Footer1", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "HeaderSection", "Name": "Header2", "Height": 10, "ViewMode": "First", "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+			{"Type": "CrossSectionLineElement", "X": 50, "Y": 5, "Width": 100, "Height": 10},
+		]},
+		{"Type": "TotalSection", "Name": "Footer2", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "HeaderSection", "Name": "Header3", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "TotalSection", "Name": "Footer3", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+	],
+}
+""");
+
+
+    [Fact]
+    public void LineBf0()
+    {
+        var i = 0;
+        var models = CreatePageModel(PageSectionBf, MakeSectionData("a", "b", "c", 1, 0));
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x=60,y=5,width=100,height=30");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=55///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=65///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1,top=75///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
+    }
+
+    [Fact]
+    public void LineBf2()
+    {
+        var i = 0;
+        var models = CreatePageModel(PageSectionBf, MakeSectionData("a", "b", "c", 1, 2));
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=655/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=665/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1,top=675/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
+    }
+
+    [Fact]
+    public void LineBf3()
+    {
+        var i = 0;
+        var models = CreatePageModel(PageSectionBf, MakeSectionData("a", "b", "c", 1, 3));
+        Assert.Equal(models.Length, 2);
+        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=655/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=665/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1,top=675/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
+
+        i = 0;
+        Assert.Equal(models[1].Models.Count, 8);
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header3,top=35/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail,top=45/3|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer3,top=345/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer2,top=355/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1,top=365/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
+    }
+
+    public static PageSection PageSectionCf { get; } = JsonLoader.LoadJsonString("""
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": "Meiryo-Bold",
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": {
+        "BreakKey": "Key1",
+	    "Header": "Header1",
+	    "Detail": {
+            "BreakKey": "Key2",
+	        "Header": "Header2",
+	        "Detail": {
+                "BreakKey": "Key3",
+	            "Header": "Header3",
+	            "Detail": "Detail",
+	            "Footer": "Footer3",
+		        },
+	        "Footer": "Footer2",
+		    },
+	    "Footer": "Footer1",
+		},
+	"Footer": "PageFooter",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 10, "ViewMode": "PageFirst", "Elements": [
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 300, "Elements": [
+			{"Type": "BindElement", "Bind": "Foo",  "Size": 10, "X": 10, "Y": 0},
+		]},
+		{"Type": "FooterSection", "Name": "PageFooter", "Height": 10, "Elements": [
+		]},
+		{"Type": "HeaderSection", "Name": "Header1", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "TotalSection", "Name": "Footer1", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "HeaderSection", "Name": "Header2", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+			{"Type": "CrossSectionLineElement", "X": 50, "Y": 5, "Width": 100, "Height": 10},
+		]},
+		{"Type": "TotalSection", "Name": "Footer2", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "HeaderSection", "Name": "Header3", "Height": 10, "ViewMode": "First", "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+		{"Type": "TotalSection", "Name": "Footer3", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key2",  "Size": 10, "X": 20, "Y": 0},
+			{"Type": "BindElement", "Bind": "Key3",  "Size": 10, "X": 30, "Y": 0},
+		]},
+	],
+}
+""");
+
+
+    [Fact]
+    public void LineCf0()
+    {
+        var i = 0;
+        var models = CreatePageModel(PageSectionCf, MakeSectionData("a", "b", "c", 1, 0));
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x=60,y=5,width=100,height=30");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=55///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=65///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1,top=75///|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
+    }
+
+    [Fact]
+    public void LineCf2()
+    {
+        var i = 0;
+        var models = CreatePageModel(PageSectionCf, MakeSectionData("a", "b", "c", 1, 2));
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=655/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=665/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1,top=675/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
+    }
+
+    [Fact]
+    public void LineCf3()
+    {
+        var i = 0;
+        var models = CreatePageModel(PageSectionCf, MakeSectionData("a", "b", "c", 1, 3));
+        Assert.Equal(models.Length, 2);
+        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=655/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=665/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1,top=675/a/b/c|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
+
+        i = 0;
+        Assert.Equal(models[1].Models.Count, 8);
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=320");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail,top=45/3|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer3,top=345/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer2,top=355/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1,top=365/a/b/c|");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
+    }
 }
