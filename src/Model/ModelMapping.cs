@@ -69,7 +69,7 @@ public static class ModelMapping
                             posx += x.Width - (box.Width * size);
                             break;
                     }
-                    var rect = !x.Style.HasFlag(TextStyle.Cliping) ? (Rectangle?)null : new Rectangle()
+                    var rect = !x.Style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
                     {
                         X = new PointValue(model.X),
                         Y = new PointValue(model.Y + top),

@@ -39,7 +39,7 @@ public class Contents : PdfObject
         };
         if (clip is { } r)
         {
-            Operations.Add(new DrawCliping()
+            Operations.Add(new DrawClipping()
             {
                 X = r.X,
                 Y = r.Y,
