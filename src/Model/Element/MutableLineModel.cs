@@ -16,7 +16,15 @@ public class MutableLineModel : ILineModel, ICrossSectionModel
 
     public void UpdatePosition(SectionModel current)
     {
-        if (current.Section.Height < current.Top + Y + Height) Height = Height - current.Section.Height + TargetModel!.Top - current.Top;
+        if (current.Section.Height > current.Top + Y + Height) return;
+        if (TargetModel!.Level is { })
+        {
+            Height = Height - current.Section.Height + TargetModel.Top - current.Top;
+        }
+        else
+        {
+            Height = TargetModel.Top + TargetModel.Section.Height - current.Top - Y;
+        }
     }
 
     public override string ToString() => $"MutableLine, X={X}, Y={Y}, Width={Width}, Height={Height}";
