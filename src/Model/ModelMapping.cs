@@ -76,7 +76,7 @@ public static class ModelMapping
                         Width = new PointValue(x.Width),
                         Height = new PointValue(box.Height * size),
                     };
-                    page.Contents.DrawString(x.Text, posx, posy, size, font, x.Color, rect);
+                    page.Contents.DrawString(x.Text, posx, posy, size, font, x.Color?.ToDeviceRGB(), rect);
 
                     if (x.Style != TextStyle.None)
                     {
@@ -86,38 +86,38 @@ public static class ModelMapping
 
                         if (x.Style.HasFlag(TextStyle.Underline))
                         {
-                            page.Contents.DrawLine(posx, posy, posx + width, posy, x.Color);
+                            page.Contents.DrawLine(posx, posy, posx + width, posy, x.Color?.ToDeviceRGB());
                         }
                         if (x.Style.HasFlag(TextStyle.DoubleUnderline))
                         {
-                            page.Contents.DrawLine(posx, posy + 2, posx + width, posy + 2, x.Color);
+                            page.Contents.DrawLine(posx, posy + 2, posx + width, posy + 2, x.Color?.ToDeviceRGB());
                         }
                         if (x.Style.HasFlag(TextStyle.Strikethrough))
                         {
                             var center = (int)(topleft + (box.Height * size / 2));
-                            page.Contents.DrawLine(posx, center, posx + width, center, x.Color);
+                            page.Contents.DrawLine(posx, center, posx + width, center, x.Color?.ToDeviceRGB());
                         }
                         if (x.Style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
                         {
-                            page.Contents.DrawRectangle(posx, topleft, width, bottomleft - topleft, x.Color);
+                            page.Contents.DrawRectangle(posx, topleft, width, bottomleft - topleft, x.Color?.ToDeviceRGB());
                         }
                         else if ((x.Style & (TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight)) > 0)
                         {
                             if (x.Style.HasFlag(TextStyle.BorderTop))
                             {
-                                page.Contents.DrawLine(posx, topleft, posx + width, topleft, x.Color);
+                                page.Contents.DrawLine(posx, topleft, posx + width, topleft, x.Color?.ToDeviceRGB());
                             }
                             if (x.Style.HasFlag(TextStyle.BorderBottom))
                             {
-                                page.Contents.DrawLine(posx, bottomleft, posx + width, bottomleft, x.Color);
+                                page.Contents.DrawLine(posx, bottomleft, posx + width, bottomleft, x.Color?.ToDeviceRGB());
                             }
                             if (x.Style.HasFlag(TextStyle.BorderLeft))
                             {
-                                page.Contents.DrawLine(posx, topleft, posx, bottomleft, x.Color);
+                                page.Contents.DrawLine(posx, topleft, posx, bottomleft, x.Color?.ToDeviceRGB());
                             }
                             if (x.Style.HasFlag(TextStyle.BorderRight))
                             {
-                                page.Contents.DrawLine(posx + width, topleft, posx + width, bottomleft, x.Color);
+                                page.Contents.DrawLine(posx + width, topleft, posx + width, bottomleft, x.Color?.ToDeviceRGB());
                             }
                         }
                     }
@@ -125,15 +125,15 @@ public static class ModelMapping
                 return;
 
             case ILineModel x:
-                page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color, x.LineWidth);
+                page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color?.ToDeviceRGB(), x.LineWidth);
                 return;
 
             case RectangleModel x:
-                page.Contents.DrawRectangle(posx, posy, x.Width, x.Height, x.Color, x.LineWidth);
+                page.Contents.DrawRectangle(posx, posy, x.Width, x.Height, x.Color?.ToDeviceRGB(), x.LineWidth);
                 return;
 
             case FillRectangleModel x:
-                page.Contents.DrawFillRectangle(posx, posy, x.Width, x.Height, x.LineColor, x.FillColor, x.LineWidth);
+                page.Contents.DrawFillRectangle(posx, posy, x.Width, x.Height, x.LineColor.ToDeviceRGB(), x.FillColor.ToDeviceRGB(), x.LineWidth);
                 return;
 
             case ImageModel x:

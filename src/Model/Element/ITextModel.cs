@@ -1,5 +1,5 @@
 ﻿using PicoPDF.Binder.Element;
-using PicoPDF.Pdf.Color;
+using System.Drawing;
 
 namespace PicoPDF.Model.Element;
 
@@ -11,5 +11,5 @@ public interface ITextModel : IModelElement
     public TextAlignment Alignment { get; init; }
     public TextStyle Style { get; init; }
     public int Width { get; init; }
-    public IColor? Color { get; init; }
+    public Color? Color { get; init; }
 }

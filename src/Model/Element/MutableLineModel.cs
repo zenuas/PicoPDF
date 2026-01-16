@@ -1,5 +1,5 @@
 ﻿using PicoPDF.Binder.Element;
-using PicoPDF.Pdf.Color;
+using System.Drawing;
 
 namespace PicoPDF.Model.Element;
 
@@ -11,7 +11,7 @@ public class MutableLineModel : ILineModel, ICrossSectionModel
     public required int Y { get; init; }
     public required int Width { get; init; }
     public required int Height { get; set; }
-    public IColor? Color { get; init; }
+    public Color? Color { get; init; }
     public int LineWidth { get; init; }
 
     public void UpdatePosition(SectionModel current)

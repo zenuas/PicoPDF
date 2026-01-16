@@ -195,7 +195,7 @@ public static class SectionBinder
                     Y = x.Y,
                     Width = x.Width,
                     Height = x.Height,
-                    Color = x.Color?.ToDeviceRGB(),
+                    Color = x.Color,
                     LineWidth = x.LineWidth,
                 };
 
@@ -208,7 +208,7 @@ public static class SectionBinder
                         Y = x.Y,
                         Width = x.Width,
                         Height = x.Height,
-                        Color = x.Color?.ToDeviceRGB(),
+                        Color = x.Color,
                         LineWidth = x.LineWidth,
                     };
                     if (level is { } lv) bind.AddCrossSectionGoBack(model, lv);
@@ -223,7 +223,7 @@ public static class SectionBinder
                     Y = x.Y,
                     Width = x.Width,
                     Height = x.Height,
-                    Color = x.Color?.ToDeviceRGB(),
+                    Color = x.Color,
                     LineWidth = x.LineWidth,
                 };
 
@@ -235,8 +235,8 @@ public static class SectionBinder
                     Y = x.Y,
                     Width = x.Width,
                     Height = x.Height,
-                    LineColor = x.LineColor.ToDeviceRGB(),
-                    FillColor = x.FillColor.ToDeviceRGB(),
+                    LineColor = x.LineColor,
+                    FillColor = x.FillColor,
                     LineWidth = x.LineWidth,
                 };
 
@@ -265,7 +265,7 @@ public static class SectionBinder
         Alignment = element.Alignment,
         Style = element.Style,
         Width = element.Width,
-        Color = element.Color?.ToDeviceRGB(),
+        Color = element.Color,
     };
 
     public static MutableTextModel CreateMutableTextModel(ITextElement element, string text, PageSection page) => new()
@@ -279,7 +279,7 @@ public static class SectionBinder
         Alignment = element.Alignment,
         Style = element.Style,
         Width = element.Width,
-        Color = element.Color?.ToDeviceRGB(),
+        Color = element.Color,
     };
 
     public static IEnumerable<(string[] BreakKeys, SummaryElement Summary)> GetBreakKeyWithSummary(string[] keys, ISubSection subsection)
