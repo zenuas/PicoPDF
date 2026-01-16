@@ -165,13 +165,15 @@ public static class SectionBinder
 
             case BindElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.Mapper[x.Bind](data), x.Format, x.Culture ?? page.DefaultCulture), page);
 
-            case SummaryElement x:
+            case SummaryElement x when x.SummaryMethod is SummaryMethod.All or SummaryMethod.Page or SummaryMethod.CrossSectionPage or SummaryMethod.Group:
                 {
+                    var model = CreateMutableTextModel(x, "", page);
                     var keycount = x.BreakKey == "" ? keys.Length - 1 : allkeys.FindLastIndex(y => y == x.BreakKey);
-                    var model = CreateMutableTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format, x.Culture ?? page.DefaultCulture, x.NaN), page);
                     bind.AddSummaryGoBack(x, model, keycount);
                     return model;
                 }
+
+            case SummaryElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format, x.Culture ?? page.DefaultCulture, x.NaN), page);
 
             case LineElement x:
                 return new LineModel()
