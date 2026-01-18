@@ -45,7 +45,7 @@ public static class SectionBinder
         view.GetIterator().OfType<DataRowView>(),
         view.Table!.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRowView, object>>(x => x.ColumnName, x => (row) => row?[x.ColumnName]!));
 
-    public static List<List<SectionModel>> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
+    public static IEnumerable<List<SectionModel>> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
     {
         var sections = (Section: page.SubSection, Depth: 1).Travers(x => x.Section is Section s ? [(s.SubSection, x.Depth + 1)] : []).ToArray();
         var detail = sections.Select(x => x.Section).OfType<DetailSection>().First();
@@ -62,9 +62,9 @@ public static class SectionBinder
         T lastdata = default!;
         SectionModel lastdetail = default!;
 
-        var models = new List<SectionModel>();
         if (datas.IsLast)
         {
+            var models = new List<SectionModel>();
             bind.SetPageCount(1);
             headers.Select(x => new SectionModel() { Section = x.Section, Depth = x.Depth, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy, keys, x.Depth) }).Each(models.Add);
             footers.FooterSort().Select(x => new SectionModel() { Section = x.Section, Depth = x.Depth, Elements = BindElements(x.Section.Elements, lastdata, bind, page, x.BreakKeyHierarchy, keys, null) }.Return(bind.BreakSection)).Each(models.Add);
@@ -72,20 +72,22 @@ public static class SectionBinder
             bind.KeyBreak(lastdata, keys.Length, keys, page);
             bind.PageBreak(lastdata, page);
             bind.LastBreak(lastdata, page);
-            return [models];
+            yield return models;
+            yield break;
         }
 
-        var pages = new List<List<SectionModel>>();
+        var page_count = 0;
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
         var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
         while (!datas.IsLast)
         {
-            bind.SetPageCount(pages.Count + 1);
+            var models = new List<SectionModel>();
+            bind.SetPageCount(++page_count);
             _ = datas.Next(0, out var firstdata);
-            if (pages.Count == 0) lastdata = firstdata;
+            if (page_count == 1) lastdata = firstdata;
             headers
-                .SkipWhileOrPageFirst(x => pages.Count == 0 || (x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](firstdata))))
+                .SkipWhileOrPageFirst(x => page_count == 1 || (x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](firstdata))))
                 .Select(x => new SectionModel() { Section = x.Section, Depth = x.Depth, Elements = BindElements(x.Section.Elements, firstdata, bind, page, x.BreakKeyHierarchy, keys, x.Depth) })
                 .Each(models.Add);
             var page_first = true;
@@ -142,13 +144,11 @@ public static class SectionBinder
                 }
             }
 
-            pages.Add([.. models]);
-            models.Clear();
             bind.PageBreak(lastdata, page);
             bind.PageBreakSection(lastdetail);
             if (datas.IsLast) bind.LastBreak(lastdata, page);
+            yield return models;
         }
-        return pages;
     }
 
     public static int GetBreakOrTakeCount<T>(BufferedEnumerator<T> datas, BindSummaryMapper<T> bind, string[] keys, int maxcount)
