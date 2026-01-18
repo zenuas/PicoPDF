@@ -88,8 +88,39 @@ public class CompactFontFormat : IExportable
     {
         stream.WriteUShortByBigEndian((ushort)index.Length);
         if (index.Length == 0) return;
-        stream.WriteByte(4);
-        index.Aggregate<byte[], uint[]>([1], (acc, x) => [.. acc, (uint)(acc.Last() + x.Length)]).Each(stream.WriteUIntByBigEndian);
+
+        var offsets = new uint[index.Length + 1];
+        offsets[0] = 1;
+        for (var i = 0; i < index.Length; i++)
+        {
+            offsets[i + 1] = offsets[i] + (uint)index[i].Length;
+        }
+        var offset_max = offsets[^1];
+        var offset_size =
+            offset_max <= byte.MaxValue ? 1 :
+            offset_max <= ushort.MaxValue ? 2 :
+            offset_max <= 0xFFFFFF ? 3 :
+            4;
+
+        stream.WriteByte((byte)offset_size);
+        switch (offset_size)
+        {
+            case 1:
+                offsets.Each(x => stream.WriteByte((byte)x));
+                break;
+
+            case 2:
+                offsets.Each(x => stream.WriteUShortByBigEndian((ushort)x));
+                break;
+
+            case 3:
+                offsets.Each(x => stream.Write([(byte)((x >> 16) & 0xFF), (byte)((x >> 8) & 0xFF), (byte)(x & 0xFF)]));
+                break;
+
+            case 4:
+                offsets.Each(stream.WriteUIntByBigEndian);
+                break;
+        }
         index.Each(x => stream.Write(x));
     }
 }
