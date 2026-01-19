@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Zenu.Mina" Version="2025.5.4" />
+    <PackageReference Include="Zenu.Mina" Version="2026.1.19" />
   </ItemGroup>
 
 </Project>
