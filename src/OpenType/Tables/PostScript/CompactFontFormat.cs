@@ -89,38 +89,25 @@ public class CompactFontFormat : IExportable
         stream.WriteUShortByBigEndian((ushort)index.Length);
         if (index.Length == 0) return;
 
-        var offsets = new uint[index.Length + 1];
-        offsets[0] = 1;
-        for (var i = 0; i < index.Length; i++)
-        {
-            offsets[i + 1] = offsets[i] + (uint)index[i].Length;
-        }
-        var offset_max = offsets[^1];
+        var offset_max = index.Sum(x => x.Length) + 1;
         var offset_size =
             offset_max <= byte.MaxValue ? 1 :
             offset_max <= ushort.MaxValue ? 2 :
             offset_max <= 0xFFFFFF ? 3 :
             4;
-
         stream.WriteByte((byte)offset_size);
-        switch (offset_size)
+
+        Action<Stream, uint> offset_write = offset_size switch
         {
-            case 1:
-                offsets.Each(x => stream.WriteByte((byte)x));
-                break;
+            1 => (x, n) => x.WriteByte((byte)n),
+            2 => (x, n) => x.WriteUShortByBigEndian((ushort)n),
+            3 => (x, n) => x.Write([(byte)((n >> 16) & 0xFF), (byte)((n >> 8) & 0xFF), (byte)(n & 0xFF)]),
+            _ => (x, n) => x.WriteUIntByBigEndian(n),
+        };
 
-            case 2:
-                offsets.Each(x => stream.WriteUShortByBigEndian((ushort)x));
-                break;
-
-            case 3:
-                offsets.Each(x => stream.Write([(byte)((x >> 16) & 0xFF), (byte)((x >> 8) & 0xFF), (byte)(x & 0xFF)]));
-                break;
-
-            case 4:
-                offsets.Each(stream.WriteUIntByBigEndian);
-                break;
-        }
+        var offset = 1U;
+        offset_write(stream, 1);
+        index.Each(x => offset_write(stream, offset += (uint)x.Length));
         index.Each(x => stream.Write(x));
     }
 }
