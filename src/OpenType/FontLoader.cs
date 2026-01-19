@@ -67,13 +67,13 @@ public static class FontLoader
     {
         using var stream = File.OpenRead(font.Path.Path);
 
-        var head = ReadTableRecprds(font, "head", stream, FontHeaderTable.ReadFrom).Try();
-        var maxp = ReadTableRecprds(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
-        var post = ReadTableRecprds(font, "post", stream, PostScriptTable.ReadFrom).Try();
-        var os2 = ReadTableRecprds(font, "OS/2", stream, OS2Table.ReadFrom).Try();
-        var cmap = ReadTableRecprds(font, "cmap", stream, CMapTable.ReadFrom).Try();
-        var hhea = ReadTableRecprds(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
-        var hmtx = ReadTableRecprds(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
+        var head = ReadTableRecord(font, "head", stream, FontHeaderTable.ReadFrom).Try();
+        var maxp = ReadTableRecord(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
+        var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
+        var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom).Try();
+        var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
+        var hhea = ReadTableRecord(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
+        var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
         var cmap4 = cmap.EncodingRecords.Values.OfType<CMapFormat4>().First();
         var cmap4_range = CreateCMap4Range(cmap4);
@@ -122,8 +122,8 @@ public static class FontLoader
 
     public static TrueTypeFont LoadTrueTypeFont(Stream stream, FontRequiredTables font)
     {
-        var loca = ReadTableRecprds(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, font.FontHeader.IndexToLocFormat, font.MaximumProfile.NumberOfGlyphs)).Try();
-        var glyf = ReadTableRecprds(font, "glyf", stream, x =>
+        var loca = ReadTableRecord(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, font.FontHeader.IndexToLocFormat, font.MaximumProfile.NumberOfGlyphs)).Try();
+        var glyf = ReadTableRecord(font, "glyf", stream, x =>
             {
                 var position = x.Position;
                 return Enumerable.Range(0, font.MaximumProfile.NumberOfGlyphs)
@@ -162,7 +162,7 @@ public static class FontLoader
 
     public static PostScriptFont LoadPostScriptFont(Stream stream, FontRequiredTables font)
     {
-        var cff = ReadTableRecprds(font, "CFF ", stream, CompactFontFormat.ReadFrom).Try();
+        var cff = ReadTableRecord(font, "CFF ", stream, CompactFontFormat.ReadFrom).Try();
 
         return new()
         {
@@ -185,5 +185,5 @@ public static class FontLoader
         };
     }
 
-    public static T? ReadTableRecprds<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f) => !font.TableRecords.TryGetValue(name, out var record) ? default : f(stream.SeekTo(record.Offset));
+    public static T? ReadTableRecord<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f) => !font.TableRecords.TryGetValue(name, out var record) ? default : f(stream.SeekTo(record.Offset));
 }
