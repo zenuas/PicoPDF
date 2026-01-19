@@ -94,6 +94,8 @@ public class CompactFontFormatTest
 
     public static void Write3Bytes(Stream stream, int x) => stream.Write([(byte)((x >> 16) & 0xFF), (byte)((x >> 8) & 0xFF), (byte)(x & 0xFF)]);
 
+    public static int Read3Bytes(Stream stream) => (stream.ReadUByte() << 16) | (stream.ReadUByte() << 8) | stream.ReadUByte();
+
     [Fact]
     public void ReadIndexData0Test()
     {
@@ -256,5 +258,182 @@ public class CompactFontFormatTest
         Assert.Equal(result[2], MakeBytes(65280));
         Assert.Equal(result[3].Length, 16711680);
         Assert.Equal(result[3], MakeBytes(16711680));
+    }
+
+    [Fact]
+    public void WriteIndexData0Test()
+    {
+        byte[][] bytes = [];
+        var stream = new MemoryStream();
+
+        CompactFontFormat.WriteIndexData(stream, bytes);
+        Assert.Equal(stream.Position, 2);
+        stream.Position = 0;
+
+        Assert.Equal(stream.ReadUShortByBigEndian(), 0);
+
+        Assert.Equal(stream.Position, 2);
+    }
+
+    [Fact]
+    public void WriteIndexData1_0Test()
+    {
+        byte[][] bytes = [[]];
+        var stream = new MemoryStream();
+
+        CompactFontFormat.WriteIndexData(stream, bytes);
+        Assert.Equal(stream.Position, 5);
+        stream.Position = 0;
+
+        Assert.Equal(stream.ReadUShortByBigEndian(), 1); // count
+        Assert.Equal(stream.ReadByte(), 1); // offset size
+        Assert.Equal(stream.ReadByte(), 1); // offset[0]
+        Assert.Equal(stream.ReadByte(), 1); // offset[1]
+
+        Assert.Equal(stream.Position, 5);
+    }
+
+    [Fact]
+    public void WriteIndexData2_0_254Test()
+    {
+        var data1 = MakeBytes(254);
+        byte[][] bytes = [[], [.. data1]];
+        var stream = new MemoryStream();
+
+        CompactFontFormat.WriteIndexData(stream, bytes);
+        Assert.Equal(stream.Position, 260);
+        stream.Position = 0;
+
+        Assert.Equal(stream.ReadUShortByBigEndian(), 2); // count
+        Assert.Equal(stream.ReadByte(), 1); // offset size
+        Assert.Equal(stream.ReadByte(), 1); // offset[0]
+        Assert.Equal(stream.ReadByte(), 1); // offset[1]
+        Assert.Equal(stream.ReadByte(), 255); // offset[2]
+        Assert.Equal(stream.ReadExactly(254), data1);
+
+        Assert.Equal(stream.Position, 260);
+    }
+
+    [Fact]
+    public void WriteIndexData2_0_255Test()
+    {
+        var data1 = MakeBytes(255);
+        byte[][] bytes = [[], [.. data1]];
+        var stream = new MemoryStream();
+
+        CompactFontFormat.WriteIndexData(stream, bytes);
+        Assert.Equal(stream.Position, 264);
+        stream.Position = 0;
+
+        Assert.Equal(stream.ReadUShortByBigEndian(), 2); // count
+        Assert.Equal(stream.ReadByte(), 2); // offset size
+        Assert.Equal(stream.ReadUShortByBigEndian(), 1); // offset[0]
+        Assert.Equal(stream.ReadUShortByBigEndian(), 1); // offset[1]
+        Assert.Equal(stream.ReadUShortByBigEndian(), 256); // offset[2]
+        Assert.Equal(stream.ReadExactly(255), data1);
+
+        Assert.Equal(stream.Position, 264);
+    }
+
+    [Fact]
+    public void WriteIndexData3_0_255_65279Test()
+    {
+        var data1 = MakeBytes(255);
+        var data2 = MakeBytes(65279);
+        byte[][] bytes = [[], [.. data1], [.. data2]];
+        var stream = new MemoryStream();
+
+        CompactFontFormat.WriteIndexData(stream, bytes);
+        Assert.Equal(stream.Position, 65545);
+        stream.Position = 0;
+
+        Assert.Equal(stream.ReadUShortByBigEndian(), 3); // count
+        Assert.Equal(stream.ReadByte(), 2); // offset size
+        Assert.Equal(stream.ReadUShortByBigEndian(), 1); // offset[0]
+        Assert.Equal(stream.ReadUShortByBigEndian(), 1); // offset[1]
+        Assert.Equal(stream.ReadUShortByBigEndian(), 256); // offset[2]
+        Assert.Equal(stream.ReadUShortByBigEndian(), 65535); // offset[3]
+        Assert.Equal(stream.ReadExactly(255), data1);
+        Assert.Equal(stream.ReadExactly(65279), data2);
+
+        Assert.Equal(stream.Position, 65545);
+    }
+
+    [Fact]
+    public void WriteIndexData3_0_255_65280Test()
+    {
+        var data1 = MakeBytes(255);
+        var data2 = MakeBytes(65280);
+        byte[][] bytes = [[], [.. data1], [.. data2]];
+        var stream = new MemoryStream();
+
+        CompactFontFormat.WriteIndexData(stream, bytes);
+        Assert.Equal(stream.Position, 65550);
+        stream.Position = 0;
+
+        Assert.Equal(stream.ReadUShortByBigEndian(), 3); // count
+        Assert.Equal(stream.ReadByte(), 3); // offset size
+        Assert.Equal(Read3Bytes(stream), 1); // offset[0]
+        Assert.Equal(Read3Bytes(stream), 1); // offset[1]
+        Assert.Equal(Read3Bytes(stream), 256); // offset[2]
+        Assert.Equal(Read3Bytes(stream), 65536); // offset[3]
+        Assert.Equal(stream.ReadExactly(255), data1);
+        Assert.Equal(stream.ReadExactly(65280), data2);
+
+        Assert.Equal(stream.Position, 65550);
+    }
+
+    [Fact]
+    public void WriteIndexData4_0_255_65280_16711679Test()
+    {
+        var data1 = MakeBytes(255);
+        var data2 = MakeBytes(65280);
+        var data3 = MakeBytes(16711679);
+        byte[][] bytes = [[], [.. data1], [.. data2], [.. data3]];
+        var stream = new MemoryStream();
+
+        CompactFontFormat.WriteIndexData(stream, bytes);
+        Assert.Equal(stream.Position, 16777232);
+        stream.Position = 0;
+
+        Assert.Equal(stream.ReadUShortByBigEndian(), 4); // count
+        Assert.Equal(stream.ReadByte(), 3); // offset size
+        Assert.Equal(Read3Bytes(stream), 1); // offset[0]
+        Assert.Equal(Read3Bytes(stream), 1); // offset[1]
+        Assert.Equal(Read3Bytes(stream), 256); // offset[2]
+        Assert.Equal(Read3Bytes(stream), 65536); // offset[3]
+        Assert.Equal(Read3Bytes(stream), 16777215); // offset[4]
+        Assert.Equal(stream.ReadExactly(255), data1);
+        Assert.Equal(stream.ReadExactly(65280), data2);
+        Assert.Equal(stream.ReadExactly(16711679), data3);
+
+        Assert.Equal(stream.Position, 16777232);
+    }
+
+    [Fact]
+    public void WriteIndexData4_0_255_65280_16711680Test()
+    {
+        var data1 = MakeBytes(255);
+        var data2 = MakeBytes(65280);
+        var data3 = MakeBytes(16711680);
+        byte[][] bytes = [[], [.. data1], [.. data2], [.. data3]];
+        var stream = new MemoryStream();
+
+        CompactFontFormat.WriteIndexData(stream, bytes);
+        Assert.Equal(stream.Position, 16777238);
+        stream.Position = 0;
+
+        Assert.Equal(stream.ReadUShortByBigEndian(), 4); // count
+        Assert.Equal(stream.ReadByte(), 4); // offset size
+        Assert.Equal<uint>(stream.ReadUIntByBigEndian(), 1); // offset[0]
+        Assert.Equal<uint>(stream.ReadUIntByBigEndian(), 1); // offset[1]
+        Assert.Equal<uint>(stream.ReadUIntByBigEndian(), 256); // offset[2]
+        Assert.Equal<uint>(stream.ReadUIntByBigEndian(), 65536); // offset[3]
+        Assert.Equal<uint>(stream.ReadUIntByBigEndian(), 16777216); // offset[4]
+        Assert.Equal(stream.ReadExactly(255), data1);
+        Assert.Equal(stream.ReadExactly(65280), data2);
+        Assert.Equal(stream.ReadExactly(16711680), data3);
+
+        Assert.Equal(stream.Position, 16777238);
     }
 }
