@@ -17,7 +17,7 @@ public static class SID
         [7] = "ampersand",
         [8] = "quoteright",
         [9] = "parenleft",
-        [10] = "parenrigh",
+        [10] = "parenright",
         [11] = "asterisk",
         [12] = "plus",
         [13] = "comma",
