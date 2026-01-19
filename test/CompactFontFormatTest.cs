@@ -1,5 +1,8 @@
-﻿using PicoPDF.OpenType.Tables.PostScript;
+﻿using Mina.Extension;
+using PicoPDF.OpenType.Tables.PostScript;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace PicoPDF.Test;
@@ -78,5 +81,180 @@ public class CompactFontFormatTest
         Assert.Equal(DictData.PackedBCDToDouble([0x00]), 0);
         Assert.Equal(DictData.PackedBCDToDouble([0x00, 0x0a, 0x01, 0x04, 0x00, 0x05, 0x04, 0x01, 0x0c, 0x03]), 0.140541e-3);
         Assert.Equal(DictData.PackedBCDToDouble([0x00, 0x0a, 0x01, 0x04, 0x00, 0x05, 0x04, 0x01, 0x0b, 0x03]), 0.140541e3);
+    }
+
+    public static IEnumerable<byte> MakeBytes(int count)
+    {
+        byte b = 0;
+        for (var i = 0; i < count; i++)
+        {
+            yield return b++;
+        }
+    }
+
+    public static void Write3Bytes(Stream stream, int x) => stream.Write([(byte)((x >> 16) & 0xFF), (byte)((x >> 8) & 0xFF), (byte)(x & 0xFF)]);
+
+    [Fact]
+    public void ReadIndexData0Test()
+    {
+        var stream = new MemoryStream();
+        stream.WriteUShortByBigEndian(0);
+        stream.Position = 0;
+
+        var result = CompactFontFormat.ReadIndexData(stream);
+        Assert.Equal(result.Length, 0);
+    }
+
+    [Fact]
+    public void ReadIndexData1_0Test()
+    {
+        var stream = new MemoryStream();
+        stream.WriteUShortByBigEndian(1); // count
+        stream.WriteByte(1); // offset size
+        stream.WriteByte(1); // offset[0]
+        stream.WriteByte(1); // offset[1]
+        stream.Position = 0;
+
+        var result = CompactFontFormat.ReadIndexData(stream);
+        Assert.Equal(result.Length, 1);
+        Assert.Equal(result[0].Length, 0);
+    }
+
+    [Fact]
+    public void ReadIndexData2_0_254Test()
+    {
+        var stream = new MemoryStream();
+        stream.WriteUShortByBigEndian(2); // count
+        stream.WriteByte(1); // offset size
+        stream.WriteByte(1); // offset[0]
+        stream.WriteByte(1); // offset[1]
+        stream.WriteByte(255); // offset[2]
+        stream.Write([.. MakeBytes(254)]);
+        stream.Position = 0;
+
+        var result = CompactFontFormat.ReadIndexData(stream);
+        Assert.Equal(result.Length, 2);
+        Assert.Equal(result[0].Length, 0);
+        Assert.Equal(result[1].Length, 254);
+        Assert.Equal(result[1], MakeBytes(254));
+    }
+
+    [Fact]
+    public void ReadIndexData2_0_255Test()
+    {
+        var stream = new MemoryStream();
+        stream.WriteUShortByBigEndian(2); // count
+        stream.WriteByte(2); // offset size
+        stream.WriteUShortByBigEndian(1); // offset[0]
+        stream.WriteUShortByBigEndian(1); // offset[1]
+        stream.WriteUShortByBigEndian(256); // offset[2]
+        stream.Write([.. MakeBytes(255)]);
+        stream.Position = 0;
+
+        var result = CompactFontFormat.ReadIndexData(stream);
+        Assert.Equal(result.Length, 2);
+        Assert.Equal(result[0].Length, 0);
+        Assert.Equal(result[1].Length, 255);
+        Assert.Equal(result[1], MakeBytes(255));
+    }
+
+    [Fact]
+    public void ReadIndexData3_0_255_65279Test()
+    {
+        var stream = new MemoryStream();
+        stream.WriteUShortByBigEndian(3); // count
+        stream.WriteByte(2); // offset size
+        stream.WriteUShortByBigEndian(1); // offset[0]
+        stream.WriteUShortByBigEndian(1); // offset[1]
+        stream.WriteUShortByBigEndian(256); // offset[2]
+        stream.WriteUShortByBigEndian(65535); // offset[3]
+        stream.Write([.. MakeBytes(255)]);
+        stream.Write([.. MakeBytes(65279)]);
+        stream.Position = 0;
+
+        var result = CompactFontFormat.ReadIndexData(stream);
+        Assert.Equal(result.Length, 3);
+        Assert.Equal(result[0].Length, 0);
+        Assert.Equal(result[1].Length, 255);
+        Assert.Equal(result[1], MakeBytes(255));
+        Assert.Equal(result[2].Length, 65279);
+        Assert.Equal(result[2], MakeBytes(65279));
+    }
+
+    [Fact]
+    public void ReadIndexData3_0_255_65280Test()
+    {
+        var stream = new MemoryStream();
+        stream.WriteUShortByBigEndian(3); // count
+        stream.WriteByte(3); // offset size
+        Write3Bytes(stream, 1); // offset[0]
+        Write3Bytes(stream, 1); // offset[1]
+        Write3Bytes(stream, 256); // offset[2]
+        Write3Bytes(stream, 65536); // offset[3]
+        stream.Write([.. MakeBytes(255)]);
+        stream.Write([.. MakeBytes(65280)]);
+        stream.Position = 0;
+
+        var result = CompactFontFormat.ReadIndexData(stream);
+        Assert.Equal(result.Length, 3);
+        Assert.Equal(result[0].Length, 0);
+        Assert.Equal(result[1].Length, 255);
+        Assert.Equal(result[1], MakeBytes(255));
+        Assert.Equal(result[2].Length, 65280);
+        Assert.Equal(result[2], MakeBytes(65280));
+    }
+
+    [Fact]
+    public void ReadIndexData4_0_255_65280_16711679Test()
+    {
+        var stream = new MemoryStream();
+        stream.WriteUShortByBigEndian(4); // count
+        stream.WriteByte(3); // offset size
+        Write3Bytes(stream, 1); // offset[0]
+        Write3Bytes(stream, 1); // offset[1]
+        Write3Bytes(stream, 256); // offset[2]
+        Write3Bytes(stream, 65536); // offset[3]
+        Write3Bytes(stream, 16777215); // offset[4]
+        stream.Write([.. MakeBytes(255)]);
+        stream.Write([.. MakeBytes(65280)]);
+        stream.Write([.. MakeBytes(16711679)]);
+        stream.Position = 0;
+
+        var result = CompactFontFormat.ReadIndexData(stream);
+        Assert.Equal(result.Length, 4);
+        Assert.Equal(result[0].Length, 0);
+        Assert.Equal(result[1].Length, 255);
+        Assert.Equal(result[1], MakeBytes(255));
+        Assert.Equal(result[2].Length, 65280);
+        Assert.Equal(result[2], MakeBytes(65280));
+        Assert.Equal(result[3].Length, 16711679);
+        Assert.Equal(result[3], MakeBytes(16711679));
+    }
+
+    [Fact]
+    public void ReadIndexData4_0_255_65280_16711680Test()
+    {
+        var stream = new MemoryStream();
+        stream.WriteUShortByBigEndian(4); // count
+        stream.WriteByte(4); // offset size
+        stream.WriteUIntByBigEndian(1); // offset[0]
+        stream.WriteUIntByBigEndian(1); // offset[1]
+        stream.WriteUIntByBigEndian(256); // offset[2]
+        stream.WriteUIntByBigEndian(65536); // offset[3]
+        stream.WriteUIntByBigEndian(16777216); // offset[4]
+        stream.Write([.. MakeBytes(255)]);
+        stream.Write([.. MakeBytes(65280)]);
+        stream.Write([.. MakeBytes(16711680)]);
+        stream.Position = 0;
+
+        var result = CompactFontFormat.ReadIndexData(stream);
+        Assert.Equal(result.Length, 4);
+        Assert.Equal(result[0].Length, 0);
+        Assert.Equal(result[1].Length, 255);
+        Assert.Equal(result[1], MakeBytes(255));
+        Assert.Equal(result[2].Length, 65280);
+        Assert.Equal(result[2], MakeBytes(65280));
+        Assert.Equal(result[3].Length, 16711680);
+        Assert.Equal(result[3], MakeBytes(16711680));
     }
 }
