@@ -2,12 +2,18 @@
 using PicoPDF.OpenType.Tables.PostScript;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace PicoPDF.Benchmark;
 
 public class WriteIndexDataBench
 {
+    public byte[] bytes254_ = [.. MakeBytes(254)];
+    public byte[] bytes255_ = [.. MakeBytes(255)];
+    public byte[] bytes65279_ = [.. MakeBytes(65279)];
+    public byte[] bytes65280_ = [.. MakeBytes(65280)];
+    public byte[] bytes16711679_ = [.. MakeBytes(16711679)];
+    public byte[] bytes16711680_ = [.. MakeBytes(16711680)];
+
     public static IEnumerable<byte> MakeBytes(int count)
     {
         byte b = 0;
@@ -20,8 +26,7 @@ public class WriteIndexDataBench
     [Benchmark]
     public void WriteIndexData1()
     {
-        var data1 = MakeBytes(254).ToArray();
-        byte[][] bytes = [[], data1];
+        byte[][] bytes = [[], bytes254_];
         var stream = new MemoryStream();
 
         CompactFontFormat.WriteIndexData(stream, bytes);
@@ -30,9 +35,7 @@ public class WriteIndexDataBench
     [Benchmark]
     public void WriteIndexData2()
     {
-        var data1 = MakeBytes(255).ToArray();
-        var data2 = MakeBytes(65279).ToArray();
-        byte[][] bytes = [[], data1, data2];
+        byte[][] bytes = [[], bytes255_, bytes65279_];
         var stream = new MemoryStream();
 
         CompactFontFormat.WriteIndexData(stream, bytes);
@@ -41,10 +44,7 @@ public class WriteIndexDataBench
     [Benchmark]
     public void WriteIndexData3()
     {
-        var data1 = MakeBytes(255).ToArray();
-        var data2 = MakeBytes(65280).ToArray();
-        var data3 = MakeBytes(16711679).ToArray();
-        byte[][] bytes = [[], data1, data2, data3];
+        byte[][] bytes = [[], bytes255_, bytes65280_, bytes16711679_];
         var stream = new MemoryStream();
 
         CompactFontFormat.WriteIndexData(stream, bytes);
@@ -53,10 +53,7 @@ public class WriteIndexDataBench
     [Benchmark]
     public void WriteIndexData4()
     {
-        var data1 = MakeBytes(255).ToArray();
-        var data2 = MakeBytes(65280).ToArray();
-        var data3 = MakeBytes(16711680).ToArray();
-        byte[][] bytes = [[], data1, data2, data3];
+        byte[][] bytes = [[], bytes255_, bytes65280_, bytes16711680_];
         var stream = new MemoryStream();
 
         CompactFontFormat.WriteIndexData(stream, bytes);
