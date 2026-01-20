@@ -44,10 +44,12 @@ public class CompactFontFormat : IExportable
         };
     }
 
-    public static byte[][] ReadIndexData(Stream stream)
+    public static byte[][] ReadIndexData(Stream stream) => ReadIndexDataBody(stream, ReadIndexDataHeader(stream));
+
+    public static int[] ReadIndexDataHeader(Stream stream)
     {
         var count = stream.ReadUShortByBigEndian();
-        if (count == 0) return [];
+        if (count == 0) return [0];
         var offset_size = stream.ReadUByte();
 
         Func<Stream, int> offset_read = offset_size switch
@@ -58,9 +60,10 @@ public class CompactFontFormat : IExportable
             _ => (x) => (int)x.ReadUIntByBigEndian(),
         };
 
-        var offset = Enumerable.Repeat(0, count + 1).Select(_ => offset_read(stream)).ToArray();
-        return [.. Enumerable.Range(0, count).Select(i => stream.ReadExactly(offset[i + 1] - offset[i]))];
+        return [.. Enumerable.Repeat(0, count + 1).Select(_ => offset_read(stream))];
     }
+
+    public static byte[][] ReadIndexDataBody(Stream stream, int[] offset) => [.. Enumerable.Range(0, offset.Length - 1).Select(i => stream.ReadExactly(offset[i + 1] - offset[i]))];
 
     public void WriteTo(Stream stream)
     {
@@ -86,10 +89,16 @@ public class CompactFontFormat : IExportable
 
     public static void WriteIndexData(Stream stream, byte[][] index)
     {
+        WriteIndexDataHeader(stream, [.. index.Select(x => (uint)x.Length)]);
+        WriteIndexDataBody(stream, index);
+    }
+
+    public static void WriteIndexDataHeader(Stream stream, uint[] index)
+    {
         stream.WriteUShortByBigEndian((ushort)index.Length);
         if (index.Length == 0) return;
 
-        var offset_max = index.Sum(x => x.Length) + 1;
+        var offset_max = index.Sum(x => x) + 1;
         var offset_size =
             offset_max <= byte.MaxValue ? 1 :
             offset_max <= ushort.MaxValue ? 2 :
@@ -107,7 +116,8 @@ public class CompactFontFormat : IExportable
 
         var offset = 1U;
         offset_write(stream, 1);
-        index.Each(x => offset_write(stream, offset += (uint)x.Length));
-        index.Each(x => stream.Write(x));
+        index.Each(x => offset_write(stream, offset += x));
     }
+
+    public static void WriteIndexDataBody(Stream stream, byte[][] index) => index.Each(x => stream.Write(x));
 }

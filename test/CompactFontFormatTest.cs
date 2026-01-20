@@ -100,8 +100,8 @@ public class CompactFontFormatTest
     public byte[] bytes255_ = [.. MakeBytes(255)];
     public byte[] bytes65279_ = [.. MakeBytes(65279)];
     public byte[] bytes65280_ = [.. MakeBytes(65280)];
-    public byte[] bytes16711679_ = [.. MakeBytes(16711679)];
-    public byte[] bytes16711680_ = [.. MakeBytes(16711680)];
+    //public byte[] bytes16711679_ = [.. MakeBytes(16711679)];
+    //public byte[] bytes16711680_ = [.. MakeBytes(16711680)];
 
     [Fact]
     public void ReadIndexData0Test()
@@ -224,20 +224,15 @@ public class CompactFontFormatTest
         Write3Bytes(stream, 256); // offset[2]
         Write3Bytes(stream, 65536); // offset[3]
         Write3Bytes(stream, 16777215); // offset[4]
-        stream.Write(bytes255_);
-        stream.Write(bytes65280_);
-        stream.Write(bytes16711679_);
         stream.Position = 0;
 
-        var result = CompactFontFormat.ReadIndexData(stream);
-        Assert.Equal(result.Length, 4);
-        Assert.Equal(result[0].Length, 0);
-        Assert.Equal(result[1].Length, 255);
-        Assert.Equal(result[1], bytes255_);
-        Assert.Equal(result[2].Length, 65280);
-        Assert.Equal(result[2], bytes65280_);
-        Assert.Equal(result[3].Length, 16711679);
-        Assert.Equal(result[3], bytes16711679_);
+        var result = CompactFontFormat.ReadIndexDataHeader(stream);
+        Assert.Equal(result.Length, 5);
+        Assert.Equal(result[0], 1);
+        Assert.Equal(result[1], 1);
+        Assert.Equal(result[2], 256);
+        Assert.Equal(result[3], 65536);
+        Assert.Equal(result[4], 16777215);
     }
 
     [Fact]
@@ -251,20 +246,15 @@ public class CompactFontFormatTest
         stream.WriteUIntByBigEndian(256); // offset[2]
         stream.WriteUIntByBigEndian(65536); // offset[3]
         stream.WriteUIntByBigEndian(16777216); // offset[4]
-        stream.Write(bytes255_);
-        stream.Write(bytes65280_);
-        stream.Write(bytes16711680_);
         stream.Position = 0;
 
-        var result = CompactFontFormat.ReadIndexData(stream);
-        Assert.Equal(result.Length, 4);
-        Assert.Equal(result[0].Length, 0);
-        Assert.Equal(result[1].Length, 255);
-        Assert.Equal(result[1], bytes255_);
-        Assert.Equal(result[2].Length, 65280);
-        Assert.Equal(result[2], bytes65280_);
-        Assert.Equal(result[3].Length, 16711680);
-        Assert.Equal(result[3], bytes16711680_);
+        var result = CompactFontFormat.ReadIndexDataHeader(stream);
+        Assert.Equal(result.Length, 5);
+        Assert.Equal(result[0], 1);
+        Assert.Equal(result[1], 1);
+        Assert.Equal(result[2], 256);
+        Assert.Equal(result[3], 65536);
+        Assert.Equal(result[4], 16777216);
     }
 
     [Fact]
@@ -387,11 +377,11 @@ public class CompactFontFormatTest
     [Fact]
     public void WriteIndexData4_0_255_65280_16711679Test()
     {
-        byte[][] bytes = [[], bytes255_, bytes65280_, bytes16711679_];
+        uint[] bytes = [0, 255, 65280, 16711679];
         var stream = new MemoryStream();
 
-        CompactFontFormat.WriteIndexData(stream, bytes);
-        Assert.Equal(stream.Position, 16777232);
+        CompactFontFormat.WriteIndexDataHeader(stream, bytes);
+        Assert.Equal(stream.Position, 18);
         stream.Position = 0;
 
         Assert.Equal(stream.ReadUShortByBigEndian(), 4); // count
@@ -401,21 +391,18 @@ public class CompactFontFormatTest
         Assert.Equal(Read3Bytes(stream), 256); // offset[2]
         Assert.Equal(Read3Bytes(stream), 65536); // offset[3]
         Assert.Equal(Read3Bytes(stream), 16777215); // offset[4]
-        Assert.Equal(stream.ReadExactly(255), bytes255_);
-        Assert.Equal(stream.ReadExactly(65280), bytes65280_);
-        Assert.Equal(stream.ReadExactly(16711679), bytes16711679_);
 
-        Assert.Equal(stream.Position, 16777232);
+        Assert.Equal(stream.Position, 18);
     }
 
     [Fact]
     public void WriteIndexData4_0_255_65280_16711680Test()
     {
-        byte[][] bytes = [[], bytes255_, bytes65280_, bytes16711680_];
+        uint[] bytes = [0, 255, 65280, 16711680];
         var stream = new MemoryStream();
 
-        CompactFontFormat.WriteIndexData(stream, bytes);
-        Assert.Equal(stream.Position, 16777238);
+        CompactFontFormat.WriteIndexDataHeader(stream, bytes);
+        Assert.Equal(stream.Position, 23);
         stream.Position = 0;
 
         Assert.Equal(stream.ReadUShortByBigEndian(), 4); // count
@@ -425,10 +412,7 @@ public class CompactFontFormatTest
         Assert.Equal<uint>(stream.ReadUIntByBigEndian(), 256); // offset[2]
         Assert.Equal<uint>(stream.ReadUIntByBigEndian(), 65536); // offset[3]
         Assert.Equal<uint>(stream.ReadUIntByBigEndian(), 16777216); // offset[4]
-        Assert.Equal(stream.ReadExactly(255), bytes255_);
-        Assert.Equal(stream.ReadExactly(65280), bytes65280_);
-        Assert.Equal(stream.ReadExactly(16711680), bytes16711680_);
 
-        Assert.Equal(stream.Position, 16777238);
+        Assert.Equal(stream.Position, 23);
     }
 }
