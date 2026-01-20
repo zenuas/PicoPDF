@@ -12,7 +12,7 @@ public class Type0Font : PdfObject, IFont
     public required string Name { get; init; }
     public required IOpenTypeRequiredTables Font { get; init; }
     public IOpenTypeRequiredTables? EmbeddedFont { get; set; }
-    public required FontRegister FontRegister { get; init; }
+    public required IFontRegister FontRegister { get; init; }
     public required string Encoding { get; init; }
     public required CIDFontDictionary FontDictionary { get; init; }
     public HashSet<char> Chars { get; init; } = [];

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace PicoPDF.Pdf.Font;
 
-public class FontRegister
+public class FontRegister : IFontRegister
 {
     public Dictionary<string, PropertyGetSet<IOpenTypeHeader>> Fonts { get; init; } = [];
     public Dictionary<FontRequiredTables, PropertyGetSet<IOpenTypeRequiredTables>> LoadedFonts { get; init; } = [];
@@ -35,7 +35,7 @@ public class FontRegister
     {
         var font = Fonts.GetValueOrDefault(name);
         if (font is null) return null;
-        if (font.Value is IOpenTypeRequiredTables req) return req;
+        if (font.Value is IOpenTypeRequiredTables otr) return otr;
 
         var fontinfo = FontLoader.LoadRequiredTables(font.Value.Cast<FontTableRecords>());
         Fonts[name].Value = fontinfo;
@@ -62,12 +62,12 @@ public class FontRegister
         LoadRequiredTables(GetFontFilePath(name, forceEmbedded)) :
         LoadRequiredTablesOrNull(name).Try();
 
-    public IOpenTypeRequiredTables LoadComplete(IOpenTypeRequiredTables otf) => otf is FontRequiredTables req ?
+    public IOpenTypeRequiredTables LoadComplete(IOpenTypeRequiredTables font) => font is FontRequiredTables req ?
         (LoadedFonts.TryGetValue(req, out var x) ?
             x.Value :
             (LoadedFonts[req] = new() { Value = FontLoader.LoadComplete(req) }).Value
         ) :
-        otf;
+        font;
 
     public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
 

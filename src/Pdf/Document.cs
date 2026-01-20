@@ -35,7 +35,7 @@ public class Document
         }
     };
     public PdfObject? Info { get; set; }
-    public FontRegister FontRegister { get; init; } = new();
+    public required IFontRegister FontRegister { get; init; }
 
     public Document()
     {

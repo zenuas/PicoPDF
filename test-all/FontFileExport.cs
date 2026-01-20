@@ -6,18 +6,18 @@ namespace PicoPDF.TestAll;
 
 public static class FontFileExport
 {
-    public static void Export(FontRegister fontreg, Option opt)
+    public static void Export(IFontRegister fontreg, Option opt)
     {
         var font = fontreg.LoadComplete(fontreg.LoadRequiredTables(opt.FontFileExport, true));
         if (font is TrueTypeFont ttf) Export(Extract(ttf, opt), opt);
-        else if (font is PostScriptFont otf) Export(Extract(otf, opt), opt);
+        else if (font is PostScriptFont psf) Export(Extract(psf, opt), opt);
     }
 
     public static void Export(IOpenTypeRequiredTables font, Option opt)
     {
         using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
         if (font is TrueTypeFont ttf) FontExporter.Export(ttf, stream);
-        else if (font is PostScriptFont otf) FontExporter.Export(otf, stream);
+        else if (font is PostScriptFont psf) FontExporter.Export(psf, stream);
     }
 
     public static TrueTypeFont Extract(TrueTypeFont font, Option opt) => FontExtract.Extract(font,

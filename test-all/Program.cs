@@ -8,16 +8,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 var (opt, jsons) = CommandLine.Run<Option>(args);
 
 if (opt.InputDeflate != "") { DeflateTest.Deflate(opt); return; }
-var fontreg = new FontRegister();
+var fontreg = (IFontRegister)(opt.FontList || opt.CMapList ? new FontRegister() : new FontRegisterLock());
 if (opt.RegisterSystemFont) fontreg.RegisterDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
 if (opt.RegisterUserFont != "") fontreg.RegisterDirectory(new PicoPDF.OpenType.LoadOption() { ForceEmbedded = true }, opt.RegisterUserFont);
 if (opt.FontFileExport != "") { FontFileExport.Export(fontreg, opt); return; }
-if (opt.FontList) { FontListTest.Preview(fontreg, opt); return; }
-if (opt.CMapList) { CMapListTest.Preview(fontreg, opt); return; }
+if (opt.FontList) { FontListTest.Preview(fontreg.Cast<FontRegister>(), opt); return; }
+if (opt.CMapList) { CMapListTest.Preview(fontreg.Cast<FontRegister>(), opt); return; }
 
 var export_opt = new PdfExportOption
 {
@@ -31,6 +32,7 @@ var export_opt = new PdfExportOption
 };
 
 var datacache = new Dictionary<string, DataTable>();
+var tasks = new List<Task>();
 foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", "*.json"))
 {
     var fname = Path.GetFileNameWithoutExtension(json);
@@ -55,24 +57,28 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
         datacache.Add(dataname, table);
     }
 
-    var doc = PdfUtility.Create(fontreg, json, table);
-    doc.AddInfo(
-        title: fname,
-        producer: "PicoPDF for 🍣 (susi edition)",
-        creation_date: DateTime.Now,
-        mod_date: DateTime.Now,
-        trapped: "/False"
-    );
-    doc.Save(pdfname, export_opt);
-
-    if (opt.OutputFontFile != "")
+    tasks.Add(Task.Run(() =>
     {
-        foreach (var x in doc.PdfObjects.OfType<Type0Font>())
+        var doc = PdfUtility.Create(fontreg, json, table);
+        doc.AddInfo(
+            title: fname,
+            producer: "PicoPDF for 🍣 (susi edition)",
+            creation_date: DateTime.Now,
+            mod_date: DateTime.Now,
+            trapped: "/False"
+        );
+        doc.Save(pdfname, export_opt);
+
+        if (opt.OutputFontFile != "")
         {
-            if (x.EmbeddedFont is { }) FontFileExport.Export(x.EmbeddedFont, new Option() { OutputFontFile = opt.OutputFontFile, FontExportChars = x.Chars.ToStringByChars() });
+            foreach (var x in doc.PdfObjects.OfType<Type0Font>())
+            {
+                if (x.EmbeddedFont is { }) FontFileExport.Export(x.EmbeddedFont, new Option() { OutputFontFile = opt.OutputFontFile, FontExportChars = x.Chars.ToStringByChars() });
+            }
         }
-    }
+    }));
 }
+await Task.WhenAll(tasks);
 
 static object autoconv(string s) =>
     int.TryParse(s, out var n) ? n :

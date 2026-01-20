@@ -59,10 +59,10 @@ public static class PdfUtility
 
     public static DeviceRGB ToDeviceRGB(this System.Drawing.Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
 
-    public static Document Create<T>(FontRegister register, string json, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => Create(register, JsonLoader.Load(json), datas, mapper);
-    public static Document Create(FontRegister register, string json, DataTable table) => Create(register, JsonLoader.Load(json), table);
-    public static Document Create(FontRegister register, string json, DataView view) => Create(register, JsonLoader.Load(json), view);
-    public static Document Create<T>(FontRegister register, PageSection pagesection, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => new Document { FontRegister = register }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, datas, mapper)));
-    public static Document Create(FontRegister register, PageSection pagesection, DataTable table) => new Document { FontRegister = register }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, table)));
-    public static Document Create(FontRegister register, PageSection pagesection, DataView view) => new Document { FontRegister = register }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, view)));
+    public static Document Create<T>(IFontRegister register, string json, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => Create(register, JsonLoader.Load(json), datas, mapper);
+    public static Document Create(IFontRegister register, string json, DataTable table) => Create(register, JsonLoader.Load(json), table);
+    public static Document Create(IFontRegister register, string json, DataView view) => Create(register, JsonLoader.Load(json), view);
+    public static Document Create<T>(IFontRegister register, PageSection pagesection, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => new Document { FontRegister = register }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, datas, mapper)));
+    public static Document Create(IFontRegister register, PageSection pagesection, DataTable table) => new Document { FontRegister = register }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, table)));
+    public static Document Create(IFontRegister register, PageSection pagesection, DataView view) => new Document { FontRegister = register }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, view)));
 }
