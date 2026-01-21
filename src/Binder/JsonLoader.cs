@@ -56,10 +56,10 @@ public static class JsonLoader
         var pagebreak = json["PageBreak"]?.AsValue() is { } pb && (bool)pb;
         return json["Type"]!.ToString() switch
         {
-            "HeaderSection" => new HeaderSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements },
+            "HeaderSection" => new HeaderSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode },
             "DetailSection" => new DetailSection() { Name = name, Height = height, Elements = elements },
-            "TotalSection" => new TotalSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak },
-            "FooterSection" => new FooterSection() { Name = name, Height = height, ViewMode = viewmode, Elements = elements, PageBreak = pagebreak },
+            "TotalSection" => new TotalSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, PageBreak = pagebreak },
+            "FooterSection" => new FooterSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, PageBreak = pagebreak },
             _ => throw new(),
         };
     }
