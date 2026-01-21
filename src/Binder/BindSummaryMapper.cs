@@ -212,8 +212,8 @@ public class BindSummaryMapper<T>
 
             case SummaryType.Maximum or SummaryType.Minimum: return Mapper[x.SummaryBind](data);
             case SummaryType.PageCount: return SummaryPool["#:PAGECOUNT()"].Value!;
-            default: throw new();
         }
+        throw new();
     }
 
     public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IParentSection section)
