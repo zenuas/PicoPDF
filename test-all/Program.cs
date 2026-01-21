@@ -59,7 +59,7 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
 
     tasks.Add(Task.Run(() =>
     {
-        var doc = PdfUtility.Create(fontreg, json, table);
+        var doc = PdfUtility.Create(json, table, fontreg);
         doc.AddInfo(
             title: fname,
             producer: "PicoPDF for 🍣 (susi edition)",
