@@ -27,7 +27,7 @@ public class BindSummaryMapperTest
         Assert.Equal(BindSummaryMapper<int>.BindFormat("1234567", "N0", culture), "1234567");
         Assert.Equal(BindSummaryMapper<int>.BindFormat("1234567.89", "N2", culture), "1234567.89");
 
-        var d = DateTime.Parse("4321-12-31T12:34:56", CultureInfo.InvariantCulture);
+        var d = new DateTime(4321, 12, 31, 12, 34, 56);
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "d", culture), "12/31/4321");
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "D", culture), "Saturday, 31 December 4321");
     }
@@ -52,7 +52,7 @@ public class BindSummaryMapperTest
         Assert.Equal(BindSummaryMapper<int>.BindFormat("1234567", "N0", culture), "1234567");
         Assert.Equal(BindSummaryMapper<int>.BindFormat("1234567.89", "N2", culture), "1234567.89");
 
-        var d = DateTime.Parse("4321-12-31T12:34:56", CultureInfo.InvariantCulture);
+        var d = new DateTime(4321, 12, 31, 12, 34, 56);
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "d", culture), "4321/12/31");
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "D", culture), "4321年12月31日土曜日");
     }
@@ -77,7 +77,7 @@ public class BindSummaryMapperTest
         Assert.Equal(BindSummaryMapper<int>.BindFormat("1234567", "N0", culture), "1234567");
         Assert.Equal(BindSummaryMapper<int>.BindFormat("1234567.89", "N2", culture), "1234567.89");
 
-        var d = DateTime.Parse("4321-12-31T12:34:56", CultureInfo.InvariantCulture);
+        var d = new DateTime(4321, 12, 31, 12, 34, 56);
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "d", culture), "31/12/4321");
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "D", culture), "samedi 31 décembre 4321");
     }
@@ -87,7 +87,7 @@ public class BindSummaryMapperTest
     {
         var culture = CultureInfo.InvariantCulture;
 
-        var d = DateTime.Parse("4321-12-31T12:34:56", CultureInfo.InvariantCulture);
+        var d = new DateTime(4321, 12, 31, 12, 34, 56);
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, 1), "1");
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, 999), "999");
         Assert.Equal(BindSummaryMapper<int>.BindFormat(d, "#", culture, 1_000), "1000");
@@ -106,7 +106,7 @@ public class BindSummaryMapperTest
     {
         var culture = CultureInfo.InvariantCulture;
 
-        var d = DateTime.Parse("4321-12-31T12:34:56", CultureInfo.InvariantCulture);
+        var d = new DateTime(4321, 12, 31, 12, 34, 56);
         Assert.Throws<FormatException>(() => BindSummaryMapper<int>.BindFormat(d, "#", culture, d));
     }
 }
