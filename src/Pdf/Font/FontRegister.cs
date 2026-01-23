@@ -102,11 +102,7 @@ public class FontRegister : IFontRegister
 
     public void AddFontCollection(string path, LoadOption? opt = null) => FontLoader.LoadTableRecordsCollection(path, opt).Each(x => Add(x));
 
-    public static IEnumerable<string> GetFontDirectories()
-    {
-        foreach (var x in GetSystemFontDirectories()) yield return x;
-        foreach (var x in GetUserFontDirectories()) yield return x;
-    }
+    public static IEnumerable<string> GetFontDirectories() => [.. GetSystemFontDirectories(), .. GetUserFontDirectories()];
 
     public static IEnumerable<string> GetSystemFontDirectories()
     {
