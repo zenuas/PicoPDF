@@ -58,7 +58,7 @@ public class BindSummaryMapperTest
     }
 
     [Fact]
-    public void BindFormaFranceCultureTest()
+    public void BindFormatFranceCultureTest()
     {
         var culture = CultureInfo.GetCultureInfo("fr-FR");
 
