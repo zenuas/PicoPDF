@@ -167,7 +167,7 @@ public class BindSummaryMapper<T>
     public void BreakSection(SectionModel model)
     {
         var depth = model.Depth ?? throw new();
-        CrossSectionGoBack[depth].Each(x => x.TargetModel = model);
+        CrossSectionGoBack.Take(depth + 1).Flatten().Each(x => x.TargetModel = model);
         CrossSectionGoBack[depth].Clear();
     }
 
@@ -175,7 +175,7 @@ public class BindSummaryMapper<T>
     {
         for (var i = 0; i < CrossSectionGoBack.Count; i++)
         {
-            CrossSectionGoBack[i].Each(x => x.TargetModel = model);
+            CrossSectionGoBack[i].Each(x => x.TargetModel ??= model);
             CrossSectionGoBack[i].Clear();
         }
     }
