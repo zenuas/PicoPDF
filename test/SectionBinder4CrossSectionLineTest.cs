@@ -20,7 +20,7 @@ public class SectionBinder4CrossSectionLineTest
 
     public static IEnumerable<(int, string, string, string)> MakeSectionData(string key1, string key2, string key3, int from, int to) => Lists.RangeTo(from, to).Select(x => (x, key1, key2, key3));
 
-    public static string ToSectionString(SectionModel section) => $"{section.Section.Name},top={section.Top}/{section.Elements.OfType<ITextModel>().Select(x => x.Text).Join("/")}|{section.Elements.OfType<ILineModel>().Select(x => $"x={x.X},y={x.Y},width={x.Width},height={x.Height}").Join("/")}";
+    public static string ToSectionString(SectionModel section) => $"{section.Section.Name},top={section.Top}/{section.Elements.OfType<ITextModel>().Select(x => x.Text).Join("/")}|{section.Elements.OfType<ILineModel>().Select(x => $"x1={x.X},y1={section.Top + x.Y},x2={x.X + x.Width},y2={section.Top + x.Y + x.Height}").Join("/")}";
 
     public static PageSection PageSection { get; } = JsonLoader.LoadJsonString("""
 {
@@ -91,7 +91,6 @@ public class SectionBinder4CrossSectionLineTest
 }
 """);
 
-
     [Fact]
     public void Line0()
     {
@@ -101,7 +100,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x=60,y=5,width=100,height=30");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=60,y1=40,x2=160,y2=70");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=55///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=65///|");
@@ -118,7 +117,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -137,7 +136,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -150,7 +149,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[1].Models.Count, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=330");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=370");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail,top=55/3|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer3,top=355/a/b/c|");
@@ -228,7 +227,6 @@ public class SectionBinder4CrossSectionLineTest
 }
 """);
 
-
     [Fact]
     public void LineAf0()
     {
@@ -238,7 +236,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x=60,y=5,width=100,height=30");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=60,y1=40,x2=160,y2=70");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=55///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=65///|");
@@ -255,7 +253,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -274,7 +272,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -286,7 +284,7 @@ public class SectionBinder4CrossSectionLineTest
         i = 0;
         Assert.Equal(models[1].Models.Count, 8);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=25/a/b/c|x=60,y=5,width=100,height=330");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=25/a/b/c|x1=60,y1=30,x2=160,y2=360");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header3,top=35/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail,top=45/3|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer3,top=345/a/b/c|");
@@ -364,7 +362,6 @@ public class SectionBinder4CrossSectionLineTest
 }
 """);
 
-
     [Fact]
     public void LineBf0()
     {
@@ -374,7 +371,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x=60,y=5,width=100,height=30");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=60,y1=40,x2=160,y2=70");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=55///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=65///|");
@@ -391,7 +388,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -410,7 +407,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -500,7 +497,6 @@ public class SectionBinder4CrossSectionLineTest
 }
 """);
 
-
     [Fact]
     public void LineCf0()
     {
@@ -510,7 +506,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x=60,y=5,width=100,height=30");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=60,y1=40,x2=160,y2=70");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=55///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=65///|");
@@ -527,7 +523,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -546,7 +542,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -559,7 +555,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[1].Models.Count, 8);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=320");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=360");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail,top=45/3|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer3,top=345/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer2,top=355/a/b/c|");
@@ -636,7 +632,6 @@ public class SectionBinder4CrossSectionLineTest
 }
 """);
 
-
     [Fact]
     public void LineAl0()
     {
@@ -646,7 +641,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x=60,y=5,width=100,height=30");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=60,y1=40,x2=160,y2=70");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=55///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=65///|");
@@ -663,7 +658,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -682,7 +677,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 9);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -694,7 +689,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[1].Models.Count, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=330");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=370");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail,top=55/3|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer3,top=355/a/b/c|");
@@ -702,6 +697,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer1,top=375/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
+
     public static PageSection PageSectionBl { get; } = JsonLoader.LoadJsonString("""
 {
 	"Size": "A4",
@@ -771,7 +767,6 @@ public class SectionBinder4CrossSectionLineTest
 }
 """);
 
-
     [Fact]
     public void LineBl0()
     {
@@ -781,7 +776,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x=60,y=5,width=100,height=30");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=60,y1=40,x2=160,y2=70");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=55///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=65///|");
@@ -798,7 +793,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -817,7 +812,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 9);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=615");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=660");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -829,7 +824,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[1].Models.Count, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=330");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=370");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail,top=55/3|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer3,top=355/a/b/c|");
@@ -917,7 +912,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x=60,y=5,width=100,height=30");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=60,y1=40,x2=160,y2=70");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer3,top=55///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer2,top=65///|");
@@ -934,7 +929,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=630");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=670");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -953,7 +948,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 9);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=620");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=660");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
@@ -965,7 +960,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[1].Models.Count, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x=60,y=5,width=100,height=330");
+        Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=370");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail,top=55/3|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Footer3,top=355/a/b/c|");
