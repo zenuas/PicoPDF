@@ -1,9 +1,11 @@
 ﻿using Mina.Data;
 using Mina.Extension;
 using PicoPDF.OpenType;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace PicoPDF.Pdf.Font;
 
@@ -13,6 +15,7 @@ public class FontRegister : IFontRegister
     public Dictionary<FontRequiredTables, PropertyGetSet<IOpenTypeRequiredTables>> LoadedFonts { get; init; } = [];
 
     public void RegisterDirectory(LoadOption? opt = null, params string[] paths) => paths
+        .Where(Directory.Exists)
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
         .Flatten()
         .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
@@ -98,4 +101,45 @@ public class FontRegister : IFontRegister
     }
 
     public void AddFontCollection(string path, LoadOption? opt = null) => FontLoader.LoadTableRecordsCollection(path, opt).Each(x => Add(x));
+
+    public static IEnumerable<string> GetFontDirectories()
+    {
+        foreach (var x in GetSystemFontDirectories()) yield return x;
+        foreach (var x in GetUserFontDirectories()) yield return x;
+    }
+
+    public static IEnumerable<string> GetSystemFontDirectories()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            yield return Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts");
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            yield return "/System/Library/Fonts";
+            yield return "/Library/Fonts";
+        }
+        else
+        {
+            yield return "/usr/share/fonts";
+            yield return "/usr/local/share/fonts";
+        }
+    }
+
+    public static IEnumerable<string> GetUserFontDirectories()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            yield return Environment.ExpandEnvironmentVariables(@"%UserProfile%\AppData\Local\Microsoft\Windows\Fonts");
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            yield return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library/Fonts");
+        }
+        else
+        {
+            yield return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".fonts");
+            yield return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local/share/fonts");
+        }
+    }
 }

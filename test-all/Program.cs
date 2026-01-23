@@ -14,7 +14,7 @@ var (opt, jsons) = CommandLine.Run<Option>(args);
 
 if (opt.InputDeflate != "") { DeflateTest.Deflate(opt); return; }
 var fontreg = (IFontRegister)(opt.FontList || opt.CMapList ? new FontRegister() : new FontRegisterLock());
-if (opt.RegisterSystemFont) fontreg.RegisterDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
+if (opt.RegisterSystemFont) FontRegister.GetFontDirectories().Each(x => fontreg.RegisterDirectory(x));
 if (opt.RegisterUserFont != "") fontreg.RegisterDirectory(new PicoPDF.OpenType.LoadOption() { ForceEmbedded = true }, opt.RegisterUserFont);
 if (opt.FontFileExport != "") { FontFileExport.Export(fontreg, opt); return; }
 if (opt.FontList) { FontListTest.Preview(fontreg.Cast<FontRegister>(), opt); return; }
