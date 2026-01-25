@@ -62,7 +62,9 @@ public static class PdfUtility
     public static Document Create<T>(string json, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null, IFontRegister? register = null) => Create(JsonLoader.Load(json), datas, mapper, register);
     public static Document Create(string json, DataTable table, IFontRegister? register = null) => Create(JsonLoader.Load(json), table, register);
     public static Document Create(string json, DataView view, IFontRegister? register = null) => Create(JsonLoader.Load(json), view, register);
-    public static Document Create<T>(PageSection pagesection, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null, IFontRegister? register = null) => new Document { FontRegister = register ?? new FontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, datas, mapper)));
-    public static Document Create(PageSection pagesection, DataTable table, IFontRegister? register = null) => new Document { FontRegister = register ?? new FontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, table)));
-    public static Document Create(PageSection pagesection, DataView view, IFontRegister? register = null) => new Document { FontRegister = register ?? new FontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, view)));
+    public static Document Create<T>(PageSection pagesection, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null, IFontRegister? register = null) => new Document { FontRegister = register ?? CreateDefaultFontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, datas, mapper)));
+    public static Document Create(PageSection pagesection, DataTable table, IFontRegister? register = null) => new Document { FontRegister = register ?? CreateDefaultFontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, table)));
+    public static Document Create(PageSection pagesection, DataView view, IFontRegister? register = null) => new Document { FontRegister = register ?? CreateDefaultFontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, view)));
+
+    public static FontRegister CreateDefaultFontRegister() => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetSystemFontDirectories()]));
 }
