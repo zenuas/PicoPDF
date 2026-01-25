@@ -1450,7 +1450,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(models[0].Models.Count, 9);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
-        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=665");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=60,y1=40,x2=160,y2=665"); // want y2 to be 675 or 817
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header3,top=45/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=55/1|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
