@@ -15,6 +15,5 @@ public class DeflateTest
         Console.Write($"{input.ReadByte():x2} ");
         using var deflate = new DeflateStream(input, CompressionMode.Decompress);
         deflate.EnumerableReadBytes().Each(output.WriteByte);
-
     }
 }
