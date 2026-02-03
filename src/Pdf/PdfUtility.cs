@@ -49,10 +49,10 @@ public static class PdfUtility
     public static double PointToMillimeter(double v) => v / 72 * 25.4;
     [Obsolete("use SI")] public static double PointToInch(double v) => v / 72;
 
-    public static readonly char[] EscapeBytes = "()\\".ToCharArray();
+    public static readonly char[] EscapeChars = ['(', ')', '\\'];
 
     public static string ToEscapeString(string s) => s.All(char.IsAscii)
-        ? $"({s.Select<char, char[]>(x => x.In(EscapeBytes) ? ['\\', x] : [x]).Flatten().ToStringByChars()})"
+        ? $"({s.Select<char, char[]>(x => x.In(EscapeChars) ? ['\\', x] : [x]).Flatten().ToStringByChars()})"
         : $"<{Convert.ToHexStringLower([.. Encoding.BigEndianUnicode.GetPreamble(), .. Encoding.BigEndianUnicode.GetBytes(s)])}>";
 
     public static DeviceRGB ToDeviceRGB(this System.Drawing.Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
