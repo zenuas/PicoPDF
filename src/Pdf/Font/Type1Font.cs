@@ -1,7 +1,4 @@
-﻿using Mina.Extension;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace PicoPDF.Pdf.Font;
 
@@ -11,7 +8,6 @@ public class Type1Font : PdfObject, IFont
     public required string BaseFont { get; init; }
     public required string Encoding { get; init; }
     public required FontDescriptor FontDescriptor { get; init; }
-    public required Encoding TextEncoding { get; init; }
     public required int FirstChar { get; init; }
     public int LastChar { get => FirstChar + Widths.Count - 1; }
     public List<long> Widths { get; init; } = [];
@@ -29,5 +25,5 @@ public class Type1Font : PdfObject, IFont
         _ = Elements.TryAdd("Widths", Widths);
     }
 
-    public IEnumerable<byte> CreateTextShowingOperator(string s) => PdfUtility.ToStringEscapeBytes(s, TextEncoding).Concat(System.Text.Encoding.ASCII.GetBytes(" Tj"));
+    public string CreateTextShowingOperator(string s) => $"{PdfUtility.ToEscapeString(s)} Tj";
 }

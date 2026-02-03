@@ -30,6 +30,7 @@ var export_opt = new PdfExportOption
     ImageStreamDeflate = opt.ImageStreamDeflate,
     CMapStreamDeflate = opt.CMapStreamDeflate,
 };
+ManualCreate.Run(fontreg, export_opt);
 
 var datacache = new Dictionary<string, DataTable>();
 var tasks = new List<Task>();

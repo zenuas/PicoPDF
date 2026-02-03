@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace PicoPDF.Pdf;
 
@@ -56,7 +55,7 @@ public class Document
         return page;
     }
 
-    public CIDFont AddFont(string name, string basefont, CMap cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public CIDFont AddFont(string name, string basefont, CMap cmap, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary()
@@ -79,7 +78,6 @@ public class Document
             Name = name,
             BaseFont = $"{basefont}-{cidsysinfo.Name}",
             Encoding = cidsysinfo.Name,
-            TextEncoding = enc,
             FontDictionary = fontdict,
         };
         PdfObjects.Add(font);
@@ -133,7 +131,7 @@ public class Document
         return type0;
     }
 
-    public Type1Font AddFont(string name, string basefont, Type1Encoding encoding, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public Type1Font AddFont(string name, string basefont, Type1Encoding encoding, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
         var fontdict = new FontDescriptor()
         {
@@ -146,7 +144,6 @@ public class Document
             Name = name,
             BaseFont = basefont,
             Encoding = encoding.ToString(),
-            TextEncoding = enc,
             FontDescriptor = fontdict,
             FirstChar = 32,
             Widths = [.. Lists.Repeat(500L).Take(126 - 32 + 1)],
@@ -156,9 +153,9 @@ public class Document
         return font;
     }
 
-    public StandardType1Font AddFont(string name, StandardType1Fonts fontname, Encoding enc)
+    public StandardType1Font AddFont(string name, StandardType1Fonts fontname)
     {
-        var font = new StandardType1Font() { Name = name, Font = fontname, TextEncoding = enc };
+        var font = new StandardType1Font() { Name = name, Font = fontname };
         PdfObjects.Add(font);
 
         return font;
@@ -191,12 +188,12 @@ public class Document
     {
         if (Info is { }) PdfObjects.Remove(Info);
         PdfObjects.Add(Info = new());
-        if (title is { }) _ = Info.Elements.TryAdd("Title", PdfUtility.ToStringEscapeBytes(title));
-        if (author is { }) _ = Info.Elements.TryAdd("Author", PdfUtility.ToStringEscapeBytes(author));
-        if (subject is { }) _ = Info.Elements.TryAdd("Subject", PdfUtility.ToStringEscapeBytes(subject));
-        if (keywords is { }) _ = Info.Elements.TryAdd("Keywords", PdfUtility.ToStringEscapeBytes(keywords));
-        if (creator is { }) _ = Info.Elements.TryAdd("Creator", PdfUtility.ToStringEscapeBytes(creator));
-        if (producer is { }) _ = Info.Elements.TryAdd("Producer", PdfUtility.ToStringEscapeBytes(producer));
+        if (title is { }) _ = Info.Elements.TryAdd("Title", PdfUtility.ToEscapeString(title));
+        if (author is { }) _ = Info.Elements.TryAdd("Author", PdfUtility.ToEscapeString(author));
+        if (subject is { }) _ = Info.Elements.TryAdd("Subject", PdfUtility.ToEscapeString(subject));
+        if (keywords is { }) _ = Info.Elements.TryAdd("Keywords", PdfUtility.ToEscapeString(keywords));
+        if (creator is { }) _ = Info.Elements.TryAdd("Creator", PdfUtility.ToEscapeString(creator));
+        if (producer is { }) _ = Info.Elements.TryAdd("Producer", PdfUtility.ToEscapeString(producer));
         if (creation_date is { }) _ = Info.Elements.TryAdd("CreationDate", creation_date);
         if (mod_date is { }) _ = Info.Elements.TryAdd("ModDate", mod_date);
         if (trapped is { }) _ = Info.Elements.TryAdd("Trapped", trapped);

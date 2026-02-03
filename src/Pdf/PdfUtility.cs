@@ -49,13 +49,11 @@ public static class PdfUtility
     public static double PointToMillimeter(double v) => v / 72 * 25.4;
     [Obsolete("use SI")] public static double PointToInch(double v) => v / 72;
 
-    public static readonly byte[] EscapeBytes = Encoding.ASCII.GetBytes("()\\");
+    public static readonly char[] EscapeBytes = "()\\".ToCharArray();
 
-    public static string ToStringEscapeBytes(string s) => s.All(char.IsAscii)
-        ? Encoding.ASCII.GetString([.. ToStringEscapeBytes(s, Encoding.ASCII)])
+    public static string ToEscapeString(string s) => s.All(char.IsAscii)
+        ? $"({s.Select<char, char[]>(x => x.In(EscapeBytes) ? ['\\', x] : [x]).Flatten().ToStringByChars()})"
         : $"<{Convert.ToHexStringLower([.. Encoding.BigEndianUnicode.GetPreamble(), .. Encoding.BigEndianUnicode.GetBytes(s)])}>";
-    public static IEnumerable<byte> ToStringEscapeBytes(string s, Encoding encoding) => ToStringEscapeBytes(encoding.GetBytes(s));
-    public static IEnumerable<byte> ToStringEscapeBytes(byte[] bytes) => [(byte)'(', .. bytes.Select<byte, byte[]>(x => x.In(EscapeBytes) ? [(byte)'\\', x] : [x]).Flatten(), (byte)')'];
 
     public static DeviceRGB ToDeviceRGB(this System.Drawing.Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
 

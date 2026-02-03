@@ -87,12 +87,5 @@ public class Type0Font : PdfObject, IFont
         };
     }
 
-    public IEnumerable<byte> CreateTextShowingOperator(string s)
-    {
-        return s
-            .Select(x => System.Text.Encoding.ASCII.GetBytes($"{(EmbeddedFont ?? Font).CharToGIDCached(x):x4}"))
-            .Flatten()
-            .Prepend((byte)'<')
-            .Concat(System.Text.Encoding.ASCII.GetBytes("> Tj"));
-    }
+    public string CreateTextShowingOperator(string s) => $"<{s.Select(x => $"{(EmbeddedFont ?? Font).CharToGIDCached(x):x4}").Join()}> Tj";
 }
