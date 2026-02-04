@@ -12,5 +12,5 @@ public class ElementIndirectArray : ElementValue
 
     public ElementIndirectArray(IEnumerable<ElementIndirectObject> xs) => Array.AddRange(xs);
 
-    public override string ToElementString() => $"[ {Array.Select(x => $"{x.ToElementString()}").Join(" ")} ]";
+    public override string ToElementString() => $"[ {Array.Select(x => x.ToElementString()).Join(" ")} ]";
 }
