@@ -56,7 +56,7 @@ public class Document
         return page;
     }
 
-    public CIDFont AddFont(string name, string basefont, CMap cmap, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public CIDFont AddFont(string name, string basefont, CMap cmap, System.Text.Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary()
@@ -79,6 +79,7 @@ public class Document
             Name = name,
             BaseFont = $"{basefont}-{cidsysinfo.Name}",
             Encoding = cidsysinfo.Name,
+            TextEncoding = enc,
             FontDictionary = fontdict,
         };
         PdfObjects.Add(font);

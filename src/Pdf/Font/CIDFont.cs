@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Element;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,6 +12,8 @@ public class CIDFont : PdfObject, IFont
     public required string BaseFont { get; init; }
     public required string Encoding { get; init; }
     public required CIDFontDictionary FontDictionary { get; init; }
+    public required System.Text.Encoding TextEncoding { get; init; }
+
     public Dictionary<char, int> Widths { get; init; } = new()
     {
         {' ', 500},  // SP
@@ -120,7 +123,7 @@ public class CIDFont : PdfObject, IFont
         _ = Elements.TryAdd("DescendantFonts", new ElementIndirectArray(FontDictionary));
     }
 
-    public string CreateTextShowingOperator(string s) => $"[{SplitWidth(s, Widths).Select(x => $"{PdfUtility.ToEscapeString(x.Text, System.Text.Encoding.ASCII)}{x.Width}").Join(" ")}] TJ";
+    public string CreateTextShowingOperator(string s) => $"[{SplitWidth(s, Widths).Select(x => $"{$"<{Convert.ToHexStringLower(TextEncoding.GetBytes(x.Text))}>"}{x.Width}").Join(" ")}] TJ";
 
     public static IEnumerable<(string Text, int Width)> SplitWidth(string text, Dictionary<char, int> widths)
     {

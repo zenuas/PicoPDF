@@ -1,5 +1,6 @@
 ﻿using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
+using System.Text;
 
 namespace PicoPDF.TestAll;
 
@@ -10,8 +11,8 @@ public class ManualCreate
         var doc = new Document() { FontRegister = fontreg };
         var page = doc.NewPage(PageSize.A4);
 
-        var cid = doc.AddFont("CID", "HeiseiMin", CMap.EUC_H);
-        page.Contents.DrawString("CID Font!", 100, 100, 12, cid);
+        var cid = doc.AddFont("CID", "HeiseiMin", CMap.UniJIS_UCS2_H, Encoding.BigEndianUnicode);
+        page.Contents.DrawString("CID Font! あア亜", 100, 100, 12, cid);
 
         var stdtype1 = doc.AddFont("STDTYPE1", StandardType1Fonts.HelveticaBold);
         page.Contents.DrawString("Standard Type1 Font!", 100, 120, 12, stdtype1);
