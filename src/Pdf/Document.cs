@@ -3,6 +3,7 @@ using PicoPDF.Image;
 using PicoPDF.Image.Png;
 using PicoPDF.OpenType;
 using PicoPDF.Pdf.Element;
+using PicoPDF.Pdf.Encoding;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;
 using System;
@@ -188,12 +189,12 @@ public class Document
     {
         if (Info is { }) PdfObjects.Remove(Info);
         PdfObjects.Add(Info = new());
-        if (title is { }) _ = Info.Elements.TryAdd("Title", PdfUtility.ToEscapeString(title));
-        if (author is { }) _ = Info.Elements.TryAdd("Author", PdfUtility.ToEscapeString(author));
-        if (subject is { }) _ = Info.Elements.TryAdd("Subject", PdfUtility.ToEscapeString(subject));
-        if (keywords is { }) _ = Info.Elements.TryAdd("Keywords", PdfUtility.ToEscapeString(keywords));
-        if (creator is { }) _ = Info.Elements.TryAdd("Creator", PdfUtility.ToEscapeString(creator));
-        if (producer is { }) _ = Info.Elements.TryAdd("Producer", PdfUtility.ToEscapeString(producer));
+        if (title is { }) _ = Info.Elements.TryAdd("Title", PdfUtility.ToEscapeString(title, UTF16WithBOM.UTF16_BEWithBOM));
+        if (author is { }) _ = Info.Elements.TryAdd("Author", PdfUtility.ToEscapeString(author, UTF16WithBOM.UTF16_BEWithBOM));
+        if (subject is { }) _ = Info.Elements.TryAdd("Subject", PdfUtility.ToEscapeString(subject, UTF16WithBOM.UTF16_BEWithBOM));
+        if (keywords is { }) _ = Info.Elements.TryAdd("Keywords", PdfUtility.ToEscapeString(keywords, UTF16WithBOM.UTF16_BEWithBOM));
+        if (creator is { }) _ = Info.Elements.TryAdd("Creator", PdfUtility.ToEscapeString(creator, UTF16WithBOM.UTF16_BEWithBOM));
+        if (producer is { }) _ = Info.Elements.TryAdd("Producer", PdfUtility.ToEscapeString(producer, UTF16WithBOM.UTF16_BEWithBOM));
         if (creation_date is { }) _ = Info.Elements.TryAdd("CreationDate", creation_date);
         if (mod_date is { }) _ = Info.Elements.TryAdd("ModDate", mod_date);
         if (trapped is { }) _ = Info.Elements.TryAdd("Trapped", trapped);

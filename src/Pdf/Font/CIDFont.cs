@@ -120,7 +120,7 @@ public class CIDFont : PdfObject, IFont
         _ = Elements.TryAdd("DescendantFonts", new ElementIndirectArray(FontDictionary));
     }
 
-    public string CreateTextShowingOperator(string s) => $"[{SplitWidth(s, Widths).Select(x => $"{PdfUtility.ToEscapeString(x.Text)}{x.Width}").Join(" ")}] TJ";
+    public string CreateTextShowingOperator(string s) => $"[{SplitWidth(s, Widths).Select(x => $"{PdfUtility.ToEscapeString(x.Text, System.Text.Encoding.ASCII)}{x.Width}").Join(" ")}] TJ";
 
     public static IEnumerable<(string Text, int Width)> SplitWidth(string text, Dictionary<char, int> widths)
     {

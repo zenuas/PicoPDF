@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 
 namespace PicoPDF.Pdf;
 
@@ -51,9 +50,9 @@ public static class PdfUtility
 
     public static readonly char[] EscapeChars = ['(', ')', '\\'];
 
-    public static string ToEscapeString(string s) => s.All(char.IsAscii)
+    public static string ToEscapeString(string s, System.Text.Encoding encoding) => s.All(char.IsAscii)
         ? $"({s.Select<char, char[]>(x => x.In(EscapeChars) ? ['\\', x] : [x]).Flatten().ToStringByChars()})"
-        : $"<{Convert.ToHexStringLower([.. Encoding.BigEndianUnicode.GetPreamble(), .. Encoding.BigEndianUnicode.GetBytes(s)])}>";
+        : $"<{Convert.ToHexStringLower(encoding.GetBytes(s))}>";
 
     public static DeviceRGB ToDeviceRGB(this System.Drawing.Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
 
