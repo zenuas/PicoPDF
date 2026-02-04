@@ -9,7 +9,7 @@ public class CIDFontDictionary : PdfObject
     public required ElementDictionary CIDSystemInfo { get; init; }
     public required FontDescriptor? FontDescriptor { get; init; }
     public int? DW { get; init; }
-    public ElementStringArray? W { get; set; }
+    public ElementArray<ElementString>? W { get; set; }
 
     public override void DoExport(PdfExportOption option)
     {

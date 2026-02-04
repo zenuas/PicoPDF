@@ -31,7 +31,7 @@ public class Document
         {
             { "Type", "/Pages" },
             { "Count", 0 },
-            { "Kids", new ElementIndirectArray() },
+            { "Kids", new ElementArray<ElementIndirectObject>() },
         }
     };
     public PdfObject? Info { get; set; }
@@ -52,7 +52,7 @@ public class Document
         PdfObjects.Add(page);
 
         PageTree.Elements["Count"].Cast<ElementInteger>().Value += 1;
-        PageTree.Elements["Kids"].Cast<ElementIndirectArray>().Array.Add(page);
+        PageTree.Elements["Kids"].Cast<ElementArray<ElementIndirectObject>>().Array.Add(page);
         return page;
     }
 

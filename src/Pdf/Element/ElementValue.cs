@@ -1,5 +1,4 @@
-﻿using Mina.Extension;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,19 +18,19 @@ public abstract class ElementValue
 
     public static implicit operator ElementValue(PdfObject x) => new ElementIndirectObject() { References = x };
 
-    public static implicit operator ElementValue(int[] xs) => new ElementIntegerArray(xs.Select(x => x.Cast<long>()));
+    public static implicit operator ElementValue(int[] xs) => new ElementArray<ElementInteger>(xs.Select(x => new ElementInteger() { Value = x }));
 
-    public static implicit operator ElementValue(long[] xs) => new ElementIntegerArray(xs);
+    public static implicit operator ElementValue(long[] xs) => new ElementArray<ElementInteger>(xs.Select(x => new ElementInteger() { Value = x }));
 
-    public static implicit operator ElementValue(List<int> xs) => new ElementIntegerArray(xs.Select(x => x.Cast<long>()));
+    public static implicit operator ElementValue(List<int> xs) => new ElementArray<ElementInteger>(xs.Select(x => new ElementInteger() { Value = x }));
 
-    public static implicit operator ElementValue(List<long> xs) => new ElementIntegerArray(xs);
+    public static implicit operator ElementValue(List<long> xs) => new ElementArray<ElementInteger>(xs.Select(x => new ElementInteger() { Value = x }));
 
-    public static implicit operator ElementValue(string[] xs) => new ElementStringArray(xs);
+    public static implicit operator ElementValue(string[] xs) => new ElementArray<ElementString>(xs.Select(x => new ElementString() { Value = x }));
 
-    public static implicit operator ElementValue(List<string> xs) => new ElementStringArray(xs);
+    public static implicit operator ElementValue(List<string> xs) => new ElementArray<ElementString>(xs.Select(x => new ElementString() { Value = x }));
 
-    public static implicit operator ElementValue(ElementIndirectObject[] xs) => new ElementIndirectArray(xs);
+    public static implicit operator ElementValue(ElementIndirectObject[] xs) => new ElementArray<ElementIndirectObject>(xs);
 
-    public static implicit operator ElementValue(List<ElementIndirectObject> xs) => new ElementIndirectArray(xs);
+    public static implicit operator ElementValue(List<ElementIndirectObject> xs) => new ElementArray<ElementIndirectObject>(xs);
 }

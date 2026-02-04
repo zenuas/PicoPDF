@@ -119,7 +119,7 @@ public class CIDFont : PdfObject, IFont
         _ = Elements.TryAdd("Subtype", $"/Type0");
         _ = Elements.TryAdd("BaseFont", $"/{BaseFont}");
         _ = Elements.TryAdd("Encoding", $"/{Encoding}");
-        _ = Elements.TryAdd("DescendantFonts", new ElementIndirectArray(FontDictionary));
+        _ = Elements.TryAdd("DescendantFonts", new ElementArray<ElementIndirectObject>(FontDictionary));
     }
 
     public string CreateTextShowingOperator(string s) => $"[{SplitWidth(s, Widths).Select(x => $"{PdfUtility.ToHexString(x.Text, TextEncoding)}{x.Width}").Join(" ")}] TJ";

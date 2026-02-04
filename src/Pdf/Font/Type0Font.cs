@@ -31,7 +31,7 @@ public class Type0Font : PdfObject, IFont
         _ = Elements.TryAdd("Type", $"/Font");
         _ = Elements.TryAdd("Subtype", $"/Type0");
         _ = Elements.TryAdd("Encoding", $"/{Encoding}");
-        _ = Elements.TryAdd("DescendantFonts", new ElementIndirectArray(FontDictionary));
+        _ = Elements.TryAdd("DescendantFonts", new ElementArray<ElementIndirectObject>(FontDictionary));
         if (option.AppendCIDToUnicode)
         {
             var cmap = new CIDToUnicode { Font = EmbeddedFont ?? Font, Chars = Chars };
@@ -66,12 +66,11 @@ public class Type0Font : PdfObject, IFont
         }
 
         var font = EmbeddedFont ?? Font;
-        FontDictionary.W = new(
-                Chars.ToArray()
-                    .Order()
-                    .Select(x => (Char: x, GID: font.CharToGIDCached(x), Width: font.MeasureGID(font.CharToGIDCached(x))))
-                    .Where(x => x.GID != 0 && (FontDictionary.DW is not { } dw || x.Width != dw))
-                    .Select(x => $"{x.GID}[{x.Width}]{(option.Debug ? $" %{x.Char}" : "")}\n")
+        FontDictionary.W = new(Chars
+                .Order()
+                .Select(x => (Char: x, GID: font.CharToGIDCached(x), Width: font.MeasureGID(font.CharToGIDCached(x))))
+                .Where(x => x.GID != 0 && (FontDictionary.DW is not { } dw || x.Width != dw))
+                .Select(x => new ElementString { Value = $"{x.GID}[{x.Width}]{(option.Debug ? $" %{x.Char}" : "")}\n" })
             );
     }
 
