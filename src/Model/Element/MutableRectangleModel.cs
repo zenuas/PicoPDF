@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace PicoPDF.Model.Element;
 
-public class MutableLineModel : ILineModel, ICrossSectionModel
+public class MutableRectangleModel : IModelElement, ICrossSectionModel
 {
     public required IElement Element { get; init; }
     public SectionModel? TargetModel { get; set; }
@@ -14,5 +14,5 @@ public class MutableLineModel : ILineModel, ICrossSectionModel
     public Color? Color { get; init; }
     public int LineWidth { get; init; }
 
-    public override string ToString() => $"MutableLine, X={X}, Y={Y}, Width={Width}, Height={Height}";
+    public override string ToString() => $"MutableRectangle, X={X}, Y={Y}, Width={Width}, Height={Height}";
 }

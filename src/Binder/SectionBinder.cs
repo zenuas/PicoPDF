@@ -227,6 +227,22 @@ public static class SectionBinder
                     LineWidth = x.LineWidth,
                 };
 
+            case CrossSectionRectangleElement x:
+                {
+                    var model = new MutableRectangleModel()
+                    {
+                        Element = x,
+                        X = posx,
+                        Y = x.Y,
+                        Width = x.Width,
+                        Height = x.Height,
+                        Color = x.Color,
+                        LineWidth = x.LineWidth,
+                    };
+                    if (depth is { } dp) bind.AddCrossSectionGoBack(model, dp);
+                    return model;
+                }
+
             case FillRectangleElement x:
                 return new FillRectangleModel()
                 {
@@ -239,6 +255,23 @@ public static class SectionBinder
                     FillColor = x.FillColor,
                     LineWidth = x.LineWidth,
                 };
+
+            case CrossSectionFillRectangleElement x:
+                {
+                    var model = new MutableFillRectangleModel()
+                    {
+                        Element = x,
+                        X = posx,
+                        Y = x.Y,
+                        Width = x.Width,
+                        Height = x.Height,
+                        LineColor = x.LineColor,
+                        FillColor = x.FillColor,
+                        LineWidth = x.LineWidth,
+                    };
+                    if (depth is { } dp) bind.AddCrossSectionGoBack(model, dp);
+                    return model;
+                }
 
             case ImageElement x:
                 return new ImageModel()

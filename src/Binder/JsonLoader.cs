@@ -165,9 +165,36 @@ public static class JsonLoader
                     };
                 }
 
+            case "CrossSectionRectangleElement":
+                {
+                    return new CrossSectionRectangleElement()
+                    {
+                        X = posx,
+                        Y = posy,
+                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
+                    };
+                }
+
             case "FillRectangleElement":
                 {
                     return new FillRectangleElement()
+                    {
+                        X = posx,
+                        Y = posy,
+                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+                        LineColor = ColorTranslator.FromHtml(json["LineColor"]!.ToString()),
+                        FillColor = ColorTranslator.FromHtml(json["FillColor"]!.ToString()),
+                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
+                    };
+                }
+
+            case "CrossSectionFillRectangleElement":
+                {
+                    return new CrossSectionFillRectangleElement()
                     {
                         X = posx,
                         Y = posy,
