@@ -205,9 +205,9 @@ public class BindSummaryMapper<T>
             case SummaryType.Count: return (int)Mapper[x.SummaryCount](data);
 
             case SummaryType.Average:
-                dynamic sum = Mapper[x.SummaryBind](data);
                 dynamic count = Mapper[x.SummaryCount](data);
-                return count == 0 ? x.NaN : sum / count;
+                if (count == 0) return x.NaN;
+                return ((dynamic)Mapper[x.SummaryBind](data)) / count;
 
             case SummaryType.Maximum or SummaryType.Minimum: return Mapper[x.SummaryBind](data);
             case SummaryType.PageCount: return SummaryPool["#:PAGECOUNT()"].Value!;
