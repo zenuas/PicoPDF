@@ -2,6 +2,7 @@
 using PicoPDF.OpenType;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace PicoPDF.Pdf.Font;
 
@@ -14,7 +15,7 @@ public class CIDToUnicode : PdfObject
     {
         var bfchar = Chars
             .Order()
-            .Select(x => $"        <{Font.CharToGID(x):x4}> {PdfUtility.ToHexString(x.ToString(), System.Text.Encoding.BigEndianUnicode)}{(option.Debug ? $" %{x}" : "")}")
+            .Select(x => $"        <{Font.CharToGID(x):x4}> {PdfUtility.ToHexString(x.ToString(), Encoding.BigEndianUnicode)}{(option.Debug ? $" %{x}" : "")}")
             .Join("\n");
 
         var writer = GetWriteStream(option.CMapStreamDeflate);

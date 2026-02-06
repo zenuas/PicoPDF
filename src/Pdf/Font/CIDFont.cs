@@ -2,6 +2,7 @@
 using PicoPDF.Pdf.Element;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace PicoPDF.Pdf.Font;
 
@@ -11,7 +12,7 @@ public class CIDFont : PdfObject, IFont
     public required string BaseFont { get; init; }
     public required string Encoding { get; init; }
     public required CIDFontDictionary FontDictionary { get; init; }
-    public required System.Text.Encoding TextEncoding { get; init; }
+    public required Encoding TextEncoding { get; init; }
 
     public Dictionary<char, int> Widths { get; init; } = new()
     {

@@ -1,9 +1,9 @@
 ﻿using Mina.Extension;
+using Mina.Text;
 using PicoPDF.Image;
 using PicoPDF.Image.Png;
 using PicoPDF.OpenType;
 using PicoPDF.Pdf.Element;
-using PicoPDF.Pdf.Encoding;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;
 using System;
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace PicoPDF.Pdf;
 
@@ -56,7 +57,7 @@ public class Document
         return page;
     }
 
-    public CIDFont AddFont(string name, string basefont, CMap cmap, System.Text.Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public CIDFont AddFont(string name, string basefont, CMap cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
     {
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary()
