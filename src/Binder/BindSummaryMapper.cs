@@ -28,19 +28,18 @@ public class BindSummaryMapper<T>
                 sr.SummaryElement.SummaryMethod is SummaryMethod.Page or SummaryMethod.PageIncremental ? $"&{keys.Join(".")}" :
                 sr.SummaryElement.SummaryMethod is SummaryMethod.CrossSectionPage or SummaryMethod.CrossSectionPageIncremental ? $"%{keys.Join(".")}" :
                 $"${keys.Join(".")}";
-            var bind = sr.SummaryElement.Bind;
             switch (sr.SummaryElement.SummaryType)
             {
                 case SummaryType.Summary:
                 case SummaryType.Average:
                     {
-                        var key = $"{breakpoint}:{bind}";
+                        var key = $"{breakpoint}:{sr.SummaryElement.Bind}";
                         if (!SummaryPool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = 0, Clear = x => x.Value = 0 };
                             SummaryPool.Add(key, v);
                             Mapper.Add(key, _ => v.Value);
-                            SummaryAction.Add(x => v.Value += (dynamic)Mapper[bind](x));
+                            SummaryAction.Add(x => v.Value += (dynamic)Mapper[sr.SummaryElement.Bind](x));
                         }
                         sr.SummaryElement.SummaryBind = key;
                         if (sr.SummaryElement.SummaryType == SummaryType.Average) goto case SummaryType.Count;
@@ -63,7 +62,7 @@ public class BindSummaryMapper<T>
 
                 case SummaryType.Maximum:
                     {
-                        var key = $"{breakpoint}:MAX({bind})";
+                        var key = $"{breakpoint}:MAX({sr.SummaryElement.Bind})";
                         if (!SummaryPool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = null, Clear = x => x.Value = null };
@@ -71,7 +70,7 @@ public class BindSummaryMapper<T>
                             Mapper.Add(key, _ => v.Value!);
                             SummaryAction.Add(x =>
                             {
-                                var value = (dynamic)Mapper[bind](x);
+                                var value = (dynamic)Mapper[sr.SummaryElement.Bind](x);
                                 v.Value = v.Value is null ? value : (v.Value < value ? value : v.Value);
                             });
                         }
@@ -81,7 +80,7 @@ public class BindSummaryMapper<T>
 
                 case SummaryType.Minimum:
                     {
-                        var key = $"{breakpoint}:MIN({bind})";
+                        var key = $"{breakpoint}:MIN({sr.SummaryElement.Bind})";
                         if (!SummaryPool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = null, Clear = x => x.Value = null };
@@ -89,7 +88,7 @@ public class BindSummaryMapper<T>
                             Mapper.Add(key, _ => v.Value!);
                             SummaryAction.Add(x =>
                             {
-                                var value = (dynamic)Mapper[bind](x);
+                                var value = (dynamic)Mapper[sr.SummaryElement.Bind](x);
                                 v.Value = v.Value is null ? value : (v.Value > value ? value : v.Value);
                             });
                         }
