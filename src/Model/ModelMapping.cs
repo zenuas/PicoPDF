@@ -128,11 +128,11 @@ public static class ModelMapping
                 page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color?.ToDeviceRGB(), x.LineWidth);
                 return;
 
-            case RectangleModel x:
+            case IRectangleModel x:
                 page.Contents.DrawRectangle(posx, posy, x.Width, x.Height, x.Color?.ToDeviceRGB(), x.LineWidth);
                 return;
 
-            case FillRectangleModel x:
+            case IFillRectangleModel x:
                 page.Contents.DrawFillRectangle(posx, posy, x.Width, x.Height, x.LineColor.ToDeviceRGB(), x.FillColor.ToDeviceRGB(), x.LineWidth);
                 return;
 

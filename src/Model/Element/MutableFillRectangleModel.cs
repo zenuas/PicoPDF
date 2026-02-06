@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace PicoPDF.Model.Element;
 
-public class MutableFillRectangleModel : IPositionSizeModel, ICrossSectionModel
+public class MutableFillRectangleModel : IFillRectangleModel, ICrossSectionModel
 {
     public required IElement Element { get; init; }
     public SectionModel? TargetModel { get; set; }
