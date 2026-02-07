@@ -34,7 +34,8 @@ public static class SectionBinder
                     .Each(x => x.UpdatePosition(model));
             }
 
-            return new PageModel() { Size = page.Size, Orientation = page.Orientation, Models = models };
+            var (width, height) = PdfUtility.GetPageSize(page.Size, page.Orientation);
+            return new PageModel() { Width = width, Height = height, Models = models };
         })];
 
     public static PageModel[] Bind(PageSection page, DataTable table) => Bind(page,

@@ -41,7 +41,7 @@ public static class ModelMapping
 
     public static void Mapping(Document doc, PageModel[] pages) => Mapping(doc, CreateFontCache(doc), CreateImageCache(doc), pages);
 
-    public static void Mapping(Document doc, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, PageModel[] pages) => pages.Each(x => Mapping(doc.NewPage(x.Size, x.Orientation), fontget, imageget, x.Models));
+    public static void Mapping(Document doc, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, PageModel[] pages) => pages.Each(x => Mapping(doc.NewPage(x.Width, x.Height), fontget, imageget, x.Models));
 
     public static void Mapping(Page page, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, List<SectionModel> models) => models.Each(x => Mapping(page, fontget, imageget, x, x.Top));
 

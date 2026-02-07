@@ -46,9 +46,11 @@ public class Document
         PdfObjects.Add(PageTree);
     }
 
-    public Page NewPage(PageSize size, Orientation orientation = Orientation.Vertical)
+    public Page NewPage(PageSize size, Orientation orientation = Orientation.Vertical) => PdfUtility.GetPageSize(size, orientation).To(x => NewPage(x.Width, x.Height));
+
+    public Page NewPage(int width, int height)
     {
-        var page = new Page() { Document = this, Size = size, Orientation = orientation };
+        var page = new Page() { Document = this, Width = width, Height = height };
         page.Elements["Parent"] = PageTree;
         PdfObjects.Add(page);
 

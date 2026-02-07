@@ -1,11 +1,10 @@
-﻿using PicoPDF.Pdf;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace PicoPDF.Model;
 
 public class PageModel
 {
-    public required PageSize Size { get; init; }
-    public required Orientation Orientation { get; init; }
+    public required int Width { get; init; }
+    public required int Height { get; init; }
     public List<SectionModel> Models { get; init; } = [];
 }

@@ -156,9 +156,8 @@ public class Contents : PdfObject
 
     public override void DoExport(PdfExportOption option)
     {
-        var (width, height) = PdfUtility.GetPageSize(Page.Size, Page.Orientation);
         var writer = GetWriteStream(option.ContentsStreamDeflate);
-        Operations.Each(x => x.OperationWrite(width, height, writer, option));
+        Operations.Each(x => x.OperationWrite(Page.Width, Page.Height, writer, option));
         writer.Flush();
     }
 }

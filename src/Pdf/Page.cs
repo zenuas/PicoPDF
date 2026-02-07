@@ -9,8 +9,8 @@ namespace PicoPDF.Pdf;
 public class Page : PdfObject
 {
     public required Document Document { get; init; }
-    public PageSize Size { get; init; } = PageSize.A4;
-    public Orientation Orientation { get; init; } = Orientation.Vertical;
+    public required int Width { get; init; }
+    public required int Height { get; init; }
     public Contents Contents { get; }
 
     public Page()
@@ -24,8 +24,7 @@ public class Page : PdfObject
 
     public override void DoExport(PdfExportOption option)
     {
-        var (width, height) = PdfUtility.GetPageSize(Size, Orientation);
-        _ = Elements.TryAdd("MediaBox", new long[] { 0, 0, width, height });
+        _ = Elements.TryAdd("MediaBox", new long[] { 0, 0, Width, Height });
 
         var dic = new ElementDictionary();
         _ = Elements.TryAdd("Resources", dic);
