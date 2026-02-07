@@ -7,7 +7,6 @@ using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PicoPDF.Model;
@@ -39,17 +38,20 @@ public static class ModelMapping
         };
     }
 
-    public static void Mapping(Document doc, PageModel[] pages) => Mapping(doc, CreateFontCache(doc), CreateImageCache(doc), pages);
-
-    public static void Mapping(Document doc, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, PageModel[] pages) => pages.Each(x => Mapping(doc.NewPage(x.Width, x.Height), fontget, imageget, x.Models));
-
-    public static void Mapping(Page page, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, List<SectionModel> models) => models.Each(x => Mapping(page, fontget, imageget, x, x.Top));
-
-    public static void Mapping(Page page, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, SectionModel model, int top) => model.Elements.Each(x => Mapping(page, fontget, imageget, x, top));
-
-    public static void Mapping(Page page, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, IModelElement model, int top)
+    public static void Mapping(Document doc, PageModel[] pages)
     {
-        double posx = model.X;
+        var fontget = CreateFontCache(doc);
+        var imageget = CreateImageCache(doc);
+        foreach (var page in pages)
+        {
+            var pdfpage = doc.NewPage(page.Width, page.Height);
+            page.Models.Each(section => section.Elements.Each(x => Mapping(pdfpage, fontget, imageget, x, section.Top, section.Left)));
+        }
+    }
+
+    public static void Mapping(Page page, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, IModelElement model, int top, int left)
+    {
+        double posx = model.X + left;
         double posy = model.Y + top;
         switch (model)
         {
@@ -71,7 +73,7 @@ public static class ModelMapping
                     }
                     var rect = !x.Style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
                     {
-                        X = new PointValue(model.X),
+                        X = new PointValue(model.X + left),
                         Y = new PointValue(model.Y + top),
                         Width = new PointValue(x.Width),
                         Height = new PointValue(box.Height * size),
