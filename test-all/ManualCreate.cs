@@ -1,4 +1,6 @@
-﻿using PicoPDF.Pdf;
+﻿using PicoPDF.Binder;
+using PicoPDF.Binder.Data;
+using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
 using System.Text;
 
@@ -9,7 +11,8 @@ public class ManualCreate
     public static void Run(IFontRegister fontreg, PdfExportOption opt)
     {
         var doc = new Document() { FontRegister = fontreg };
-        var page = doc.NewPage(PageSize.A4);
+        var (width, height) = SectionBinder.GetPageSize(PageSize.A4, Orientation.Horizontal);
+        var page = doc.NewPage(width, height);
 
         var cid = doc.AddFont("CID", "HeiseiMin", CMap.UniJIS_UCS2_H, Encoding.BigEndianUnicode);
         page.Contents.DrawString("CID Font! あア亜", 100, 100, 12, cid);

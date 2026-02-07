@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Pdf;
+﻿namespace PicoPDF.Binder.Data;
 
 public enum PageSize
 {

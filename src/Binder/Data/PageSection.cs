@@ -1,5 +1,4 @@
-﻿using PicoPDF.Pdf;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace PicoPDF.Binder.Data;
 

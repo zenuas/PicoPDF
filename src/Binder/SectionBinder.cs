@@ -4,7 +4,6 @@ using PicoPDF.Binder.Data;
 using PicoPDF.Binder.Element;
 using PicoPDF.Model;
 using PicoPDF.Model.Element;
-using PicoPDF.Pdf;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,7 +21,8 @@ public static class SectionBinder
             models.Where(x => x.Section is not FooterSection).Each(x => x.Top = (top += x.Section.Height) - x.Section.Height);
 
             // footer bottom-up order
-            int bottom = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - page.Padding.Bottom;
+            var (width, height) = GetPageSize(page.Size, page.Orientation);
+            int bottom = height - page.Padding.Bottom;
             models.Where(x => x.Section is FooterSection).Reverse().Each(x => x.Top = bottom -= x.Section.Height);
             
             // cross section update position
@@ -34,7 +34,6 @@ public static class SectionBinder
                     .Each(x => x.UpdatePosition(model));
             }
 
-            var (width, height) = PdfUtility.GetPageSize(page.Size, page.Orientation);
             return new PageModel() { Width = width, Height = height, Models = models };
         })];
 
@@ -79,7 +78,7 @@ public static class SectionBinder
 
         var page_count = 0;
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
-        var pageheight_minus_everypagefooter = PdfUtility.GetPageSize(page.Size, page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
+        var pageheight_minus_everypagefooter = GetPageSize(page.Size, page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
         while (!datas.IsLast)
         {
@@ -381,5 +380,33 @@ public static class SectionBinder
             if (x.Section.BreakKey != "") keys.Add(x.Section.BreakKey);
             yield return ([.. keys], x.Section, x.Depth);
         }
+    }
+
+    public static (int Width, int Height) GetVerticalPageSize(PageSize size)
+    {
+        return size switch
+        {
+            PageSize.A0 => (2384, 3370),
+            PageSize.A1 => (1684, 2384),
+            PageSize.A2 => (1191, 1684),
+            PageSize.A3 => (842, 1191),
+            PageSize.A4 => (595, 842),
+            PageSize.A5 => (420, 595),
+
+            PageSize.B0 => (2835, 4008),
+            PageSize.B1 => (2004, 2835),
+            PageSize.B2 => (1417, 2004),
+            PageSize.B3 => (1001, 1417),
+            PageSize.B4 => (709, 1001),
+            PageSize.B5 => (499, 709),
+
+            _ => (0, 0),
+        };
+    }
+
+    public static (int Width, int Height) GetPageSize(PageSize size, Orientation orientation)
+    {
+        var (width, height) = GetVerticalPageSize(size);
+        return orientation == Orientation.Vertical ? (width, height) : (height, width);
     }
 }

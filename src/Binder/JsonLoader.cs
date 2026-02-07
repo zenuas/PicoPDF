@@ -1,7 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Binder.Data;
 using PicoPDF.Binder.Element;
-using PicoPDF.Pdf;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
