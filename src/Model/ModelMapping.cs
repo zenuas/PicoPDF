@@ -84,7 +84,7 @@ public static class ModelMapping
                     {
                         var width = (int)(box.Width * size);
                         var topleft = model.Y + top;
-                        var bottomleft = (int)(model.Y + top + (box.Height * size));
+                        var bottomleft = (int)(topleft + (box.Height * size));
 
                         if (x.Style.HasFlag(TextStyle.Underline))
                         {
