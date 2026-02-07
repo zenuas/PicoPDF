@@ -16,7 +16,7 @@ public class Type1Font : PdfObject, IFont
     {
         RelatedObjects.Add(FontDescriptor);
         _ = Elements.TryAdd("Type", $"/Font %{Name}");
-        _ = Elements.TryAdd("Subtype", $"/Type1");
+        _ = Elements.TryAdd("Subtype", "/Type1");
         _ = Elements.TryAdd("BaseFont", $"/{BaseFont}");
         _ = Elements.TryAdd("Encoding", $"/{Encoding}");
         _ = Elements.TryAdd("FontDescriptor", FontDescriptor);

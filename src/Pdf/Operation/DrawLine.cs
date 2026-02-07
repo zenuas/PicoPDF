@@ -16,10 +16,10 @@ public class DrawLine : IOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"q\n");
+        writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
         writer.Write($"{LineWidth.ToPoint()} w\n");
         writer.Write($"{StartX.ToPoint()} {height - StartY.ToPoint()} m {EndX.ToPoint()} {height - EndY.ToPoint()} l S\n");
-        writer.Write($"Q\n");
+        writer.Write("Q\n");
     }
 }

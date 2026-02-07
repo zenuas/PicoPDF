@@ -17,11 +17,11 @@ public class DrawFillRectangle : IOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"q\n");
+        writer.Write("q\n");
         if (LineColor is { } cf) writer.Write($"{cf.CreateColor(true)}\n");
         if (FillColor is { } cb) writer.Write($"{cb.CreateColor(false)}\n");
         writer.Write($"{LineWidth.ToPoint()} w\n");
         writer.Write($"{X.ToPoint()} {height - Y.ToPoint()} {Width.ToPoint()} {-Height.ToPoint()} re B\n");
-        writer.Write($"Q\n");
+        writer.Write("Q\n");
     }
 }

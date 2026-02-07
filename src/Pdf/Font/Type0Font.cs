@@ -28,8 +28,8 @@ public class Type0Font : PdfObject, IFont
     public override void DoExport(PdfExportOption option)
     {
         RelatedObjects.Add(FontDictionary);
-        _ = Elements.TryAdd("Type", $"/Font");
-        _ = Elements.TryAdd("Subtype", $"/Type0");
+        _ = Elements.TryAdd("Type", "/Font");
+        _ = Elements.TryAdd("Subtype", "/Type0");
         _ = Elements.TryAdd("Encoding", $"/{Encoding}");
         _ = Elements.TryAdd("DescendantFonts", new ElementArray<ElementIndirectObject>(FontDictionary));
         if (option.AppendCIDToUnicode)

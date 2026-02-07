@@ -17,21 +17,21 @@ public class DrawString : IOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"BT\n");
+        writer.Write("BT\n");
         if (Color is { } c)
         {
-            writer.Write($"  q\n");
+            writer.Write("  q\n");
             writer.Write($"  {c.CreateColor(false)}\n");
         }
         writer.Write($"  /{Font.Name} {FontSize} Tf\n");
         writer.Write($"  {X.ToPoint()} {height - Y.ToPoint()} Td\n");
         writer.Write($"  {Font.CreateTextShowingOperator(Text)}");
         if (option.Debug) writer.Write($" % {Text}");
-        writer.Write($"\n");
+        writer.Write("\n");
         if (Color is { })
         {
-            writer.Write($"  Q\n");
+            writer.Write("  Q\n");
         }
-        writer.Write($"ET\n");
+        writer.Write("ET\n");
     }
 }
