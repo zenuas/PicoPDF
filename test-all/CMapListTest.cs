@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PicoPDF.TestAll;
 
-public class CMapListTest
+public static class CMapListTest
 {
     public static void Preview(FontRegister fontreg, Option opt)
     {

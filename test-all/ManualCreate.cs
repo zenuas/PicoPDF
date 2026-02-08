@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PicoPDF.TestAll;
 
-public class ManualCreate
+public static class ManualCreate
 {
     public static void Run(IFontRegister fontreg, PdfExportOption opt)
     {

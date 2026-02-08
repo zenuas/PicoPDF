@@ -5,7 +5,7 @@ using System.IO.Compression;
 
 namespace PicoPDF.TestAll;
 
-public class DeflateTest
+public static class DeflateTest
 {
     public static void Deflate(Option opt)
     {
