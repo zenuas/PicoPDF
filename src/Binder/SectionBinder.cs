@@ -30,7 +30,7 @@ public static class SectionBinder
             {
                 model.Elements
                     .OfType<ICrossSectionModel>()
-                    .Where(x => x.TargetModel is { })
+                    .Where(x => x.TargetSection is { })
                     .Each(x => x.UpdatePosition(model));
             }
 
