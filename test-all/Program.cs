@@ -19,6 +19,7 @@ if (opt.RegisterUserFont != "") fontreg.RegisterDirectory(new PicoPDF.OpenType.L
 if (opt.FontFileExport != "") { FontFileExport.Export(fontreg, opt); return; }
 if (opt.FontList) { FontListTest.Preview(fontreg.Cast<FontRegister>(), opt); return; }
 if (opt.CMapList) { CMapListTest.Preview(fontreg.Cast<FontRegister>(), opt); return; }
+if (opt.FontDump != "") { FontDump.Dump(fontreg.LoadRequiredTables(opt.FontDump, false), opt); return; }
 
 var export_opt = new PdfExportOption
 {

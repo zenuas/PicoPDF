@@ -55,6 +55,9 @@ public class Option
     [CommandOption("input-deflate")]
     public string InputDeflate { get; init; } = "";
 
+    [CommandOption("font-dump")]
+    public string FontDump { get; init; } = "";
+
     [CommandOption("output"), CommandOption('o')]
     public string Output { get; init; } = "";
 }
