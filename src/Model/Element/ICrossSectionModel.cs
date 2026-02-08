@@ -12,7 +12,7 @@ public interface ICrossSectionModel
         if (overflow_height < 0) return;
 
         var world_top = current.Top + Y;
-        int world_bottom = TargetSection!.Depth is { } depth && current.Depth == depth ? TargetSection.Top + overflow_height : TargetSection.Top + TargetSection.Section.Height;
+        int world_bottom = TargetSection!.Top + (TargetSection.Depth is { } depth && current.Depth == depth ? overflow_height : TargetSection.Section.Height);
         Height = world_bottom - world_top;
     }
 }
