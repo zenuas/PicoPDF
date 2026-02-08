@@ -8,7 +8,7 @@ public interface ICrossSectionModel
 
     public void UpdatePosition(SectionModel current)
     {
-        if (current.Section.Height > current.Top + Y + Height) return;
+        if (current.Section.Height > Y + Height) return;
         if (TargetModel!.Depth is { } depth && current.Depth == depth)
         {
             Height = Height - current.Section.Height + TargetModel.Top - current.Top;
