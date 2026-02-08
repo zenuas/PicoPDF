@@ -8,14 +8,11 @@ public interface ICrossSectionModel
 
     public void UpdatePosition(SectionModel current)
     {
-        if (current.Section.Height > Y + Height) return;
-        if (TargetModel!.Depth is { } depth && current.Depth == depth)
-        {
-            Height = Height - current.Section.Height + TargetModel.Top - current.Top;
-        }
-        else
-        {
-            Height = TargetModel.Top + TargetModel.Section.Height - current.Top - Y;
-        }
+        var overflow_height = Y + Height - current.Section.Height;
+        if (overflow_height < 0) return;
+
+        var world_top = current.Top + Y;
+        int world_bottom = TargetModel!.Depth is { } depth && current.Depth == depth ? TargetModel.Top + overflow_height : TargetModel.Top + TargetModel.Section.Height;
+        Height = world_bottom - world_top;
     }
 }
