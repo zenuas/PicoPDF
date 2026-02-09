@@ -191,15 +191,15 @@ public class Document
     {
         if (Info is { }) PdfObjects.Remove(Info);
         PdfObjects.Add(Info = new());
-        if (title is { }) _ = Info.Elements.TryAdd("Title", PdfUtility.ToEscapeString(title, UTF16WithBOM.UTF16_BEWithBOM));
-        if (author is { }) _ = Info.Elements.TryAdd("Author", PdfUtility.ToEscapeString(author, UTF16WithBOM.UTF16_BEWithBOM));
-        if (subject is { }) _ = Info.Elements.TryAdd("Subject", PdfUtility.ToEscapeString(subject, UTF16WithBOM.UTF16_BEWithBOM));
-        if (keywords is { }) _ = Info.Elements.TryAdd("Keywords", PdfUtility.ToEscapeString(keywords, UTF16WithBOM.UTF16_BEWithBOM));
-        if (creator is { }) _ = Info.Elements.TryAdd("Creator", PdfUtility.ToEscapeString(creator, UTF16WithBOM.UTF16_BEWithBOM));
-        if (producer is { }) _ = Info.Elements.TryAdd("Producer", PdfUtility.ToEscapeString(producer, UTF16WithBOM.UTF16_BEWithBOM));
-        if (creation_date is { }) _ = Info.Elements.TryAdd("CreationDate", creation_date);
-        if (mod_date is { }) _ = Info.Elements.TryAdd("ModDate", mod_date);
-        if (trapped is { }) _ = Info.Elements.TryAdd("Trapped", trapped);
+        if (title is { }) Info.Elements.Add("Title", PdfUtility.ToEscapeString(title, UTF16WithBOM.UTF16_BEWithBOM));
+        if (author is { }) Info.Elements.Add("Author", PdfUtility.ToEscapeString(author, UTF16WithBOM.UTF16_BEWithBOM));
+        if (subject is { }) Info.Elements.Add("Subject", PdfUtility.ToEscapeString(subject, UTF16WithBOM.UTF16_BEWithBOM));
+        if (keywords is { }) Info.Elements.Add("Keywords", PdfUtility.ToEscapeString(keywords, UTF16WithBOM.UTF16_BEWithBOM));
+        if (creator is { }) Info.Elements.Add("Creator", PdfUtility.ToEscapeString(creator, UTF16WithBOM.UTF16_BEWithBOM));
+        if (producer is { }) Info.Elements.Add("Producer", PdfUtility.ToEscapeString(producer, UTF16WithBOM.UTF16_BEWithBOM));
+        if (creation_date is { }) Info.Elements.Add("CreationDate", creation_date);
+        if (mod_date is { }) Info.Elements.Add("ModDate", mod_date);
+        if (trapped is { }) Info.Elements.Add("Trapped", trapped);
         return Info;
     }
 
