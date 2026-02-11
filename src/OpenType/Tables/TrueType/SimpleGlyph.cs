@@ -98,7 +98,7 @@ public class SimpleGlyph : IGlyph
         stream.WriteShortByBigEndian(YMax);
         EndPointsOfContours.Each(stream.WriteUShortByBigEndian);
         stream.WriteUShortByBigEndian((ushort)Instructions.Length);
-        Instructions.Each(stream.WriteByte);
+        stream.Write(Instructions);
 
         Flags.Select(x => (byte)(x
                 & ~(byte)SimpleGlyphFlags.REPEAT_FLAG

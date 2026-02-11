@@ -374,6 +374,6 @@ public class DictData
     public static void WriteFDSelect(Stream stream, byte[] fdselect)
     {
         stream.WriteByte(0);
-        fdselect.Each(stream.WriteByte);
+        stream.Write(fdselect);
     }
 }

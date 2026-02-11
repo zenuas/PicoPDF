@@ -164,7 +164,7 @@ public class CompositeGlyph : IGlyph
         if (Instructions.Length > 0)
         {
             stream.WriteUShortByBigEndian((ushort)Instructions.Length);
-            Instructions.Each(stream.WriteByte);
+            stream.Write(Instructions);
         }
     }
 }

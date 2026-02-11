@@ -24,6 +24,6 @@ public class CMapFormat0 : ICMapFormat
         stream.WriteUShortByBigEndian(Format);
         stream.WriteUShortByBigEndian(Length);
         stream.WriteUShortByBigEndian(Language);
-        GlyphIdArray.Each(stream.WriteByte);
+        stream.Write(GlyphIdArray);
     }
 }
