@@ -59,6 +59,12 @@ public class PageSize : ISpanParsable<PageSize>, IComparable<PageSize>
 
     public (int Width, int Height) GetPageSize(Orientation orientation) => orientation == Orientation.Vertical ? (Width, Height) : (Height, Width);
 
+    public static (int Width, int Height) GetPageSize(PageSizes size, Orientation orientation)
+    {
+        var (width, height) = GetVerticalPageSize(size);
+        return orientation == Orientation.Vertical ? (width, height) : (height, width);
+    }
+
     public static (int Width, int Height) GetVerticalPageSize(PageSizes size)
     {
         return size switch
@@ -80,10 +86,4 @@ public class PageSize : ISpanParsable<PageSize>, IComparable<PageSize>
             _ => (0, 0),
         };
     }
-    public static (int Width, int Height) GetPageSize(PageSizes size, Orientation orientation)
-    {
-        var (width, height) = GetVerticalPageSize(size);
-        return orientation == Orientation.Vertical ? (width, height) : (height, width);
-    }
-
 }
