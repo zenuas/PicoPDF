@@ -16,10 +16,22 @@ public class PageSize : ISpanParsable<PageSize>, IComparable<PageSize>
         Height = height;
     }
 
+    public static PageSize Parse(string s) => Parse(s.AsSpan(), null);
+
+    public static PageSize Parse(string s, IFormatProvider? provider) => Parse(s.AsSpan(), provider);
+
     public static PageSize Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
     {
         _ = TryParse(s, provider, out var result);
         return result!;
+    }
+
+    public static bool TryParse(string s, [MaybeNullWhen(false)] out PageSize result) => TryParse(s.AsSpan(), null, out result);
+
+    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out PageSize result)
+    {
+        result = default;
+        return s is not null && TryParse(s.AsSpan(), provider, out result);
     }
 
     public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out PageSize result)
@@ -39,18 +51,6 @@ public class PageSize : ISpanParsable<PageSize>, IComparable<PageSize>
         if (int.TryParse(s[0..separator], provider, out var width) && int.TryParse(s[(separator + 1)..], provider, out var height)) result = new PageSize(width, height);
         return result is not null;
     }
-
-    public static PageSize Parse(string s, IFormatProvider? provider) => Parse(s.AsSpan(), provider);
-
-    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out PageSize result)
-    {
-        result = default;
-        return s is not null && TryParse(s.AsSpan(), provider, out result);
-    }
-
-    public static PageSize Parse(string s) => Parse(s.AsSpan(), null);
-
-    public static bool TryParse(string s, [MaybeNullWhen(false)] out PageSize result) => TryParse(s.AsSpan(), null, out result);
 
     public int CompareTo(PageSize? other) => other is null ? 1
         : Width != other.Width ? Width - other.Width
