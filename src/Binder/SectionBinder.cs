@@ -21,7 +21,7 @@ public static class SectionBinder
             models.Where(x => x.Section is not FooterSection).Each(x => x.Top = (top += x.Section.Height) - x.Section.Height);
 
             // footer bottom-up order
-            var (width, height) = GetPageSize(page.Size, page.Orientation);
+            var (width, height) = page.Size.GetPageSize(page.Orientation);
             int bottom = height - page.Padding.Bottom;
             models.Where(x => x.Section is FooterSection).Reverse().Each(x => x.Top = bottom -= x.Section.Height);
             
@@ -79,7 +79,7 @@ public static class SectionBinder
 
         var page_count = 0;
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
-        var pageheight_minus_everypagefooter = GetPageSize(page.Size, page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
+        var pageheight_minus_everypagefooter = page.Size.GetPageSize(page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
         while (!datas.IsLast)
         {
@@ -382,31 +382,25 @@ public static class SectionBinder
         }
     }
 
-    public static (int Width, int Height) GetVerticalPageSize(PageSize size)
+    public static (int Width, int Height) GetVerticalPageSize(PageSizes size)
     {
         return size switch
         {
-            PageSize.A0 => (2384, 3370),
-            PageSize.A1 => (1684, 2384),
-            PageSize.A2 => (1191, 1684),
-            PageSize.A3 => (842, 1191),
-            PageSize.A4 => (595, 842),
-            PageSize.A5 => (420, 595),
+            PageSizes.A0 => (2384, 3370),
+            PageSizes.A1 => (1684, 2384),
+            PageSizes.A2 => (1191, 1684),
+            PageSizes.A3 => (842, 1191),
+            PageSizes.A4 => (595, 842),
+            PageSizes.A5 => (420, 595),
 
-            PageSize.B0 => (2835, 4008),
-            PageSize.B1 => (2004, 2835),
-            PageSize.B2 => (1417, 2004),
-            PageSize.B3 => (1001, 1417),
-            PageSize.B4 => (709, 1001),
-            PageSize.B5 => (499, 709),
+            PageSizes.B0 => (2835, 4008),
+            PageSizes.B1 => (2004, 2835),
+            PageSizes.B2 => (1417, 2004),
+            PageSizes.B3 => (1001, 1417),
+            PageSizes.B4 => (709, 1001),
+            PageSizes.B5 => (499, 709),
 
             _ => (0, 0),
         };
-    }
-
-    public static (int Width, int Height) GetPageSize(PageSize size, Orientation orientation)
-    {
-        var (width, height) = GetVerticalPageSize(size);
-        return orientation == Orientation.Vertical ? (width, height) : (height, width);
     }
 }

@@ -27,7 +27,7 @@ public static class JsonLoader
 
         return new()
         {
-            Size = Enum.Parse<PageSize>(json["Size"]!.ToString()),
+            Size = PageSize.Parse(json["Size"]!.ToString()),
             Orientation = Enum.Parse<Orientation>(json["Orientation"]!.ToString()),
             DefaultFont = json["DefaultFont"]!.ToString(),
             Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
