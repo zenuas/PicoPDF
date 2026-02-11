@@ -8,10 +8,7 @@ public class PageSize : ISpanParsable<PageSize>, IComparable<PageSize>
     public int Width { get; init; }
     public int Height { get; init; }
 
-    public PageSize(PageSizes size)
-    {
-        (Width, Height) = GetVerticalPageSize(size);
-    }
+    public PageSize(PageSizes size) => (Width, Height) = GetVerticalPageSize(size);
 
     public PageSize(int width, int height)
     {
