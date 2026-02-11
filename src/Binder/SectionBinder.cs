@@ -381,26 +381,4 @@ public static class SectionBinder
             yield return ([.. keys], x.Section, x.Depth);
         }
     }
-
-    public static (int Width, int Height) GetVerticalPageSize(PageSizes size)
-    {
-        return size switch
-        {
-            PageSizes.A0 => (2384, 3370),
-            PageSizes.A1 => (1684, 2384),
-            PageSizes.A2 => (1191, 1684),
-            PageSizes.A3 => (842, 1191),
-            PageSizes.A4 => (595, 842),
-            PageSizes.A5 => (420, 595),
-
-            PageSizes.B0 => (2835, 4008),
-            PageSizes.B1 => (2004, 2835),
-            PageSizes.B2 => (1417, 2004),
-            PageSizes.B3 => (1001, 1417),
-            PageSizes.B4 => (709, 1001),
-            PageSizes.B5 => (499, 709),
-
-            _ => (0, 0),
-        };
-    }
 }
