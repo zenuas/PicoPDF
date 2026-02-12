@@ -1,5 +1,4 @@
-﻿using PicoPDF.OpenType;
-using PicoPDF.Pdf.Font;
+﻿using PicoPDF.Pdf.Font;
 using System;
 using System.Linq;
 
@@ -11,7 +10,7 @@ public static class FontListTest
     {
         foreach (var kv in fontreg.Fonts.Where(x => opt.AllFontPreview || x.Key != FontRegister.GetFontFilePath(x.Value.Value.Path)))
         {
-            Console.WriteLine($"{kv.Key},\"{FontRegister.GetFontFilePath(kv.Value.Value.Path)}\",TTF={kv.Value.Value.Offset.ContainTrueType()}");
+            Console.WriteLine($"{kv.Key},\"{FontRegister.GetFontFilePath(kv.Value.Value.Path)}\",Offset.Version=0x{kv.Value.Value.Offset.Version:x8}");
         }
     }
 }

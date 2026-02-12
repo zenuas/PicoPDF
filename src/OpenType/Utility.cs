@@ -9,9 +9,9 @@ public static class Utility
 {
     public static readonly ComparerBinder<(int Start, int End)> CMap4RangeComparer = new() { Compare = (a, b) => a.End < b.End ? -1 : a.Start > b.Start ? 1 : 0 };
 
-    public static bool ContainTrueType(this OffsetTable self) => self.Version == 0x00010000;
+    public static bool ContainTrueType(this OffsetTable self) => self.Version == 0x00010000 || self.Version == 0x74727565;
 
-    public static bool ContainCFF(this OffsetTable self) => self.Version == 0x4F54544F || self.Version == 0x74727565;
+    public static bool ContainCFF(this OffsetTable self) => self.Version == 0x4F54544F;
 
     public static int CharToGIDCached(this IOpenTypeRequiredTables font, char c) => font.CMap4Cache.TryGetValue(c, out var gid) ? gid : (font.CMap4Cache[c] = CharToGID(font, c));
 
