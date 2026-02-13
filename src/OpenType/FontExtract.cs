@@ -3,6 +3,7 @@ using PicoPDF.OpenType.Tables;
 using PicoPDF.OpenType.Tables.PostScript;
 using PicoPDF.OpenType.Tables.TrueType;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PicoPDF.OpenType;
@@ -118,9 +119,21 @@ public static class FontExtract
                 .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.FontDictSelect : (byte)0)
                 .ToArray();
 
-        var fdarray = fdselect
-            .Order()
-            .Distinct()
+        var global_subr = font.CompactFontFormat.GlobalSubroutines;
+        var global_subr_mark = new HashSet<int>();
+        var local_subr_mark = new Dictionary<byte, HashSet<int>>();
+        var fdselect_unique = fdselect.Order().Distinct().ToArray();
+        fdselect_unique.Each(x => local_subr_mark.Add(fdselect_index[x], []));
+        Subroutine.EnumGlobalSubroutines(char_strings[0], global_subr, (_, index) => global_subr_mark.Add(index));
+        for (var i = 1; i < char_strings.Length; i++)
+        {
+            var fdindex = gid_glyph[i].FontDictSelect;
+            var local_subr = font.CompactFontFormat.TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
+            var current_subr_mark = local_subr_mark[fdselect_index[fdindex]];
+            Subroutine.EnumSubroutines(char_strings[i], local_subr, global_subr, (global, index) => (global ? global_subr_mark : current_subr_mark).Add(index));
+        }
+
+        var fdarray = fdselect_unique
             .Select(x => font.CompactFontFormat.TopDict.FontDictArray[x].Clone())
             .ToArray();
 
@@ -148,7 +161,7 @@ public static class FontExtract
             Names = font.CompactFontFormat.Names,
             TopDict = top_dict,
             Strings = font.CompactFontFormat.Strings,
-            GlobalSubroutines = font.CompactFontFormat.GlobalSubroutines,
+            GlobalSubroutines = [.. global_subr.Select((x, i) => global_subr_mark.Contains(i) ? x : [11])],
         };
 
         return new()
