@@ -13,7 +13,7 @@ public static class FontExtract
     {
         var chars = opt.ExtractChars.Order().ToArray();
         var char_glyph = chars
-            .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGID(c)))
+            .Select((c, i) => (Char: c, Index: i + 1, GID: font.CharToGID(c)))
             .ToDictionary(x => x.Char, x => (
                     x.Index,
                     Glyph: font.Glyphs[x.GID],
@@ -27,8 +27,8 @@ public static class FontExtract
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmap4 = CMapFormat4.CreateFormat(chars.ToDictionary(x => x, x => char_glyph[x].Index));
-        var cmap = CreateCMapTable(cmap4, opt);
+        var cmapN = CMapFormat12.CreateFormat(chars.ToDictionary(x => x, x => (uint)char_glyph[x].Index));
+        var cmap = CreateCMapTable(cmapN, opt);
 
         var hmtx = new HorizontalMetricsTable()
         {
@@ -58,7 +58,7 @@ public static class FontExtract
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = cmap4.CreateCharToGID(),
+            CharToGID = cmapN.CreateCharToGID(),
             IndexToLocation = null!,
             Glyphs = glyf,
         };

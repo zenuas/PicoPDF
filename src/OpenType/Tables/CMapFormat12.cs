@@ -1,6 +1,7 @@
 ﻿using Mina.Binder;
 using Mina.Extension;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -31,6 +32,36 @@ public class CMapFormat12 : ICMapFormat
             NumberOfGroups = num_of_groups,
             Groups = [.. Enumerable.Repeat(0, (int)num_of_groups).Select(_ => (stream.ReadUIntByBigEndian(), stream.ReadUIntByBigEndian(), stream.ReadUIntByBigEndian()))],
         };
+    }
+
+    public static CMapFormat12 CreateFormat(Dictionary<char, uint> char_gid)
+    {
+        var chars = char_gid.Keys.Order().ToArray();
+        var groups = CreateStartEnds(chars, char_gid);
+
+        return new()
+        {
+            Format = 12,
+            Reserved = 0,
+            Length = (uint)(16 + groups.Length * 12), // sizeof(Format) + sizeof(Reserved) + sizeof(Length) + sizeof(Language) + sizeof(NumberOfGroups) + NumberOfGroups * sizeof(Groups)
+            Language = 0,
+            NumberOfGroups = (uint)groups.Length,
+            Groups = groups,
+        };
+    }
+
+    public static (uint StartCharCode, uint EndCharCode, uint StartGlyphID)[] CreateStartEnds(Span<char> chars, Dictionary<char, uint> char_gid)
+    {
+        var start = chars[0];
+        var gid = char_gid[chars[0]];
+        if (chars.Length == 1) return [(start, start, gid)];
+
+        for (var i = 1; i < chars.Length; i++)
+        {
+            if (start + i == chars[i] && gid + i == char_gid[chars[i]]) continue;
+            return [(start, (uint)(start + i), gid), .. CreateStartEnds(chars[i..], char_gid)];
+        }
+        return [(start, chars[^1], gid)];
     }
 
     public void WriteTo(Stream stream)
