@@ -1,4 +1,5 @@
 ﻿using Mina.Command;
+using PicoPDF.Pdf.Font;
 
 namespace PicoPDF.TestAll;
 
@@ -11,7 +12,7 @@ public class Option
     public bool AppendCIDToUnicode { get; init; } = true;
 
     [CommandOption("font-embed")]
-    public bool FontEmbed { get; init; } = true;
+    public FontEmbed FontEmbed { get; init; } = FontEmbed.PossibleEmbed;
 
     [CommandOption("contents-deflate")]
     public bool ContentsStreamDeflate { get; init; } = false;
