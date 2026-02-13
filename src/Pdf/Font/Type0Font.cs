@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace PicoPDF.Pdf.Font;
 
-public class Type0Font : PdfObject, IFont
+public class Type0Font : PdfObject, IFont, IFontChars
 {
     public required string Name { get; init; }
     public required IOpenTypeRequiredTables Font { get; init; }
@@ -74,17 +74,13 @@ public class Type0Font : PdfObject, IFont
             );
     }
 
-    public Position MeasureStringBox(string s)
+    public Position MeasureStringBox(string s) => new()
     {
-        s.Each(x => Chars.Add(x));
-        return new()
-        {
-            Left = 0,
-            Top = (double)-Font.OS2.STypoAscender / Font.FontHeader.UnitsPerEm,
-            Right = (double)Font.MeasureString(s) / 1000,
-            Bottom = (double)-Font.OS2.STypoDescender / Font.FontHeader.UnitsPerEm,
-        };
-    }
+        Left = 0,
+        Top = (double)-Font.OS2.STypoAscender / Font.FontHeader.UnitsPerEm,
+        Right = (double)Font.MeasureString(s) / 1000,
+        Bottom = (double)-Font.OS2.STypoDescender / Font.FontHeader.UnitsPerEm,
+    };
 
     public string CreateTextShowingOperator(string s) => $"<{s.Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";
 }

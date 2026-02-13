@@ -28,6 +28,7 @@ public class Contents : PdfObject
 
     public void DrawString(string s, IPoint x, IPoint y, double size, IFont font, IColor? c = null, Rectangle? clip = null)
     {
+        if (font is IFontChars fontchars) fontchars.WriteString(s);
         var str = new DrawString()
         {
             Text = s,

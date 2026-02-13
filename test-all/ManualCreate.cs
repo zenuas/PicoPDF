@@ -22,6 +22,12 @@ public static class ManualCreate
         var type1 = doc.AddFont("TYPE1", "Helvetica", Type1Encoding.WinAnsiEncoding);
         page.Contents.DrawString("Type1 Font!", 100, 140, 12, type1);
 
+        var post = doc.AddFont("POST1", fontreg.LoadRequiredTables("test-case/NotoSansCJK-Regular.ttc,0"));
+        page.Contents.DrawString("PostScript Font! あア亜", 100, 160, 12, post);
+
+        var ttf = doc.AddFont("true1", fontreg.LoadRequiredTables("Meiryo Bold"));
+        page.Contents.DrawString("TrueType Font! あア亜", 100, 180, 12, ttf);
+
         doc.Save("test-case/manual-create.pdf", opt);
     }
 }
