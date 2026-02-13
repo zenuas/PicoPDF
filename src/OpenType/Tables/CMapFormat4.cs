@@ -77,6 +77,7 @@ public class CMapFormat4 : ICMapFormat
 
     public static (char Start, char End)[] CreateStartEnds(Span<char> chars, Dictionary<char, ushort> char_gid)
     {
+        if (chars.Length == 0) return [];
         var start = chars[0];
         var gid = char_gid[chars[0]];
         if (chars.Length == 1) return [(start, start), ((char)0xFFFF, (char)0xFFFF)];
