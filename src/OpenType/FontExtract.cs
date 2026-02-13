@@ -33,13 +33,13 @@ public static class FontExtract
         var hmtx = new HorizontalMetricsTable()
         {
             Metrics = [.. Lists.RangeTo(1, num_of_glyph)
-                .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
+                .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
                 .Prepend(font.HorizontalMetrics.Metrics[0])],
             LeftSideBearing = [],
         };
 
         var glyf = Lists.RangeTo(1, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.Glyph : new NotdefGlyph())
+            .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.Glyph : new NotdefGlyph())
             .Prepend(new NotdefGlyph())
             .ToArray();
 
@@ -69,7 +69,7 @@ public static class FontExtract
         var chars = opt.ExtractChars.Order().ToArray();
         var charsets = font.CompactFontFormat.TopDict.Charsets.Try();
         var char_glyph = chars
-            .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGID(c)))
+            .Select((c, i) => (Char: c, Index: i + 1, GID: font.CharToGID(c)))
             .ToDictionary(x => x.Char, x => (
                     x.Index,
                     Glyph: font.CompactFontFormat.TopDict.CharStrings[x.GID],
@@ -93,15 +93,29 @@ public static class FontExtract
         }
         var num_of_glyph = gid_glyph.Keys.Max();
 
+        var name = ExtractNameTable(font.Name, opt);
+        var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
+        var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
+        var cmapN = CMapFormat12.CreateFormat(chars.ToDictionary(x => x, x => (uint)char_glyph[x].Index));
+        var cmap = CreateCMapTable(cmapN, opt);
+
+        var hmtx = new HorizontalMetricsTable()
+        {
+            Metrics = [.. Lists.RangeTo(1, num_of_glyph)
+                .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
+                .Prepend(font.HorizontalMetrics.Metrics[0])],
+            LeftSideBearing = [],
+        };
+
         var char_strings = Lists.RangeTo(1, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.Glyph : font.CompactFontFormat.TopDict.CharStrings[0])
+            .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.Glyph : font.CompactFontFormat.TopDict.CharStrings[0])
             .Prepend(font.CompactFontFormat.TopDict.CharStrings[0])
             .ToArray();
 
         var fdselect = font.CompactFontFormat.TopDict.FontDictSelect.Length == 0
             ? []
             : Lists.RangeTo(0, num_of_glyph)
-                .Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.FontDictSelect : (byte)0)
+                .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.FontDictSelect : (byte)0)
                 .ToArray();
 
         var fdarray = fdselect
@@ -118,7 +132,7 @@ public static class FontExtract
             Charsets = new()
             {
                 Format = 0,
-                Glyph = [.. Lists.RangeTo(1, num_of_glyph).Select(x => gid_glyph.TryGetValue((ushort)x, out var glyph) ? glyph.Charset : (ushort)0)],
+                Glyph = [.. Lists.RangeTo(1, num_of_glyph).Select(x => (ushort)x)],
             },
             PrivateDict = font.CompactFontFormat.TopDict.PrivateDict,
             FontDictArray = fdarray,
@@ -144,15 +158,15 @@ public static class FontExtract
             Position = font.Position,
             TableRecords = font.TableRecords,
             Offset = font.Offset,
-            Name = font.Name,
+            Name = name,
             FontHeader = font.FontHeader,
-            MaximumProfile = font.MaximumProfile,
+            MaximumProfile = maxp,
             PostScript = font.PostScript,
             OS2 = font.OS2,
-            HorizontalHeader = font.HorizontalHeader,
-            HorizontalMetrics = font.HorizontalMetrics,
-            CMap = font.CMap,
-            CharToGID = font.CharToGID,
+            HorizontalHeader = hhea,
+            HorizontalMetrics = hmtx,
+            CMap = cmap,
+            CharToGID = cmapN.CreateCharToGID(),
             CompactFontFormat = cff,
         };
     }
