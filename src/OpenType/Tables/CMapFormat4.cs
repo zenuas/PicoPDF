@@ -129,6 +129,7 @@ public class CMapFormat4 : ICMapFormat
             if (cache.TryGetValue(c, out var gid)) return gid;
 
             var seg = range.BinarySearch((c, c), RangeComparer);
+            if (seg < 0) return cache[c] = 0;
             var start = StartCode[seg];
             if (c < start) return cache[c] = 0;
 
