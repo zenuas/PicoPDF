@@ -16,10 +16,10 @@ if (opt.InputDeflate != "") { DeflateTest.Deflate(opt); return; }
 var fontreg = (IFontRegister)(opt.FontList || opt.CMapList ? new FontRegister() : new FontRegisterLock());
 if (opt.RegisterSystemFont) fontreg.RegisterDirectory([.. FontRegister.GetFontDirectories()]);
 if (opt.RegisterUserFont != "") fontreg.RegisterDirectory(new PicoPDF.OpenType.LoadOption() { ForceEmbedded = true }, opt.RegisterUserFont);
-if (opt.FontFileExtract != "") { FontFileExport.Export(fontreg.LoadComplete(fontreg.LoadRequiredTables(opt.FontFileExtract, true)), opt); return; }
+if (opt.FontFileExtract != "") { FontFileExport.Export(fontreg.LoadComplete(fontreg.LoadRequiredTables(opt.FontFileExtract)), opt); return; }
 if (opt.FontList) { FontListTest.Preview(fontreg.Cast<FontRegister>(), opt); return; }
 if (opt.CMapList) { CMapListTest.Preview(fontreg.Cast<FontRegister>(), opt); return; }
-if (opt.FontDump != "") { FontDump.Dump(fontreg.LoadRequiredTables(opt.FontDump, false), opt); return; }
+if (opt.FontDump != "") { FontDump.Dump(fontreg.LoadRequiredTables(opt.FontDump), opt); return; }
 
 var export_opt = new PdfExportOption
 {

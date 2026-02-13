@@ -19,7 +19,7 @@ public static class ModelMapping
         return (name) =>
         {
             if (fontcache.TryGetValue(name, out var value)) return value;
-            var x = doc.AddFont($"F{fontcache.Count}", doc.FontRegister.LoadRequiredTables(name, true));
+            var x = doc.AddFont($"F{fontcache.Count}", doc.FontRegister.LoadRequiredTables(name));
             fontcache.Add(name, x);
             return x;
         };

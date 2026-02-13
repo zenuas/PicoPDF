@@ -24,11 +24,11 @@ public class FontRegisterLock : IFontRegister
         }
     }
 
-    public IOpenTypeRequiredTables LoadRequiredTables(string name, bool forceEmbedded)
+    public IOpenTypeRequiredTables LoadRequiredTables(string name)
     {
         lock (LockObject)
         {
-            return FontRegister.LoadRequiredTables(name, forceEmbedded);
+            return FontRegister.LoadRequiredTables(name);
         }
     }
 

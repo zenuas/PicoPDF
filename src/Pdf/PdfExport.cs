@@ -15,7 +15,7 @@ public static class PdfExport
 
         foreach (var font in doc.PdfObjects.OfType<Type0Font>())
         {
-            if (option.EmbeddedFont || font.Font.Path.ForceEmbedded) font.CreateEmbeddedFont();
+            if (option.EmbeddedFont) font.CreateEmbeddedFont();
         }
         var xref = new List<long>();
         GetAllReferences(doc, option).Each((x, i) =>

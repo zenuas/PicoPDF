@@ -11,7 +11,7 @@ public class Option
     public bool AppendCIDToUnicode { get; init; } = true;
 
     [CommandOption("embedded-font")]
-    public bool EmbeddedFont { get; init; } = false;
+    public bool EmbeddedFont { get; init; } = true;
 
     [CommandOption("contents-deflate")]
     public bool ContentsStreamDeflate { get; init; } = false;

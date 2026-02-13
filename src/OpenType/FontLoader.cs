@@ -13,7 +13,7 @@ public static class FontLoader
     public static FontTableRecords LoadTableRecords(string path, LoadOption? opt = null)
     {
         using var stream = File.OpenRead(path);
-        return LoadTableRecords(new FontPath { Path = path, ForceEmbedded = opt?.ForceEmbedded ?? false }, stream, opt ?? new());
+        return LoadTableRecords(new FontPath { Path = path }, stream, opt ?? new());
     }
 
     public static FontTableRecords[] LoadTableRecordsCollection(string path, LoadOption? opt = null)
@@ -31,7 +31,7 @@ public static class FontLoader
             : [.. Enumerable.Repeat(0, (int)header.NumberOfFonts)
                 .Select(_ => stream.ReadUIntByBigEndian())
                 .ToArray()
-                .Select((x, i) => Objects.Catch(() => LoadTableRecords(new FontCollectionPath { Path = path, Index = i, ForceEmbedded = opt.ForceEmbedded }, stream.SeekTo(x), opt), out var r) is null ? r : null)
+                .Select((x, i) => Objects.Catch(() => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream.SeekTo(x), opt), out var r) is null ? r : null)
                 .OfType<FontTableRecords>()];
     }
 
