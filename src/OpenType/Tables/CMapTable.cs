@@ -38,6 +38,7 @@ public class CMapTable : IExportable
         {
             0 => CMapFormat0.ReadFrom(stream),
             4 => CMapFormat4.ReadFrom(stream),
+            12 => CMapFormat12.ReadFrom(stream),
             _ => new CMapFormatN { Format = format },
         };
     }
