@@ -20,6 +20,6 @@ public class PostScriptFont : IOpenTypeRequiredTables
     public required HorizontalHeaderTable HorizontalHeader { get; init; }
     public required HorizontalMetricsTable HorizontalMetrics { get; init; }
     public required CMapTable CMap { get; init; }
-    public required Func<char, int> CharToGID { get; init; }
+    public required Func<char, uint> CharToGID { get; init; }
     public required CompactFontFormat CompactFontFormat { get; init; }
 }

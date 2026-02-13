@@ -12,5 +12,5 @@ public interface IOpenTypeRequiredTables : IOpenTypeHeader
     public HorizontalHeaderTable HorizontalHeader { get; init; }
     public HorizontalMetricsTable HorizontalMetrics { get; init; }
     public CMapTable CMap { get; init; }
-    public Func<char, int> CharToGID { get; init; }
+    public Func<char, uint> CharToGID { get; init; }
 }

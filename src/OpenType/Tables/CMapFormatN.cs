@@ -9,5 +9,5 @@ public class CMapFormatN : ICMapFormat
 
     public void WriteTo(Stream stream) { }
 
-    public Func<char, int> CreateCharToGID() => _ => 0;
+    public Func<char, uint> CreateCharToGID() => _ => 0;
 }

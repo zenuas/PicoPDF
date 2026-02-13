@@ -1,4 +1,5 @@
-﻿using Mina.Extension;
+﻿using Mina.Binder;
+using Mina.Extension;
 using System;
 using System.IO;
 using System.Linq;
@@ -47,8 +48,17 @@ public class CMapFormat12 : ICMapFormat
         });
     }
 
-    public Func<char, int> CreateCharToGID()
+    public static readonly ComparerBinder<(uint StartCharCode, uint EndCharCode, uint StartGlyphID)> RangeComparer = new() { Compare = (a, b) => a.StartCharCode < b.StartCharCode ? -1 : a.EndCharCode > b.EndCharCode ? 1 : 0 };
+
+    public Func<char, uint> CreateCharToGID()
     {
-        throw new NotImplementedException();
+        return (c) =>
+        {
+            var code = (uint)c;
+            var index = Groups.BinarySearch((code, code, 0u), RangeComparer);
+            if (index < 0) return 0;
+            var (start_code, _, start_gid) = Groups[index];
+            return start_gid + (code - start_code);
+        };
     }
 }

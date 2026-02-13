@@ -14,7 +14,7 @@ public static class Utility
 
     public static int MeasureChar(this IOpenTypeRequiredTables font, char c) => MeasureGID(font, font.CharToGID(c));
 
-    public static int MeasureGID(this IOpenTypeRequiredTables font, int gid)
+    public static int MeasureGID(this IOpenTypeRequiredTables font, uint gid)
     {
         var width = font.HorizontalMetrics.Metrics[Math.Min(gid, font.HorizontalHeader.NumberOfHMetrics - 1)].AdvanceWidth;
         return font.FontHeader.UnitsPerEm == 1000 ? width : width * 1000 / font.FontHeader.UnitsPerEm;

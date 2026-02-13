@@ -74,7 +74,10 @@ public static class FontLoader
         var hhea = ReadTableRecord(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
-        var cmap4 = cmap.EncodingRecords.Values.OfType<CMapFormat4>().First();
+        var current_cmap =
+            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat12>().FirstOrDefault() ??
+            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat4>().FirstOrDefault() ??
+            cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault();
 
         return new()
         {
@@ -91,7 +94,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = cmap4.CreateCharToGID(),
+            CharToGID = current_cmap!.CreateCharToGID(),
         };
     }
 

@@ -108,21 +108,21 @@ public class CMapFormat4 : ICMapFormat
 
     public List<(int Start, int End)> CreateRange()
     {
-        var cmap4_range = new List<(int Start, int End)>();
+        var range = new List<(int Start, int End)>();
         _ = EndCode.Aggregate(0, (acc, x) =>
         {
-            cmap4_range.Add((acc, x));
+            range.Add((acc, x));
             return x + 1;
         });
-        return cmap4_range;
+        return range;
     }
 
     public static readonly ComparerBinder<(int Start, int End)> RangeComparer = new() { Compare = (a, b) => a.End < b.End ? -1 : a.Start > b.Start ? 1 : 0 };
 
-    public Func<char, int> CreateCharToGID()
+    public Func<char, uint> CreateCharToGID()
     {
         var range = CreateRange();
-        var cache = new Dictionary<char, int>();
+        var cache = new Dictionary<char, uint>();
 
         return (c) =>
         {
@@ -133,10 +133,10 @@ public class CMapFormat4 : ICMapFormat
             if (c < start) return cache[c] = 0;
 
             var idrange = IdRangeOffsets[seg];
-            if (idrange == 0) return cache[c] = (c + IdDelta[seg]) & 0xFFFF;
+            if (idrange == 0) return cache[c] = (uint)((c + IdDelta[seg]) & 0xFFFF);
 
             var gindex = (idrange / 2) + c - start - (SegCountX2 / 2) + seg;
-            return cache[c] = (GlyphIdArray[gindex] + IdDelta[seg]) & 0xFFFF;
+            return cache[c] = (uint)((GlyphIdArray[gindex] + IdDelta[seg]) & 0xFFFF);
         };
     }
 }

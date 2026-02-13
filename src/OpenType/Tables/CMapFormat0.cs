@@ -29,5 +29,5 @@ public class CMapFormat0 : ICMapFormat
         stream.Write(GlyphIdArray);
     }
 
-    public Func<char, int> CreateCharToGID() => (c) => GlyphIdArray[Encoding.ASCII.GetBytes([c])[0]];
+    public Func<char, uint> CreateCharToGID() => (c) => GlyphIdArray[Encoding.ASCII.GetBytes([c])[0]];
 }
