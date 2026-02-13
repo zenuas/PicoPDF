@@ -25,7 +25,7 @@ var export_opt = new PdfExportOption
 {
     Debug = opt.Debug,
     AppendCIDToUnicode = opt.AppendCIDToUnicode,
-    EmbeddedFont = opt.EmbeddedFont,
+    FontEmbed = opt.FontEmbed,
     ContentsStreamDeflate = opt.ContentsStreamDeflate,
     JpegStreamDeflate = opt.JpegStreamDeflate,
     ImageStreamDeflate = opt.ImageStreamDeflate,
