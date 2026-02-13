@@ -1,6 +1,8 @@
 ﻿using Mina.Extension;
+using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace PicoPDF.OpenType.Tables;
 
@@ -26,4 +28,6 @@ public class CMapFormat0 : ICMapFormat
         stream.WriteUShortByBigEndian(Language);
         stream.Write(GlyphIdArray);
     }
+
+    public Func<char, int> CreateCharToGID() => (c) => GlyphIdArray[Encoding.ASCII.GetBytes([c])[0]];
 }

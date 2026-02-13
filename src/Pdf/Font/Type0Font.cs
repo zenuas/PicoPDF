@@ -68,7 +68,7 @@ public class Type0Font : PdfObject, IFont
         var font = EmbeddedFont ?? Font;
         FontDictionary.W = new(Chars
                 .Order()
-                .Select(x => (Char: x, GID: font.CharToGIDCached(x), Width: font.MeasureGID(font.CharToGIDCached(x))))
+                .Select(x => (Char: x, GID: font.CharToGID(x), Width: font.MeasureGID(font.CharToGID(x))))
                 .Where(x => x.GID != 0 && (FontDictionary.DW is not { } dw || x.Width != dw))
                 .Select(x => new ElementString { Value = $"{x.GID}[{x.Width}]{(option.Debug ? $" %{x.Char}" : "")}\n" })
             );
@@ -86,5 +86,5 @@ public class Type0Font : PdfObject, IFont
         };
     }
 
-    public string CreateTextShowingOperator(string s) => $"<{s.Select(x => $"{(EmbeddedFont ?? Font).CharToGIDCached(x):x4}").Join()}> Tj";
+    public string CreateTextShowingOperator(string s) => $"<{s.Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";
 }

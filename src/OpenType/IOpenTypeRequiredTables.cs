@@ -1,5 +1,5 @@
 ﻿using PicoPDF.OpenType.Tables;
-using System.Collections.Generic;
+using System;
 
 namespace PicoPDF.OpenType;
 
@@ -12,7 +12,5 @@ public interface IOpenTypeRequiredTables : IOpenTypeHeader
     public HorizontalHeaderTable HorizontalHeader { get; init; }
     public HorizontalMetricsTable HorizontalMetrics { get; init; }
     public CMapTable CMap { get; init; }
-    public CMapFormat4 CMap4 { get; init; }
-    public List<(int Start, int End)> CMap4Range { get; init; }
-    public Dictionary<char, int> CMap4Cache { get; init; }
+    public Func<char, int> CharToGID { get; init; }
 }

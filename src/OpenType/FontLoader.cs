@@ -3,7 +3,6 @@ using PicoPDF.OpenType.Tables;
 using PicoPDF.OpenType.Tables.PostScript;
 using PicoPDF.OpenType.Tables.TrueType;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -76,7 +75,6 @@ public static class FontLoader
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
         var cmap4 = cmap.EncodingRecords.Values.OfType<CMapFormat4>().First();
-        var cmap4_range = CreateCMap4Range(cmap4);
 
         return new()
         {
@@ -93,8 +91,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CMap4 = cmap4,
-            CMap4Range = cmap4_range,
+            CharToGID = cmap4.CreateCharToGID(),
         };
     }
 
@@ -107,17 +104,6 @@ public static class FontLoader
         return font.Offset.ContainTrueType()
             ? LoadTrueTypeFont(stream, font)
             : LoadPostScriptFont(stream, font);
-    }
-
-    public static List<(int Start, int End)> CreateCMap4Range(CMapFormat4 cmap4)
-    {
-        var cmap4_range = new List<(int Start, int End)>();
-        _ = cmap4.EndCode.Aggregate(0, (acc, x) =>
-        {
-            cmap4_range.Add((acc, x));
-            return x + 1;
-        });
-        return cmap4_range;
     }
 
     public static TrueTypeFont LoadTrueTypeFont(Stream stream, FontRequiredTables font)
@@ -153,8 +139,7 @@ public static class FontLoader
             HorizontalHeader = font.HorizontalHeader,
             HorizontalMetrics = font.HorizontalMetrics,
             CMap = font.CMap,
-            CMap4 = font.CMap4,
-            CMap4Range = font.CMap4Range,
+            CharToGID = font.CharToGID,
             IndexToLocation = loca,
             Glyphs = glyf,
         };
@@ -179,8 +164,7 @@ public static class FontLoader
             HorizontalHeader = font.HorizontalHeader,
             HorizontalMetrics = font.HorizontalMetrics,
             CMap = font.CMap,
-            CMap4 = font.CMap4,
-            CMap4Range = font.CMap4Range,
+            CharToGID = font.CharToGID,
             CompactFontFormat = cff,
         };
     }

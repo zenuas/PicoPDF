@@ -1,4 +1,5 @@
-﻿using Mina.Extension;
+﻿using Mina.Binder;
+using Mina.Extension;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -103,5 +104,39 @@ public class CMapFormat4 : ICMapFormat
         IdDelta.Each(stream.WriteShortByBigEndian);
         IdRangeOffsets.Each(stream.WriteUShortByBigEndian);
         GlyphIdArray.Each(stream.WriteUShortByBigEndian);
+    }
+
+    public List<(int Start, int End)> CreateRange()
+    {
+        var cmap4_range = new List<(int Start, int End)>();
+        _ = EndCode.Aggregate(0, (acc, x) =>
+        {
+            cmap4_range.Add((acc, x));
+            return x + 1;
+        });
+        return cmap4_range;
+    }
+
+    public static readonly ComparerBinder<(int Start, int End)> RangeComparer = new() { Compare = (a, b) => a.End < b.End ? -1 : a.Start > b.Start ? 1 : 0 };
+
+    public Func<char, int> CreateCharToGID()
+    {
+        var range = CreateRange();
+        var cache = new Dictionary<char, int>();
+
+        return (c) =>
+        {
+            if (cache.TryGetValue(c, out var gid)) return gid;
+
+            var seg = range.BinarySearch((c, c), RangeComparer);
+            var start = StartCode[seg];
+            if (c < start) return cache[c] = 0;
+
+            var idrange = IdRangeOffsets[seg];
+            if (idrange == 0) return cache[c] = (c + IdDelta[seg]) & 0xFFFF;
+
+            var gindex = (idrange / 2) + c - start - (SegCountX2 / 2) + seg;
+            return cache[c] = (GlyphIdArray[gindex] + IdDelta[seg]) & 0xFFFF;
+        };
     }
 }

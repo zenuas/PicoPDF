@@ -1,5 +1,4 @@
-﻿using Mina.Binder;
-using PicoPDF.OpenType.Tables;
+﻿using PicoPDF.OpenType.Tables;
 using System;
 using System.Linq;
 
@@ -7,30 +6,13 @@ namespace PicoPDF.OpenType;
 
 public static class Utility
 {
-    public static readonly ComparerBinder<(int Start, int End)> CMap4RangeComparer = new() { Compare = (a, b) => a.End < b.End ? -1 : a.Start > b.Start ? 1 : 0 };
-
     public static bool ContainTrueType(this OffsetTable self) => self.Version == 0x00010000 || self.Version == 0x74727565;
 
     public static bool ContainCFF(this OffsetTable self) => self.Version == 0x4F54544F;
 
-    public static int CharToGIDCached(this IOpenTypeRequiredTables font, char c) => font.CMap4Cache.TryGetValue(c, out var gid) ? gid : (font.CMap4Cache[c] = CharToGID(font, c));
-
-    public static int CharToGID(this IOpenTypeRequiredTables font, char c)
-    {
-        var seg = font.CMap4Range.BinarySearch((c, c), CMap4RangeComparer);
-        var start = font.CMap4.StartCode[seg];
-        if (c < start) return 0;
-
-        var idrange = font.CMap4.IdRangeOffsets[seg];
-        if (idrange == 0) return (c + font.CMap4.IdDelta[seg]) & 0xFFFF;
-
-        var gindex = (idrange / 2) + c - start - (font.CMap4.SegCountX2 / 2) + seg;
-        return (font.CMap4.GlyphIdArray[gindex] + font.CMap4.IdDelta[seg]) & 0xFFFF;
-    }
-
     public static int MeasureString(this IOpenTypeRequiredTables font, string s) => s.Select(x => MeasureChar(font, x)).Sum();
 
-    public static int MeasureChar(this IOpenTypeRequiredTables font, char c) => MeasureGID(font, CharToGIDCached(font, c));
+    public static int MeasureChar(this IOpenTypeRequiredTables font, char c) => MeasureGID(font, font.CharToGID(c));
 
     public static int MeasureGID(this IOpenTypeRequiredTables font, int gid)
     {

@@ -13,7 +13,7 @@ public static class FontExtract
     {
         var chars = opt.ExtractChars.Order().ToArray();
         var char_glyph = chars
-            .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGIDCached(c)))
+            .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGID(c)))
             .ToDictionary(x => x.Char, x => (
                     x.Index,
                     Glyph: font.Glyphs[x.GID],
@@ -28,7 +28,6 @@ public static class FontExtract
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
         var cmap4 = CMapFormat4.CreateFormat(chars.ToDictionary(x => x, x => char_glyph[x].Index));
-        var cmap4_range = FontLoader.CreateCMap4Range(cmap4);
         var cmap = CreateCMapTable(cmap4, opt);
 
         var hmtx = new HorizontalMetricsTable()
@@ -59,8 +58,7 @@ public static class FontExtract
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CMap4 = cmap4,
-            CMap4Range = cmap4_range,
+            CharToGID = cmap4.CreateCharToGID(),
             IndexToLocation = null!,
             Glyphs = glyf,
         };
@@ -71,7 +69,7 @@ public static class FontExtract
         var chars = opt.ExtractChars.Order().ToArray();
         var charsets = font.CompactFontFormat.TopDict.Charsets.Try();
         var char_glyph = chars
-            .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGIDCached(c)))
+            .Select((c, i) => (Char: c, Index: (ushort)(i + 1), GID: font.CharToGID(c)))
             .ToDictionary(x => x.Char, x => (
                     x.Index,
                     Glyph: font.CompactFontFormat.TopDict.CharStrings[x.GID],
@@ -154,8 +152,7 @@ public static class FontExtract
             HorizontalHeader = font.HorizontalHeader,
             HorizontalMetrics = font.HorizontalMetrics,
             CMap = font.CMap,
-            CMap4 = font.CMap4,
-            CMap4Range = font.CMap4Range,
+            CharToGID = font.CharToGID,
             CompactFontFormat = cff,
         };
     }
