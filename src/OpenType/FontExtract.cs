@@ -134,7 +134,17 @@ public static class FontExtract
         }
 
         var fdarray = fdselect_unique
-            .Select(x => font.CompactFontFormat.TopDict.FontDictArray[x].Clone())
+            .Select(x =>
+            {
+                var dict = font.CompactFontFormat.TopDict.FontDictArray[x];
+                var private_dict = dict.PrivateDict;
+                if (private_dict is { })
+                {
+                    var subr_mark = local_subr_mark[fdselect_index[x]];
+                    private_dict = private_dict.Clone(subr: [.. private_dict.LocalSubroutines.Select((x, i) => subr_mark.Contains(i) ? x : [11])]);
+                }
+                return dict.Clone(private_dict);
+            })
             .ToArray();
 
         var top_dict = new DictData

@@ -108,14 +108,14 @@ public class DictData
         };
     }
 
-    public DictData Clone() => new()
+    public DictData Clone(DictData? private_dict = null, byte[][]? subr = null) => new()
     {
         Strings = Strings,
         Dict = Dict.ToDictionary(),
         CharStrings = CharStrings,
         Charsets = Charsets,
-        PrivateDict = PrivateDict?.Clone(),
-        LocalSubroutines = LocalSubroutines,
+        PrivateDict = private_dict ?? PrivateDict?.Clone(),
+        LocalSubroutines = subr ?? LocalSubroutines,
         FontDictArray = [.. FontDictArray.Select(x => x.Clone())],
         FontDictSelect = [.. FontDictSelect],
     };
