@@ -37,7 +37,7 @@
 	@exit /b %ERRORLEVEL%
 
 :test
-	dotnet test --nologo -v q
+	dotnet test --nologo -v q %*
 	@exit /b %ERRORLEVEL%
 
 :test-all
