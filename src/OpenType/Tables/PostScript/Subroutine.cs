@@ -1,56 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace PicoPDF.OpenType.Tables.PostScript;
 
 public static class Subroutine
 {
-    public static void EnumSubroutines(byte[] charstring, byte[][]? local_subr, byte[][] global_subr, Func<bool, int, bool> f)
+    public static void EnumSubroutines(Span<byte> charstring, byte[][]? local_subr, byte[][] global_subr, Func<bool, int, bool> f)
     {
         var local_bias = GetSubroutineBias(local_subr?.Length ?? 0);
         var global_bias = GetSubroutineBias(global_subr.Length);
-        var bytes = new List<byte>();
-        var num_escape = 0;
+        var operand = 0;
         for (var i = 0; i < charstring.Length; i++)
         {
             var c = charstring[i];
-            if (num_escape > 0)
+            if (c == (byte)CharstringCommandCodes.Escape)
             {
-                bytes.Add(c);
-                num_escape--;
-            }
-            else if (c == (byte)CharstringCommandCodes.Escape)
-            {
+                operand = 0;
                 i++;
-                bytes.Clear();
             }
             else if (c is (byte)CharstringCommandCodes.Callsubr or (byte)CharstringCommandCodes.Callgsubr)
             {
-                var num = CharstringNumber(bytes);
                 if (c == (byte)CharstringCommandCodes.Callgsubr)
                 {
-                    var index = num + global_bias;
+                    var index = operand + global_bias;
                     Debug.Assert(index >= 0 && index < global_subr.Length);
                     if (index >= 0 && index < global_subr.Length && f(true, index)) EnumSubroutines(global_subr[index], null, global_subr, f);
                 }
                 else if (local_subr is { })
                 {
-                    var index = num + local_bias;
+                    var index = operand + local_bias;
                     Debug.Assert(index >= 0 && index < local_subr.Length);
                     if (index >= 0 && index < local_subr.Length && f(false, index)) EnumSubroutines(local_subr[index], local_subr, global_subr, f);
                 }
-                bytes.Clear();
+                operand = 0;
             }
             else if (c != 28 && c < 32)
             {
-                bytes.Clear(); // any operator
+                operand = 0; // any operator
             }
             else
             {
-                bytes.Clear(); // any number
-                bytes.Add(c);
-                num_escape = NextNumberBytes(c);
+                operand = CharstringNumber(charstring[i..Math.Min(charstring.Length, 1 + (i += NextNumberBytes(c)))]); // any number
             }
         }
     }
@@ -60,12 +50,12 @@ public static class Subroutine
         subr_count < 33900 ? 1131 :
         32768;
 
-    public static int CharstringNumber(List<byte> charstring) =>
-        charstring.Count == 1 && charstring[0] is >= 32 and <= 246 ? charstring[0] - 139 :
-        charstring.Count == 2 && charstring[0] is >= 247 and <= 250 ? (charstring[0] - 247) * 256 + charstring[1] + 108 :
-        charstring.Count == 2 && charstring[0] is >= 251 and <= 254 ? -((charstring[0] - 251) * 256) - charstring[1] - 108 :
-        charstring.Count == 3 && charstring[0] == 28 ? (short)(charstring[1] << 8 | charstring[2]) :
-        charstring.Count == 5 && charstring[0] == 255 ? charstring[1] << 24 | charstring[2] << 16 | charstring[3] << 8 | charstring[4] :
+    public static int CharstringNumber(Span<byte> charstring) =>
+        charstring.Length == 1 && charstring[0] is >= 32 and <= 246 ? charstring[0] - 139 :
+        charstring.Length == 2 && charstring[0] is >= 247 and <= 250 ? (charstring[0] - 247) * 256 + charstring[1] + 108 :
+        charstring.Length == 2 && charstring[0] is >= 251 and <= 254 ? -((charstring[0] - 251) * 256) - charstring[1] - 108 :
+        charstring.Length == 3 && charstring[0] == 28 ? (short)(charstring[1] << 8 | charstring[2]) :
+        charstring.Length == 5 && charstring[0] == 255 ? charstring[1] << 24 | charstring[2] << 16 | charstring[3] << 8 | charstring[4] :
         0;
 
     public static int NextNumberBytes(byte c) =>
