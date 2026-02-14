@@ -6,7 +6,6 @@ public enum Platforms
 {
     Unicode = 0,
 
-    [Obsolete("deprecated")]
     Macintosh = 1,
 
     [Obsolete("deprecated")]
