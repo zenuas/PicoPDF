@@ -6,9 +6,9 @@ namespace PicoPDF.OpenType.Tables.PostScript;
 
 public static class Subroutine
 {
-    public static void EnumSubroutines(byte[] charstring, byte[][] local_subr, byte[][] global_subr, Func<bool, int, bool> f)
+    public static void EnumSubroutines(byte[] charstring, byte[][]? local_subr, byte[][] global_subr, Func<bool, int, bool> f)
     {
-        var local_bias = GetSubroutineBias(local_subr.Length);
+        var local_bias = GetSubroutineBias(local_subr?.Length ?? 0);
         var global_bias = GetSubroutineBias(global_subr.Length);
         var bytes = new List<byte>();
         var num_escape = 0;
@@ -28,60 +28,18 @@ public static class Subroutine
             else if (c is (byte)CharstringCommandCodes.Callsubr or (byte)CharstringCommandCodes.Callgsubr)
             {
                 var num = CharstringNumber(bytes);
-                if (c == (byte)CharstringCommandCodes.Callsubr)
+                if (c == (byte)CharstringCommandCodes.Callgsubr)
+                {
+                    var index = num + global_bias;
+                    Debug.Assert(index >= 0 && index < global_subr.Length);
+                    if (index >= 0 && index < global_subr.Length && f(true, index)) EnumSubroutines(global_subr[index], null, global_subr, f);
+                }
+                else if (local_subr is { })
                 {
                     var index = num + local_bias;
                     Debug.Assert(index >= 0 && index < local_subr.Length);
                     if (index >= 0 && index < local_subr.Length && f(false, index)) EnumSubroutines(local_subr[index], local_subr, global_subr, f);
                 }
-                else
-                {
-                    var index = num + global_bias;
-                    Debug.Assert(index >= 0 && index < global_subr.Length);
-                    if (index >= 0 && index < global_subr.Length && f(true, index)) EnumGlobalSubroutines(global_subr[index], global_subr, f);
-                }
-                bytes.Clear();
-            }
-            else if (c != 28 && c < 32)
-            {
-                bytes.Clear(); // any operator
-            }
-            else
-            {
-                bytes.Clear(); // any number
-                bytes.Add(c);
-                num_escape = NextNumberBytes(c);
-            }
-        }
-    }
-
-    public static void EnumGlobalSubroutines(byte[] charstring, byte[][] global_subr, Func<bool, int, bool> f)
-    {
-        var global_bias = GetSubroutineBias(global_subr.Length);
-        var bytes = new List<byte>();
-        var num_escape = 0;
-        for (var i = 0; i < charstring.Length; i++)
-        {
-            var c = charstring[i];
-            if (num_escape > 0)
-            {
-                bytes.Add(c);
-                num_escape--;
-            }
-            else if (c == (byte)CharstringCommandCodes.Escape)
-            {
-                i++;
-                bytes.Clear();
-            }
-            else if (c == (byte)CharstringCommandCodes.Callsubr)
-            {
-                Debug.Fail("call LocalSubr from GlobalSubr");
-            }
-            else if (c == (byte)CharstringCommandCodes.Callgsubr)
-            {
-                var index = CharstringNumber(bytes) + global_bias;
-                Debug.Assert(index >= 0 && index < global_subr.Length);
-                if (index >= 0 && index < global_subr.Length && f(true, index)) EnumGlobalSubroutines(global_subr[index], global_subr, f);
                 bytes.Clear();
             }
             else if (c != 28 && c < 32)
