@@ -124,8 +124,7 @@ public static class FontExtract
         var local_subr_mark = new Dictionary<byte, HashSet<int>>();
         var fdselect_unique = fdselect.Order().Distinct().ToArray();
         fdselect_unique.Each(x => local_subr_mark.Add(fdselect_index[x], []));
-        Subroutine.EnumGlobalSubroutines(char_strings[0], global_subr, (_, index) => global_subr_mark.Add(index));
-        for (var i = 1; i < char_strings.Length; i++)
+        for (var i = 0; i < char_strings.Length; i++)
         {
             var fdindex = gid_glyph[i].FontDictSelect;
             var local_subr = font.CompactFontFormat.TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
