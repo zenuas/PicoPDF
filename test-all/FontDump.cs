@@ -116,6 +116,30 @@ public static class FontDump
         Console.WriteLine($"hhea,MetricDataFormat,{hhea.MetricDataFormat}");
         Console.WriteLine($"hhea,NumberOfHMetrics,{hhea.NumberOfHMetrics}");
 
+        var name = font.Name;
+        Console.WriteLine($"name,Format,{name.Format}");
+        Console.WriteLine($"name,Count,{name.Count}");
+        Console.WriteLine($"name,StringOffset,{name.StringOffset}");
+        for (var i = 0; i < name.NameRecords.Length; i++)
+        {
+            var x = name.NameRecords[i];
+            Console.WriteLine($"name,NameRecords[{i}],{x.Name}," +
+                $"PlatformID={x.NameRecord.PlatformID}," +
+                $"EncodingID={x.NameRecord.EncodingID}," +
+                $"LanguageID={x.NameRecord.LanguageID}," +
+                $"NameID={x.NameRecord.NameID}," +
+                $"Length={x.NameRecord.Length}," +
+                $"Offset={x.NameRecord.Offset}");
+        }
+        Console.WriteLine($"name,LanguageTagCount,{name.LanguageTagCount}");
+        for (var i = 0; i < name.LanguageTagRecords.Length; i++)
+        {
+            var x = name.LanguageTagRecords[i];
+            Console.WriteLine($"name,LanguageTagRecords[{i}],{x.Name}," +
+                $"Length={x.LanguageTagRecord.Length}," +
+                $"LanguageTagOffset={x.LanguageTagRecord.LanguageTagOffset}");
+        }
+
         //var hmtx = font.HorizontalMetrics;
         //var cmap4 = font.CMap;
         //var cmap4_range = font.CMap4;
