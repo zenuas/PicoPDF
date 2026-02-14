@@ -120,25 +120,25 @@ public class CMapFormat4 : ICMapFormat
 
     public static readonly ComparerBinder<(int Start, int End)> RangeComparer = new() { Compare = (a, b) => a.End < b.End ? -1 : a.Start > b.Start ? 1 : 0 };
 
-    public Func<char, uint> CreateCharToGID()
+    public Func<int, uint> CreateCharToGID()
     {
         var range = CreateRange();
         var cache = new Dictionary<char, uint>();
 
         return (c) =>
         {
-            if (cache.TryGetValue(c, out var gid)) return gid;
+            if (cache.TryGetValue((char)c, out var gid)) return gid;
 
             var seg = range.BinarySearch((c, c), RangeComparer);
-            if (seg < 0) return cache[c] = 0;
+            if (seg < 0) return cache[(char)c] = 0;
             var start = StartCode[seg];
-            if (c < start) return cache[c] = 0;
+            if (c < start) return cache[(char)c] = 0;
 
             var idrange = IdRangeOffsets[seg];
-            if (idrange == 0) return cache[c] = (uint)((c + IdDelta[seg]) & 0xFFFF);
+            if (idrange == 0) return cache[(char)c] = (uint)((c + IdDelta[seg]) & 0xFFFF);
 
             var gindex = (idrange / 2) + c - start - (SegCountX2 / 2) + seg;
-            return cache[c] = (uint)((GlyphIdArray[gindex] + IdDelta[seg]) & 0xFFFF);
+            return cache[(char)c] = (uint)((GlyphIdArray[gindex] + IdDelta[seg]) & 0xFFFF);
         };
     }
 }

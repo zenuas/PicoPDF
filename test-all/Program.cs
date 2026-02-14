@@ -75,7 +75,7 @@ foreach (var json in jsons.Length > 0 ? jsons : Directory.GetFiles("test-case", 
         {
             foreach (var x in doc.PdfObjects.OfType<Type0Font>())
             {
-                if (x.EmbeddedFont is { }) FontFileExport.Export(x.EmbeddedFont, new Option() { OutputFontFile = opt.OutputFontFile, FontExportChars = x.Chars.ToStringByChars() });
+                if (x.EmbeddedFont is { }) FontFileExport.Export(x.EmbeddedFont, new Option() { OutputFontFile = opt.OutputFontFile, FontExportChars = PdfUtility.ToStringByChars(x.Chars) });
             }
         }
     }));

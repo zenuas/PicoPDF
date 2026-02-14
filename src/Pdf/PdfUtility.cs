@@ -37,4 +37,18 @@ public static class PdfUtility
     public static Document CreateDocument(PageSection pagesection, DataView view, IFontRegister? register = null) => new Document { FontRegister = register ?? CreateDefaultFontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, view)));
 
     public static IFontRegister CreateDefaultFontRegister() => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetSystemFontDirectories()]));
+
+    public static IEnumerable<int> ToUtf32CharArray(string s)
+    {
+        var i = 0;
+        for (; i < s.Length - 1; i++)
+        {
+            yield return char.IsHighSurrogate(s[i]) && char.IsLowSurrogate(s[i + 1])
+                ? char.ConvertToUtf32(s[i], s[++i])
+                : s[i];
+        }
+        if (i < s.Length) yield return s[^1];
+    }
+
+    public static string ToStringByChars(IEnumerable<int> chars) => chars.Select(char.ConvertFromUtf32).Join();
 }

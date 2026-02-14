@@ -2,7 +2,7 @@
 
 public class FontExtractOption
 {
-    public required char[] ExtractChars { get; init; }
+    public required int[] ExtractChars { get; init; }
     public (Platforms? PlatformID, Encodings? EncodingID, ushort? LanguageID, NameIDs? NameID)[] OutputNames { get; init; } = [
         new(null, null, null, NameIDs.FontFamilyName),
         new(null, null, null, NameIDs.FontSubfamilyName),

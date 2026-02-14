@@ -1,4 +1,5 @@
 ﻿using PicoPDF.OpenType;
+using PicoPDF.Pdf;
 using System.IO;
 
 namespace PicoPDF.TestAll;
@@ -15,7 +16,7 @@ public static class FontFileExport
     public static TrueTypeFont Extract(TrueTypeFont font, Option opt) => FontExtract.Extract(font,
             new()
             {
-                ExtractChars = opt.FontExportChars.ToCharArray(),
+                ExtractChars = [.. PdfUtility.ToUtf32CharArray(opt.FontExportChars)],
                 OutputNames = [
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontFamilyName),
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontSubfamilyName),
@@ -31,7 +32,7 @@ public static class FontFileExport
     public static PostScriptFont Extract(PostScriptFont font, Option opt) => FontExtract.Extract(font,
             new()
             {
-                ExtractChars = opt.FontExportChars.ToCharArray(),
+                ExtractChars = [.. PdfUtility.ToUtf32CharArray(opt.FontExportChars)],
                 OutputNames = [
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontFamilyName),
                     new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontSubfamilyName),

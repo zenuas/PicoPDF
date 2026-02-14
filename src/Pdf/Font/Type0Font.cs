@@ -15,7 +15,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
     public required IFontRegister FontRegister { get; init; }
     public required string Encoding { get; init; }
     public required CIDFontDictionary FontDictionary { get; init; }
-    public HashSet<char> Chars { get; init; } = [];
+    public HashSet<int> Chars { get; init; } = [];
 
     public void CreateEmbeddedFont()
     {
@@ -82,5 +82,5 @@ public class Type0Font : PdfObject, IFont, IFontChars
         Bottom = (double)-Font.OS2.STypoDescender / Font.FontHeader.UnitsPerEm,
     };
 
-    public string CreateTextShowingOperator(string s) => $"<{s.Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";
+    public string CreateTextShowingOperator(string s) => $"<{PdfUtility.ToUtf32CharArray(s).Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";
 }

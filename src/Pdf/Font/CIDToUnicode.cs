@@ -2,20 +2,19 @@
 using PicoPDF.OpenType;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PicoPDF.Pdf.Font;
 
 public class CIDToUnicode : PdfObject
 {
     public required IOpenTypeRequiredTables Font { get; init; }
-    public required HashSet<char> Chars { get; init; }
+    public required HashSet<int> Chars { get; init; }
 
     public override void DoExport(PdfExportOption option)
     {
         var bfchar = Chars
             .Order()
-            .Select(x => $"        <{Font.CharToGID(x):x4}> {PdfUtility.ToHexString(x.ToString(), Encoding.BigEndianUnicode)}{(option.Debug ? $" %{x}" : "")}")
+            .Select(x => $"        <{Font.CharToGID(x):x4}> <{x:x4}>{(option.Debug ? $" %{PdfUtility.ToStringByChars([x])}" : "")}")
             .Join("\n");
 
         var writer = GetWriteStream(option.CMapStreamDeflate);

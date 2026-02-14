@@ -20,7 +20,7 @@ public class TrueTypeFont : IOpenTypeRequiredTables
     public required HorizontalHeaderTable HorizontalHeader { get; init; }
     public required HorizontalMetricsTable HorizontalMetrics { get; init; }
     public required CMapTable CMap { get; init; }
-    public required Func<char, uint> CharToGID { get; init; }
+    public required Func<int, uint> CharToGID { get; init; }
     public required IndexToLocationTable IndexToLocation { get; init; }
     public required IGlyph[] Glyphs { get; init; }
 }

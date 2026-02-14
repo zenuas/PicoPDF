@@ -6,5 +6,5 @@ public interface ICMapFormat : IExportable
 {
     public ushort Format { get; init; }
 
-    public Func<char, uint> CreateCharToGID();
+    public Func<int, uint> CreateCharToGID();
 }

@@ -34,7 +34,7 @@ public class CMapFormat12 : ICMapFormat
         };
     }
 
-    public static CMapFormat12 CreateFormat(Dictionary<char, uint> char_gid)
+    public static CMapFormat12 CreateFormat(Dictionary<int, uint> char_gid)
     {
         var chars = char_gid.Keys.Order().ToArray();
         var groups = CreateStartEnds(chars, char_gid);
@@ -50,19 +50,19 @@ public class CMapFormat12 : ICMapFormat
         };
     }
 
-    public static (uint StartCharCode, uint EndCharCode, uint StartGlyphID)[] CreateStartEnds(Span<char> chars, Dictionary<char, uint> char_gid)
+    public static (uint StartCharCode, uint EndCharCode, uint StartGlyphID)[] CreateStartEnds(Span<int> chars, Dictionary<int, uint> char_gid)
     {
         if (chars.Length == 0) return [];
         var start = chars[0];
         var gid = char_gid[chars[0]];
-        if (chars.Length == 1) return [(start, start, gid)];
+        if (chars.Length == 1) return [((uint)start, (uint)start, gid)];
 
         for (var i = 1; i < chars.Length; i++)
         {
             if (start + i == chars[i] && gid + i == char_gid[chars[i]]) continue;
-            return [(start, (uint)(start + i), gid), .. CreateStartEnds(chars[i..], char_gid)];
+            return [((uint)start, (uint)(start + i), gid), .. CreateStartEnds(chars[i..], char_gid)];
         }
-        return [(start, chars[^1], gid)];
+        return [((uint)start, (uint)chars[^1], gid)];
     }
 
     public void WriteTo(Stream stream)
@@ -82,7 +82,7 @@ public class CMapFormat12 : ICMapFormat
 
     public static readonly ComparerBinder<(uint StartCharCode, uint EndCharCode, uint StartGlyphID)> RangeComparer = new() { Compare = (a, b) => a.StartCharCode < b.StartCharCode ? -1 : a.EndCharCode > b.EndCharCode ? 1 : 0 };
 
-    public Func<char, uint> CreateCharToGID()
+    public Func<int, uint> CreateCharToGID()
     {
         return (c) =>
         {
