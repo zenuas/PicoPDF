@@ -19,9 +19,7 @@ PicoPDFは知っている最小のSI接頭語にちなんで名付けた。
 ```cs
 var datas = new Data[] { ... };
 
-var fontreg = new FontRegister();
-fontreg.RegistDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts"));
-PicoPDF.Pdf.PdfUtility.Create(fontreg, "example.json", datas).Save("example.pdf");
+PicoPDF.Pdf.PdfUtility.CreateDocument("example.json", datas).Save("example.pdf");
 ```
 
 ## Json definition file
