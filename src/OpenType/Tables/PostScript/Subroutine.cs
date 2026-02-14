@@ -13,12 +13,7 @@ public static class Subroutine
         for (var i = 0; i < charstring.Length; i++)
         {
             var c = charstring[i];
-            if (c == (byte)CharstringCommandCodes.Escape)
-            {
-                operand = 0;
-                i++;
-            }
-            else if (c is (byte)CharstringCommandCodes.Callsubr or (byte)CharstringCommandCodes.Callgsubr)
+            if (c is (byte)CharstringCommandCodes.Callsubr or (byte)CharstringCommandCodes.Callgsubr)
             {
                 if (c == (byte)CharstringCommandCodes.Callgsubr)
                 {
@@ -37,6 +32,7 @@ public static class Subroutine
             else if (c != 28 && c < 32)
             {
                 operand = 0; // any operator
+                if (c == (byte)CharstringCommandCodes.Escape) i++;
             }
             else
             {
