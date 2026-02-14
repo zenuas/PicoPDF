@@ -6,6 +6,16 @@ namespace PicoPDF.Test;
 public class SubroutineTest
 {
     [Fact]
+    public void GetSubroutineBias()
+    {
+        Assert.Equal(Subroutine.GetSubroutineBias(0), 107);
+        Assert.Equal(Subroutine.GetSubroutineBias(1239), 107);
+        Assert.Equal(Subroutine.GetSubroutineBias(1240), 1131);
+        Assert.Equal(Subroutine.GetSubroutineBias(33899), 1131);
+        Assert.Equal(Subroutine.GetSubroutineBias(33900), 32768);
+    }
+
+    [Fact]
     public void CharstringNumber()
     {
         Assert.Equal(Subroutine.CharstringNumber([]), 0);
