@@ -15,7 +15,7 @@ public class CIDToUnicode : PdfObject
     {
         var bfchar = Chars
             .Order()
-            .Select(x => (Char: x, String: PdfUtility.ToStringByChars([x])))
+            .Select(x => (Char: x, String: char.ConvertFromUtf32(x)))
             .Select(x => $"        <{Font.CharToGID(x.Char):x4}> {PdfUtility.ToHexString(x.String, Encoding.BigEndianUnicode)}{(option.Debug ? $" %{x.String}" : "")}")
             .Join("\n");
 
