@@ -46,4 +46,21 @@ public class SubroutineTest
         Assert.Equal(Subroutine.CharstringNumber([255, 128, 0, 0, 0]), -2147483648);
         Assert.Equal(Subroutine.CharstringNumber([255, 255, 255, 255, 255]), -1);
     }
+
+    [Fact]
+    public void NextNumberBytes()
+    {
+        Assert.Equal(Subroutine.NextNumberBytes(28), 2);
+        Assert.Equal(Subroutine.NextNumberBytes(32), 0);
+        Assert.Equal(Subroutine.NextNumberBytes(246), 0);
+        Assert.Equal(Subroutine.NextNumberBytes(247), 1);
+        Assert.Equal(Subroutine.NextNumberBytes(248), 1);
+        Assert.Equal(Subroutine.NextNumberBytes(249), 1);
+        Assert.Equal(Subroutine.NextNumberBytes(250), 1);
+        Assert.Equal(Subroutine.NextNumberBytes(251), 1);
+        Assert.Equal(Subroutine.NextNumberBytes(252), 1);
+        Assert.Equal(Subroutine.NextNumberBytes(253), 1);
+        Assert.Equal(Subroutine.NextNumberBytes(254), 1);
+        Assert.Equal(Subroutine.NextNumberBytes(255), 4);
+    }
 }
