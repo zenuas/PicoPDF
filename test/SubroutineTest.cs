@@ -1,4 +1,6 @@
 ﻿using PicoPDF.OpenType.Tables.PostScript;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace PicoPDF.Test;
@@ -62,5 +64,50 @@ public class SubroutineTest
         Assert.Equal(Subroutine.NextNumberBytes(253), 1);
         Assert.Equal(Subroutine.NextNumberBytes(254), 1);
         Assert.Equal(Subroutine.NextNumberBytes(255), 4);
+    }
+
+    public int EnumSubroutinesTest(byte[] charstring)
+    {
+        var local_subr = new byte[][] {
+            /* 0 */ [11],
+            /* 1 */ [33, 10, 11], // 1 callsubr
+            /* 2 */ [11],
+            /* 3 */ [33, 10, 11], // 1 callsubr
+            /* 4 */ [34, 29, 11], // 2 callgsubr
+        };
+        var global_subr = new byte[][] {
+            /* 0 */ [11],
+            /* 1 */ [33, 29, 11], // 1 callgsubr
+            /* 2 */ [35, 29, 11], // 3 callgsubr
+            /* 3 */ [11],
+        };
+
+        var local_subr_mark = new HashSet<int>();
+        var global_subr_mark = new HashSet<int>();
+
+        Subroutine.EnumSubroutines(charstring, local_subr, global_subr, (global, index) => (global ? global_subr_mark : local_subr_mark).Add(index));
+        return local_subr_mark.Order().Select(x => 1 << x).Aggregate(0, (acc, x) => acc | x) |
+            global_subr_mark.Order().Select(x => 0x100 << x).Aggregate(0, (acc, x) => acc | x);
+    }
+
+    [Fact]
+    public void EnumSubroutines()
+    {
+        Assert.Equal(EnumSubroutinesTest([]), 0);
+        Assert.Equal(EnumSubroutinesTest([28]), 0);
+        Assert.Equal(EnumSubroutinesTest([28, 100]), 0);
+        Assert.Equal(EnumSubroutinesTest([28, 100, 200]), 0);
+
+        Assert.Equal(EnumSubroutinesTest([32, 10, 14]), 0b001); // 0 callsubr
+        Assert.Equal(EnumSubroutinesTest([33, 10, 14]), 0b010); // 1 callsubr
+        Assert.Equal(EnumSubroutinesTest([34, 10, 14]), 0b100); // 2 callsubr
+        Assert.Equal(EnumSubroutinesTest([32, 10, 34, 10, 14]), 0b0101); // 0 callsubr 2 callsubr
+        Assert.Equal(EnumSubroutinesTest([32, 10, 35, 10, 14]), 0b1011); // 0 callsubr 3 callsubr
+        Assert.Equal(EnumSubroutinesTest([36, 10, 14]), 0b1100_00010000); // 4 callsubr
+
+        Assert.Equal(EnumSubroutinesTest([32, 29, 14]), 0b0001_00000000); // 0 callgsubr
+        Assert.Equal(EnumSubroutinesTest([33, 29, 14]), 0b0010_00000000); // 1 callgsubr
+        Assert.Equal(EnumSubroutinesTest([34, 29, 14]), 0b1100_00000000); // 2 callgsubr
+        Assert.Equal(EnumSubroutinesTest([35, 29, 14]), 0b1000_00000000); // 3 callgsubr
     }
 }
