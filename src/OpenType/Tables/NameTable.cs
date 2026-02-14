@@ -36,7 +36,7 @@ public class NameTable : IExportable
         }
 
         var name_records = records
-            .Select(x => ((x.PlatformID is (ushort)Platforms.Unicode or (ushort)Platforms.Windows ? Encoding.BigEndianUnicode : Encoding.UTF8).GetString(stream.SeekTo(position + string_offset + x.Offset).ReadExactly(x.Length)), x))
+            .Select(x => (x.GetEncoding().GetString(stream.SeekTo(position + string_offset + x.Offset).ReadExactly(x.Length)), x))
             .ToArray();
 
         var lang_tags = tags

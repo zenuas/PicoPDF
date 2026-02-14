@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using System.IO;
+using System.Text;
 
 namespace PicoPDF.OpenType.Tables;
 
@@ -21,6 +22,30 @@ public class NameRecord
         Length = stream.ReadUShortByBigEndian(),
         Offset = stream.ReadUShortByBigEndian(),
     };
+
+    public Encoding GetEncoding() => (PlatformID, EncodingID, LanguageID) switch
+    {
+        ((ushort)Platforms.Unicode, _, _) => Encoding.BigEndianUnicode,
+        ((ushort)Platforms.Windows, 0 or 1 or 10, _) => Encoding.BigEndianUnicode,
+        ((ushort)Platforms.Windows, 2, _) => GetEncodingOrUtf8("shift_jis"),
+        ((ushort)Platforms.Windows, 4, _) => GetEncodingOrUtf8("big5"),
+        ((ushort)Platforms.Windows, 5, _) => GetEncodingOrUtf8("x-cp20949"),
+        ((ushort)Platforms.Windows, 6, _) => GetEncodingOrUtf8("Johab"),
+        ((ushort)Platforms.Macintosh, 1, _) => GetEncodingOrUtf8("shift_jis"),
+        _ => Encoding.UTF8,
+    };
+
+    public static Encoding GetEncodingOrUtf8(string name)
+    {
+        try
+        {
+            return Encoding.GetEncoding(name);
+        }
+        catch
+        {
+            return Encoding.UTF8;
+        }
+    }
 
     public override string ToString() => $"PlatformID={PlatformID}, EncodingID={EncodingID}, LanguageID={LanguageID}, NameID={NameID}";
 }
