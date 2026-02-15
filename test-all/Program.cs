@@ -13,12 +13,13 @@ using System.Threading.Tasks;
 var (opt, jsons) = CommandLine.Run<Option>(args);
 
 if (opt.InputDeflate != "") { DeflateTest.Deflate(opt); return; }
-var fontreg = (IFontRegister)(opt.FontList || opt.CMapList ? new FontRegister() : new FontRegisterLock());
+var fontreg = (IFontRegister)(opt.FontList || opt.CMapList || opt.NameList ? new FontRegister() : new FontRegisterLock());
 if (opt.RegisterSystemFont) fontreg.RegisterDirectory([.. FontRegister.GetFontDirectories()]);
 if (opt.RegisterUserFont != "") fontreg.RegisterDirectory(new PicoPDF.OpenType.LoadOption() { ForceEmbedded = true }, opt.RegisterUserFont);
 if (opt.FontFileExtract != "") { FontFileExport.Export(fontreg.LoadComplete(fontreg.LoadRequiredTables(opt.FontFileExtract)), opt); return; }
 if (opt.FontList) { FontListTest.Preview(fontreg.Cast<FontRegister>(), opt); return; }
 if (opt.CMapList) { CMapListTest.Preview(fontreg.Cast<FontRegister>(), opt); return; }
+if (opt.NameList) { NameRecordListTest.Preview(fontreg.Cast<FontRegister>(), opt); return; }
 if (opt.FontDump != "") { FontDump.Dump(fontreg.LoadRequiredTables(opt.FontDump), opt); return; }
 
 var export_opt = new PdfExportOption

@@ -53,6 +53,9 @@ public class Option
     [CommandOption("cmap-list")]
     public bool CMapList { get; init; } = false;
 
+    [CommandOption("name-list")]
+    public bool NameList { get; init; } = false;
+
     [CommandOption("input-deflate")]
     public string InputDeflate { get; init; } = "";
 
