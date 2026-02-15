@@ -41,6 +41,13 @@ public static class Subroutine
         }
     }
 
+    public static byte[] NumberToBytes(int number) =>
+        number is >= -107 and <= 107 ? [(byte)(number + 139)] :
+        number is >= 108 and <= 1131 ? [(byte)((number - 108) / 256 + 247), (byte)(number - 108)] :
+        number is <= -108 and >= -1131 ? [(byte)((-number - 108) / 256 + 251), (byte)(-number - 108)] :
+        number is >= -32768 and <= 32767 ? [28, (byte)(number >> 8), (byte)(number & 0xFF)] :
+        [255, (byte)(number >> 24), (byte)((number >> 16) & 0xFF), (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)];
+
     public static int GetSubroutineBias(int subr_count) =>
         subr_count < 1240 ? 107 :
         subr_count < 33900 ? 1131 :

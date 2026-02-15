@@ -8,6 +8,37 @@ namespace PicoPDF.Test;
 public class SubroutineTest
 {
     [Fact]
+    public void NumberToBytes()
+    {
+        Assert.Equal(Subroutine.NumberToBytes(-107), [32]);
+        Assert.Equal(Subroutine.NumberToBytes(-106), [33]);
+        Assert.Equal(Subroutine.NumberToBytes(106), [245]);
+        Assert.Equal(Subroutine.NumberToBytes(107), [246]);
+        Assert.Equal(Subroutine.NumberToBytes(108), [247, 0]);
+        Assert.Equal(Subroutine.NumberToBytes(109), [247, 1]);
+        Assert.Equal(Subroutine.NumberToBytes(1130), [250, 254]);
+        Assert.Equal(Subroutine.NumberToBytes(1131), [250, 255]);
+        Assert.Equal(Subroutine.NumberToBytes(-108), [251, 0]);
+        Assert.Equal(Subroutine.NumberToBytes(-109), [251, 1]);
+        Assert.Equal(Subroutine.NumberToBytes(-1130), [254, 254]);
+        Assert.Equal(Subroutine.NumberToBytes(-1131), [254, 255]);
+        //Assert.Equal(Subroutine.NumberToBytes(0), [28, 0, 0]);
+        //Assert.Equal(Subroutine.NumberToBytes(1), [28, 0, 1]);
+        Assert.Equal(Subroutine.NumberToBytes(32766), [28, 127, 254]);
+        Assert.Equal(Subroutine.NumberToBytes(32767), [28, 127, 255]);
+        Assert.Equal(Subroutine.NumberToBytes(-32768), [28, 128, 0]);
+        Assert.Equal(Subroutine.NumberToBytes(-32767), [28, 128, 1]);
+        //Assert.Equal(Subroutine.NumberToBytes(-2), [28, 255, 254]);
+        //Assert.Equal(Subroutine.NumberToBytes(-1), [28, 255, 255]);
+
+        // 16-bit signed integer with 16 bits of fraction.
+        //Assert.Equal(Subroutine.NumberToBytes(0), [255, 0, 0, 0, 0]);
+        Assert.Equal(Subroutine.NumberToBytes(0x7FFFFFFF), [255, 127, 255, 255, 255]);
+        Assert.Equal(Subroutine.NumberToBytes(-2147483648), [255, 128, 0, 0, 0]);
+        //Assert.Equal(Subroutine.NumberToBytes(-1), [255, 255, 255, 255, 255]);
+    }
+
+    [Fact]
     public void GetSubroutineBias()
     {
         Assert.Equal(Subroutine.GetSubroutineBias(0), 107);
@@ -66,7 +97,7 @@ public class SubroutineTest
         Assert.Equal(Subroutine.NextNumberBytes(255), 4);
     }
 
-    public int EnumSubroutinesTest(byte[] charstring)
+    public static int EnumSubroutinesTest(byte[] charstring)
     {
         var local_subr = new byte[][] {
             /* 0 */ [11],
