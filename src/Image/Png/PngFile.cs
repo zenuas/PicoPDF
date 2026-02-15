@@ -29,7 +29,7 @@ public class PngFile : IImageCanvas
         var compression_method = (byte)0;
         var filter_method = (byte)0;
         var interlace_method = (byte)0;
-        var palette = new List<Color>();
+        Color[] palette = [];
         var datas = new List<byte>();
 
         while (true)
@@ -57,7 +57,7 @@ public class PngFile : IImageCanvas
 
                 case (uint)ChunkTypes.PLTE:
                     Debug.Assert(length >= 3 && length % 3 == 0);
-                    Lists.RangeTo(0, (length / 3) - 1).Select(x => Color.FromArgb(chunkdataraw[x * 3], chunkdataraw[(x * 3) + 1], chunkdataraw[(x * 3) + 2])).Each(palette.Add);
+                    palette = [.. Lists.RangeTo(0, (length / 3) - 1).Select(x => Color.FromArgb(chunkdataraw[x * 3], chunkdataraw[(x * 3) + 1], chunkdataraw[(x * 3) + 2]))];
                     break;
 
                 case (uint)ChunkTypes.IDAT:
