@@ -64,7 +64,7 @@ public class SectionBinderCultureTest
         var i = 0;
         var models = CreatePageModel(Lists.RangeTo(1, 0), DateTime.Parse("2000/01/02", CultureInfo.InvariantCulture));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 2);
+        Assert.Equal(models[0].Models.Length, 2);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter|0.00|0.00|0,00|1|/|1");
     }
@@ -75,7 +75,7 @@ public class SectionBinderCultureTest
         var i = 0;
         var models = CreatePageModel(Lists.RangeTo(999, 1000), DateTime.Parse("2000/01/02", CultureInfo.InvariantCulture));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 4);
+        Assert.Equal(models[0].Models.Length, 4);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/999.00|999.00|999,00|Sunday, 02 January 2000|2000年1月3日月曜日|mardi 4 janvier 2000");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1,000.00|1,000.00|1 000,00|Wednesday, 05 January 2000|2000年1月6日木曜日|vendredi 7 janvier 2000");

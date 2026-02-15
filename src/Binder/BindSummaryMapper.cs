@@ -225,5 +225,5 @@ public class BindSummaryMapper<T>
         if (section.Footer is ISection footer) foreach (var x in TraversSummaryElement(keys, footer.Elements)) yield return x;
     }
 
-    public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, List<IElement> elements) => elements.OfType<SummaryElement>().Select(x => (keys, x));
+    public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IElement[] elements) => elements.OfType<SummaryElement>().Select(x => (keys, x));
 }

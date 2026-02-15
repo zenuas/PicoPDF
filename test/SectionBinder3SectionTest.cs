@@ -113,7 +113,7 @@ public class SectionBinder3SectionTest
         var i = 0;
         var models = CreatePageModel(MakeSectionData("a", "a", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 6);
+        Assert.Equal(models[0].Models.Length, 6);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1//");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2//");
@@ -128,7 +128,7 @@ public class SectionBinder3SectionTest
         var i = 0;
         var models = CreatePageModel(MakeSectionData("a", "a", 1, 1));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 7);
+        Assert.Equal(models[0].Models.Length, 7);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2/a/a");
@@ -144,7 +144,7 @@ public class SectionBinder3SectionTest
         var i = 0;
         var models = CreatePageModel(MakeSectionData("a", "a", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2/a/a");
@@ -163,7 +163,7 @@ public class SectionBinder3SectionTest
         datas.AddRange(MakeSectionData("a", "b", 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2/a/a");
@@ -186,7 +186,7 @@ public class SectionBinder3SectionTest
         datas.AddRange(MakeSectionData("b", "a", 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2/a/a");
@@ -209,7 +209,7 @@ public class SectionBinder3SectionTest
         datas.AddRange(MakeSectionData("b", "b", 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2/a/a");
@@ -232,7 +232,7 @@ public class SectionBinder3SectionTest
         datas.AddRange(MakeSectionData("a", "b", 1, 2));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2/a/a");
@@ -247,7 +247,7 @@ public class SectionBinder3SectionTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/A-Sum=4/A-Cnt=3/A-Avg=1/A-Max=2/A-Min=1/1///2");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 7);
+        Assert.Equal(models[1].Models.Length, 7);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/a/b");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2/a/b");
@@ -265,7 +265,7 @@ public class SectionBinder3SectionTest
         datas.AddRange(MakeSectionData("a", "b", 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2/a/a");
@@ -280,7 +280,7 @@ public class SectionBinder3SectionTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=21/P-Cnt=6/P-Avg=3/P-Max=6/P-Min=1/A-Sum=22/A-Cnt=7/A-Avg=3/A-Max=6/A-Min=1/1///2");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 7);
+        Assert.Equal(models[1].Models.Length, 7);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/a/b");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2/a/b");
@@ -298,7 +298,7 @@ public class SectionBinder3SectionTest
         datas.AddRange(MakeSectionData("a", "b", 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2/a/a");
@@ -313,7 +313,7 @@ public class SectionBinder3SectionTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=21/P-Cnt=6/P-Avg=3/P-Max=6/P-Min=1/A-Sum=29/A-Cnt=8/A-Avg=3/A-Max=7/A-Min=1/1///2");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 12);
+        Assert.Equal(models[1].Models.Length, 12);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2/a/a");
@@ -336,7 +336,7 @@ public class SectionBinder3SectionTest
         datas.AddRange(MakeSectionData("a", "b", 1, 2));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 3);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2/a/a");
@@ -351,7 +351,7 @@ public class SectionBinder3SectionTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=21/P-Cnt=6/P-Avg=3/P-Max=6/P-Min=1/A-Sum=31/A-Cnt=9/A-Avg=3/A-Max=7/A-Min=1/1///3");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 12);
+        Assert.Equal(models[1].Models.Length, 12);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/a/a");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2/a/a");
@@ -366,7 +366,7 @@ public class SectionBinder3SectionTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter/PageFooter/P-Sum=1/P-Cnt=1/P-Avg=1/P-Max=1/P-Min=1/A-Sum=31/A-Cnt=9/A-Avg=3/A-Max=7/A-Min=1/2///3");
 
         i = 0;
-        Assert.Equal(models[2].Models.Count, 7);
+        Assert.Equal(models[2].Models.Length, 7);
         Assert.Equal(ToSectionString(models[2].Models[i++]), "PageHeader/PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[2].Models[i++]), "Header1/a/b");
         Assert.Equal(ToSectionString(models[2].Models[i++]), "Header2/a/b");

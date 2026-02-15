@@ -97,7 +97,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSection, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=70");
@@ -114,7 +114,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSection, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -133,7 +133,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSection, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -146,7 +146,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 9);
+        Assert.Equal(models[1].Models.Length, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=370");
@@ -233,7 +233,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionAf, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=70");
@@ -250,7 +250,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionAf, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -269,7 +269,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionAf, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -282,7 +282,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 8);
+        Assert.Equal(models[1].Models.Length, 8);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=25/a/b/c|x1=50,y1=30,x2=150,y2=360");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header3,top=35/a/b/c|");
@@ -368,7 +368,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBf, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=70");
@@ -385,7 +385,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBf, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -404,7 +404,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBf, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -417,7 +417,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 8);
+        Assert.Equal(models[1].Models.Length, 8);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header3,top=35/a/b/c|");
@@ -503,7 +503,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionCf, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=70");
@@ -520,7 +520,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionCf, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -539,7 +539,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionCf, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -552,7 +552,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 8);
+        Assert.Equal(models[1].Models.Length, 8);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=360");
@@ -638,7 +638,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionAl, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=70");
@@ -655,7 +655,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionAl, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -674,7 +674,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionAl, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 9);
+        Assert.Equal(models[0].Models.Length, 9);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -686,7 +686,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 9);
+        Assert.Equal(models[1].Models.Length, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=370");
@@ -773,7 +773,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBl, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=70");
@@ -790,7 +790,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBl, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -809,7 +809,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBl, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 9);
+        Assert.Equal(models[0].Models.Length, 9);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=665");
@@ -821,7 +821,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 9);
+        Assert.Equal(models[1].Models.Length, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=370");
@@ -909,7 +909,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionCl, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=70");
@@ -926,7 +926,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionCl, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -945,7 +945,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionCl, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 9);
+        Assert.Equal(models[0].Models.Length, 9);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=660");
@@ -957,7 +957,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 9);
+        Assert.Equal(models[1].Models.Length, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=370");
@@ -1044,7 +1044,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBlCl, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=70");
@@ -1061,7 +1061,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBlCl, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -1080,7 +1080,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBlCl, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=655");
@@ -1091,7 +1091,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 9);
+        Assert.Equal(models[1].Models.Length, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=370");
@@ -1178,7 +1178,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionAlBlCl, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=70");
@@ -1195,7 +1195,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionAlBlCl, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=670");
@@ -1214,7 +1214,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionAlBlCl, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 7);
+        Assert.Equal(models[0].Models.Length, 7);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=655");
@@ -1224,7 +1224,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 9);
+        Assert.Equal(models[1].Models.Length, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=370");
@@ -1290,7 +1290,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionNoFooter, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 4);
+        Assert.Equal(models[0].Models.Length, 4);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=50");
@@ -1303,7 +1303,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionNoFooter, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 6);
+        Assert.Equal(models[0].Models.Length, 6);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=655");
@@ -1318,7 +1318,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionNoFooter, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 6);
+        Assert.Equal(models[0].Models.Length, 6);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=655");
@@ -1327,7 +1327,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail,top=355/2|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 5);
+        Assert.Equal(models[1].Models.Length, 5);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=355");
@@ -1411,7 +1411,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBFl, MakeSectionData("a", "b", "c", 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25///|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35///|x1=50,y1=40,x2=150,y2=812");
@@ -1428,7 +1428,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBFl, MakeSectionData("a", "b", "c", 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=812");
@@ -1447,7 +1447,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         var i = 0;
         var models = CreatePageModel(PageSectionBFl, MakeSectionData("a", "b", "c", 1, 3));
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 9);
+        Assert.Equal(models[0].Models.Length, 9);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=665"); // want y2 to be 675 or 817
@@ -1459,7 +1459,7 @@ public class SectionBinder4CrossSectionFillRectangleTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter,top=817/|");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 9);
+        Assert.Equal(models[1].Models.Length, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader,top=15/|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1,top=25/a/b/c|");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header2,top=35/a/b/c|x1=50,y1=40,x2=150,y2=812");

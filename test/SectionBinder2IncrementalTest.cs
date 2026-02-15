@@ -112,7 +112,7 @@ public class SectionBinder2IncrementalTest
         var i = 0;
         var models = CreatePageModel(MakeSectionData(100, 1, 0));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 4);
+        Assert.Equal(models[0].Models.Length, 4);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/0");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/0/PI-Sum=0/PI-Cnt=0/NaN///Px-Sum=0/Px-Cnt=0/NaN///GI-Sum=0/GI-Cnt=0/NaN///AI-Sum=0/AI-Cnt=0/NaN//");
@@ -125,7 +125,7 @@ public class SectionBinder2IncrementalTest
         var i = 0;
         var models = CreatePageModel(MakeSectionData(100, 1, 1));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 5);
+        Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
@@ -139,7 +139,7 @@ public class SectionBinder2IncrementalTest
         var i = 0;
         var models = CreatePageModel(MakeSectionData(100, 1, 2));
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 6);
+        Assert.Equal(models[0].Models.Length, 6);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
@@ -156,7 +156,7 @@ public class SectionBinder2IncrementalTest
         datas.AddRange(MakeSectionData(200, 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 8);
+        Assert.Equal(models[0].Models.Length, 8);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
@@ -175,7 +175,7 @@ public class SectionBinder2IncrementalTest
         datas.AddRange(MakeSectionData(200, 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 1);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
@@ -198,7 +198,7 @@ public class SectionBinder2IncrementalTest
         datas.AddRange(MakeSectionData(200, 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 10);
+        Assert.Equal(models[0].Models.Length, 10);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
@@ -211,7 +211,7 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=21/PI-Cnt=6/PI-Avg=3/PI-Max=6/PI-Min=1/Px-Sum=21/Px-Cnt=6/Px-Avg=3/Px-Max=6/Px-Min=1/GI-Sum=21/GI-Cnt=6/GI-Avg=3/GI-Max=6/GI-Min=1/AI-Sum=21/AI-Cnt=6/AI-Avg=3/AI-Max=6/AI-Min=1/1///2");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 5);
+        Assert.Equal(models[1].Models.Length, 5);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=7");
@@ -227,7 +227,7 @@ public class SectionBinder2IncrementalTest
         datas.AddRange(MakeSectionData(200, 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 11);
+        Assert.Equal(models[0].Models.Length, 11);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
@@ -241,7 +241,7 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=28/PI-Cnt=7/PI-Avg=4/PI-Max=7/PI-Min=1/Px-Sum=28/Px-Cnt=7/Px-Avg=4/Px-Max=7/Px-Min=1/GI-Sum=28/GI-Cnt=7/GI-Avg=4/GI-Max=7/GI-Min=1/AI-Sum=28/AI-Cnt=7/AI-Avg=4/AI-Max=7/AI-Min=1/1///2");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 5);
+        Assert.Equal(models[1].Models.Length, 5);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=8");
@@ -257,7 +257,7 @@ public class SectionBinder2IncrementalTest
         datas.AddRange(MakeSectionData(200, 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
@@ -272,7 +272,7 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=36/PI-Cnt=8/PI-Avg=4/PI-Max=8/PI-Min=1/Px-Sum=36/Px-Cnt=8/Px-Avg=4/Px-Max=8/Px-Min=1/GI-Sum=36/GI-Cnt=8/GI-Avg=4/GI-Max=8/GI-Min=1/AI-Sum=36/AI-Cnt=8/AI-Avg=4/AI-Max=8/AI-Min=1/1///2");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 5);
+        Assert.Equal(models[1].Models.Length, 5);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/200");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=9");
@@ -288,7 +288,7 @@ public class SectionBinder2IncrementalTest
         datas.AddRange(MakeSectionData(200, 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
@@ -303,7 +303,7 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=36/PI-Cnt=8/PI-Avg=4/PI-Max=8/PI-Min=1/Px-Sum=36/Px-Cnt=8/Px-Avg=4/Px-Max=8/Px-Min=1/GI-Sum=36/GI-Cnt=8/GI-Avg=4/GI-Max=8/GI-Min=1/AI-Sum=36/AI-Cnt=8/AI-Avg=4/AI-Max=8/AI-Min=1/1///2");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 8);
+        Assert.Equal(models[1].Models.Length, 8);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/9/PI-Sum=9/PI-Cnt=1/Px-Cnt=1/GI-Cnt=9/AI-Cnt=9");
@@ -322,7 +322,7 @@ public class SectionBinder2IncrementalTest
         datas.AddRange(MakeSectionData(200, 1, 1));
         var models = CreatePageModel(datas);
         Assert.Equal(models.Length, 2);
-        Assert.Equal(models[0].Models.Count, 12);
+        Assert.Equal(models[0].Models.Length, 12);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/1/PI-Sum=1/PI-Cnt=1/Px-Cnt=1/GI-Cnt=1/AI-Cnt=1");
@@ -337,7 +337,7 @@ public class SectionBinder2IncrementalTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/PI-Sum=36/PI-Cnt=8/PI-Avg=4/PI-Max=8/PI-Min=1/Px-Sum=36/Px-Cnt=8/Px-Avg=4/Px-Max=8/Px-Min=1/GI-Sum=36/GI-Cnt=8/GI-Avg=4/GI-Max=8/GI-Min=1/AI-Sum=36/AI-Cnt=8/AI-Avg=4/AI-Max=8/AI-Min=1/1///2");
 
         i = 0;
-        Assert.Equal(models[1].Models.Count, 9);
+        Assert.Equal(models[1].Models.Length, 9);
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageHeader/PageHeader");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail/9/PI-Sum=9/PI-Cnt=1/Px-Cnt=1/GI-Cnt=9/AI-Cnt=9");

@@ -48,7 +48,7 @@ public static class JsonLoader
 
     public static ISection LoadSubSection(JsonNode json)
     {
-        var elements = json["Elements"]!.AsArray().Select(x => LoadElement(x!)).ToList();
+        var elements = json["Elements"]!.AsArray().Select(x => LoadElement(x!)).ToArray();
         var name = json["Name"]!.ToString();
         var height = (int)json["Height"]!.AsValue();
         var viewmode = json["ViewMode"] is { } v ? Enum.Parse<ViewModes>(v.ToString()) : ViewModes.Every;

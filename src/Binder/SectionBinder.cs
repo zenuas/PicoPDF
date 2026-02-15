@@ -45,7 +45,7 @@ public static class SectionBinder
         view.GetIterator().OfType<DataRowView>(),
         view.Table!.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRowView, object>>(x => x.ColumnName, x => (row) => row?[x.ColumnName]!));
 
-    public static IEnumerable<List<SectionModel>> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
+    public static IEnumerable<SectionModel[]> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
     {
         var sections = (Section: page.SubSection, Depth: 1).Travers(x => x.Section is Section s ? [(s.SubSection, x.Depth + 1)] : []).ToArray();
         var detail = sections.Select(x => x.Section).OfType<DetailSection>().First();
@@ -73,7 +73,7 @@ public static class SectionBinder
             bind.KeyBreak(lastdata, keys.Length, keys, page);
             bind.PageBreak(lastdata, page);
             bind.LastBreak(lastdata, page);
-            yield return models;
+            yield return [.. models];
             yield break;
         }
 
@@ -148,7 +148,7 @@ public static class SectionBinder
             bind.PageBreak(lastdata, page);
             bind.PageBreakSection(lastdetail);
             if (datas.IsLast) bind.LastBreak(lastdata, page);
-            yield return models;
+            yield return [.. models];
         }
     }
 
@@ -167,7 +167,7 @@ public static class SectionBinder
         return maxcount;
     }
 
-    public static List<IModelElement> BindElements<T>(List<IElement> elements, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys, int? depth) => [.. elements.Select(x => BindElement(x, data, bind, page, keys, allkeys, depth))];
+    public static IModelElement[] BindElements<T>(IElement[] elements, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys, int? depth) => [.. elements.Select(x => BindElement(x, data, bind, page, keys, allkeys, depth))];
 
     public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys, int? depth)
     {

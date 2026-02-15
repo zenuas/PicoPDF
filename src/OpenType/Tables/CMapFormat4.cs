@@ -107,7 +107,7 @@ public class CMapFormat4 : ICMapFormat
         GlyphIdArray.Each(stream.WriteUShortByBigEndian);
     }
 
-    public List<(int Start, int End)> CreateRange()
+    public (int Start, int End)[] CreateRange()
     {
         var range = new List<(int Start, int End)>();
         _ = EndCode.Aggregate(0, (acc, x) =>
@@ -115,7 +115,7 @@ public class CMapFormat4 : ICMapFormat
             range.Add((acc, x));
             return x + 1;
         });
-        return range;
+        return [.. range];
     }
 
     public static readonly ComparerBinder<(int Start, int End)> RangeComparer = new() { Compare = (a, b) => a.End < b.End ? -1 : a.Start > b.Start ? 1 : 0 };

@@ -56,7 +56,7 @@ public static class PdfExport
         stream.Write("%%EOF\n");
     }
 
-    public static List<PdfObject> GetAllReferences(Document doc, PdfExportOption option)
+    public static PdfObject[] GetAllReferences(Document doc, PdfExportOption option)
     {
         var refs = new List<PdfObject>();
 
@@ -69,6 +69,6 @@ public static class PdfExport
         }
         doc.PdfObjects.Each(refsadd);
 
-        return refs;
+        return [.. refs];
     }
 }

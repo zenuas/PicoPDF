@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace PicoPDF.Pdf.Font;
+﻿namespace PicoPDF.Pdf.Font;
 
 public class Type1Font : PdfObject, IFont
 {
@@ -9,8 +7,8 @@ public class Type1Font : PdfObject, IFont
     public required string Encoding { get; init; }
     public required FontDescriptor FontDescriptor { get; init; }
     public required int FirstChar { get; init; }
-    public int LastChar { get => FirstChar + Widths.Count - 1; }
-    public List<long> Widths { get; init; } = [];
+    public int LastChar { get => FirstChar + Widths.Length - 1; }
+    public long[] Widths { get; init; } = [];
 
     public override void DoExport(PdfExportOption option)
     {
