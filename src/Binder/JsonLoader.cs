@@ -29,7 +29,7 @@ public static class JsonLoader
         {
             Size = PageSize.Parse(json["Size"]!.ToString()),
             Orientation = Enum.Parse<Orientation>(json["Orientation"]!.ToString()),
-            DefaultFont = json["DefaultFont"]!.ToString(),
+            DefaultFont = ToStringArray(json["DefaultFont"])[0],
             Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
             Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
             SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
@@ -219,6 +219,13 @@ public static class JsonLoader
                 }
         }
         throw new();
+    }
+
+    public static string[] ToStringArray(JsonNode? node)
+    {
+        if (node is JsonValue v) return [(string)v!];
+        if (node is JsonArray xs) return [.. xs.Select(x => x?.AsValue() is { } value ? (string)value! : "")];
+        return [];
     }
 
     public static AllSides LoadAllSides(JsonNode? node)
