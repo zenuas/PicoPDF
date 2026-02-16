@@ -66,15 +66,11 @@ public class Contents : PdfObject
         {
             DrawLine(posx, basey + 2, posx + width, basey + 2, c);
         }
-        if (style.HasFlag(TextStyle.Strikethrough))
+        if ((style & (TextStyle.Strikethrough | TextStyle.DoubleStrikethrough)) > 0)
         {
             var center = posy + ((basey - posy) / 2);
-            DrawLine(posx, center, posx + width, center, c);
-        }
-        if (style.HasFlag(TextStyle.DoubleStrikethrough))
-        {
-            var center = posy + ((basey - posy) / 2) + 2;
-            DrawLine(posx, center, posx + width, center, c);
+            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(posx, center, posx + width, center, c);
+            if (style.HasFlag(TextStyle.DoubleStrikethrough)) DrawLine(posx, center + 2, posx + width, center + 2, c);
         }
         if (style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
         {
