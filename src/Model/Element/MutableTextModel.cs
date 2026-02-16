@@ -10,7 +10,7 @@ public class MutableTextModel : ITextModel
     public required int Y { get; init; }
     public required string Text { get; set; }
     public required int Size { get; init; }
-    public string Font { get; init; } = "";
+    public required string[] Font { get; init; }
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
     public TextStyle Style { get; init; } = TextStyle.None;
     public int Width { get; init; }

@@ -25,11 +25,14 @@ public static class JsonLoader
             .Select(x => LoadSubSection(x!))
             .ToDictionary(x => x.Name, x => x);
 
+        var fonts = ToStringArray(json["DefaultFont"]);
+        if (fonts.Length == 0) throw new IndexOutOfRangeException("DefaultFont is empty");
+
         return new()
         {
             Size = PageSize.Parse(json["Size"]!.ToString()),
             Orientation = Enum.Parse<Orientation>(json["Orientation"]!.ToString()),
-            DefaultFont = ToStringArray(json["DefaultFont"])[0],
+            DefaultFont = fonts,
             Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
             Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
             SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
@@ -76,7 +79,7 @@ public static class JsonLoader
                         X = posx,
                         Y = posy,
                         Text = json["Text"]!.ToString(),
-                        Font = json["Font"]?.ToString() ?? "",
+                        Font = ToStringArray(json["Font"]),
                         Size = (int)json["Size"]!.AsValue(),
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Style = json["Style"] is { } style ? Enum.Parse<TextStyle>(style.ToString()) : TextStyle.None,
@@ -93,7 +96,7 @@ public static class JsonLoader
                         Y = posy,
                         Bind = json["Bind"]!.ToString(),
                         Format = json["Format"]?.ToString() ?? "",
-                        Font = json["Font"]?.ToString() ?? "",
+                        Font = ToStringArray(json["Font"]),
                         Size = (int)json["Size"]!.AsValue(),
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Style = json["Style"] is { } style ? Enum.Parse<TextStyle>(style.ToString()) : TextStyle.None,
@@ -112,7 +115,7 @@ public static class JsonLoader
                         Y = posy,
                         Bind = json["Bind"]?.ToString() ?? "",
                         Format = json["Format"]?.ToString() ?? "",
-                        Font = json["Font"]?.ToString() ?? "",
+                        Font = ToStringArray(json["Font"]),
                         Size = (int)json["Size"]!.AsValue(),
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Style = json["Style"] is { } style ? Enum.Parse<TextStyle>(style.ToString()) : TextStyle.None,

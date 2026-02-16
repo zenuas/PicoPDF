@@ -57,7 +57,7 @@ public static class ModelMapping
         {
             case ITextModel x:
                 {
-                    var font = fontget(x.Font);
+                    var font = fontget(x.Font[0]);
                     var box = font.MeasureStringBox(x.Text);
                     var size = x.Style.HasFlag(TextStyle.ShrinkToFit) && x.Width < (box.Width * x.Size) ? x.Width / box.Width : x.Size;
                     posy += -box.Top * size;
