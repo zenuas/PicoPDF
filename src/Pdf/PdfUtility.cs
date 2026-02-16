@@ -3,6 +3,7 @@ using PicoPDF.Binder;
 using PicoPDF.Binder.Data;
 using PicoPDF.Model;
 using PicoPDF.Pdf.Color;
+using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Font;
 using System;
 using System.Collections.Generic;
@@ -37,4 +38,34 @@ public static class PdfUtility
     public static Document CreateDocument(PageSection pagesection, DataView view, IFontRegister? register = null) => new Document { FontRegister = register ?? CreateDefaultFontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind(pagesection, view)));
 
     public static IFontRegister CreateDefaultFontRegister() => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetSystemFontDirectories()]));
+
+    public static IEnumerable<(string Text, Type0Font Font)> GetTextFont(string s, string[] fonts, Func<string, Type0Font> fontget)
+    {
+        if (s.Length == 0) yield break;
+
+        var xs = s.ToUtf32CharArray().Select(x => (Char: x, Font: GetTextFont(x, fonts, fontget))).ToArray();
+        var prev_font = xs[0].Font;
+        var prev_text = new List<int>() { xs[0].Char };
+        for (var i = 1; i < xs.Length; i++)
+        {
+            if (ReferenceEquals(prev_font, xs[i].Font))
+            {
+                prev_text.Add(xs[i].Char);
+            }
+            else
+            {
+                yield return (prev_text.ToStringByChars(), prev_font);
+                prev_font = xs[i].Font;
+                prev_text.Clear();
+                prev_text.Add(xs[i].Char);
+            }
+        }
+        yield return (prev_text.ToStringByChars(), prev_font);
+    }
+
+    public static Type0Font GetTextFont(int c, string[] fonts, Func<string, Type0Font> fontget) => fonts.Select(fontget).Where(x => x.Font.CharToGID(c) > 0).First();
+
+    public static Position MeasureTextFontBox((string Text, Type0Font Font)[] textfonts) => textfonts
+        .Select(x => x.Font.MeasureStringBox(x.Text))
+        .Aggregate(new Position(), (acc, x) => new(0, Math.Min(acc.Top, x.Top), acc.Right + x.Right, Math.Max(acc.Bottom, x.Bottom)));
 }

@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using PicoPDF.Binder.Element;
 using PicoPDF.Pdf.Color;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Font;
@@ -52,6 +53,51 @@ public class Contents : PdfObject
         else
         {
             Operations.Add(str);
+        }
+    }
+
+    public void DrawTextStyle(TextStyle style, double posx, double posy, double basey, double width, double height, IColor? c = null)
+    {
+        if (style.HasFlag(TextStyle.Underline))
+        {
+            DrawLine(posx, basey, posx + width, basey, c);
+        }
+        if (style.HasFlag(TextStyle.DoubleUnderline))
+        {
+            DrawLine(posx, basey + 2, posx + width, basey + 2, c);
+        }
+        if (style.HasFlag(TextStyle.Strikethrough))
+        {
+            var center = posy + ((basey - posy) / 2);
+            DrawLine(posx, center, posx + width, center, c);
+        }
+        if (style.HasFlag(TextStyle.DoubleStrikethrough))
+        {
+            var center = posy + ((basey - posy) / 2) + 2;
+            DrawLine(posx, center, posx + width, center, c);
+        }
+        if (style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
+        {
+            DrawRectangle(posx, posy, width, height, c);
+        }
+        else if ((style & (TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight)) > 0)
+        {
+            if (style.HasFlag(TextStyle.BorderTop))
+            {
+                DrawLine(posx, posy, posx + width, posy, c);
+            }
+            if (style.HasFlag(TextStyle.BorderBottom))
+            {
+                DrawLine(posx, posy + height, posx + width, posy + height, c);
+            }
+            if (style.HasFlag(TextStyle.BorderLeft))
+            {
+                DrawLine(posx, posy, posx, posy + height, c);
+            }
+            if (style.HasFlag(TextStyle.BorderRight))
+            {
+                DrawLine(posx + width, posy, posx + width, posy + height, c);
+            }
         }
     }
 

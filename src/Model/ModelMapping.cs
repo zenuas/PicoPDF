@@ -55,74 +55,40 @@ public static class ModelMapping
         double posy = model.Y + top;
         switch (model)
         {
-            case ITextModel x:
+            case ITextModel textmodel:
                 {
-                    var font = fontget(x.Font[0]);
-                    var box = font.MeasureStringBox(x.Text);
-                    var size = x.Style.HasFlag(TextStyle.ShrinkToFit) && x.Width < (box.Width * x.Size) ? x.Width / box.Width : x.Size;
-                    posy += -box.Top * size;
-                    switch (x.Alignment)
+                    var textfonts = PdfUtility.GetTextFont(textmodel.Text, textmodel.Font, fontget).ToArray();
+                    var allbox = PdfUtility.MeasureTextFontBox(textfonts);
+
+                    var size = textmodel.Style.HasFlag(TextStyle.ShrinkToFit) && textmodel.Width < (allbox.Width * textmodel.Size) ? textmodel.Width / allbox.Width : textmodel.Size;
+                    posy += -allbox.Top * size;
+                    switch (textmodel.Alignment)
                     {
                         case TextAlignment.Center:
-                            posx += (x.Width - (box.Width * size)) / 2;
+                            posx += (textmodel.Width - (allbox.Width * size)) / 2;
                             break;
 
                         case TextAlignment.End:
-                            posx += x.Width - (box.Width * size);
+                            posx += textmodel.Width - (allbox.Width * size);
                             break;
                     }
-                    var rect = !x.Style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
+                    var rect = !textmodel.Style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
                     {
                         X = new PointValue(model.X + left),
                         Y = new PointValue(model.Y + top),
-                        Width = new PointValue(x.Width),
-                        Height = new PointValue(box.Height * size),
+                        Width = new PointValue(textmodel.Width),
+                        Height = new PointValue(allbox.Height * size),
                     };
-                    page.Contents.DrawString(x.Text, posx, posy, size, font, x.Color?.ToDeviceRGB(), rect);
 
-                    if (x.Style != TextStyle.None)
+                    var text_left = posx;
+                    foreach (var (text, font) in textfonts)
                     {
-                        var width = (int)(box.Width * size);
-                        var topleft = model.Y + top;
-                        var bottomleft = (int)(topleft + (box.Height * size));
-
-                        if (x.Style.HasFlag(TextStyle.Underline))
-                        {
-                            page.Contents.DrawLine(posx, posy, posx + width, posy, x.Color?.ToDeviceRGB());
-                        }
-                        if (x.Style.HasFlag(TextStyle.DoubleUnderline))
-                        {
-                            page.Contents.DrawLine(posx, posy + 2, posx + width, posy + 2, x.Color?.ToDeviceRGB());
-                        }
-                        if (x.Style.HasFlag(TextStyle.Strikethrough))
-                        {
-                            var center = (int)(topleft + (box.Height * size / 2));
-                            page.Contents.DrawLine(posx, center, posx + width, center, x.Color?.ToDeviceRGB());
-                        }
-                        if (x.Style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
-                        {
-                            page.Contents.DrawRectangle(posx, topleft, width, bottomleft - topleft, x.Color?.ToDeviceRGB());
-                        }
-                        else if ((x.Style & (TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight)) > 0)
-                        {
-                            if (x.Style.HasFlag(TextStyle.BorderTop))
-                            {
-                                page.Contents.DrawLine(posx, topleft, posx + width, topleft, x.Color?.ToDeviceRGB());
-                            }
-                            if (x.Style.HasFlag(TextStyle.BorderBottom))
-                            {
-                                page.Contents.DrawLine(posx, bottomleft, posx + width, bottomleft, x.Color?.ToDeviceRGB());
-                            }
-                            if (x.Style.HasFlag(TextStyle.BorderLeft))
-                            {
-                                page.Contents.DrawLine(posx, topleft, posx, bottomleft, x.Color?.ToDeviceRGB());
-                            }
-                            if (x.Style.HasFlag(TextStyle.BorderRight))
-                            {
-                                page.Contents.DrawLine(posx + width, topleft, posx + width, bottomleft, x.Color?.ToDeviceRGB());
-                            }
-                        }
+                        var box = font.MeasureStringBox(text);
+                        page.Contents.DrawString(text, text_left, posy, size, font, textmodel.Color?.ToDeviceRGB(), rect);
+                        text_left += box.Width * size;
                     }
+
+                    if (textmodel.Style != TextStyle.None) page.Contents.DrawTextStyle(textmodel.Style, model.X + left, model.Y + top, posy, allbox.Width * size, allbox.Height * size, textmodel.Color?.ToDeviceRGB());
                 }
                 return;
 
