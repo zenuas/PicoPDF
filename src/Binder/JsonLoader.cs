@@ -26,7 +26,7 @@ public static class JsonLoader
             .ToDictionary(x => x.Name, x => x);
 
         var fonts = ToStringArray(json["DefaultFont"]);
-        if (fonts.Length == 0) throw new IndexOutOfRangeException("DefaultFont is empty");
+        if (fonts.Length == 0) throw new("DefaultFont is empty");
 
         return new()
         {
