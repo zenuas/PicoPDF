@@ -81,14 +81,15 @@ public static class ModelMapping
                     };
 
                     var text_left = posx;
+                    var color = textmodel.Color?.ToDeviceRGB();
                     foreach (var (text, font) in textfonts)
                     {
                         var box = font.MeasureStringBox(text);
-                        page.Contents.DrawString(text, text_left, posy, size, font, textmodel.Color?.ToDeviceRGB(), rect);
+                        page.Contents.DrawString(text, text_left, posy, size, font, color, rect);
                         text_left += box.Width * size;
                     }
 
-                    if (textmodel.Style != TextStyle.None) page.Contents.DrawTextStyle(textmodel.Style, model.X + left, model.Y + top, posy, allbox.Width * size, allbox.Height * size, textmodel.Color?.ToDeviceRGB());
+                    if (textmodel.Style != TextStyle.None) page.Contents.DrawTextStyle(textmodel.Style, model.X + left, model.Y + top, posy, allbox.Width * size, allbox.Height * size, color);
                 }
                 return;
 
