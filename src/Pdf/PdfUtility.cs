@@ -63,7 +63,7 @@ public static class PdfUtility
         yield return (prev_text.ToStringByChars(), prev_font);
     }
 
-    public static Type0Font GetTextFont(int c, string[] fonts, Func<string, Type0Font> fontget) => fonts.Select(fontget).Where(x => x.Font.CharToGID(c) > 0).First();
+    public static Type0Font GetTextFont(int c, string[] fonts, Func<string, Type0Font> fontget) => fonts.Select(fontget).Where(x => x.Font.CharToGID(c) > 0).FirstOrDefault() ?? fontget(fonts[0]);
 
     public static FontBox MeasureTextFontBox((string Text, Type0Font Font)[] textfonts) => textfonts
         .Select(x => x.Font.MeasureStringBox(x.Text))
