@@ -76,8 +76,8 @@ public class Type0Font : PdfObject, IFont, IFontChars
 
     public FontBox MeasureStringBox(string s) => new()
     {
-        Ascender = (double)-Font.OS2.STypoAscender / Font.FontHeader.UnitsPerEm,
-        Descender = (double)-Font.OS2.STypoDescender / Font.FontHeader.UnitsPerEm,
+        Ascender = (double)-Font.HorizontalHeader.Ascender / Font.FontHeader.UnitsPerEm,
+        Descender = (double)-Font.HorizontalHeader.Descender / Font.FontHeader.UnitsPerEm,
         Width = (double)Font.MeasureString(s) / 1000,
     };
 
