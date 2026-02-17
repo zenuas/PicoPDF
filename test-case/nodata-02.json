@@ -1,0 +1,34 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": "Meiryo Bold",
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "TextStyleテスト", "Size": 30, "X": 10, "Y": 0},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y":  40, "Style": "Underline"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y":  80, "Style": "DoubleUnderline"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 120, "Style": "BorderTop"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 160, "Style": "BorderBottom"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 200, "Style": "Strikethrough"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 240, "Style": "DoubleStrikethrough"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 280, "Style": "Strikethrough, Underline, BorderTop, BorderBottom, BorderLeft, BorderRight"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 280, "Style": "DoubleStrikethrough", "Color": "Red"},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Sikutyouson", "Size": 10, "X": 60, "Y": 0},
+			{"Type": "BindElement", "Bind": "Number",      "Size": 10, "X": 100, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50},
+			{"Type": "LineElement", "X": 10,  "Y": 12, "Width": 150, "Height": 0, "Color": "Gray"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 180, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Tiiki"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 230, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Todouhuken"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 280, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Tiiki"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 330, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Todouhuken"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 380, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "All"},
+		]},
+	],
+}

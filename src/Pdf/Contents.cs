@@ -64,13 +64,18 @@ public class Contents : PdfObject
         }
         if (style.HasFlag(TextStyle.DoubleUnderline))
         {
-            DrawLine(posx, basey + 2, posx + width, basey + 2, c);
+            DrawLine(posx, basey + 1, posx + width, basey + 1, c);
+            DrawLine(posx, basey - 1, posx + width, basey - 1, c);
         }
         if ((style & (TextStyle.Strikethrough | TextStyle.DoubleStrikethrough)) > 0)
         {
-            var center = posy + ((basey - posy) / 2);
+            var center = posy + (height / 2);
             if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(posx, center, posx + width, center, c);
-            if (style.HasFlag(TextStyle.DoubleStrikethrough)) DrawLine(posx, center + 2, posx + width, center + 2, c);
+            if (style.HasFlag(TextStyle.DoubleStrikethrough))
+            {
+                DrawLine(posx, center + 1, posx + width, center + 1, c);
+                DrawLine(posx, center - 1, posx + width, center - 1, c);
+            }
         }
         if (style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
         {
