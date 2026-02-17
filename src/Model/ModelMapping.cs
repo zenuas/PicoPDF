@@ -61,7 +61,7 @@ public static class ModelMapping
                     var allbox = PdfUtility.MeasureTextFontBox(textfonts);
 
                     var size = textmodel.Style.HasFlag(TextStyle.ShrinkToFit) && textmodel.Width < (allbox.Width * textmodel.Size) ? textmodel.Width / allbox.Width : textmodel.Size;
-                    posy += -allbox.Top * size;
+                    posy += -allbox.Ascender * size;
                     switch (textmodel.Alignment)
                     {
                         case TextAlignment.Center:

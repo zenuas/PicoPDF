@@ -65,7 +65,7 @@ public static class PdfUtility
 
     public static Type0Font GetTextFont(int c, string[] fonts, Func<string, Type0Font> fontget) => fonts.Select(fontget).Where(x => x.Font.CharToGID(c) > 0).First();
 
-    public static Position MeasureTextFontBox((string Text, Type0Font Font)[] textfonts) => textfonts
+    public static FontBox MeasureTextFontBox((string Text, Type0Font Font)[] textfonts) => textfonts
         .Select(x => x.Font.MeasureStringBox(x.Text))
-        .Aggregate(new Position(), (acc, x) => new(0, Math.Min(acc.Top, x.Top), acc.Right + x.Right, Math.Max(acc.Bottom, x.Bottom)));
+        .Aggregate(new FontBox(), (acc, x) => new(Math.Min(acc.Ascender, x.Ascender), Math.Max(acc.Descender, x.Descender), acc.Width + x.Width));
 }
