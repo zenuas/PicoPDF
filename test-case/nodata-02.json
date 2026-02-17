@@ -18,6 +18,9 @@
 			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 240, "Style": "DoubleStrikethrough"},
 			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 280, "Style": "Strikethrough, Underline, BorderTop, BorderBottom, BorderLeft, BorderRight"},
 			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 280, "Style": "DoubleStrikethrough", "Color": "Red"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 320, "Style": "ShrinkToFit, BorderTop, BorderBottom, BorderLeft, BorderRight", "Width": 100},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 360, "Style": "Clipping, BorderTop, BorderBottom, BorderLeft, BorderRight", "Width": 100},
+			{"Type": "TextElement", "Text": "aijpqあいうえお", "Size": 20, "X": 10, "Y": 400, "Style": "Clipping, BorderTop, BorderBottom, BorderLeft, BorderRight", "Width": 200},
 		]},
 		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
 			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 10, "Y": 0},

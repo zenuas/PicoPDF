@@ -89,7 +89,14 @@ public static class ModelMapping
                         text_left += box.Width * size;
                     }
 
-                    if (textmodel.Style != TextStyle.None) page.Contents.DrawTextStyle(textmodel.Style, model.X + left, model.Y + top, posy, allbox.Width * size, allbox.Height * size, color);
+                    if (textmodel.Style != TextStyle.None) page.Contents
+                            .DrawTextStyle(textmodel.Style,
+                                model.X + left,
+                                model.Y + top, posy,
+                                textmodel.Style.HasFlag(TextStyle.Clipping) ? Math.Min(textmodel.Width, allbox.Width * size) : allbox.Width * size,
+                                allbox.Height * size,
+                                color
+                            );
                 }
                 return;
 
