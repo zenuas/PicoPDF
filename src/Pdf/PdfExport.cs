@@ -35,8 +35,7 @@ public static class PdfExport
                 stream.Write(input.ToArray());
                 stream.Write("\nendstream\n");
             }
-            stream.Write("endobj\n");
-            stream.Write("\n");
+            stream.Write("endobj\n\n");
         });
 
         var startxref = stream.Position;
