@@ -70,7 +70,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
                 .Order()
                 .Select(x => (Char: x, GID: font.CharToGID(x), Width: font.MeasureGID(font.CharToGID(x))))
                 .Where(x => x.GID != 0 && (FontDictionary.DW is not { } dw || x.Width != dw))
-                .Select(x => new ElementString { Value = $"{x.GID}[{x.Width}]{(option.Debug ? $" %{x.Char}" : "")}\n" })
+                .Select(x => new ElementString { Value = $"{x.GID}[{x.Width}]{(option.Debug ? $" %{Strings.ToStringByChars([x.Char])}" : "")}\n" })
             );
     }
 
