@@ -92,7 +92,7 @@ public static class ModelMapping
                                 posy,
                                 posx,
                                 basey,
-                                textmodel.Style.HasFlag(TextStyle.Clipping) ? textmodel.Width : width,
+                                textmodel.Width > 0 ? textmodel.Width : width,
                                 text_left,
                                 width,
                                 height,

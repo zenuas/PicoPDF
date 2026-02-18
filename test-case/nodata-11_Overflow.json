@@ -1,0 +1,32 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": ["Meiryo Bold", "Segoe UI Symbol"],
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "Overflowテスト", "Size": 30, "X": 10, "Y": 0},
+			{"Type": "TextElement", "Text": "Width指定はあるがテキスト長すぎた場合をOverflowと呼称する、Overflowという機能があるわけではない", "Size": 10, "X": 10, "Y": 40},
+			
+			{"Type": "TextElement", "Text": "Width指定はあるがStyle指定がないと見た目の変化はなし", "Size": 20, "X": 10, "Y":  80, "Width": 100},
+			{"Type": "TextElement", "Text": "UnderlineはWidthを無視して追従", "Size": 20, "X": 10, "Y": 120, "Width": 100, "Style": "Underline"},
+			{"Type": "TextElement", "Text": "BorderはWidthまでに制限される",  "Size": 20, "X": 10, "Y": 160, "Width": 100, "Style": "BorderBottom"},
+			{"Type": "TextElement", "Text": "BorderはWidthまでに制限される",  "Size": 20, "X": 10, "Y": 200, "Width": 100, "Style": "BorderTop, BorderBottom, BorderLeft, BorderRight"},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 10, "Y": 0},
+			{"Type": "BindElement", "Bind": "Sikutyouson", "Size": 10, "X": 60, "Y": 0},
+			{"Type": "BindElement", "Bind": "Number",      "Size": 10, "X": 100, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50},
+			{"Type": "LineElement", "X": 10,  "Y": 12, "Width": 150, "Height": 0, "Color": "Gray"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 180, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Tiiki"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 230, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Todouhuken"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 280, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Tiiki"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 330, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Todouhuken"},
+			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 380, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "All"},
+		]},
+	],
+}
