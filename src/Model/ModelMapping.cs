@@ -87,17 +87,8 @@ public static class ModelMapping
                         text_shift += box.Width * size;
                     }
 
-                    if (textmodel.Style != TextStyle.None) page.Contents
-                            .DrawTextStyle(textmodel.Style,
-                                posy,
-                                posx,
-                                basey,
-                                textmodel.Width > 0 ? textmodel.Width : width,
-                                text_left,
-                                width,
-                                height,
-                                color
-                            );
+                    if ((textmodel.Style & TextStyle.TextStyleMask) > 0) page.Contents.DrawTextStyle(textmodel.Style, posy, text_left, basey, width, height, color);
+                    if ((textmodel.Style & TextStyle.BorderStyleMask) > 0) page.Contents.DrawBorderStyle(textmodel.Style, posy, posx, basey, textmodel.Width > 0 ? textmodel.Width : width, height, color);
                 }
                 return;
 

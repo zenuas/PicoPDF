@@ -17,7 +17,7 @@ public class ContentsTest
         var left = 1;
         var right = 1 + 4;
 
-        contens.DrawTextStyle(style, top, left, 0, right - left, 0, 0, bottom - top);
+        contens.DrawBorderStyle(style, top, left, 0, right - left, bottom - top);
         return [.. contens.Operations
                 .OfType<DrawLine>()
                 .Select(line => line.Points.Select(pt => ((int)pt.X.ToPoint(), (int)pt.Y.ToPoint())).ToArray())
@@ -25,7 +25,7 @@ public class ContentsTest
     }
 
     [Fact]
-    public void DrawTextStyleTest()
+    public void DrawBorderStyleTest()
     {
         var contens = new Contents() { Page = null! };
 

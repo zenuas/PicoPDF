@@ -16,4 +16,7 @@ public enum TextStyle
     DoubleStrikethrough = 1 << 7,
     ShrinkToFit = 1 << 8,
     Clipping = 1 << 9,
+
+    TextStyleMask = Underline | DoubleUnderline | Strikethrough | DoubleStrikethrough,
+    BorderStyleMask = BorderTop | BorderLeft | BorderRight | BorderBottom,
 }
