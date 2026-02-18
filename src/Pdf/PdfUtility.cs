@@ -39,11 +39,19 @@ public static class PdfUtility
 
     public static IFontRegister CreateDefaultFontRegister() => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetSystemFontDirectories()]));
 
-    public static IEnumerable<(string Text, Type0Font Font)> GetTextFont(string s, Type0Font[] fonts)
+    public static IEnumerable<(string Text, Type0Font Font)[]> GetMultilineTextFont(string text, Type0Font[] fonts)
     {
-        if (s.Length == 0) yield break;
+        foreach (var line in text.SplitLine())
+        {
+            yield return GetTextFont(line, fonts).ToArray();
+        }
+    }
 
-        var xs = s.ToUtf32CharArray().Select(x => (Char: x, Font: GetTextFont(x, fonts))).ToArray();
+    public static IEnumerable<(string Text, Type0Font Font)> GetTextFont(string line, Type0Font[] fonts)
+    {
+        if (line.Length == 0) yield break;
+
+        var xs = line.ToUtf32CharArray().Select(x => (Char: x, Font: GetTextFont(x, fonts))).ToArray();
         var prev_font = xs[0].Font;
         var prev_text = new List<int>() { xs[0].Char };
         for (var i = 1; i < xs.Length; i++)
@@ -67,5 +75,5 @@ public static class PdfUtility
 
     public static FontBox MeasureTextFontBox((string Text, Type0Font Font)[] textfonts) => textfonts
         .Select(x => x.Font.MeasureStringBox(x.Text))
-        .Aggregate(new FontBox(), (acc, x) => new(Math.Min(acc.Ascender, x.Ascender), Math.Max(acc.Descender, x.Descender), acc.Width + x.Width));
+        .Aggregate(new FontBox(), (acc, x) => new(Math.Min(acc.Ascender, x.Ascender), Math.Max(acc.Descender, x.Descender), Math.Max(acc.LineGap, x.LineGap), acc.Width + x.Width));
 }

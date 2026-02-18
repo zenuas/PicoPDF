@@ -78,6 +78,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
     {
         Ascender = (double)-Font.HorizontalHeader.Ascender / Font.FontHeader.UnitsPerEm,
         Descender = (double)-Font.HorizontalHeader.Descender / Font.FontHeader.UnitsPerEm,
+        LineGap = (double)Font.HorizontalHeader.LineGap / Font.FontHeader.UnitsPerEm,
         Width = (double)Font.MeasureString(s) / 1000,
     };
 

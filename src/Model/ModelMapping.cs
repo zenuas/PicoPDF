@@ -57,31 +57,35 @@ public static class ModelMapping
         {
             case ITextModel textmodel:
                 {
-                    var textfonts = PdfUtility.GetTextFont(textmodel.Text, [.. textmodel.Font.Select(fontget)]).ToArray();
-                    var allbox = PdfUtility.MeasureTextFontBox(textfonts);
-
-                    var size = textmodel.Style.HasFlag(TextStyle.ShrinkToFit) && textmodel.Width < (allbox.Width * textmodel.Size) ? textmodel.Width / allbox.Width : textmodel.Size;
-                    var width = allbox.Width * size;
-                    var height = allbox.Height * size;
-                    var basey = posy - (allbox.Ascender * size);
-                    var text_left = textmodel.Alignment switch
+                    var lines = PdfUtility.GetMultilineTextFont(textmodel.Text, [.. textmodel.Font.Select(fontget)]).ToArray();
+                    var linetop = posy;
+                    foreach (var textfonts in lines)
                     {
-                        TextAlignment.Center => posx + ((textmodel.Width - width) / 2),
-                        TextAlignment.End => posx + textmodel.Width - width,
-                        _ => posx,
-                    };
-                    var rect = !textmodel.Style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
-                    {
-                        X = new PointValue(posx),
-                        Y = new PointValue(posy),
-                        Width = new PointValue(textmodel.Width),
-                        Height = new PointValue(height),
-                    };
-                    var color = textmodel.Color?.ToDeviceRGB();
+                        var allbox = PdfUtility.MeasureTextFontBox(textfonts);
+                        var size = textmodel.Style.HasFlag(TextStyle.ShrinkToFit) && textmodel.Width < (allbox.Width * textmodel.Size) ? textmodel.Width / allbox.Width : textmodel.Size;
+                        var width = allbox.Width * size;
+                        var height = allbox.Height * size;
+                        var basey = linetop - (allbox.Ascender * size);
+                        var text_left = textmodel.Alignment switch
+                        {
+                            TextAlignment.Center => posx + ((textmodel.Width - width) / 2),
+                            TextAlignment.End => posx + textmodel.Width - width,
+                            _ => posx,
+                        };
+                        var rect = !textmodel.Style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
+                        {
+                            X = new PointValue(posx),
+                            Y = new PointValue(linetop),
+                            Width = new PointValue(textmodel.Width),
+                            Height = new PointValue(height),
+                        };
+                        var color = textmodel.Color?.ToDeviceRGB();
 
-                    page.Contents.DrawTextFont(textfonts, text_left, basey, size, color, rect);
-                    if ((textmodel.Style & TextStyle.TextStyleMask) > 0) page.Contents.DrawTextStyle(textmodel.Style, posy, text_left, basey, width, height, color);
-                    if ((textmodel.Style & TextStyle.BorderStyleMask) > 0) page.Contents.DrawBorderStyle(textmodel.Style, posy, posx, textmodel.Width > 0 ? textmodel.Width : width, height, color);
+                        page.Contents.DrawTextFont(textfonts, text_left, basey, size, color, rect);
+                        if ((textmodel.Style & TextStyle.TextStyleMask) > 0) page.Contents.DrawTextStyle(textmodel.Style, linetop, text_left, basey, width, height, color);
+                        if ((textmodel.Style & TextStyle.BorderStyleMask) > 0) page.Contents.DrawBorderStyle(textmodel.Style, linetop, posx, textmodel.Width > 0 ? textmodel.Width : width, height, color);
+                        linetop += height + (allbox.LineGap * size);
+                    }
                 }
                 return;
 
