@@ -6,6 +6,7 @@ using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.Operation;
 using PicoPDF.Pdf.XObject;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PicoPDF.Pdf;
 
@@ -104,11 +105,17 @@ public class Contents : PdfObject
 
     public void DrawLine(double start_x, double start_y, double end_x, double end_y, IColor? c = null, double? linewidth = null)
     {
-        DrawLine(
-                new PointValue(start_x),
-                new PointValue(start_y),
-                new PointValue(end_x),
-                new PointValue(end_y),
+        DrawLines(
+                [(new PointValue(start_x), new PointValue(start_y)), (new PointValue(end_x), new PointValue(end_y))],
+                c,
+                new PointValue(linewidth ?? 1)
+            );
+    }
+
+    public void DrawLines((double X, double Y)[] points, IColor? c = null, double? linewidth = null)
+    {
+        DrawLines(
+                [.. points.Select(x => (new PointValue(x.X), new PointValue(x.Y)))],
                 c,
                 new PointValue(linewidth ?? 1)
             );
@@ -116,12 +123,18 @@ public class Contents : PdfObject
 
     public void DrawLine(IPoint start_x, IPoint start_y, IPoint end_x, IPoint end_y, IColor? c = null, IPoint? linewidth = null)
     {
+        DrawLines(
+                [(start_x, start_y), (end_x, end_y)],
+                c,
+                linewidth
+            );
+    }
+
+    public void DrawLines((IPoint X, IPoint Y)[] points, IColor? c = null, IPoint? linewidth = null)
+    {
         Operations.Add(new DrawLine()
         {
-            StartX = start_x,
-            StartY = start_y,
-            EndX = end_x,
-            EndY = end_y,
+            Points = points,
             Color = c,
             LineWidth = linewidth ?? new PointValue(1),
         });
