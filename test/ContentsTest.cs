@@ -12,11 +12,11 @@ public class ContentsTest
     {
         var contens = new Contents() { Page = null! };
 
-        var width = 4;
-        var height = 8;
-        var top = 2;
+        var width = 1 << 0;
+        var height = 1 << 1;
+        var top = 1 << 2;
+        var left = 1 << 3;
         var bottom = top + height;
-        var left = 1;
         var right = left + width;
 
         contens.DrawBorderStyle(style, top, left, width, height);
@@ -29,11 +29,11 @@ public class ContentsTest
     [Fact]
     public void DrawBorderStyleTest()
     {
-        var width = 4;
-        var height = 8;
-        var top = 2;
+        var width = 1 << 0;
+        var height = 1 << 1;
+        var top = 1 << 2;
+        var left = 1 << 3;
         var bottom = top + height;
-        var left = 1;
         var right = left + width;
 
         Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderTop), [[(left, top), (right, top)]]);
