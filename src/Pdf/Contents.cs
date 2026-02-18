@@ -15,10 +15,10 @@ public class Contents : PdfObject
     public required Page Page { get; init; }
     public List<IOperation> Operations { get; init; } = [];
 
-    public void DrawText(string s, double left, double basey, double size, IFont font, IColor? c = null, Rectangle? clip = null)
+    public void DrawText(string text, double left, double basey, double size, IFont font, IColor? c = null, Rectangle? clip = null)
     {
         DrawText(
-                s,
+                text,
                 new PointValue(left),
                 new PointValue(basey),
                 size,
@@ -28,12 +28,12 @@ public class Contents : PdfObject
             );
     }
 
-    public void DrawText(string s, IPoint left, IPoint basey, double size, IFont font, IColor? c = null, Rectangle? clip = null)
+    public void DrawText(string text, IPoint left, IPoint basey, double size, IFont font, IColor? c = null, Rectangle? clip = null)
     {
-        if (font is IFontChars fontchars) fontchars.WriteString(s);
+        if (font is IFontChars fontchars) fontchars.WriteString(text);
         var str = new DrawString()
         {
-            Text = s,
+            Text = text,
             X = left,
             Y = basey,
             FontSize = size,
