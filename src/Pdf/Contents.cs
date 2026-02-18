@@ -15,7 +15,7 @@ public class Contents : PdfObject
     public required Page Page { get; init; }
     public List<IOperation> Operations { get; init; } = [];
 
-    public void DrawText(string text, double left, double basey, double size, IFont font, IColor? c = null, Rectangle? clip = null)
+    public void DrawText(string text, double left, double basey, double size, IFont font, IColor? color = null, Rectangle? clip = null)
     {
         DrawText(
                 text,
@@ -23,12 +23,12 @@ public class Contents : PdfObject
                 new PointValue(basey),
                 size,
                 font,
-                c,
+                color,
                 clip
             );
     }
 
-    public void DrawText(string text, IPoint left, IPoint basey, double size, IFont font, IColor? c = null, Rectangle? clip = null)
+    public void DrawText(string text, IPoint left, IPoint basey, double size, IFont font, IColor? color = null, Rectangle? clip = null)
     {
         if (font is IFontChars fontchars) fontchars.WriteString(text);
         var str = new DrawString()
@@ -38,7 +38,7 @@ public class Contents : PdfObject
             Y = basey,
             FontSize = size,
             Font = font,
-            Color = c,
+            Color = color,
         };
         if (clip is { } r)
         {
@@ -57,18 +57,18 @@ public class Contents : PdfObject
         }
     }
 
-    public void DrawTextFont((string Text, Type0Font Font)[] textfonts, double left, double basey, double size, IColor? c = null, Rectangle? clip = null)
+    public void DrawTextFont((string Text, Type0Font Font)[] textfonts, double left, double basey, double size, IColor? color = null, Rectangle? clip = null)
     {
         var left_shift = left;
         foreach (var (text, font) in textfonts)
         {
             var box = font.MeasureStringBox(text);
-            DrawText(text, left_shift, basey, size, font, c, clip);
+            DrawText(text, left_shift, basey, size, font, color, clip);
             left_shift += box.Width * size;
         }
     }
 
-    public double DrawMultilineText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? c = null)
+    public double DrawMultilineText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
     {
         var linetop = top;
         foreach (var textfonts in PdfUtility.GetMultilineTextFont(text, fonts))
@@ -92,41 +92,41 @@ public class Contents : PdfObject
                 Height = new PointValue(text_height),
             };
 
-            DrawTextFont(textfonts, text_left, basey, text_size, c, rect);
-            if ((style & TextStyle.TextStyleMask) > 0) DrawTextStyle(style, linetop, text_left, basey, text_width, text_height, c);
-            if ((style & TextStyle.BorderStyleMask) > 0) DrawBorderStyle(style, linetop, left, width > 0 ? width : text_width, text_height, c);
+            DrawTextFont(textfonts, text_left, basey, text_size, color, rect);
+            if ((style & TextStyle.TextStyleMask) > 0) DrawTextStyle(style, linetop, text_left, basey, text_width, text_height, color);
+            if ((style & TextStyle.BorderStyleMask) > 0) DrawBorderStyle(style, linetop, left, width > 0 ? width : text_width, text_height, color);
             linetop += text_height + (allbox.LineGap * text_size);
         }
         return linetop - top;
     }
 
-    public void DrawTextStyle(TextStyle style, double top, double left, double basey, double width, double height, IColor? c = null)
+    public void DrawTextStyle(TextStyle style, double top, double left, double basey, double width, double height, IColor? color = null)
     {
         var right = left + width;
         var linewidth = height / 20;
 
         if (style.HasFlag(TextStyle.Underline))
         {
-            DrawLine(left, basey + (linewidth * 2), right, basey + (linewidth * 2), c, linewidth * 2);
+            DrawLine(left, basey + (linewidth * 2), right, basey + (linewidth * 2), color, linewidth * 2);
         }
         if (style.HasFlag(TextStyle.DoubleUnderline))
         {
-            DrawLine(left, basey + linewidth, right, basey + linewidth, c, linewidth);
-            DrawLine(left, basey + (linewidth * 3), right, basey + (linewidth * 3), c, linewidth);
+            DrawLine(left, basey + linewidth, right, basey + linewidth, color, linewidth);
+            DrawLine(left, basey + (linewidth * 3), right, basey + (linewidth * 3), color, linewidth);
         }
         if ((style & (TextStyle.Strikethrough | TextStyle.DoubleStrikethrough)) > 0)
         {
             var center = top + (height / 2);
-            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(left, center, right, center, c, linewidth);
+            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(left, center, right, center, color, linewidth);
             if (style.HasFlag(TextStyle.DoubleStrikethrough))
             {
-                DrawLine(left, center + linewidth, right, center + linewidth, c, linewidth);
-                DrawLine(left, center - linewidth, right, center - linewidth, c, linewidth);
+                DrawLine(left, center + linewidth, right, center + linewidth, color, linewidth);
+                DrawLine(left, center - linewidth, right, center - linewidth, color, linewidth);
             }
         }
     }
 
-    public void DrawBorderStyle(TextStyle style, double top, double left, double width, double height, IColor? c = null)
+    public void DrawBorderStyle(TextStyle style, double top, double left, double width, double height, IColor? color = null)
     {
         var bottom = top + height;
         var right = left + width;
@@ -134,26 +134,26 @@ public class Contents : PdfObject
 
         if (style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
         {
-            DrawRectangle(left, top, width, height, c, linewidth);
+            DrawRectangle(left, top, width, height, color, linewidth);
         }
         if ((style & (TextStyle.BorderTop | TextStyle.BorderBottom)) == 0 || (style & (TextStyle.BorderLeft | TextStyle.BorderRight)) == 0)
         {
             // draw multi strokes
             if (style.HasFlag(TextStyle.BorderTop))
             {
-                DrawLine(left, top, right, top, c, linewidth);
+                DrawLine(left, top, right, top, color, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderBottom))
             {
-                DrawLine(left, bottom, right, bottom, c, linewidth);
+                DrawLine(left, bottom, right, bottom, color, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderLeft))
             {
-                DrawLine(left, top, left, bottom, c, linewidth);
+                DrawLine(left, top, left, bottom, color, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderRight))
             {
-                DrawLine(right, top, right, bottom, c, linewidth);
+                DrawLine(right, top, right, bottom, color, linewidth);
             }
         }
         else
@@ -161,69 +161,69 @@ public class Contents : PdfObject
             // draw one stroke
             switch (style & (TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
             {
-                case TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(left, top), (right, top), (right, bottom)], c, linewidth); break;
-                case TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(right, top), (right, bottom), (left, bottom)], c, linewidth); break;
-                case TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(right, bottom), (left, bottom), (left, top)], c, linewidth); break;
-                case TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(left, bottom), (left, top), (right, top)], c, linewidth); break;
+                case TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(left, top), (right, top), (right, bottom)], color, linewidth); break;
+                case TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(right, top), (right, bottom), (left, bottom)], color, linewidth); break;
+                case TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(right, bottom), (left, bottom), (left, top)], color, linewidth); break;
+                case TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(left, bottom), (left, top), (right, top)], color, linewidth); break;
 
-                case TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(left, top), (right, top), (right, bottom), (left, bottom)], c, linewidth); break;
-                case TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(right, top), (right, bottom), (left, bottom), (left, top)], c, linewidth); break;
-                case TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(right, bottom), (left, bottom), (left, top), (right, top)], c, linewidth); break;
-                case TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(left, bottom), (left, top), (right, top), (right, bottom)], c, linewidth); break;
+                case TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(left, top), (right, top), (right, bottom), (left, bottom)], color, linewidth); break;
+                case TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(right, top), (right, bottom), (left, bottom), (left, top)], color, linewidth); break;
+                case TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(right, bottom), (left, bottom), (left, top), (right, top)], color, linewidth); break;
+                case TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(left, bottom), (left, top), (right, top), (right, bottom)], color, linewidth); break;
             }
         }
     }
 
-    public void DrawLine(double start_x, double start_y, double end_x, double end_y, IColor? c = null, double? linewidth = null)
+    public void DrawLine(double start_x, double start_y, double end_x, double end_y, IColor? color = null, double? linewidth = null)
     {
         DrawLines(
                 [(new PointValue(start_x), new PointValue(start_y)), (new PointValue(end_x), new PointValue(end_y))],
-                c,
+                color,
                 new PointValue(linewidth ?? 1)
             );
     }
 
-    public void DrawLines((double X, double Y)[] points, IColor? c = null, double? linewidth = null)
+    public void DrawLines((double X, double Y)[] points, IColor? color = null, double? linewidth = null)
     {
         DrawLines(
                 [.. points.Select(x => (new PointValue(x.X), new PointValue(x.Y)))],
-                c,
+                color,
                 new PointValue(linewidth ?? 1)
             );
     }
 
-    public void DrawLine(IPoint start_x, IPoint start_y, IPoint end_x, IPoint end_y, IColor? c = null, IPoint? linewidth = null)
+    public void DrawLine(IPoint start_x, IPoint start_y, IPoint end_x, IPoint end_y, IColor? color = null, IPoint? linewidth = null)
     {
         DrawLines(
                 [(start_x, start_y), (end_x, end_y)],
-                c,
+                color,
                 linewidth
             );
     }
 
-    public void DrawLines((IPoint X, IPoint Y)[] points, IColor? c = null, IPoint? linewidth = null)
+    public void DrawLines((IPoint X, IPoint Y)[] points, IColor? color = null, IPoint? linewidth = null)
     {
         Operations.Add(new DrawLine()
         {
             Points = points,
-            Color = c,
+            Color = color,
             LineWidth = linewidth ?? new PointValue(1),
         });
     }
 
-    public void DrawRectangle(double x, double y, double width, double height, IColor? c = null, double? linewidth = null)
+    public void DrawRectangle(double x, double y, double width, double height, IColor? color = null, double? linewidth = null)
     {
         DrawRectangle(
                 new PointValue(x),
                 new PointValue(y),
                 new PointValue(width),
                 new PointValue(height),
-                c,
+                color,
                 new PointValue(linewidth ?? 1)
             );
     }
 
-    public void DrawRectangle(IPoint x, IPoint y, IPoint width, IPoint height, IColor? c = null, IPoint? linewidth = null)
+    public void DrawRectangle(IPoint x, IPoint y, IPoint width, IPoint height, IColor? color = null, IPoint? linewidth = null)
     {
         Operations.Add(new DrawRectangle()
         {
@@ -231,7 +231,7 @@ public class Contents : PdfObject
             Y = y,
             Width = width,
             Height = height,
-            Color = c,
+            Color = color,
             LineWidth = linewidth ?? new PointValue(1),
         });
     }
