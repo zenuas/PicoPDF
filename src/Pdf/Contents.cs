@@ -75,7 +75,7 @@ public class Contents : PdfObject
         if ((style & (TextStyle.Strikethrough | TextStyle.DoubleStrikethrough)) > 0)
         {
             var center = top + (height / 2);
-            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(left, center, right, center, c, linewidth * 2);
+            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(left, center, right, center, c, linewidth);
             if (style.HasFlag(TextStyle.DoubleStrikethrough))
             {
                 DrawLine(left, center + linewidth, right, center + linewidth, c, linewidth);
