@@ -33,6 +33,8 @@ public static class ManualCreate
         var textfonts = PdfUtility.GetTextFont("aijpqあいうえお🍣", [ttf, emoji]).ToArray();
         page.Contents.DrawTextFont(textfonts, 100, 200, 12);
 
+        page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 100, 220, 12, ttf);
+
         doc.Save("test-case/manual-create.pdf", opt);
     }
 }
