@@ -60,44 +60,44 @@ public class Contents : PdfObject
     {
         if (style.HasFlag(TextStyle.Underline))
         {
-            DrawLine(posx, basey, posx + width, basey, c);
+            DrawLine(posx, basey + (height / 10), posx + width, basey + (height / 10), c, height / 10);
         }
         if (style.HasFlag(TextStyle.DoubleUnderline))
         {
-            DrawLine(posx, basey + 1, posx + width, basey + 1, c);
-            DrawLine(posx, basey - 1, posx + width, basey - 1, c);
+            DrawLine(posx, basey + (height / 20), posx + width, basey + (height / 20), c, height / 20);
+            DrawLine(posx, basey + (height / 20 * 3), posx + width, basey + (height / 20 * 3), c, height / 20);
         }
         if ((style & (TextStyle.Strikethrough | TextStyle.DoubleStrikethrough)) > 0)
         {
             var center = posy + (height / 2);
-            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(posx, center, posx + width, center, c);
+            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(posx, center, posx + width, center, c, height / 10);
             if (style.HasFlag(TextStyle.DoubleStrikethrough))
             {
-                DrawLine(posx, center + 1, posx + width, center + 1, c);
-                DrawLine(posx, center - 1, posx + width, center - 1, c);
+                DrawLine(posx, center + (height / 20), posx + width, center + (height / 20), c, height / 20);
+                DrawLine(posx, center - (height / 20), posx + width, center - (height / 20), c, height / 20);
             }
         }
         if (style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
         {
-            DrawRectangle(posx, posy, width, height, c);
+            DrawRectangle(posx, posy, width, height, c, height / 20);
         }
         else if ((style & (TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight)) > 0)
         {
             if (style.HasFlag(TextStyle.BorderTop))
             {
-                DrawLine(posx, posy, posx + width, posy, c);
+                DrawLine(posx, posy, posx + width, posy, c, height / 20);
             }
             if (style.HasFlag(TextStyle.BorderBottom))
             {
-                DrawLine(posx, posy + height, posx + width, posy + height, c);
+                DrawLine(posx, posy + height, posx + width, posy + height, c, height / 20);
             }
             if (style.HasFlag(TextStyle.BorderLeft))
             {
-                DrawLine(posx, posy, posx, posy + height, c);
+                DrawLine(posx, posy, posx, posy + height, c, height / 20);
             }
             if (style.HasFlag(TextStyle.BorderRight))
             {
-                DrawLine(posx + width, posy, posx + width, posy + height, c);
+                DrawLine(posx + width, posy, posx + width, posy + height, c, height / 20);
             }
         }
     }
