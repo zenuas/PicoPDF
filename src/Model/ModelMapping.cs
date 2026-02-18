@@ -62,25 +62,20 @@ public static class ModelMapping
 
                     var size = textmodel.Style.HasFlag(TextStyle.ShrinkToFit) && textmodel.Width < (allbox.Width * textmodel.Size) ? textmodel.Width / allbox.Width : textmodel.Size;
                     var basey = posy - (allbox.Ascender * size);
-                    switch (textmodel.Alignment)
+                    var text_left = textmodel.Alignment switch
                     {
-                        case TextAlignment.Center:
-                            posx += (textmodel.Width - (allbox.Width * size)) / 2;
-                            break;
-
-                        case TextAlignment.End:
-                            posx += textmodel.Width - (allbox.Width * size);
-                            break;
-                    }
+                        TextAlignment.Center => posx + (textmodel.Width - (allbox.Width * size)) / 2,
+                        TextAlignment.End => posx + textmodel.Width - (allbox.Width * size),
+                        _ => posx,
+                    };
                     var rect = !textmodel.Style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
                     {
-                        X = new PointValue(model.X + left),
-                        Y = new PointValue(model.Y + top),
+                        X = new PointValue(posx),
+                        Y = new PointValue(posy),
                         Width = new PointValue(textmodel.Width),
                         Height = new PointValue(allbox.Height * size),
                     };
 
-                    var text_left = posx;
                     var color = textmodel.Color?.ToDeviceRGB();
                     foreach (var (text, font) in textfonts)
                     {
@@ -91,8 +86,8 @@ public static class ModelMapping
 
                     if (textmodel.Style != TextStyle.None) page.Contents
                             .DrawTextStyle(textmodel.Style,
-                                model.Y + top,
-                                model.X + left,
+                                posy,
+                                posx,
                                 basey,
                                 textmodel.Style.HasFlag(TextStyle.Clipping) ? Math.Min(textmodel.Width, allbox.Width * size) : allbox.Width * size,
                                 allbox.Height * size,
