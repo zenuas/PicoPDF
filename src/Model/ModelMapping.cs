@@ -77,16 +77,9 @@ public static class ModelMapping
                         Width = new PointValue(textmodel.Width),
                         Height = new PointValue(height),
                     };
-
                     var color = textmodel.Color?.ToDeviceRGB();
-                    var text_shift = text_left;
-                    foreach (var (text, font) in textfonts)
-                    {
-                        var box = font.MeasureStringBox(text);
-                        page.Contents.DrawString(text, text_shift, basey, size, font, color, rect);
-                        text_shift += box.Width * size;
-                    }
 
+                    page.Contents.DrawStringFont(textfonts, text_left, basey, size, color, rect);
                     if ((textmodel.Style & TextStyle.TextStyleMask) > 0) page.Contents.DrawTextStyle(textmodel.Style, posy, text_left, basey, width, height, color);
                     if ((textmodel.Style & TextStyle.BorderStyleMask) > 0) page.Contents.DrawBorderStyle(textmodel.Style, posy, posx, textmodel.Width > 0 ? textmodel.Width : width, height, color);
                 }

@@ -57,6 +57,17 @@ public class Contents : PdfObject
         }
     }
 
+    public void DrawStringFont((string Text, Type0Font Font)[] textfonts, double x, double y, double size, IColor? c = null, Rectangle? clip = null)
+    {
+        var left = x;
+        foreach (var (text, font) in textfonts)
+        {
+            var box = font.MeasureStringBox(text);
+            DrawString(text, left, y, size, font, c, clip);
+            left += box.Width * size;
+        }
+    }
+
     public void DrawTextStyle(TextStyle style, double top, double left, double basey, double width, double height, IColor? c = null)
     {
         var right = left + width;
