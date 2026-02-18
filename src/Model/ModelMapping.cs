@@ -79,7 +79,7 @@ public static class ModelMapping
                     };
                     var color = textmodel.Color?.ToDeviceRGB();
 
-                    page.Contents.DrawStringFont(textfonts, text_left, basey, size, color, rect);
+                    page.Contents.DrawTextFont(textfonts, text_left, basey, size, color, rect);
                     if ((textmodel.Style & TextStyle.TextStyleMask) > 0) page.Contents.DrawTextStyle(textmodel.Style, posy, text_left, basey, width, height, color);
                     if ((textmodel.Style & TextStyle.BorderStyleMask) > 0) page.Contents.DrawBorderStyle(textmodel.Style, posy, posx, textmodel.Width > 0 ? textmodel.Width : width, height, color);
                 }

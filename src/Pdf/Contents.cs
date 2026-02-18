@@ -15,11 +15,11 @@ public class Contents : PdfObject
     public required Page Page { get; init; }
     public List<IOperation> Operations { get; init; } = [];
 
-    public void DrawString(string s, double x, double basey, double size, IFont font, IColor? c = null, Rectangle? clip = null)
+    public void DrawText(string s, double left, double basey, double size, IFont font, IColor? c = null, Rectangle? clip = null)
     {
-        DrawString(
+        DrawText(
                 s,
-                new PointValue(x),
+                new PointValue(left),
                 new PointValue(basey),
                 size,
                 font,
@@ -28,13 +28,13 @@ public class Contents : PdfObject
             );
     }
 
-    public void DrawString(string s, IPoint x, IPoint basey, double size, IFont font, IColor? c = null, Rectangle? clip = null)
+    public void DrawText(string s, IPoint left, IPoint basey, double size, IFont font, IColor? c = null, Rectangle? clip = null)
     {
         if (font is IFontChars fontchars) fontchars.WriteString(s);
         var str = new DrawString()
         {
             Text = s,
-            X = x,
+            X = left,
             Y = basey,
             FontSize = size,
             Font = font,
@@ -57,13 +57,13 @@ public class Contents : PdfObject
         }
     }
 
-    public void DrawStringFont((string Text, Type0Font Font)[] textfonts, double x, double basey, double size, IColor? c = null, Rectangle? clip = null)
+    public void DrawTextFont((string Text, Type0Font Font)[] textfonts, double x, double basey, double size, IColor? c = null, Rectangle? clip = null)
     {
         var left = x;
         foreach (var (text, font) in textfonts)
         {
             var box = font.MeasureStringBox(text);
-            DrawString(text, left, basey, size, font, c, clip);
+            DrawText(text, left, basey, size, font, c, clip);
             left += box.Width * size;
         }
     }
