@@ -1,9 +1,7 @@
 ﻿using Mina.Extension;
-using PicoPDF.Binder.Element;
 using PicoPDF.Image;
 using PicoPDF.Model.Element;
 using PicoPDF.Pdf;
-using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;
 using System;
@@ -55,38 +53,8 @@ public static class ModelMapping
         double posy = model.Y + top;
         switch (model)
         {
-            case ITextModel textmodel:
-                {
-                    var lines = PdfUtility.GetMultilineTextFont(textmodel.Text, [.. textmodel.Font.Select(fontget)]).ToArray();
-                    var linetop = posy;
-                    foreach (var textfonts in lines)
-                    {
-                        var allbox = PdfUtility.MeasureTextFontBox(textfonts);
-                        var size = textmodel.Style.HasFlag(TextStyle.ShrinkToFit) && textmodel.Width < (allbox.Width * textmodel.Size) ? textmodel.Width / allbox.Width : textmodel.Size;
-                        var width = allbox.Width * size;
-                        var height = allbox.Height * size;
-                        var basey = linetop - (allbox.Ascender * size);
-                        var text_left = textmodel.Alignment switch
-                        {
-                            TextAlignment.Center => posx + ((textmodel.Width - width) / 2),
-                            TextAlignment.End => posx + textmodel.Width - width,
-                            _ => posx,
-                        };
-                        var rect = !textmodel.Style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
-                        {
-                            X = new PointValue(posx),
-                            Y = new PointValue(linetop),
-                            Width = new PointValue(textmodel.Width),
-                            Height = new PointValue(height),
-                        };
-                        var color = textmodel.Color?.ToDeviceRGB();
-
-                        page.Contents.DrawTextFont(textfonts, text_left, basey, size, color, rect);
-                        if ((textmodel.Style & TextStyle.TextStyleMask) > 0) page.Contents.DrawTextStyle(textmodel.Style, linetop, text_left, basey, width, height, color);
-                        if ((textmodel.Style & TextStyle.BorderStyleMask) > 0) page.Contents.DrawBorderStyle(textmodel.Style, linetop, posx, textmodel.Width > 0 ? textmodel.Width : width, height, color);
-                        linetop += height + (allbox.LineGap * size);
-                    }
-                }
+            case ITextModel x:
+                _ = page.Contents.DrawMultilineText(x.Text, posy, posx, x.Size, [.. x.Font.Select(fontget)], x.Width, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
                 return;
 
             case ILineModel x:

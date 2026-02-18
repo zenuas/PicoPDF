@@ -57,15 +57,47 @@ public class Contents : PdfObject
         }
     }
 
-    public void DrawTextFont((string Text, Type0Font Font)[] textfonts, double x, double basey, double size, IColor? c = null, Rectangle? clip = null)
+    public void DrawTextFont((string Text, Type0Font Font)[] textfonts, double left, double basey, double size, IColor? c = null, Rectangle? clip = null)
     {
-        var left = x;
+        var left_shift = left;
         foreach (var (text, font) in textfonts)
         {
             var box = font.MeasureStringBox(text);
-            DrawText(text, left, basey, size, font, c, clip);
-            left += box.Width * size;
+            DrawText(text, left_shift, basey, size, font, c, clip);
+            left_shift += box.Width * size;
         }
+    }
+
+    public double DrawMultilineText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? c = null)
+    {
+        var linetop = top;
+        foreach (var textfonts in PdfUtility.GetMultilineTextFont(text, fonts))
+        {
+            var allbox = PdfUtility.MeasureTextFontBox(textfonts);
+            var text_size = style.HasFlag(TextStyle.ShrinkToFit) && width < (allbox.Width * size) ? width / allbox.Width : size;
+            var text_width = allbox.Width * text_size;
+            var text_height = allbox.Height * text_size;
+            var basey = linetop - (allbox.Ascender * text_size);
+            var text_left = alignment switch
+            {
+                TextAlignment.Center => left + ((width - text_width) / 2),
+                TextAlignment.End => left + width - text_width,
+                _ => left,
+            };
+            var rect = !style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
+            {
+                X = new PointValue(left),
+                Y = new PointValue(linetop),
+                Width = new PointValue(width),
+                Height = new PointValue(text_height),
+            };
+
+            DrawTextFont(textfonts, text_left, basey, text_size, c, rect);
+            if ((style & TextStyle.TextStyleMask) > 0) DrawTextStyle(style, linetop, text_left, basey, text_width, text_height, c);
+            if ((style & TextStyle.BorderStyleMask) > 0) DrawBorderStyle(style, linetop, left, width > 0 ? width : text_width, text_height, c);
+            linetop += text_height + (allbox.LineGap * text_size);
+        }
+        return linetop - top;
     }
 
     public void DrawTextStyle(TextStyle style, double top, double left, double basey, double width, double height, IColor? c = null)

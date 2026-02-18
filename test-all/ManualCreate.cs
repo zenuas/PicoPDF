@@ -33,14 +33,7 @@ public static class ManualCreate
         var textfonts = PdfUtility.GetTextFont("aijpqあいうえお🍣", [ttf, emoji]).ToArray();
         page.Contents.DrawTextFont(textfonts, 100, 200, 12);
 
-        var lines = PdfUtility.GetMultilineTextFont("途中で\n改行コードの\r\n入った\rテキストのテスト", [ttf, emoji]).ToArray();
-        double y = 220;
-        foreach (var line in lines)
-        {
-            var box = PdfUtility.MeasureTextFontBox(line);
-            page.Contents.DrawTextFont(line, 100, y, 12);
-            y += (box.Height + box.LineGap) * 12;
-        }
+        _ = page.Contents.DrawMultilineText("途中で\n改行コードの\r\n入った\rテキストのテスト", 220, 100, 12, [ttf, emoji]);
 
         doc.Save("test-case/manual-create.pdf", opt);
     }
