@@ -132,7 +132,7 @@ public class Contents : PdfObject
         var right = left + width;
         var linewidth = height / 20;
 
-        if (style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
+        if (style.HasFlag(TextStyle.Border))
         {
             DrawRectangle(left, top, width, height, color, linewidth);
         }
@@ -159,7 +159,7 @@ public class Contents : PdfObject
         else
         {
             // draw one stroke
-            switch (style & (TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
+            switch (style & TextStyle.BorderStyleMask)
             {
                 case TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(left, top), (right, top), (right, bottom)], color, linewidth); break;
                 case TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(right, top), (right, bottom), (left, bottom)], color, linewidth); break;
