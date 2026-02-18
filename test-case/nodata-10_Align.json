@@ -26,9 +26,13 @@
 			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size": 20, "X": 10, "Y": 440, "Width": 100, "Alignment": "Center", "Style": "Clipping"},
 			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size": 20, "X": 10, "Y": 480, "Width": 100, "Alignment": "End",    "Style": "Clipping"},
 			
-			{"Type": "TextElement", "Text": "aijpq",             "Size": 20, "X": 10, "Y": 520, "Width": 100, "Alignment": "Start",  "Style": "Clipping, Underline"},
-			{"Type": "TextElement", "Text": "aijpq",             "Size": 20, "X": 10, "Y": 560, "Width": 100, "Alignment": "Center", "Style": "Clipping, Underline"},
-			{"Type": "TextElement", "Text": "aijpq",             "Size": 20, "X": 10, "Y": 600, "Width": 100, "Alignment": "End",    "Style": "Clipping, Underline"},
+			{"Type": "TextElement", "Text": "aijpq",             "Size": 20, "X": 10, "Y": 520, "Width": 100, "Alignment": "Start",  "Style": "Clipping, BorderBottom"},
+			{"Type": "TextElement", "Text": "aijpq",             "Size": 20, "X": 10, "Y": 560, "Width": 100, "Alignment": "Center", "Style": "Clipping, BorderBottom"},
+			{"Type": "TextElement", "Text": "aijpq",             "Size": 20, "X": 10, "Y": 600, "Width": 100, "Alignment": "End",    "Style": "Clipping, BorderBottom"},
+			
+			{"Type": "TextElement", "Text": "aijpq",             "Size": 20, "X": 10, "Y": 640, "Width": 100, "Alignment": "Start",  "Style": "Clipping, Underline"},
+			{"Type": "TextElement", "Text": "aijpq",             "Size": 20, "X": 10, "Y": 680, "Width": 100, "Alignment": "Center", "Style": "Clipping, Underline"},
+			{"Type": "TextElement", "Text": "aijpq",             "Size": 20, "X": 10, "Y": 720, "Width": 100, "Alignment": "End",    "Style": "Clipping, Underline"},
 		]},
 		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
 			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 10, "Y": 0},

@@ -79,11 +79,12 @@ public static class ModelMapping
                     };
 
                     var color = textmodel.Color?.ToDeviceRGB();
+                    var text_shift = text_left;
                     foreach (var (text, font) in textfonts)
                     {
                         var box = font.MeasureStringBox(text);
-                        page.Contents.DrawString(text, text_left, basey, size, font, color, rect);
-                        text_left += box.Width * size;
+                        page.Contents.DrawString(text, text_shift, basey, size, font, color, rect);
+                        text_shift += box.Width * size;
                     }
 
                     if (textmodel.Style != TextStyle.None) page.Contents
@@ -91,7 +92,9 @@ public static class ModelMapping
                                 posy,
                                 posx,
                                 basey,
-                                textmodel.Style.HasFlag(TextStyle.Clipping) ? Math.Min(textmodel.Width, width) : width,
+                                textmodel.Style.HasFlag(TextStyle.Clipping) ? textmodel.Width : width,
+                                text_left,
+                                width,
                                 height,
                                 color
                             );

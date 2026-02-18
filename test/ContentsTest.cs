@@ -8,7 +8,7 @@ namespace PicoPDF.Test;
 
 public class ContentsTest
 {
-    public static (int X, int Y)[][] GetStrokes(TextStyle style)
+    public static (int X, int Y)[][] GetBorderStrokes(TextStyle style)
     {
         var contens = new Contents() { Page = null! };
 
@@ -17,7 +17,7 @@ public class ContentsTest
         var left = 1;
         var right = 1 + 4;
 
-        contens.DrawTextStyle(style, top, left, 0, right - left, bottom - top);
+        contens.DrawTextStyle(style, top, left, 0, right - left, 0, 0, bottom - top);
         return [.. contens.Operations
                 .OfType<DrawLine>()
                 .Select(line => line.Points.Select(pt => ((int)pt.X.ToPoint(), (int)pt.Y.ToPoint())).ToArray())
@@ -34,22 +34,22 @@ public class ContentsTest
         var left = 1;
         var right = 1 + 4;
 
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderTop), [[(left, top), (right, top)]]);
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderBottom), [[(left, bottom), (right, bottom)]]);
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderLeft), [[(left, top), (left, bottom)]]);
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderRight), [[(right, top), (right, bottom)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderTop), [[(left, top), (right, top)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderBottom), [[(left, bottom), (right, bottom)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderLeft), [[(left, top), (left, bottom)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderRight), [[(right, top), (right, bottom)]]);
 
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderTop | TextStyle.BorderBottom), [[(left, top), (right, top)], [(left, bottom), (right, bottom)]]);
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderLeft | TextStyle.BorderRight), [[(left, top), (left, bottom)], [(right, top), (right, bottom)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderTop | TextStyle.BorderBottom), [[(left, top), (right, top)], [(left, bottom), (right, bottom)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderLeft | TextStyle.BorderRight), [[(left, top), (left, bottom)], [(right, top), (right, bottom)]]);
 
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderTop | TextStyle.BorderRight), [[(left, top), (right, top), (right, bottom)]]);
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderRight | TextStyle.BorderBottom), [[(right, top), (right, bottom), (left, bottom)]]);
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderBottom | TextStyle.BorderLeft), [[(right, bottom), (left, bottom), (left, top)]]);
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderLeft | TextStyle.BorderTop), [[(left, bottom), (left, top), (right, top)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderTop | TextStyle.BorderRight), [[(left, top), (right, top), (right, bottom)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderRight | TextStyle.BorderBottom), [[(right, top), (right, bottom), (left, bottom)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderBottom | TextStyle.BorderLeft), [[(right, bottom), (left, bottom), (left, top)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderLeft | TextStyle.BorderTop), [[(left, bottom), (left, top), (right, top)]]);
 
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom), [[(left, top), (right, top), (right, bottom), (left, bottom)]]);
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft), [[(right, top), (right, bottom), (left, bottom), (left, top)]]);
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop), [[(right, bottom), (left, bottom), (left, top), (right, top)]]);
-        Assert.Equal<(int, int)[][]>(GetStrokes(TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight), [[(left, bottom), (left, top), (right, top), (right, bottom)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom), [[(left, top), (right, top), (right, bottom), (left, bottom)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft), [[(right, top), (right, bottom), (left, bottom), (left, top)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop), [[(right, bottom), (left, bottom), (left, top), (right, top)]]);
+        Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight), [[(left, bottom), (left, top), (right, top), (right, bottom)]]);
     }
 }

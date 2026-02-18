@@ -57,29 +57,30 @@ public class Contents : PdfObject
         }
     }
 
-    public void DrawTextStyle(TextStyle style, double top, double left, double basey, double width, double height, IColor? c = null)
+    public void DrawTextStyle(TextStyle style, double top, double left, double basey, double width, double text_left, double text_width, double height, IColor? c = null)
     {
         var bottom = top + height;
         var right = left + width;
+        var text_right = text_left + text_width;
         var linewidth = height / 20;
 
         if (style.HasFlag(TextStyle.Underline))
         {
-            DrawLine(left, basey + (linewidth * 2), right, basey + (linewidth * 2), c, linewidth * 2);
+            DrawLine(text_left, basey + (linewidth * 2), text_right, basey + (linewidth * 2), c, linewidth * 2);
         }
         if (style.HasFlag(TextStyle.DoubleUnderline))
         {
-            DrawLine(left, basey + linewidth, right, basey + linewidth, c, linewidth);
-            DrawLine(left, basey + (linewidth * 3), right, basey + (linewidth * 3), c, linewidth);
+            DrawLine(text_left, basey + linewidth, text_right, basey + linewidth, c, linewidth);
+            DrawLine(text_left, basey + (linewidth * 3), text_right, basey + (linewidth * 3), c, linewidth);
         }
         if ((style & (TextStyle.Strikethrough | TextStyle.DoubleStrikethrough)) > 0)
         {
             var center = top + (height / 2);
-            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(left, center, right, center, c, linewidth);
+            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(text_left, center, text_right, center, c, linewidth);
             if (style.HasFlag(TextStyle.DoubleStrikethrough))
             {
-                DrawLine(left, center + linewidth, right, center + linewidth, c, linewidth);
-                DrawLine(left, center - linewidth, right, center - linewidth, c, linewidth);
+                DrawLine(text_left, center + linewidth, text_right, center + linewidth, c, linewidth);
+                DrawLine(text_left, center - linewidth, text_right, center - linewidth, c, linewidth);
             }
         }
         if (style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
