@@ -12,12 +12,14 @@ public class ContentsTest
     {
         var contens = new Contents() { Page = null! };
 
+        var width = 4;
+        var height = 8;
         var top = 2;
-        var bottom = 2 + 8;
+        var bottom = top + height;
         var left = 1;
-        var right = 1 + 4;
+        var right = left + width;
 
-        contens.DrawBorderStyle(style, top, left, right - left, bottom - top);
+        contens.DrawBorderStyle(style, top, left, width, height);
         return [.. contens.Operations
                 .OfType<DrawLine>()
                 .Select(line => line.Points.Select(pt => ((int)pt.X.ToPoint(), (int)pt.Y.ToPoint())).ToArray())
@@ -27,10 +29,12 @@ public class ContentsTest
     [Fact]
     public void DrawBorderStyleTest()
     {
+        var width = 4;
+        var height = 8;
         var top = 2;
-        var bottom = 2 + 8;
+        var bottom = top + height;
         var left = 1;
-        var right = 1 + 4;
+        var right = left + width;
 
         Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderTop), [[(left, top), (right, top)]]);
         Assert.Equal<(int, int)[][]>(GetBorderStrokes(TextStyle.BorderBottom), [[(left, bottom), (right, bottom)]]);
