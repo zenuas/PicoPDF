@@ -1,4 +1,5 @@
 ﻿using PicoPDF.Binder.Data;
+using PicoPDF.Binder.Element;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
 using System.Linq;
@@ -33,7 +34,7 @@ public static class ManualCreate
         var textfonts = PdfUtility.GetTextFont("aijpqあいうえお🍣", [ttf, emoji]).ToArray();
         page.Contents.DrawTextFont(textfonts, 100, 200, 12);
 
-        _ = page.Contents.DrawMultilineText("途中で\n改行コードの\r\n入った\rテキストのテスト", 220, 100, 12, [ttf, emoji]);
+        _ = page.Contents.DrawMultilineText("途中で\n改行コードの\r\n入った\rテキストのテスト", 220, 100, 12, [ttf, emoji], style: TextStyle.Border);
 
         doc.Save("test-case/manual-create.pdf", opt);
     }

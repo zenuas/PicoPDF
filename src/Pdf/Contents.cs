@@ -5,6 +5,7 @@ using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.Operation;
 using PicoPDF.Pdf.XObject;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -71,8 +72,13 @@ public class Contents : PdfObject
     public double DrawMultilineText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
     {
         var linetop = top;
+        double? prev_linegap = null;
+        var max_width = 0.0;
+        var max_height = 0.0;
         foreach (var textfonts in PdfUtility.GetMultilineTextFont(text, fonts))
         {
+            if (prev_linegap is { } gap) linetop += gap;
+
             var allbox = PdfUtility.MeasureTextFontBox(textfonts);
             var text_size = style.HasFlag(TextStyle.ShrinkToFit) && width < (allbox.Width * size) ? width / allbox.Width : size;
             var text_width = allbox.Width * text_size;
@@ -94,9 +100,12 @@ public class Contents : PdfObject
 
             DrawTextFont(textfonts, text_left, basey, text_size, color, rect);
             if ((style & TextStyle.TextStyleMask) > 0) DrawTextStyle(style, linetop, text_left, basey, text_width, text_height, color);
-            if ((style & TextStyle.BorderStyleMask) > 0) DrawBorderStyle(style, linetop, left, width > 0 ? width : text_width, text_height, color);
-            linetop += text_height + (allbox.LineGap * text_size);
+            linetop += text_height;
+            prev_linegap = allbox.LineGap * text_size;
+            max_width = Math.Max(max_width, text_width);
+            max_height = Math.Max(max_height, text_height);
         }
+        if ((style & TextStyle.BorderStyleMask) > 0) DrawBorderStyle(style, top, left, width > 0 ? width : max_width, linetop - top, max_height / 20, color);
         return linetop - top;
     }
 
@@ -126,11 +135,11 @@ public class Contents : PdfObject
         }
     }
 
-    public void DrawBorderStyle(TextStyle style, double top, double left, double width, double height, IColor? color = null)
+    public void DrawBorderStyle(TextStyle style, double top, double left, double width, double height, double? linewidth = null, IColor? color = null)
     {
         var bottom = top + height;
         var right = left + width;
-        var linewidth = height / 20;
+        linewidth ??= height / 20;
 
         if (style.HasFlag(TextStyle.Border))
         {
