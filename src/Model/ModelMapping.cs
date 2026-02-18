@@ -88,7 +88,7 @@ public static class ModelMapping
                     }
 
                     if ((textmodel.Style & TextStyle.TextStyleMask) > 0) page.Contents.DrawTextStyle(textmodel.Style, posy, text_left, basey, width, height, color);
-                    if ((textmodel.Style & TextStyle.BorderStyleMask) > 0) page.Contents.DrawBorderStyle(textmodel.Style, posy, posx, basey, textmodel.Width > 0 ? textmodel.Width : width, height, color);
+                    if ((textmodel.Style & TextStyle.BorderStyleMask) > 0) page.Contents.DrawBorderStyle(textmodel.Style, posy, posx, textmodel.Width > 0 ? textmodel.Width : width, height, color);
                 }
                 return;
 

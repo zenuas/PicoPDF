@@ -83,7 +83,7 @@ public class Contents : PdfObject
         }
     }
 
-    public void DrawBorderStyle(TextStyle style, double top, double left, double basey, double width, double height, IColor? c = null)
+    public void DrawBorderStyle(TextStyle style, double top, double left, double width, double height, IColor? c = null)
     {
         var bottom = top + height;
         var right = left + width;
