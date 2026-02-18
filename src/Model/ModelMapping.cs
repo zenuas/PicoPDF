@@ -91,8 +91,9 @@ public static class ModelMapping
 
                     if (textmodel.Style != TextStyle.None) page.Contents
                             .DrawTextStyle(textmodel.Style,
+                                model.Y + top,
                                 model.X + left,
-                                model.Y + top, posy,
+                                posy,
                                 textmodel.Style.HasFlag(TextStyle.Clipping) ? Math.Min(textmodel.Width, allbox.Width * size) : allbox.Width * size,
                                 allbox.Height * size,
                                 color

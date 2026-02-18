@@ -57,67 +57,69 @@ public class Contents : PdfObject
         }
     }
 
-    public void DrawTextStyle(TextStyle style, double posx, double posy, double basey, double width, double height, IColor? c = null)
+    public void DrawTextStyle(TextStyle style, double top, double left, double basey, double width, double height, IColor? c = null)
     {
+        var bottom = top + height;
+        var right = left + width;
+        var linewidth = height / 20;
+
         if (style.HasFlag(TextStyle.Underline))
         {
-            DrawLine(posx, basey + (height / 10), posx + width, basey + (height / 10), c, height / 10);
+            DrawLine(left, basey + (linewidth * 2), right, basey + (linewidth * 2), c, linewidth * 2);
         }
         if (style.HasFlag(TextStyle.DoubleUnderline))
         {
-            DrawLine(posx, basey + (height / 20), posx + width, basey + (height / 20), c, height / 20);
-            DrawLine(posx, basey + (height / 20 * 3), posx + width, basey + (height / 20 * 3), c, height / 20);
+            DrawLine(left, basey + linewidth, right, basey + linewidth, c, linewidth);
+            DrawLine(left, basey + (linewidth * 3), right, basey + (linewidth * 3), c, linewidth);
         }
         if ((style & (TextStyle.Strikethrough | TextStyle.DoubleStrikethrough)) > 0)
         {
-            var center = posy + (height / 2);
-            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(posx, center, posx + width, center, c, height / 10);
+            var center = top + (height / 2);
+            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(left, center, right, center, c, linewidth * 2);
             if (style.HasFlag(TextStyle.DoubleStrikethrough))
             {
-                DrawLine(posx, center + (height / 20), posx + width, center + (height / 20), c, height / 20);
-                DrawLine(posx, center - (height / 20), posx + width, center - (height / 20), c, height / 20);
+                DrawLine(left, center + linewidth, right, center + linewidth, c, linewidth);
+                DrawLine(left, center - linewidth, right, center - linewidth, c, linewidth);
             }
         }
         if (style.HasFlag(TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
         {
-            DrawRectangle(posx, posy, width, height, c, height / 20);
+            DrawRectangle(left, top, width, height, c, linewidth);
         }
         if ((style & (TextStyle.BorderTop | TextStyle.BorderBottom)) == 0 || (style & (TextStyle.BorderLeft | TextStyle.BorderRight)) == 0)
         {
             // draw multi strokes
-            var linewidth = height / 20;
             if (style.HasFlag(TextStyle.BorderTop))
             {
-                DrawLine(posx, posy, posx + width, posy, c, linewidth);
+                DrawLine(left, top, right, top, c, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderBottom))
             {
-                DrawLine(posx, posy + height, posx + width, posy + height, c, linewidth);
+                DrawLine(left, bottom, right, bottom, c, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderLeft))
             {
-                DrawLine(posx, posy, posx, posy + height, c, linewidth);
+                DrawLine(left, top, left, bottom, c, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderRight))
             {
-                DrawLine(posx + width, posy, posx + width, posy + height, c, linewidth);
+                DrawLine(right, top, right, bottom, c, linewidth);
             }
         }
         else
         {
             // draw one stroke
-            var linewidth = height / 20;
             switch (style & (TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
             {
-                case TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(posx, posy), (posx + width, posy), (posx + width, posy + height)], c, linewidth); break;
-                case TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(posx + width, posy), (posx + width, posy + height), (posx, posy + height)], c, linewidth); break;
-                case TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(posx + width, posy + height), (posx, posy + height), (posx, posy)], c, linewidth); break;
-                case TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(posx, posy + height), (posx, posy), (posx + width, posy)], c, linewidth); break;
+                case TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(left, top), (right, top), (right, bottom)], c, linewidth); break;
+                case TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(right, top), (right, bottom), (left, bottom)], c, linewidth); break;
+                case TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(right, bottom), (left, bottom), (left, top)], c, linewidth); break;
+                case TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(left, bottom), (left, top), (right, top)], c, linewidth); break;
 
-                case TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(posx, posy), (posx + width, posy), (posx + width, posy + height), (posx, posy + height)], c, linewidth); break;
-                case TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(posx + width, posy), (posx + width, posy + height), (posx, posy + height), (posx, posy)], c, linewidth); break;
-                case TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(posx + width, posy + height), (posx, posy + height), (posx, posy), (posx + width, posy)], c, linewidth); break;
-                case TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(posx, posy + height), (posx, posy), (posx + width, posy), (posx + width, posy + height)], c, linewidth); break;
+                case TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(left, top), (right, top), (right, bottom), (left, bottom)], c, linewidth); break;
+                case TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(right, top), (right, bottom), (left, bottom), (left, top)], c, linewidth); break;
+                case TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(right, bottom), (left, bottom), (left, top), (right, top)], c, linewidth); break;
+                case TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(left, bottom), (left, top), (right, top), (right, bottom)], c, linewidth); break;
             }
         }
     }
