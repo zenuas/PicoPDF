@@ -27,8 +27,6 @@ public class ContentsTest
     [Fact]
     public void DrawBorderStyleTest()
     {
-        var contens = new Contents() { Page = null! };
-
         var top = 2;
         var bottom = 2 + 8;
         var left = 1;
