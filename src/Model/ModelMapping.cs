@@ -57,7 +57,7 @@ public static class ModelMapping
         {
             case ITextModel textmodel:
                 {
-                    var textfonts = PdfUtility.GetTextFont(textmodel.Text, textmodel.Font, fontget).ToArray();
+                    var textfonts = PdfUtility.GetTextFont(textmodel.Text, [.. textmodel.Font.Select(fontget)]).ToArray();
                     var allbox = PdfUtility.MeasureTextFontBox(textfonts);
 
                     var size = textmodel.Style.HasFlag(TextStyle.ShrinkToFit) && textmodel.Width < (allbox.Width * textmodel.Size) ? textmodel.Width / allbox.Width : textmodel.Size;

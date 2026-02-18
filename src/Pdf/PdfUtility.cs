@@ -39,11 +39,11 @@ public static class PdfUtility
 
     public static IFontRegister CreateDefaultFontRegister() => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetSystemFontDirectories()]));
 
-    public static IEnumerable<(string Text, Type0Font Font)> GetTextFont(string s, string[] fonts, Func<string, Type0Font> fontget)
+    public static IEnumerable<(string Text, Type0Font Font)> GetTextFont(string s, Type0Font[] fonts)
     {
         if (s.Length == 0) yield break;
 
-        var xs = s.ToUtf32CharArray().Select(x => (Char: x, Font: GetTextFont(x, fonts, fontget))).ToArray();
+        var xs = s.ToUtf32CharArray().Select(x => (Char: x, Font: GetTextFont(x, fonts))).ToArray();
         var prev_font = xs[0].Font;
         var prev_text = new List<int>() { xs[0].Char };
         for (var i = 1; i < xs.Length; i++)
@@ -63,7 +63,7 @@ public static class PdfUtility
         yield return (prev_text.ToStringByChars(), prev_font);
     }
 
-    public static Type0Font GetTextFont(int c, string[] fonts, Func<string, Type0Font> fontget) => fonts.Select(fontget).Where(x => x.Font.CharToGID(c) > 0).FirstOrDefault() ?? fontget(fonts[0]);
+    public static Type0Font GetTextFont(int c, Type0Font[] fonts) => fonts.Where(x => x.Font.CharToGID(c) > 0).FirstOrDefault() ?? fonts[0];
 
     public static FontBox MeasureTextFontBox((string Text, Type0Font Font)[] textfonts) => textfonts
         .Select(x => x.Font.MeasureStringBox(x.Text))

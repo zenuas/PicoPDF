@@ -1,6 +1,7 @@
 ﻿using PicoPDF.Binder.Data;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
+using System.Linq;
 using System.Text;
 
 namespace PicoPDF.TestAll;
@@ -27,6 +28,10 @@ public static class ManualCreate
 
         var ttf = doc.AddFont("true1", fontreg.LoadRequiredTables("Meiryo Bold"));
         page.Contents.DrawText("TrueType Font! あア亜 𠮷野家", 100, 180, 12, ttf);
+
+        var emoji = doc.AddFont("emoji1", fontreg.LoadRequiredTables("Segoe UI Emoji"));
+        var textfonts = PdfUtility.GetTextFont("aijpqあいうえお🍣", [ttf, emoji]).ToArray();
+        page.Contents.DrawTextFont(textfonts, 100, 200, 12);
 
         doc.Save("test-case/manual-create.pdf", opt);
     }
