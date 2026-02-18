@@ -64,7 +64,7 @@ public static class ModelMapping
                     var basey = posy - (allbox.Ascender * size);
                     var text_left = textmodel.Alignment switch
                     {
-                        TextAlignment.Center => posx + (textmodel.Width - (allbox.Width * size)) / 2,
+                        TextAlignment.Center => posx + ((textmodel.Width - (allbox.Width * size)) / 2),
                         TextAlignment.End => posx + textmodel.Width - (allbox.Width * size),
                         _ => posx,
                     };
