@@ -61,11 +61,13 @@ public static class ModelMapping
                     var allbox = PdfUtility.MeasureTextFontBox(textfonts);
 
                     var size = textmodel.Style.HasFlag(TextStyle.ShrinkToFit) && textmodel.Width < (allbox.Width * textmodel.Size) ? textmodel.Width / allbox.Width : textmodel.Size;
+                    var width = allbox.Width * size;
+                    var height = allbox.Height * size;
                     var basey = posy - (allbox.Ascender * size);
                     var text_left = textmodel.Alignment switch
                     {
-                        TextAlignment.Center => posx + ((textmodel.Width - (allbox.Width * size)) / 2),
-                        TextAlignment.End => posx + textmodel.Width - (allbox.Width * size),
+                        TextAlignment.Center => posx + ((textmodel.Width - width) / 2),
+                        TextAlignment.End => posx + textmodel.Width - width,
                         _ => posx,
                     };
                     var rect = !textmodel.Style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
@@ -73,7 +75,7 @@ public static class ModelMapping
                         X = new PointValue(posx),
                         Y = new PointValue(posy),
                         Width = new PointValue(textmodel.Width),
-                        Height = new PointValue(allbox.Height * size),
+                        Height = new PointValue(height),
                     };
 
                     var color = textmodel.Color?.ToDeviceRGB();
@@ -89,8 +91,8 @@ public static class ModelMapping
                                 posy,
                                 posx,
                                 basey,
-                                textmodel.Style.HasFlag(TextStyle.Clipping) ? Math.Min(textmodel.Width, allbox.Width * size) : allbox.Width * size,
-                                allbox.Height * size,
+                                textmodel.Style.HasFlag(TextStyle.Clipping) ? Math.Min(textmodel.Width, width) : width,
+                                height,
                                 color
                             );
                 }
