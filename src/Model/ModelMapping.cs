@@ -61,7 +61,7 @@ public static class ModelMapping
                     var allbox = PdfUtility.MeasureTextFontBox(textfonts);
 
                     var size = textmodel.Style.HasFlag(TextStyle.ShrinkToFit) && textmodel.Width < (allbox.Width * textmodel.Size) ? textmodel.Width / allbox.Width : textmodel.Size;
-                    posy += -allbox.Ascender * size;
+                    var basey = posy - (allbox.Ascender * size);
                     switch (textmodel.Alignment)
                     {
                         case TextAlignment.Center:
@@ -85,7 +85,7 @@ public static class ModelMapping
                     foreach (var (text, font) in textfonts)
                     {
                         var box = font.MeasureStringBox(text);
-                        page.Contents.DrawString(text, text_left, posy, size, font, color, rect);
+                        page.Contents.DrawString(text, text_left, basey, size, font, color, rect);
                         text_left += box.Width * size;
                     }
 
@@ -93,7 +93,7 @@ public static class ModelMapping
                             .DrawTextStyle(textmodel.Style,
                                 model.Y + top,
                                 model.X + left,
-                                posy,
+                                basey,
                                 textmodel.Style.HasFlag(TextStyle.Clipping) ? Math.Min(textmodel.Width, allbox.Width * size) : allbox.Width * size,
                                 allbox.Height * size,
                                 color
