@@ -82,23 +82,42 @@ public class Contents : PdfObject
         {
             DrawRectangle(posx, posy, width, height, c, height / 20);
         }
-        else if ((style & (TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight)) > 0)
+        if ((style & (TextStyle.BorderTop | TextStyle.BorderBottom)) == 0 || (style & (TextStyle.BorderLeft | TextStyle.BorderRight)) == 0)
         {
+            // draw multi strokes
+            var linewidth = height / 20;
             if (style.HasFlag(TextStyle.BorderTop))
             {
-                DrawLine(posx, posy, posx + width, posy, c, height / 20);
+                DrawLine(posx, posy, posx + width, posy, c, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderBottom))
             {
-                DrawLine(posx, posy + height, posx + width, posy + height, c, height / 20);
+                DrawLine(posx, posy + height, posx + width, posy + height, c, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderLeft))
             {
-                DrawLine(posx, posy, posx, posy + height, c, height / 20);
+                DrawLine(posx, posy, posx, posy + height, c, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderRight))
             {
-                DrawLine(posx + width, posy, posx + width, posy + height, c, height / 20);
+                DrawLine(posx + width, posy, posx + width, posy + height, c, linewidth);
+            }
+        }
+        else
+        {
+            // draw one stroke
+            var linewidth = height / 20;
+            switch (style & (TextStyle.BorderTop | TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderRight))
+            {
+                case TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(posx, posy), (posx + width, posy), (posx + width, posy + height)], c, linewidth); break;
+                case TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(posx + width, posy), (posx + width, posy + height), (posx, posy + height)], c, linewidth); break;
+                case TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(posx + width, posy + height), (posx, posy + height), (posx, posy)], c, linewidth); break;
+                case TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(posx, posy + height), (posx, posy), (posx + width, posy)], c, linewidth); break;
+
+                case TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(posx, posy), (posx + width, posy), (posx + width, posy + height), (posx, posy + height)], c, linewidth); break;
+                case TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(posx + width, posy), (posx + width, posy + height), (posx, posy + height), (posx, posy)], c, linewidth); break;
+                case TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(posx + width, posy + height), (posx, posy + height), (posx, posy), (posx + width, posy)], c, linewidth); break;
+                case TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(posx, posy + height), (posx, posy), (posx + width, posy), (posx + width, posy + height)], c, linewidth); break;
             }
         }
     }

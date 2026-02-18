@@ -21,6 +21,21 @@
 			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size": 16, "X": 10, "Y": 360, "Style": "BorderTop, BorderBottom, BorderLeft, BorderRight"},
 			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size": 18, "X": 10, "Y": 400, "Style": "BorderTop, BorderBottom, BorderLeft, BorderRight"},
 			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size": 20, "X": 10, "Y": 440, "Style": "BorderTop, BorderBottom, BorderLeft, BorderRight"},
+			
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y":  40, "Style": "BorderTop"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y":  80, "Style": "BorderRight"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y": 120, "Style": "BorderBottom"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y": 160, "Style": "BorderLeft"},
+			
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y": 200, "Style": "BorderTop, BorderRight"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y": 240, "Style": "BorderRight, BorderBottom"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y": 280, "Style": "BorderBottom, BorderLeft"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y": 320, "Style": "BorderLeft, BorderTop"},
+			
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y": 360, "Style": "BorderTop, BorderRight, BorderBottom"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y": 400, "Style": "BorderRight, BorderBottom, BorderLeft"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y": 440, "Style": "BorderBottom, BorderLeft, BorderTop"},
+			{"Type": "TextElement", "Text": "aijpqあいうえお🍣", "Size":  20, "X": 300, "Y": 480, "Style": "BorderLeft, BorderTop, BorderRight"},
 		]},
 		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
 			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 10, "Y": 0},
