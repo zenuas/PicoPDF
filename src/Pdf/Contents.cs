@@ -16,23 +16,19 @@ public class Contents : PdfObject
     public required Page Page { get; init; }
     public List<IOperation> Operations { get; init; } = [];
 
-    public void DrawSingleLineText(string text, double left, double basey, double size, IFont font, IColor? color = null, Rectangle? clip = null)
-    {
-        DrawSingleLineText(
-                text,
-                new PointValue(left),
-                new PointValue(basey),
-                size,
-                font,
-                color,
-                clip
-            );
-    }
+    public static DrawString CreateDrawSingleLineTextOperation(string text, double basey, double left, double size, IFont font, IColor? color = null) => CreateDrawSingleLineTextOperation(
+            text,
+            new PointValue(basey),
+            new PointValue(left),
+            size,
+            font,
+            color
+        );
 
-    public void DrawSingleLineText(string text, IPoint left, IPoint basey, double size, IFont font, IColor? color = null, Rectangle? clip = null)
+    public static DrawString CreateDrawSingleLineTextOperation(string text, IPoint basey, IPoint left, double size, IFont font, IColor? color = null)
     {
         if (font is IFontChars fontchars) fontchars.WriteString(text);
-        var str = new DrawString()
+        return new()
         {
             Text = text,
             X = left,
@@ -41,31 +37,28 @@ public class Contents : PdfObject
             Font = font,
             Color = color,
         };
-        if (clip is { } r)
-        {
-            Operations.Add(new DrawClipping()
-            {
-                X = r.X,
-                Y = r.Y,
-                Width = r.Width,
-                Height = r.Height,
-                Operation = str,
-            });
-        }
-        else
-        {
-            Operations.Add(str);
-        }
     }
 
-    public void DrawTextFont((string Text, Type0Font Font)[] textfonts, double left, double basey, double size, IColor? color = null, Rectangle? clip = null)
+    public static IEnumerable<DrawString> CreateDrawTextFontOperation((string Text, Type0Font Font)[] textfonts, double basey, double left, double size, IColor? color = null)
     {
         var left_shift = left;
         foreach (var (text, font) in textfonts)
         {
             var box = font.MeasureStringBox(text);
-            DrawSingleLineText(text, left_shift, basey, size, font, color, clip);
+            yield return CreateDrawSingleLineTextOperation(text, basey, left_shift, size, font, color);
             left_shift += box.Width * size;
+        }
+    }
+
+    public void DrawText(string text, double top, double left, double size, IFont font)
+    {
+        if (font is Type0Font type1font)
+        {
+            _ = DrawText(text, top, left, size, [type1font]);
+        }
+        else
+        {
+            Operations.Add(CreateDrawSingleLineTextOperation(text, top, left, size, font));
         }
     }
 
@@ -75,6 +68,7 @@ public class Contents : PdfObject
         double? prev_linegap = null;
         var max_width = 0.0;
         var max_height = 0.0;
+        var opes = new List<IOperation>();
         foreach (var textfonts in PdfUtility.GetMultilineTextFont(text, fonts))
         {
             if (prev_linegap is { } gap) linetop += gap;
@@ -90,52 +84,65 @@ public class Contents : PdfObject
                 TextAlignment.End => left + width - text_width,
                 _ => left,
             };
-            var rect = !style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
-            {
-                X = new PointValue(left),
-                Y = new PointValue(top),
-                Width = new PointValue(width),
-                Height = new PointValue(height),
-            };
 
-            DrawTextFont(textfonts, text_left, basey, text_size, color, rect);
-            if ((style & TextStyle.TextStyleMask) > 0) DrawTextStyle(style, linetop, text_left, basey, text_width, text_height, color);
+            opes.AddRange(CreateDrawTextFontOperation(textfonts, basey, text_left, text_size, color));
+            if ((style & TextStyle.TextStyleMask) > 0) opes.AddRange(CreateDrawTextStyleOperations(style, linetop, text_left, basey, text_width, text_height, color));
             linetop += text_height;
             prev_linegap = allbox.LineGap * text_size;
             max_width = Math.Max(max_width, text_width);
             max_height = Math.Max(max_height, text_height);
         }
-        if ((style & TextStyle.BorderStyleMask) > 0) DrawBorderStyle(style, top, left, width > 0 ? width : max_width, height > 0 ? height : linetop - top, max_height / 20, color);
+        if ((style & TextStyle.BorderStyleMask) > 0) opes.AddRange(CreateDrawBorderStyleOperations(style, top, left, width > 0 ? width : max_width, height > 0 ? height : linetop - top, max_height / 20, color));
+
+        if (style.HasFlag(TextStyle.Clipping))
+        {
+            Operations.Add(new DrawClipping()
+            {
+                X = new PointValue(left),
+                Y = new PointValue(top),
+                Width = new PointValue(width),
+                Height = new PointValue(height),
+                Operations = [.. opes],
+            });
+        }
+        else
+        {
+            Operations.AddRange(opes);
+        }
         return linetop - top;
     }
 
-    public void DrawTextStyle(TextStyle style, double top, double left, double basey, double width, double height, IColor? color = null)
+    public void DrawTextStyle(TextStyle style, double top, double left, double basey, double width, double height, IColor? color = null) => CreateDrawTextStyleOperations(style, top, left, basey, width, height, color).Each(Operations.Add);
+
+    public static IEnumerable<IOperation> CreateDrawTextStyleOperations(TextStyle style, double top, double left, double basey, double width, double height, IColor? color = null)
     {
         var right = left + width;
         var linewidth = height / 20;
 
         if (style.HasFlag(TextStyle.Underline))
         {
-            DrawLine(left, basey + (linewidth * 2), right, basey + (linewidth * 2), color, linewidth * 2);
+            yield return CreateDrawLinesOperation([(left, basey + (linewidth * 2)), (right, basey + (linewidth * 2))], color, linewidth * 2);
         }
         if (style.HasFlag(TextStyle.DoubleUnderline))
         {
-            DrawLine(left, basey + linewidth, right, basey + linewidth, color, linewidth);
-            DrawLine(left, basey + (linewidth * 3), right, basey + (linewidth * 3), color, linewidth);
+            yield return CreateDrawLinesOperation([(left, basey + linewidth), (right, basey + linewidth)], color, linewidth);
+            yield return CreateDrawLinesOperation([(left, basey + (linewidth * 3)), (right, basey + (linewidth * 3))], color, linewidth);
         }
         if ((style & (TextStyle.Strikethrough | TextStyle.DoubleStrikethrough)) > 0)
         {
             var center = top + (height / 2);
-            if (style.HasFlag(TextStyle.Strikethrough)) DrawLine(left, center, right, center, color, linewidth);
+            if (style.HasFlag(TextStyle.Strikethrough)) yield return CreateDrawLinesOperation([(left, center), (right, center)], color, linewidth);
             if (style.HasFlag(TextStyle.DoubleStrikethrough))
             {
-                DrawLine(left, center + linewidth, right, center + linewidth, color, linewidth);
-                DrawLine(left, center - linewidth, right, center - linewidth, color, linewidth);
+                yield return CreateDrawLinesOperation([(left, center + linewidth), (right, center + linewidth)], color, linewidth);
+                yield return CreateDrawLinesOperation([(left, center - linewidth), (right, center - linewidth)], color, linewidth);
             }
         }
     }
 
-    public void DrawBorderStyle(TextStyle style, double top, double left, double width, double height, double? linewidth = null, IColor? color = null)
+    public void DrawBorderStyle(TextStyle style, double top, double left, double width, double height, double? linewidth = null, IColor? color = null) => CreateDrawBorderStyleOperations(style, top, left, width, height, linewidth, color).Each(Operations.Add);
+
+    public static IEnumerable<IOperation> CreateDrawBorderStyleOperations(TextStyle style, double top, double left, double width, double height, double? linewidth = null, IColor? color = null)
     {
         var bottom = top + height;
         var right = left + width;
@@ -143,26 +150,26 @@ public class Contents : PdfObject
 
         if (style.HasFlag(TextStyle.Border))
         {
-            DrawRectangle(left, top, width, height, color, linewidth);
+            yield return CreateDrawRectangleOperation(left, top, width, height, color, linewidth);
         }
         if ((style & (TextStyle.BorderTop | TextStyle.BorderBottom)) == 0 || (style & (TextStyle.BorderLeft | TextStyle.BorderRight)) == 0)
         {
             // draw multi strokes
             if (style.HasFlag(TextStyle.BorderTop))
             {
-                DrawLine(left, top, right, top, color, linewidth);
+                yield return CreateDrawLinesOperation([(left, top), (right, top)], color, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderBottom))
             {
-                DrawLine(left, bottom, right, bottom, color, linewidth);
+                yield return CreateDrawLinesOperation([(left, bottom), (right, bottom)], color, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderLeft))
             {
-                DrawLine(left, top, left, bottom, color, linewidth);
+                yield return CreateDrawLinesOperation([(left, top), (left, bottom)], color, linewidth);
             }
             if (style.HasFlag(TextStyle.BorderRight))
             {
-                DrawLine(right, top, right, bottom, color, linewidth);
+                yield return CreateDrawLinesOperation([(right, top), (right, bottom)], color, linewidth);
             }
         }
         else
@@ -170,130 +177,100 @@ public class Contents : PdfObject
             // draw one stroke
             switch (style & TextStyle.BorderStyleMask)
             {
-                case TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(left, top), (right, top), (right, bottom)], color, linewidth); break;
-                case TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(right, top), (right, bottom), (left, bottom)], color, linewidth); break;
-                case TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(right, bottom), (left, bottom), (left, top)], color, linewidth); break;
-                case TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(left, bottom), (left, top), (right, top)], color, linewidth); break;
+                case TextStyle.BorderTop | TextStyle.BorderRight: yield return CreateDrawLinesOperation([(left, top), (right, top), (right, bottom)], color, linewidth); break;
+                case TextStyle.BorderRight | TextStyle.BorderBottom: yield return CreateDrawLinesOperation([(right, top), (right, bottom), (left, bottom)], color, linewidth); break;
+                case TextStyle.BorderBottom | TextStyle.BorderLeft: yield return CreateDrawLinesOperation([(right, bottom), (left, bottom), (left, top)], color, linewidth); break;
+                case TextStyle.BorderLeft | TextStyle.BorderTop: yield return CreateDrawLinesOperation([(left, bottom), (left, top), (right, top)], color, linewidth); break;
 
-                case TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom: DrawLines([(left, top), (right, top), (right, bottom), (left, bottom)], color, linewidth); break;
-                case TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft: DrawLines([(right, top), (right, bottom), (left, bottom), (left, top)], color, linewidth); break;
-                case TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop: DrawLines([(right, bottom), (left, bottom), (left, top), (right, top)], color, linewidth); break;
-                case TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight: DrawLines([(left, bottom), (left, top), (right, top), (right, bottom)], color, linewidth); break;
+                case TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom: yield return CreateDrawLinesOperation([(left, top), (right, top), (right, bottom), (left, bottom)], color, linewidth); break;
+                case TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft: yield return CreateDrawLinesOperation([(right, top), (right, bottom), (left, bottom), (left, top)], color, linewidth); break;
+                case TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop: yield return CreateDrawLinesOperation([(right, bottom), (left, bottom), (left, top), (right, top)], color, linewidth); break;
+                case TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight: yield return CreateDrawLinesOperation([(left, bottom), (left, top), (right, top), (right, bottom)], color, linewidth); break;
             }
         }
     }
 
-    public void DrawLine(double start_x, double start_y, double end_x, double end_y, IColor? color = null, double? linewidth = null)
-    {
-        DrawLines(
-                [(new PointValue(start_x), new PointValue(start_y)), (new PointValue(end_x), new PointValue(end_y))],
-                color,
-                new PointValue(linewidth ?? 1)
-            );
-    }
+    public void DrawLine(double start_x, double start_y, double end_x, double end_y, IColor? color = null, double? linewidth = null) => Operations.Add(CreateDrawLinesOperation([(start_x, start_y), (end_x, end_y)], color, linewidth));
 
-    public void DrawLines((double X, double Y)[] points, IColor? color = null, double? linewidth = null)
-    {
-        DrawLines(
-                [.. points.Select(x => (new PointValue(x.X), new PointValue(x.Y)))],
-                color,
-                new PointValue(linewidth ?? 1)
-            );
-    }
+    public void DrawLines((double X, double Y)[] points, IColor? color = null, double? linewidth = null) => Operations.Add(CreateDrawLinesOperation(points, color, linewidth));
 
-    public void DrawLine(IPoint start_x, IPoint start_y, IPoint end_x, IPoint end_y, IColor? color = null, IPoint? linewidth = null)
-    {
-        DrawLines(
-                [(start_x, start_y), (end_x, end_y)],
-                color,
-                linewidth
-            );
-    }
+    public static DrawLine CreateDrawLinesOperation((double X, double Y)[] points, IColor? color = null, double? linewidth = null) => CreateDrawLinesOperation(
+            [.. points.Select(x => (new PointValue(x.X), new PointValue(x.Y)))],
+            color,
+            new PointValue(linewidth ?? 1)
+        );
 
-    public void DrawLines((IPoint X, IPoint Y)[] points, IColor? color = null, IPoint? linewidth = null)
+    public static DrawLine CreateDrawLinesOperation((IPoint X, IPoint Y)[] points, IColor? color = null, IPoint? linewidth = null) => new()
     {
-        Operations.Add(new DrawLine()
-        {
-            Points = points,
-            Color = color,
-            LineWidth = linewidth ?? new PointValue(1),
-        });
-    }
+        Points = points,
+        Color = color,
+        LineWidth = linewidth ?? new PointValue(1),
+    };
 
-    public void DrawRectangle(double x, double y, double width, double height, IColor? color = null, double? linewidth = null)
-    {
-        DrawRectangle(
-                new PointValue(x),
-                new PointValue(y),
-                new PointValue(width),
-                new PointValue(height),
-                color,
-                new PointValue(linewidth ?? 1)
-            );
-    }
+    public void DrawRectangle(double x, double y, double width, double height, IColor? color = null, double? linewidth = null) => Operations.Add(CreateDrawRectangleOperation(x, y, width, height, color, linewidth));
 
-    public void DrawRectangle(IPoint x, IPoint y, IPoint width, IPoint height, IColor? color = null, IPoint? linewidth = null)
-    {
-        Operations.Add(new DrawRectangle()
-        {
-            X = x,
-            Y = y,
-            Width = width,
-            Height = height,
-            Color = color,
-            LineWidth = linewidth ?? new PointValue(1),
-        });
-    }
+    public void DrawRectangle(IPoint x, IPoint y, IPoint width, IPoint height, IColor? color = null, IPoint? linewidth = null) => Operations.Add(CreateDrawRectangleOperation(x, y, width, height, color, linewidth));
 
-    public void DrawFillRectangle(double x, double y, double width, double height, IColor? line = null, IColor? fill = null, double? linewidth = null)
-    {
-        DrawFillRectangle(
-                new PointValue(x),
-                new PointValue(y),
-                new PointValue(width),
-                new PointValue(height),
-                line,
-                fill,
-                new PointValue(linewidth ?? 1)
-            );
-    }
+    public static DrawRectangle CreateDrawRectangleOperation(double x, double y, double width, double height, IColor? color = null, double? linewidth = null) => CreateDrawRectangleOperation(
+            new PointValue(x),
+            new PointValue(y),
+            new PointValue(width),
+            new PointValue(height),
+            color,
+            new PointValue(linewidth ?? 1)
+        );
 
-    public void DrawFillRectangle(IPoint x, IPoint y, IPoint width, IPoint height, IColor? line = null, IColor? fill = null, IPoint? linewidth = null)
+    public static DrawRectangle CreateDrawRectangleOperation(IPoint x, IPoint y, IPoint width, IPoint height, IColor? color = null, IPoint? linewidth = null) => new()
     {
-        Operations.Add(new DrawFillRectangle()
-        {
-            X = x,
-            Y = y,
-            Width = width,
-            Height = height,
-            LineColor = line,
-            FillColor = fill,
-            LineWidth = linewidth ?? new PointValue(1),
-        });
-    }
+        X = x,
+        Y = y,
+        Width = width,
+        Height = height,
+        Color = color,
+        LineWidth = linewidth ?? new PointValue(1),
+    };
 
-    public void DrawImage(double x, double y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
-    {
-        DrawImage(
-                new PointValue(x),
-                new PointValue(y),
-                image,
-                zoomwidth,
-                zoomheight
-            );
-    }
+    public void DrawFillRectangle(double x, double y, double width, double height, IColor? line = null, IColor? fill = null, double? linewidth = null) => Operations.Add(CreateDrawFillRectangleOperation(x, y, width, height, line, fill, linewidth));
 
-    public void DrawImage(IPoint x, IPoint y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0)
+    public static DrawFillRectangle CreateDrawFillRectangleOperation(double x, double y, double width, double height, IColor? line = null, IColor? fill = null, double? linewidth = null) => CreateDrawFillRectangleOperation(
+            new PointValue(x),
+            new PointValue(y),
+            new PointValue(width),
+            new PointValue(height),
+            line,
+            fill,
+            new PointValue(linewidth ?? 1)
+        );
+
+    public static DrawFillRectangle CreateDrawFillRectangleOperation(IPoint x, IPoint y, IPoint width, IPoint height, IColor? line = null, IColor? fill = null, IPoint? linewidth = null) => new()
     {
-        Operations.Add(new DrawImage()
-        {
-            X = x,
-            Y = y,
-            Image = image,
-            ZoomWidth = zoomwidth,
-            ZoomHeight = zoomheight,
-        });
-    }
+        X = x,
+        Y = y,
+        Width = width,
+        Height = height,
+        LineColor = line,
+        FillColor = fill,
+        LineWidth = linewidth ?? new PointValue(1),
+    };
+
+    public void DrawImage(double x, double y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0) => Operations.Add(CreateDrawImageOperation(x, y, image, zoomwidth, zoomheight));
+
+    public static DrawImage CreateDrawImageOperation(double x, double y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0) => CreateDrawImageOperation(
+        new PointValue(x),
+        new PointValue(y),
+        image,
+        zoomwidth,
+        zoomheight
+    );
+
+    public static DrawImage CreateDrawImageOperation(IPoint x, IPoint y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0) => new()
+    {
+        X = x,
+        Y = y,
+        Image = image,
+        ZoomWidth = zoomwidth,
+        ZoomHeight = zoomheight,
+    };
 
     public override void DoExport(PdfExportOption option)
     {
