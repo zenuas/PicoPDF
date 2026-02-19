@@ -50,17 +50,7 @@ public class Contents : PdfObject
         }
     }
 
-    public void DrawText(string text, double top, double left, double size, IFont font)
-    {
-        if (font is Type0Font type1font)
-        {
-            _ = DrawText(text, top, left, size, [type1font]);
-        }
-        else
-        {
-            Operations.Add(CreateDrawSingleLineTextOperation(text, top, left, size, font));
-        }
-    }
+    public void DrawTextOnBaseline(string text, double basey, double left, double size, IFont font) => Operations.Add(CreateDrawSingleLineTextOperation(text, basey, left, size, font));
 
     public double DrawText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
     {
