@@ -142,13 +142,15 @@ public class Contents : PdfObject
         {
             yield return CreateDrawRectangleOperation(left, top, width, height, color, linewidth);
         }
-        if ((style & (TextStyle.BorderTop | TextStyle.BorderBottom)) == 0 || (style & (TextStyle.BorderLeft | TextStyle.BorderRight)) == 0)
+        if ((style & (TextStyle.BorderTop | TextStyle.BorderBottom)) == 0)
         {
-            // draw multi strokes
-            if (style.HasFlag(TextStyle.BorderTop)) yield return CreateDrawLinesOperation([(left, top), (right, top)], color, linewidth);
-            if (style.HasFlag(TextStyle.BorderBottom)) yield return CreateDrawLinesOperation([(left, bottom), (right, bottom)], color, linewidth);
             if (style.HasFlag(TextStyle.BorderLeft)) yield return CreateDrawLinesOperation([(left, top), (left, bottom)], color, linewidth);
             if (style.HasFlag(TextStyle.BorderRight)) yield return CreateDrawLinesOperation([(right, top), (right, bottom)], color, linewidth);
+        }
+        else if ((style & (TextStyle.BorderLeft | TextStyle.BorderRight)) == 0)
+        {
+            if (style.HasFlag(TextStyle.BorderTop)) yield return CreateDrawLinesOperation([(left, top), (right, top)], color, linewidth);
+            if (style.HasFlag(TextStyle.BorderBottom)) yield return CreateDrawLinesOperation([(left, bottom), (right, bottom)], color, linewidth);
         }
         else
         {
