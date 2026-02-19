@@ -12,10 +12,10 @@ public class ContentsTest
     {
         var contens = new Contents() { Page = null! };
 
-        var width = 1 << 0;
-        var height = 1 << 1;
-        var top = 1 << 2;
-        var left = 1 << 3;
+        var left = 1;
+        var top = 2;
+        var height = 4;
+        var width = 8;
         var bottom = top + height;
         var right = left + width;
 
@@ -29,10 +29,20 @@ public class ContentsTest
     [Fact]
     public void DrawBorderStyleTest()
     {
-        var width = 1 << 0;
-        var height = 1 << 1;
-        var top = 1 << 2;
-        var left = 1 << 3;
+        /* all coordinate values ​​are unique.
+           
+           topleft(x=1, y=2)               topright(x=9, y=2)
+            +------------------------------------------+
+            |                  width=8                 |
+            | height=4                                 |
+            |                                          |
+            +------------------------------------------+
+           bottomleft(x=1, y=6)         bottomright(x=9, y=6)
+         */
+        var left = 1;
+        var top = 2;
+        var height = 4;
+        var width = 8;
         var bottom = top + height;
         var right = left + width;
 
