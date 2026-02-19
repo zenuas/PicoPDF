@@ -14,6 +14,7 @@ public class BindElement : ITextElement
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
     public TextStyle Style { get; init; } = TextStyle.None;
     public int Width { get; init; }
+    public int Height { get; init; }
     public Color? Color { get; init; } = null;
     public CultureInfo? Culture { get; init; } = null;
 }

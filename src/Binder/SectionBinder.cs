@@ -298,6 +298,7 @@ public static class SectionBinder
         Alignment = element.Alignment,
         Style = element.Style,
         Width = element.Width,
+        Height = element.Height,
         Color = element.Color,
     };
 
@@ -312,6 +313,7 @@ public static class SectionBinder
         Alignment = element.Alignment,
         Style = element.Style,
         Width = element.Width,
+        Height = element.Height,
         Color = element.Color,
     };
 

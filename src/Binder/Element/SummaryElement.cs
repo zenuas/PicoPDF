@@ -16,6 +16,7 @@ public class SummaryElement : ITextElement
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
     public TextStyle Style { get; init; } = TextStyle.None;
     public int Width { get; init; }
+    public int Height { get; init; }
     public Color? Color { get; init; } = null;
     public SummaryType SummaryType { get; init; } = SummaryType.Summary;
     public SummaryMethod SummaryMethod { get; init; } = SummaryMethod.Group;

@@ -11,5 +11,6 @@ public interface ITextModel : IModelElement
     public TextAlignment Alignment { get; init; }
     public TextStyle Style { get; init; }
     public int Width { get; init; }
+    public int Height { get; init; }
     public Color? Color { get; init; }
 }

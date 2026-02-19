@@ -54,7 +54,7 @@ public static class ModelMapping
         switch (model)
         {
             case ITextModel x:
-                _ = page.Contents.DrawMultilineText(x.Text, posy, posx, x.Size, [.. x.Font.Select(fontget)], x.Width, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
+                _ = page.Contents.DrawMultilineText(x.Text, posy, posx, x.Size, [.. x.Font.Select(fontget)], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
                 return;
 
             case ILineModel x:

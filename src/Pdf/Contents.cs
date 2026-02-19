@@ -69,7 +69,7 @@ public class Contents : PdfObject
         }
     }
 
-    public double DrawMultilineText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
+    public double DrawMultilineText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
     {
         var linetop = top;
         double? prev_linegap = null;
@@ -93,9 +93,9 @@ public class Contents : PdfObject
             var rect = !style.HasFlag(TextStyle.Clipping) ? (Rectangle?)null : new Rectangle()
             {
                 X = new PointValue(left),
-                Y = new PointValue(linetop),
+                Y = new PointValue(top),
                 Width = new PointValue(width),
-                Height = new PointValue(text_height),
+                Height = new PointValue(height),
             };
 
             DrawTextFont(textfonts, text_left, basey, text_size, color, rect);
@@ -105,7 +105,7 @@ public class Contents : PdfObject
             max_width = Math.Max(max_width, text_width);
             max_height = Math.Max(max_height, text_height);
         }
-        if ((style & TextStyle.BorderStyleMask) > 0) DrawBorderStyle(style, top, left, width > 0 ? width : max_width, linetop - top, max_height / 20, color);
+        if ((style & TextStyle.BorderStyleMask) > 0) DrawBorderStyle(style, top, left, width > 0 ? width : max_width, height > 0 ? height : linetop - top, max_height / 20, color);
         return linetop - top;
     }
 

@@ -36,6 +36,8 @@ public static class ManualCreate
 
         _ = page.Contents.DrawMultilineText("途中で\n改行コードの\r\n入った\rテキストのテスト", 220, 100, 12, [ttf, emoji], style: TextStyle.Border);
 
+        _ = page.Contents.DrawMultilineText("途中で\n改行コードの\r\n入った\rテキストのテスト", 220, 300, 12, [ttf, emoji], 65, 60, style: TextStyle.Border | TextStyle.Clipping);
+
         doc.Save("test-case/manual-create.pdf", opt);
     }
 }
