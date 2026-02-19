@@ -16,9 +16,9 @@ public class Contents : PdfObject
     public required Page Page { get; init; }
     public List<IOperation> Operations { get; init; } = [];
 
-    public void DrawText(string text, double left, double basey, double size, IFont font, IColor? color = null, Rectangle? clip = null)
+    public void DrawSingleLineText(string text, double left, double basey, double size, IFont font, IColor? color = null, Rectangle? clip = null)
     {
-        DrawText(
+        DrawSingleLineText(
                 text,
                 new PointValue(left),
                 new PointValue(basey),
@@ -29,7 +29,7 @@ public class Contents : PdfObject
             );
     }
 
-    public void DrawText(string text, IPoint left, IPoint basey, double size, IFont font, IColor? color = null, Rectangle? clip = null)
+    public void DrawSingleLineText(string text, IPoint left, IPoint basey, double size, IFont font, IColor? color = null, Rectangle? clip = null)
     {
         if (font is IFontChars fontchars) fontchars.WriteString(text);
         var str = new DrawString()
@@ -64,12 +64,12 @@ public class Contents : PdfObject
         foreach (var (text, font) in textfonts)
         {
             var box = font.MeasureStringBox(text);
-            DrawText(text, left_shift, basey, size, font, color, clip);
+            DrawSingleLineText(text, left_shift, basey, size, font, color, clip);
             left_shift += box.Width * size;
         }
     }
 
-    public double DrawMultilineText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
+    public double DrawText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
     {
         var linetop = top;
         double? prev_linegap = null;
