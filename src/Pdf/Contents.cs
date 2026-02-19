@@ -197,7 +197,7 @@ public class Contents : PdfObject
     public static DrawLine CreateDrawLinesOperation((double X, double Y)[] points, IColor? color = null, double? linewidth = null) => CreateDrawLinesOperation(
             [.. points.Select(x => (new PointValue(x.X), new PointValue(x.Y)))],
             color,
-            new PointValue(linewidth ?? 1)
+            linewidth is { } lw ? new PointValue(lw) : null
         );
 
     public static DrawLine CreateDrawLinesOperation((IPoint X, IPoint Y)[] points, IColor? color = null, IPoint? linewidth = null) => new()
@@ -217,7 +217,7 @@ public class Contents : PdfObject
             new PointValue(width),
             new PointValue(height),
             color,
-            new PointValue(linewidth ?? 1)
+            linewidth is { } lw ? new PointValue(lw) : null
         );
 
     public static DrawRectangle CreateDrawRectangleOperation(IPoint x, IPoint y, IPoint width, IPoint height, IColor? color = null, IPoint? linewidth = null) => new()
@@ -239,7 +239,7 @@ public class Contents : PdfObject
             new PointValue(height),
             line,
             fill,
-            new PointValue(linewidth ?? 1)
+            linewidth is { } lw ? new PointValue(lw) : null
         );
 
     public static DrawFillRectangle CreateDrawFillRectangleOperation(IPoint x, IPoint y, IPoint width, IPoint height, IColor? line = null, IColor? fill = null, IPoint? linewidth = null) => new()
