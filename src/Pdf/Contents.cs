@@ -91,7 +91,7 @@ public class Contents : PdfObject
                 X = new PointValue(left),
                 Y = new PointValue(top),
                 Width = new PointValue(width),
-                Height = new PointValue(height),
+                Height = new PointValue(height > 0 ? height : linetop - top),
                 Operations = [.. opes],
             });
         }
