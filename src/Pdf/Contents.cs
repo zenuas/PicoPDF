@@ -41,12 +41,12 @@ public class Contents : PdfObject
 
     public static IEnumerable<DrawString> CreateDrawTextFontOperation((string Text, Type0Font Font)[] textfonts, double basey, double left, double size, IColor? color = null)
     {
-        var left_shift = left;
+        var start = left;
         foreach (var (text, font) in textfonts)
         {
             var box = font.MeasureStringBox(text);
-            yield return CreateDrawSingleLineTextOperation(text, basey, left_shift, size, font, color);
-            left_shift += box.Width * size;
+            yield return CreateDrawSingleLineTextOperation(text, basey, start, size, font, color);
+            start += box.Width * size;
         }
     }
 
