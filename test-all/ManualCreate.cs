@@ -24,10 +24,10 @@ public static class ManualCreate
         page.Contents.DrawTextOnBaseline("Type1 Font!", 140, 100, 12, type1);
 
         var post = doc.AddFont("POST1", fontreg.LoadRequiredTables("test-case/NotoSansCJK-Regular.ttc,0"));
-        page.Contents.DrawText("PostScript Font! あア亜 𠮷野家", 160, 100, 12, [post]);
+        _ = page.Contents.DrawText("PostScript Font! あア亜 𠮷野家", 160, 100, 12, [post]);
 
         var ttf = doc.AddFont("true1", fontreg.LoadRequiredTables("Meiryo Bold"));
-        page.Contents.DrawText("TrueType Font! あア亜 𠮷野家", 180, 100, 12, [ttf]);
+        _ = page.Contents.DrawText("TrueType Font! あア亜 𠮷野家", 180, 100, 12, [ttf]);
 
         var emoji = doc.AddFont("emoji1", fontreg.LoadRequiredTables("Segoe UI Emoji"));
         _ = page.Contents.DrawText("aijpqあいうえお🍣", 200, 100, 12, [ttf, emoji]);
