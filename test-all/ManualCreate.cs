@@ -16,6 +16,7 @@ public static class ManualCreate
 
         var cid = doc.AddFont("CID", "HeiseiMin", CMap.UniJIS_UCS2_H, Encoding.BigEndianUnicode);
         page.Contents.DrawTextOnBaseline("CID Font! あア亜", 100, 100, 12, cid);
+        page.Contents.DrawTextStyle(TextStyle.Underline, 100, 100, 100, 50, 12);
 
         var stdtype1 = doc.AddFont("STDTYPE1", StandardType1Fonts.HelveticaBold);
         page.Contents.DrawTextOnBaseline("Standard Type1 Font!", 120, 100, 12, stdtype1);
