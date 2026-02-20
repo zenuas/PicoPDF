@@ -29,7 +29,7 @@ public class Contents : PdfObject
 
     public static DrawString CreateDrawTextOnBaselineOperation(string text, IPoint basey, IPoint left, double size, IFont font, IColor? color = null)
     {
-        if (font is IFontChars fontchars) fontchars.WriteString(text);
+        if (font is IFontChars fontchars) fontchars.AddCharCache(text);
         return new()
         {
             Text = text,
