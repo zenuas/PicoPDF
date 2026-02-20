@@ -100,6 +100,56 @@ SummaryElementの集計方法はSummaryMethodプロパティで設定する。
 * AllIncremental  
   全ページの全セクションの現在行までを集計対象とする。  
 
+## Function overview
+
+jsonファイルとデータを元にCreateDocument関数、Saveメソッドのみを呼び出すだけでよい。  
+内部構造は次の通り。  
+
+```mermaid
+graph TD;
+    subgraph data ["any data"]
+      direction TB;
+      array;
+      DataTable;
+      DataView;
+    end
+    
+    subgraph font ["OpenType(TTF/OTF/TTC)"]
+      direction TB;
+      FontRegister;
+      ttf;
+      cff;
+    end
+    
+    json:::input-->JsonLoader;
+    JsonLoader-->PageSection;
+    PageSection-->SectionBinder;
+    data:::input-->SectionBinder;
+    SectionBinder-->PageModel;
+    PageModel-->ModelMapping;
+    font-->ModelMapping;
+    ModelMapping-->Document;
+    Document-->Save;
+    Save-->pdf;
+    
+    json@{ shape: doc, label: "*.json" }
+    array@{ shape: rect, label: "Any Array" }
+    ttf@{ shape: doc, label: "TrueTypeFont" }
+    cff@{ shape: doc, label: "PostScriptFont" }
+    pdf@{ shape: doc, label: "*.pdf" }
+    
+    JsonLoader@{ shape: subproc, label: "JsonLoader.Load" }
+    SectionBinder@{ shape: subproc, label: "SectionBinder.Bind" }
+    ModelMapping@{ shape: subproc, label: "ModelMapping.Mapping" }
+    Save@{ shape: subproc, label: "Save" }
+    
+    PageSection@{ shape: lean-r, label: "PageSection" }
+    PageModel@{ shape: lean-r, label: "PageModel[]" }
+    Document@{ shape: lean-r, label: "Document" }
+    
+    classDef input stroke:red
+```
+
 ## Think about
 
 キーブレイク時の改ページが全フッター出力後に起こってしまう。  
