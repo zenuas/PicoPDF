@@ -66,12 +66,12 @@ public static class FontLoader
     {
         using var stream = File.OpenRead(font.Path.Path);
 
-        var head = ReadTableRecord(font, "head", stream, FontHeaderTable.ReadFrom).Try();
-        var maxp = ReadTableRecord(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
-        var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom).Try();
         var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
+        var head = ReadTableRecord(font, "head", stream, FontHeaderTable.ReadFrom).Try();
         var hhea = ReadTableRecord(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
+        var maxp = ReadTableRecord(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
+        var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
         var current_cmap =
