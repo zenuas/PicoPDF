@@ -12,13 +12,13 @@ public static class FontLoader
 {
     public static FontTableRecords LoadTableRecords(string path, LoadOption? opt = null)
     {
-        using var stream = File.OpenRead(path);
+        using var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         return LoadTableRecords(new FontPath { Path = path }, stream, opt ?? new());
     }
 
     public static FontTableRecords[] LoadTableRecordsCollection(string path, LoadOption? opt = null)
     {
-        using var stream = File.OpenRead(path);
+        using var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         return LoadTableRecordsCollection(path, stream, opt ?? new());
     }
 
@@ -64,7 +64,7 @@ public static class FontLoader
 
     public static FontRequiredTables LoadRequiredTables(FontTableRecords font)
     {
-        using var stream = File.OpenRead(font.Path.Path);
+        using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
         var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
         var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
@@ -102,7 +102,7 @@ public static class FontLoader
 
     public static IOpenTypeRequiredTables LoadComplete(FontRequiredTables font)
     {
-        using var stream = File.OpenRead(font.Path.Path);
+        using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
         return font.Offset.ContainTrueType()
             ? LoadTrueTypeFont(stream, font)

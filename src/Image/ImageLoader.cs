@@ -11,13 +11,13 @@ public static class ImageLoader
 {
     public static IImage? FromFile(string path)
     {
-        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         return FromStream(stream);
     }
 
     public static IImage? FromFile(string path, ImageTypes type)
     {
-        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         return FromStream(stream, type);
     }
 
@@ -30,7 +30,7 @@ public static class ImageLoader
         _ => null,
     };
 
-    public static ImageTypes TypeCheck(string path) => new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read).Using(TypeCheck);
+    public static ImageTypes TypeCheck(string path) => new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite).Using(TypeCheck);
 
     public static ImageTypes TypeCheck(Stream stream)
     {
