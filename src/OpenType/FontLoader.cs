@@ -3,6 +3,7 @@ using PicoPDF.OpenType.Tables;
 using PicoPDF.OpenType.Tables.PostScript;
 using PicoPDF.OpenType.Tables.TrueType;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -45,7 +46,7 @@ public static class FontLoader
             .Select(_ => TableRecord.ReadFrom(stream))
             .ToDictionary(x => x.TableTag, x => x);
 
-        var name = NameTable.ReadFrom(stream.SeekTo(tables["name"].Offset));
+        var name = ReadTableRecord(tables, "name", stream, NameTable.ReadFrom).Try();
         string namev(NameIDs nameid) => opt.PlatformIDOrder
             .Select(x => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == (ushort)x && y.NameRecord.NameID == (ushort)nameid)?.Name)
             .Where(x => x is { })
@@ -172,5 +173,7 @@ public static class FontLoader
         };
     }
 
-    public static T? ReadTableRecord<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f) => !font.TableRecords.TryGetValue(name, out var record) ? default : f(stream.SeekTo(record.Offset));
+    public static T? ReadTableRecord<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f) => ReadTableRecord(font.TableRecords, name, stream, f);
+
+    public static T? ReadTableRecord<T>(Dictionary<string, TableRecord> tables, string name, Stream stream, Func<Stream, T> f) => !tables.TryGetValue(name, out var record) ? default : f(stream.SeekTo(record.Offset));
 }
