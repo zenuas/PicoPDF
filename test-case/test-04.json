@@ -51,7 +51,7 @@
 			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 380, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "AllIncremental"},
 		]},
 		{"Type": "TotalSection", "Name": "Total", "Height": 20, "ViewMode": "Last", "PageBreak": true, "Elements": [
-			{"Type": "FillRectangleElement", "X": 10,  "Y": 2, "Width": 450, "Height": 10, "LineColor": "Blue", "FillColor": "#EEEEEE"},
+			{"Type": "FillRectangleElement", "X": 10,  "Y": 0, "Width": 450, "Height": 10, "LineColor": "Blue", "FillColor": "#EEEEEE"},
 			{"Type": "TextElement",    "Text": "地域計", "Size": 10, "X": 10,  "Y": 0},
 			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 180, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Tiiki"},
 			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 230, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Todouhuken"},
@@ -61,7 +61,7 @@
 		]},
 		{"Type": "TotalSection", "Name": "Total2", "Height": 20, "Elements": [
 			{"Type": "TextElement",    "Text": "都道府県計", "Size": 10, "X": 10,  "Y": 0},
-			{"Type": "RectangleElement", "X": 10,  "Y": 2, "Width": 450, "Height": 10, "Color": "#FF0000"},
+			{"Type": "RectangleElement", "X": 10,  "Y": 0, "Width": 450, "Height": 10, "Color": "#FF0000"},
 			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 180, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Tiiki"},
 			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 230, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Page",  "BreakKey": "Todouhuken"},
 			{"Type": "SummaryElement", "Bind": "Number", "Size": 10, "X": 280, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50, "SummaryType": "Summary", "SummaryMethod": "Group", "BreakKey": "Tiiki"},
