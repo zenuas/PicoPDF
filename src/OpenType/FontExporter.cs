@@ -26,7 +26,7 @@ public static class FontExporter
 
     public static void Export(TrueTypeFont font, Stream stream, long start_stream_position = 0)
     {
-        var table_names = new string[] { "OS/2", "cmap", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "name", "post" };
+        var table_names = new string[] { "cmap", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "name", "post" }.If(_ => font.OS2 is { }, xs => [.. xs.Prepend("OS/2")], xs => xs);
         var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
 
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
@@ -47,7 +47,7 @@ public static class FontExporter
             WriteTableRecord(stream, table);
         });
 
-        ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
+        if (font.OS2 is { }) ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
         ExportTable(stream, start_stream_position, tables["cmap"], font.CMap);
         ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0));
         ExportTable(stream, start_stream_position, tables["hhea"], font.HorizontalHeader);
@@ -56,7 +56,7 @@ public static class FontExporter
         ExportTable(stream, start_stream_position, tables["name"], font.Name);
         ExportTable(stream, start_stream_position, tables["post"], font.PostScript);
 
-        Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
+        if (font.OS2 is { }) Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
         Debug.Assert(tables["head"].Length == 54);
         Debug.Assert(tables["hhea"].Length == 36);
         Debug.Assert(tables["maxp"].Length is 6 or 32);
@@ -103,7 +103,7 @@ public static class FontExporter
 
     public static void Export(PostScriptFont font, Stream stream, long start_stream_position = 0)
     {
-        var table_names = new string[] { "CFF ", "OS/2", "cmap", "head", "hhea", "hmtx", "maxp", "name", "post" };
+        var table_names = new string[] { "CFF ", "cmap", "head", "hhea", "hmtx", "maxp", "name", "post" }.If(_ => font.OS2 is { }, xs => [.. xs.Concat("OS/2").Order(StringComparer.Ordinal)], xs => xs);
         var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
 
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
@@ -125,7 +125,7 @@ public static class FontExporter
         });
 
         ExportTable(stream, start_stream_position, tables["CFF "], font.CompactFontFormat);
-        ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
+        if (font.OS2 is { }) ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
         ExportTable(stream, start_stream_position, tables["cmap"], font.CMap);
         ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0));
         ExportTable(stream, start_stream_position, tables["hhea"], font.HorizontalHeader);
@@ -134,7 +134,7 @@ public static class FontExporter
         ExportTable(stream, start_stream_position, tables["name"], font.Name);
         ExportTable(stream, start_stream_position, tables["post"], font.PostScript);
 
-        Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
+        if (font.OS2 is { }) Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
         Debug.Assert(tables["head"].Length == 54);
         Debug.Assert(tables["hhea"].Length == 36);
         Debug.Assert(tables["maxp"].Length is 6 or 32);

@@ -66,7 +66,7 @@ public static class FontLoader
     {
         using var stream = File.OpenRead(font.Path.Path);
 
-        var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom).Try();
+        var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
         var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
         var head = ReadTableRecord(font, "head", stream, FontHeaderTable.ReadFrom).Try();
         var hhea = ReadTableRecord(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();

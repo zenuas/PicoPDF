@@ -16,7 +16,7 @@ public class TrueTypeFont : IOpenTypeRequiredTables
     public required FontHeaderTable FontHeader { get; init; }
     public required MaximumProfileTable MaximumProfile { get; init; }
     public required PostScriptTable PostScript { get; init; }
-    public required OS2Table OS2 { get; init; }
+    public required OS2Table? OS2 { get; init; }
     public required HorizontalHeaderTable HorizontalHeader { get; init; }
     public required HorizontalMetricsTable HorizontalMetrics { get; init; }
     public required CMapTable CMap { get; init; }

@@ -17,7 +17,7 @@ public static class PdfExport
         {
             if (font.Chars.Count > 0 &&
                 (option.FontEmbed == FontEmbed.ForceEmbed ||
-                (option.FontEmbed == FontEmbed.PossibleEmbed && (font.Font.OS2.FsType & 0x2) == 0))) font.CreateEmbeddedFont();
+                (option.FontEmbed == FontEmbed.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
         }
         var xref = new List<long>();
         GetAllReferences(doc, option).Each((x, i) =>
