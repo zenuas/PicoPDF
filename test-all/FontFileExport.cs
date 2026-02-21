@@ -9,7 +9,7 @@ public static class FontFileExport
 {
     public static void Export(IOpenTypeRequiredTables font, Option opt)
     {
-        using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+        using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
         if (font is TrueTypeFont ttf) FontExporter.Export(Extract(ttf, opt), stream);
         else if (font is PostScriptFont psf) FontExporter.Export(Extract(psf, opt), stream);
     }

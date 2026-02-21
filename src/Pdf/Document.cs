@@ -205,7 +205,7 @@ public class Document
 
     public void Save(string path, PdfExportOption? option = null)
     {
-        using var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+        using var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
         Save(stream, option ?? new());
     }
 
