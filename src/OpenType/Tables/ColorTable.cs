@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace PicoPDF.OpenType.Tables;
 
@@ -11,10 +12,14 @@ public class ColorTable : IExportable
     public required uint BaseGlyphRecordsOffset { get; init; }
     public required uint LayerRecordsOffset { get; init; }
     public required ushort NumberLayerRecords { get; init; }
+    public required BaseGlyphRecord[] BaseGlyphRecords { get; init; }
+    public required LayerRecord[] LayerRecords { get; init; }
 
 
     public static ColorTable ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var version = stream.ReadUShortByBigEndian();
         var numBaseGlyphRecords = stream.ReadUShortByBigEndian();
         var baseGlyphRecordsOffset = stream.ReadUIntByBigEndian();
@@ -35,6 +40,9 @@ public class ColorTable : IExportable
             itemVariationStoreOffset = stream.ReadUIntByBigEndian();
         }
 
+        var baseGlyphRecords = stream.SeekTo(position + baseGlyphRecordsOffset).To(_ => Lists.Repeat(() => BaseGlyphRecord.ReadFrom(stream)).Take(numBaseGlyphRecords).ToArray());
+        var layerRecords = stream.SeekTo(position + layerRecordsOffset).To(_ => Lists.Repeat(() => LayerRecord.ReadFrom(stream)).Take(numLayerRecords).ToArray());
+
         return new()
         {
             Version = version,
@@ -42,6 +50,8 @@ public class ColorTable : IExportable
             BaseGlyphRecordsOffset = baseGlyphRecordsOffset,
             LayerRecordsOffset = layerRecordsOffset,
             NumberLayerRecords = numLayerRecords,
+            BaseGlyphRecords = baseGlyphRecords,
+            LayerRecords = layerRecords,
         };
     }
 
