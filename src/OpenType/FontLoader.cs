@@ -28,7 +28,7 @@ public static class FontLoader
         var header = TrueTypeCollectionHeader.ReadFrom(stream);
 
         return header.TTCTag != "ttcf"
-            ? throw new InvalidOperationException()
+            ? throw new InvalidDataException()
             : [.. Enumerable.Repeat(0, (int)header.NumberOfFonts)
                 .Select(_ => stream.ReadUIntByBigEndian())
                 .ToArray()
@@ -40,7 +40,7 @@ public static class FontLoader
     {
         var position = stream.Position;
         var offset = OffsetTable.ReadFrom(stream);
-        if (!offset.ContainTrueType() && !offset.ContainCFF()) throw new InvalidOperationException();
+        if (!offset.ContainTrueType() && !offset.ContainCFF()) throw new InvalidDataException();
 
         var tables = Enumerable.Repeat(0, offset.NumberOfTables)
             .Select(_ => TableRecord.ReadFrom(stream))
