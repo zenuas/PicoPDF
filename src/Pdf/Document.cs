@@ -90,13 +90,13 @@ public class Document
 
     public Type0Font AddFont(string name, IOpenTypeRequiredTables font)
     {
-        var flag = font.CMap.EncodingRecords.Contains(x => x.Key.PlatformEncoding == PlatformEncodings.Windows_Symbol) ?
-            FontDescriptorFlags.Symbolic :
-            FontDescriptorFlags.Nonsymbolic;
-
-        if (font.PostScript.IsFixedPitch != 0) flag |= FontDescriptorFlags.FixedPitch;
-        if ((font.FontHeader.MacStyle & 1) != 0) flag |= FontDescriptorFlags.ForceBold;
-        if ((font.FontHeader.MacStyle & 2) != 0) flag |= FontDescriptorFlags.Italic;
+        var flag =
+            (font.CMap.EncodingRecords.Contains(x => x.Key.PlatformEncoding == PlatformEncodings.Windows_Symbol) ?
+                FontDescriptorFlags.Symbolic :
+                FontDescriptorFlags.Nonsymbolic) |
+            (font.PostScript.IsFixedPitch != 0 ? FontDescriptorFlags.FixedPitch : 0) |
+            ((font.FontHeader.MacStyle & 1) != 0 ? FontDescriptorFlags.ForceBold : 0) |
+            ((font.FontHeader.MacStyle & 2) != 0 ? FontDescriptorFlags.Italic : 0);
 
         return AddFont(name, font, flag);
     }
