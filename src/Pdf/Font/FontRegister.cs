@@ -22,13 +22,20 @@ public class FontRegister : IFontRegister
         .Where(x => x.Extension is ".TTF" or ".TTC")
         .Each(x =>
         {
-            if (x.Extension == ".TTC")
+            try
             {
-                AddFontCollection(x.Path, opt);
+                if (x.Extension == ".TTC")
+                {
+                    AddFontCollection(x.Path, opt);
+                }
+                else
+                {
+                    AddFont(x.Path, opt);
+                }
             }
-            else
+            catch
             {
-                AddFont(x.Path, opt);
+                // ignore loading errors
             }
         });
 
@@ -95,10 +102,7 @@ public class FontRegister : IFontRegister
         return true;
     }
 
-    public void AddFont(string path, LoadOption? opt = null)
-    {
-        if (Objects.Catch(() => FontLoader.LoadTableRecords(path, opt), out var r) is null) Add(r);
-    }
+    public void AddFont(string path, LoadOption? opt = null) => Add(FontLoader.LoadTableRecords(path, opt));
 
     public void AddFontCollection(string path, LoadOption? opt = null) => FontLoader.LoadTableRecordsCollection(path, opt).Each(x => Add(x));
 
