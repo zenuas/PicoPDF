@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using PicoPDF.OpenType.Extension;
 using PicoPDF.OpenType.Tables.PostScript;
 using System;
 using System.Collections.Generic;
@@ -91,10 +92,6 @@ public class CompactFontFormatTest
             yield return b++;
         }
     }
-
-    public static void Write3Bytes(Stream stream, int x) => stream.Write([(byte)((x >> 16) & 0xFF), (byte)((x >> 8) & 0xFF), (byte)(x & 0xFF)]);
-
-    public static int Read3Bytes(Stream stream) => (stream.ReadUByte() << 16) | (stream.ReadUByte() << 8) | stream.ReadUByte();
 
     public byte[] bytes254_ = [.. MakeBytes(254)];
     public byte[] bytes255_ = [.. MakeBytes(255)];
@@ -196,10 +193,10 @@ public class CompactFontFormatTest
         var stream = new MemoryStream();
         stream.WriteUShortByBigEndian(3); // count
         stream.WriteByte(3); // offset size
-        Write3Bytes(stream, 1); // offset[0]
-        Write3Bytes(stream, 1); // offset[1]
-        Write3Bytes(stream, 256); // offset[2]
-        Write3Bytes(stream, 65536); // offset[3]
+        stream.Write3BytesByBigEndian(1); // offset[0]
+        stream.Write3BytesByBigEndian(1); // offset[1]
+        stream.Write3BytesByBigEndian(256); // offset[2]
+        stream.Write3BytesByBigEndian(65536); // offset[3]
         stream.Write(bytes255_);
         stream.Write(bytes65280_);
         stream.Position = 0;
@@ -219,11 +216,11 @@ public class CompactFontFormatTest
         var stream = new MemoryStream();
         stream.WriteUShortByBigEndian(4); // count
         stream.WriteByte(3); // offset size
-        Write3Bytes(stream, 1); // offset[0]
-        Write3Bytes(stream, 1); // offset[1]
-        Write3Bytes(stream, 256); // offset[2]
-        Write3Bytes(stream, 65536); // offset[3]
-        Write3Bytes(stream, 16777215); // offset[4]
+        stream.Write3BytesByBigEndian(1); // offset[0]
+        stream.Write3BytesByBigEndian(1); // offset[1]
+        stream.Write3BytesByBigEndian(256); // offset[2]
+        stream.Write3BytesByBigEndian(65536); // offset[3]
+        stream.Write3BytesByBigEndian(16777215); // offset[4]
         stream.Position = 0;
 
         var result = CompactFontFormat.ReadIndexDataHeader(stream);
@@ -364,10 +361,10 @@ public class CompactFontFormatTest
 
         Assert.Equal(stream.ReadUShortByBigEndian(), 3); // count
         Assert.Equal(stream.ReadByte(), 3); // offset size
-        Assert.Equal(Read3Bytes(stream), 1); // offset[0]
-        Assert.Equal(Read3Bytes(stream), 1); // offset[1]
-        Assert.Equal(Read3Bytes(stream), 256); // offset[2]
-        Assert.Equal(Read3Bytes(stream), 65536); // offset[3]
+        Assert.Equal(stream.Read3BytesByBigEndian(), 1); // offset[0]
+        Assert.Equal(stream.Read3BytesByBigEndian(), 1); // offset[1]
+        Assert.Equal(stream.Read3BytesByBigEndian(), 256); // offset[2]
+        Assert.Equal(stream.Read3BytesByBigEndian(), 65536); // offset[3]
         Assert.Equal(stream.ReadExactly(255), bytes255_);
         Assert.Equal(stream.ReadExactly(65280), bytes65280_);
 
@@ -386,11 +383,11 @@ public class CompactFontFormatTest
 
         Assert.Equal(stream.ReadUShortByBigEndian(), 4); // count
         Assert.Equal(stream.ReadByte(), 3); // offset size
-        Assert.Equal(Read3Bytes(stream), 1); // offset[0]
-        Assert.Equal(Read3Bytes(stream), 1); // offset[1]
-        Assert.Equal(Read3Bytes(stream), 256); // offset[2]
-        Assert.Equal(Read3Bytes(stream), 65536); // offset[3]
-        Assert.Equal(Read3Bytes(stream), 16777215); // offset[4]
+        Assert.Equal(stream.Read3BytesByBigEndian(), 1); // offset[0]
+        Assert.Equal(stream.Read3BytesByBigEndian(), 1); // offset[1]
+        Assert.Equal(stream.Read3BytesByBigEndian(), 256); // offset[2]
+        Assert.Equal(stream.Read3BytesByBigEndian(), 65536); // offset[3]
+        Assert.Equal(stream.Read3BytesByBigEndian(), 16777215); // offset[4]
 
         Assert.Equal(stream.Position, 18);
     }

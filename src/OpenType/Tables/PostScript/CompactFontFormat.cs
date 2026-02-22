@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using PicoPDF.OpenType.Extension;
 using System;
 using System.IO;
 using System.Linq;
@@ -56,7 +57,7 @@ public class CompactFontFormat : IExportable
         {
             1 => (x) => x.ReadUByte(),
             2 => (x) => x.ReadUShortByBigEndian(),
-            3 => (x) => (x.ReadUByte() << 16) | (x.ReadUByte() << 8) | x.ReadUByte(),
+            3 => (x) => x.Read3BytesByBigEndian(),
             _ => (x) => (int)x.ReadUIntByBigEndian(),
         };
 
