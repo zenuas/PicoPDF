@@ -29,8 +29,8 @@ public static class FontLoader
 
         return header.TTCTag != "ttcf"
             ? throw new InvalidDataException()
-            : [.. Enumerable.Repeat(0, (int)header.NumberOfFonts)
-                .Select(_ => stream.ReadUIntByBigEndian())
+            : [.. Lists.Repeat(() => stream.ReadUIntByBigEndian())
+                .Take((int)header.NumberOfFonts)
                 .ToArray()
                 .Select((x, i) => Objects.Catch(() => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream.SeekTo(x), opt), out var r) is null ? r : null)
                 .OfType<FontTableRecords>()];
