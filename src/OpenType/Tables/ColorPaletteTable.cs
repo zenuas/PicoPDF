@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System;
 using System.IO;
 using System.Linq;
 
@@ -73,6 +72,35 @@ public class ColorPaletteTable : IExportable
 
     public void WriteTo(Stream stream)
     {
-        throw new NotImplementedException();
+        var colorRecordsArrayOffset = /* sizeof(Version) + sizeof(NumberPaletteEntries) + sizeof(NumberPalettes) + sizeof(NumberColorRecords) + sizeof(ColorRecordsArrayOffset) */12
+            + (/* sizeof(ColorRecordIndices) */2 * ColorRecordIndices.Length)
+            + /* sizeof(PaletteTypesArrayOffset) + sizeof(PaletteLabelsArrayOffset) + sizeof(PaletteEntryLabelsArrayOffset) */12;
+
+        stream.WriteUShortByBigEndian(Version);
+        stream.WriteUShortByBigEndian(NumberPaletteEntries);
+        stream.WriteUShortByBigEndian(NumberPalettes);
+        stream.WriteUShortByBigEndian(NumberColorRecords);
+        stream.WriteUIntByBigEndian((uint)colorRecordsArrayOffset);
+        ColorRecordIndices.Each(stream.WriteUShortByBigEndian);
+
+        if (Version == 0)
+        {
+            ColorRecords.Each(x => x.WriteTo(stream));
+        }
+        else
+        {
+            var sizeof_ColorRecords = /* sizeof(ColorRecords) */2 * ColorRecords.Length;
+            var sizeof_PaletteTypes = /* sizeof(PaletteTypes) */4 * PaletteTypes.Length;
+            var sizeof_PaletteLabels = /* sizeof(PaletteLabels) */2 * PaletteLabels.Length;
+
+            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffset + sizeof_ColorRecords));
+            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffset + sizeof_ColorRecords + sizeof_PaletteTypes));
+            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffset + sizeof_ColorRecords + sizeof_PaletteTypes + sizeof_PaletteLabels));
+
+            ColorRecords.Each(x => x.WriteTo(stream));
+            PaletteTypes.Each(stream.WriteUIntByBigEndian);
+            PaletteLabels.Each(stream.WriteUShortByBigEndian);
+            PaletteEntryLabels.Each(stream.WriteUShortByBigEndian);
+        }
     }
 }

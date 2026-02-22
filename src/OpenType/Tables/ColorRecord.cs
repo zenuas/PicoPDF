@@ -16,4 +16,12 @@ public class ColorRecord
         Red = (byte)stream.ReadByte(),
         Alpha = (byte)stream.ReadByte(),
     };
+
+    public void WriteTo(Stream stream)
+    {
+        stream.WriteByte(Blue);
+        stream.WriteByte(Green);
+        stream.WriteByte(Red);
+        stream.WriteByte(Alpha);
+    }
 }
