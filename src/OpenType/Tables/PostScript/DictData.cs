@@ -197,7 +197,7 @@ public class DictData
             _ => throw new(),
         })
         .Join()
-        .To(x => double.Parse(x));
+        .To(double.Parse);
 
     public static IEnumerable<byte> DoubleToPackedBCD(double d) => d.ToString(CultureInfo.InvariantCulture)
         .Replace("E-", "e")
@@ -247,7 +247,7 @@ public class DictData
             return new()
             {
                 Format = 0,
-                Glyph = [.. Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(glyph_count_without_notdef)],
+                Glyph = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take(glyph_count_without_notdef)],
             };
         }
     }
@@ -271,7 +271,7 @@ public class DictData
         }
         else
         {
-            return [.. Lists.Repeat(() => stream.ReadUByte()).Take(glyph_count_with_notdef)];
+            return [.. Lists.Repeat(stream.ReadUByte).Take(glyph_count_with_notdef)];
         }
     }
 

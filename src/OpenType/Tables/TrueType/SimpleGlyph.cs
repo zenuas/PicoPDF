@@ -25,9 +25,9 @@ public class SimpleGlyph : IGlyph
         var xmax = stream.ReadShortByBigEndian();
         var ymax = stream.ReadShortByBigEndian();
 
-        var endpoints = Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(number_of_contours).ToArray();
+        var endpoints = Lists.Repeat(stream.ReadUShortByBigEndian).Take(number_of_contours).ToArray();
         var instruction_length = stream.ReadUShortByBigEndian();
-        var instructions = Lists.Repeat(() => stream.ReadUByte()).Take(instruction_length).ToArray();
+        var instructions = Lists.Repeat(stream.ReadUByte).Take(instruction_length).ToArray();
 
         var lastpoint = endpoints.Last() + 1;
         var flags = new byte[lastpoint];

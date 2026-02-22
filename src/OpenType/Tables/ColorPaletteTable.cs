@@ -29,7 +29,7 @@ public class ColorPaletteTable : IExportable
         var numPalettes = stream.ReadUShortByBigEndian();
         var numColorRecords = stream.ReadUShortByBigEndian();
         var colorRecordsArrayOffset = stream.ReadUIntByBigEndian();
-        var colorRecordIndices = Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(numPalettes).ToArray();
+        var colorRecordIndices = Lists.Repeat(stream.ReadUShortByBigEndian).Take(numPalettes).ToArray();
 
         uint paletteTypesArrayOffset = 0;
         uint paletteLabelsArrayOffset = 0;
