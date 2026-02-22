@@ -23,4 +23,11 @@ public class TrueTypeFont : IOpenTypeRequiredTables
     public required Func<int, uint> CharToGID { get; init; }
     public required IndexToLocationTable IndexToLocation { get; init; }
     public required IGlyph[] Glyphs { get; init; }
+
+    public required ColorBitmapDataTable? ColorBitmapData { get; init; }
+    public required ColorBitmapLocationTable? ColorBitmapLocation { get; init; }
+    public required ColorTable? Color { get; init; }
+    public required ColorPaletteTable? ColorPalette { get; init; }
+    public required StandardBitmapGraphicsTable? StandardBitmapGraphics { get; init; }
+    public required ScalableVectorGraphicsTable? ScalableVectorGraphics { get; init; }
 }

@@ -62,6 +62,12 @@ public static class FontExtract
             CharToGID = cmapN.CreateCharToGID(),
             IndexToLocation = null!,
             Glyphs = glyf,
+            ColorBitmapData = null,
+            ColorBitmapLocation = null,
+            Color = null,
+            ColorPalette = null,
+            StandardBitmapGraphics = null,
+            ScalableVectorGraphics = null,
         };
     }
 
@@ -190,6 +196,12 @@ public static class FontExtract
             CMap = cmap,
             CharToGID = cmapN.CreateCharToGID(),
             CompactFontFormat = cff,
+            ColorBitmapData = null,
+            ColorBitmapLocation = null,
+            Color = null,
+            ColorPalette = null,
+            StandardBitmapGraphics = null,
+            ScalableVectorGraphics = null,
         };
     }
 

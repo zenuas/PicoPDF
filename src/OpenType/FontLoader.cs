@@ -128,6 +128,13 @@ public static class FontLoader
                     .ToArray();
             }).Try();
 
+        var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
+        var cblc = ReadTableRecord(font, "CBLC", stream, ColorBitmapLocationTable.ReadFrom);
+        var colr = ReadTableRecord(font, "COLR", stream, ColorTable.ReadFrom);
+        var cpal = ReadTableRecord(font, "CPAL", stream, ColorPaletteTable.ReadFrom);
+        var svg = ReadTableRecord(font, "SVG ", stream, ScalableVectorGraphicsTable.ReadFrom);
+        var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
+
         return new()
         {
             PostScriptName = font.PostScriptName,
@@ -146,12 +153,25 @@ public static class FontLoader
             CharToGID = font.CharToGID,
             IndexToLocation = loca,
             Glyphs = glyf,
+            ColorBitmapData = cbdt,
+            ColorBitmapLocation = cblc,
+            Color = colr,
+            ColorPalette = cpal,
+            StandardBitmapGraphics = sbix,
+            ScalableVectorGraphics = svg,
         };
     }
 
     public static PostScriptFont LoadPostScriptFont(Stream stream, FontRequiredTables font)
     {
         var cff = ReadTableRecord(font, "CFF ", stream, CompactFontFormat.ReadFrom).Try();
+
+        var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
+        var cblc = ReadTableRecord(font, "CBLC", stream, ColorBitmapLocationTable.ReadFrom);
+        var colr = ReadTableRecord(font, "COLR", stream, ColorTable.ReadFrom);
+        var cpal = ReadTableRecord(font, "CPAL", stream, ColorPaletteTable.ReadFrom);
+        var svg = ReadTableRecord(font, "SVG ", stream, ScalableVectorGraphicsTable.ReadFrom);
+        var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
         return new()
         {
@@ -170,6 +190,12 @@ public static class FontLoader
             CMap = font.CMap,
             CharToGID = font.CharToGID,
             CompactFontFormat = cff,
+            ColorBitmapData = cbdt,
+            ColorBitmapLocation = cblc,
+            Color = colr,
+            ColorPalette = cpal,
+            StandardBitmapGraphics = sbix,
+            ScalableVectorGraphics = svg,
         };
     }
 
