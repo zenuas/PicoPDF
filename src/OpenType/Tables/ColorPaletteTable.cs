@@ -30,14 +30,11 @@ public class ColorPaletteTable : IExportable
         var numPalettes = stream.ReadUShortByBigEndian();
         var numColorRecords = stream.ReadUShortByBigEndian();
         var colorRecordsArrayOffset = stream.ReadUIntByBigEndian();
-        var colorRecordIndices = Lists.Repeat(() => stream.ReadUShortByBigEndian())
-                .Take(numPalettes)
-                .ToArray();
+        var colorRecordIndices = Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(numPalettes).ToArray();
 
         uint paletteTypesArrayOffset = 0;
         uint paletteLabelsArrayOffset = 0;
         uint paletteEntryLabelsArrayOffset = 0;
-
         if (version >= 1)
         {
             paletteTypesArrayOffset = stream.ReadUIntByBigEndian();
@@ -45,10 +42,7 @@ public class ColorPaletteTable : IExportable
             paletteEntryLabelsArrayOffset = stream.ReadUIntByBigEndian();
         }
 
-        stream.Position = position + colorRecordsArrayOffset;
-        var colorRecords = Lists.Repeat(() => ColorRecord.ReadFrom(stream))
-                .Take(numColorRecords)
-                .ToArray();
+        var colorRecords = stream.SeekTo(position + colorRecordsArrayOffset).To(_ => Lists.Repeat(() => ColorRecord.ReadFrom(stream)).Take(numColorRecords).ToArray());
 
         uint[] paletteTypes = paletteTypesArrayOffset == 0 ? []
             : [.. stream.SeekTo(position + paletteTypesArrayOffset).To(_ => Lists.Repeat(() => stream.ReadUIntByBigEndian()).Take(numPalettes))];
