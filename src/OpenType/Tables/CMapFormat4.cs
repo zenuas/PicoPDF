@@ -41,12 +41,12 @@ public class CMapFormat4 : ICMapFormat
             SearchRange = stream.ReadUShortByBigEndian(),
             EntrySelector = stream.ReadUShortByBigEndian(),
             RangeShift = stream.ReadUShortByBigEndian(),
-            EndCode = [.. Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian())],
+            EndCode = [.. Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(seg_count)],
             ReservedPad = stream.ReadUShortByBigEndian(),
-            StartCode = [.. Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian())],
-            IdDelta = [.. Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadShortByBigEndian())],
-            IdRangeOffsets = [.. Enumerable.Repeat(0, seg_count).Select(_ => stream.ReadUShortByBigEndian())],
-            GlyphIdArray = [.. Enumerable.Repeat(0, glyph_count).Select(_ => stream.ReadUShortByBigEndian())],
+            StartCode = [.. Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(seg_count)],
+            IdDelta = [.. Lists.Repeat(() => stream.ReadShortByBigEndian()).Take(seg_count)],
+            IdRangeOffsets = [.. Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(seg_count)],
+            GlyphIdArray = [.. Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(glyph_count)],
         };
     }
 

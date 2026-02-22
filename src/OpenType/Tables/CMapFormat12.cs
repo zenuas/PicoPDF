@@ -30,7 +30,7 @@ public class CMapFormat12 : ICMapFormat
             Length = length,
             Language = language,
             NumberOfGroups = num_of_groups,
-            Groups = [.. Enumerable.Repeat(0, (int)num_of_groups).Select(_ => (stream.ReadUIntByBigEndian(), stream.ReadUIntByBigEndian(), stream.ReadUIntByBigEndian()))],
+            Groups = [.. Lists.Repeat(() => (stream.ReadUIntByBigEndian(), stream.ReadUIntByBigEndian(), stream.ReadUIntByBigEndian())).Take((int)num_of_groups)],
         };
     }
 

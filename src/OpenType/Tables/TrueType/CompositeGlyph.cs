@@ -100,7 +100,7 @@ public class CompositeGlyph : IGlyph
                 if ((flags & (ushort)CompositeGlyphFlags.WE_HAVE_INSTRUCTIONS) != 0)
                 {
                     instruction_length = stream.ReadUShortByBigEndian();
-                    instructions = [.. Enumerable.Repeat(0, instruction_length).Select(_ => stream.ReadUByte())];
+                    instructions = [.. Lists.Repeat(() => stream.ReadUByte()).Take(instruction_length)];
                 }
                 break;
             }

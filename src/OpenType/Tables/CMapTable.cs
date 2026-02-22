@@ -24,8 +24,8 @@ public class CMapTable : IExportable
         {
             Version = ver,
             NumberOfTables = num_of_tables,
-            EncodingRecords = Enumerable.Repeat(0, num_of_tables)
-                .Select(_ => EncodingRecord.ReadFrom(stream))
+            EncodingRecords = Lists.Repeat(() => EncodingRecord.ReadFrom(stream))
+                .Take(num_of_tables)
                 .ToArray()
                 .ToDictionary(x => x, x => offset_cmap.TryGetValue(x.Offset, out var cmap) ? cmap : (offset_cmap[x.Offset] = ReadCMapFormat(stream.SeekTo(position + x.Offset)))),
         };

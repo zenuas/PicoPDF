@@ -30,8 +30,8 @@ public class ColorPaletteTable : IExportable
         var numPalettes = stream.ReadUShortByBigEndian();
         var numColorRecords = stream.ReadUShortByBigEndian();
         var colorRecordsArrayOffset = stream.ReadUIntByBigEndian();
-        var colorRecordIndices = Enumerable.Repeat(0, numPalettes)
-                .Select(_ => stream.ReadUShortByBigEndian())
+        var colorRecordIndices = Lists.Repeat(() => stream.ReadUShortByBigEndian())
+                .Take(numPalettes)
                 .ToArray();
 
         uint paletteTypesArrayOffset = 0;
@@ -46,18 +46,18 @@ public class ColorPaletteTable : IExportable
         }
 
         stream.Position = position + colorRecordsArrayOffset;
-        var colorRecords = Enumerable.Repeat(0, numColorRecords)
-                .Select(_ => ColorRecord.ReadFrom(stream))
+        var colorRecords = Lists.Repeat(() => ColorRecord.ReadFrom(stream))
+                .Take(numColorRecords)
                 .ToArray();
 
         uint[] paletteTypes = paletteTypesArrayOffset == 0 ? []
-            : [.. stream.SeekTo(position + paletteTypesArrayOffset).To(_ => Enumerable.Repeat(0, numPalettes).Select(_ => stream.ReadUIntByBigEndian()))];
+            : [.. stream.SeekTo(position + paletteTypesArrayOffset).To(_ => Lists.Repeat(() => stream.ReadUIntByBigEndian()).Take(numPalettes))];
 
         ushort[] paletteLabels = paletteLabelsArrayOffset == 0 ? []
-            : [.. stream.SeekTo(position + paletteLabelsArrayOffset).To(_ => Enumerable.Repeat(0, numPalettes).Select(_ => stream.ReadUShortByBigEndian()))];
+            : [.. stream.SeekTo(position + paletteLabelsArrayOffset).To(_ => Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(numPalettes))];
 
         ushort[] paletteEntryLabels = paletteEntryLabelsArrayOffset == 0 ? []
-            : [.. stream.SeekTo(position + paletteEntryLabelsArrayOffset).To(_ => Enumerable.Repeat(0, numPaletteEntries).Select(_ => stream.ReadUShortByBigEndian()))];
+            : [.. stream.SeekTo(position + paletteEntryLabelsArrayOffset).To(_ => Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(numPaletteEntries))];
 
         return new()
         {

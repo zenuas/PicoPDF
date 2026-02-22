@@ -42,8 +42,8 @@ public static class FontLoader
         var offset = OffsetTable.ReadFrom(stream);
         if (!offset.ContainTrueType() && !offset.ContainCFF()) throw new InvalidDataException();
 
-        var tables = Enumerable.Repeat(0, offset.NumberOfTables)
-            .Select(_ => TableRecord.ReadFrom(stream))
+        var tables = Lists.Repeat(() => TableRecord.ReadFrom(stream))
+            .Take(offset.NumberOfTables)
             .ToDictionary(x => x.TableTag, x => x);
 
         var name = ReadTableRecord(tables, "name", stream, NameTable.ReadFrom).Try();

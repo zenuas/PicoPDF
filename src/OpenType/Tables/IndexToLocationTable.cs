@@ -11,7 +11,7 @@ public class IndexToLocationTable
     public static IndexToLocationTable ReadFrom(Stream stream, short index_to_locformat, ushort number_of_glyphs) => new()
     {
         Offsets = index_to_locformat == 0
-            ? [.. Enumerable.Repeat(0, number_of_glyphs + 1).Select(_ => (uint)stream.ReadUShortByBigEndian() * 2)]
-            : [.. Enumerable.Repeat(0, number_of_glyphs + 1).Select(_ => stream.ReadUIntByBigEndian())],
+            ? [.. Lists.Repeat(() => (uint)stream.ReadUShortByBigEndian() * 2).Take(number_of_glyphs + 1)]
+            : [.. Lists.Repeat(() => stream.ReadUIntByBigEndian()).Take(number_of_glyphs + 1)],
     };
 }

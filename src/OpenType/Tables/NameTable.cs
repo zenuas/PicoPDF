@@ -22,8 +22,8 @@ public class NameTable : IExportable
         var count = stream.ReadUShortByBigEndian();
         var string_offset = stream.ReadUShortByBigEndian();
 
-        var records = Enumerable.Repeat(0, count)
-            .Select(_ => NameRecord.ReadFrom(stream))
+        var records = Lists.Repeat(() => NameRecord.ReadFrom(stream))
+            .Take(count)
             .ToArray();
 
         ushort lang_tag_count = 0;
@@ -32,7 +32,7 @@ public class NameTable : IExportable
         {
             lang_tag_count = stream.ReadUShortByBigEndian();
 
-            tags = [.. Enumerable.Repeat(0, lang_tag_count).Select(_ => LanguageTagRecord.ReadFrom(stream))];
+            tags = [.. Lists.Repeat(() => LanguageTagRecord.ReadFrom(stream)).Take(lang_tag_count)];
         }
 
         var name_records = records

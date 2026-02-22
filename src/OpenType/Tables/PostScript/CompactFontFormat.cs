@@ -60,7 +60,7 @@ public class CompactFontFormat : IExportable
             _ => (x) => (int)x.ReadUIntByBigEndian(),
         };
 
-        return [.. Enumerable.Repeat(0, count + 1).Select(_ => offset_read(stream))];
+        return [.. Lists.Repeat(() => offset_read(stream)).Take(count + 1)];
     }
 
     public static byte[][] ReadIndexDataBody(Stream stream, int[] offset) => [.. Enumerable.Range(0, offset.Length - 1).Select(i => stream.ReadExactly(offset[i + 1] - offset[i]))];

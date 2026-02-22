@@ -247,7 +247,7 @@ public class DictData
             return new()
             {
                 Format = 0,
-                Glyph = [.. Enumerable.Repeat(0, glyph_count_without_notdef).Select(_ => stream.ReadUShortByBigEndian())],
+                Glyph = [.. Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(glyph_count_without_notdef)],
             };
         }
     }
@@ -271,7 +271,7 @@ public class DictData
         }
         else
         {
-            return [.. Enumerable.Repeat(0, glyph_count_with_notdef).Select(_ => stream.ReadUByte())];
+            return [.. Lists.Repeat(() => stream.ReadUByte()).Take(glyph_count_with_notdef)];
         }
     }
 
