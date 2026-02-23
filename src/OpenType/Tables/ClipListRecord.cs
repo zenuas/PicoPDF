@@ -32,5 +32,19 @@ public class ClipListRecord
 
     public void WriteTo(Stream stream)
     {
+        var clipBoxOffsets = new int[Clips.Length];
+        _ = ClipBoxFormats
+            .Select((x, i) => (ClipBoxFormat: x, Index: i))
+            .Accumulator((acc, x) => (clipBoxOffsets[x.Index] = acc) + x.ClipBoxFormat.SizeOf(), /* sizeof(Format) + sizeof(NumberClips) */5 + (/* sizeof(Clips) */8 * Clips.Length));
+
+        stream.WriteByte(Format);
+        stream.WriteUIntByBigEndian(NumberClips);
+        for (int i = 0; i < Clips.Length; i++)
+        {
+            stream.WriteUShortByBigEndian(Clips[i].StartGlyphID);
+            stream.WriteUShortByBigEndian(Clips[i].EndGlyphID);
+            stream.Write3BytesByBigEndian(clipBoxOffsets[i]);
+        }
+        ClipBoxFormats.Each(x => x.WriteTo(stream));
     }
 }

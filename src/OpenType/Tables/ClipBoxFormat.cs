@@ -40,4 +40,6 @@ public class ClipBoxFormat
             stream.WriteUIntByBigEndian(VarIndexBase);
         }
     }
+
+    public int SizeOf() => /* sizeof(Format) + sizeof(XMin) + sizeof(YMin) + sizeof(XMax) + sizeof(YMax) */9 + (Format >= 2 ? /* sizeof(VarIndexBase) */4 : 0);
 }
