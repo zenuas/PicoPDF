@@ -67,7 +67,7 @@ public class NameTable : IExportable
         NameRecords.Each(x =>
         {
             var offset = strings.Position;
-            strings.Write((x.NameRecord.PlatformID == (ushort)Platforms.Unicode || x.NameRecord.PlatformID == (ushort)Platforms.Windows ? Encoding.BigEndianUnicode : Encoding.UTF8).GetBytes(x.Name));
+            strings.Write(x.NameRecord.GetEncoding().GetBytes(x.Name));
 
             stream.WriteUShortByBigEndian(x.NameRecord.PlatformID);
             stream.WriteUShortByBigEndian(x.NameRecord.EncodingID);
