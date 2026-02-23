@@ -14,6 +14,7 @@ public class ColorTable : IExportable
     public required ushort NumberLayerRecords { get; init; }
     public required BaseGlyphRecord[] BaseGlyphRecords { get; init; }
     public required LayerRecord[] LayerRecords { get; init; }
+    public required BaseGlyphListRecord? BaseGlyphListRecord { get; init; }
 
 
     public static ColorTable ReadFrom(Stream stream)
@@ -42,6 +43,9 @@ public class ColorTable : IExportable
 
         var baseGlyphRecords = stream.SeekTo(position + baseGlyphRecordsOffset).To(_ => Lists.Repeat(() => BaseGlyphRecord.ReadFrom(stream)).Take(numBaseGlyphRecords).ToArray());
         var layerRecords = stream.SeekTo(position + layerRecordsOffset).To(_ => Lists.Repeat(() => LayerRecord.ReadFrom(stream)).Take(numLayerRecords).ToArray());
+
+        BaseGlyphListRecord? paletteTypes = baseGlyphListOffset == 0 ? null
+            : stream.SeekTo(position + baseGlyphListOffset).To(BaseGlyphListRecord.ReadFrom);
 
         return new()
         {
