@@ -44,13 +44,13 @@ public class ColorPaletteTable : IExportable
         var colorRecords = stream.SeekTo(position + colorRecordsArrayOffset).To(_ => Lists.Repeat(() => ColorRecord.ReadFrom(stream)).Take(numColorRecords).ToArray());
 
         uint[] paletteTypes = paletteTypesArrayOffset == 0 ? []
-            : [.. stream.SeekTo(position + paletteTypesArrayOffset).To(_ => Lists.Repeat(() => stream.ReadUIntByBigEndian()).Take(numPalettes))];
+            : [.. stream.SeekTo(position + paletteTypesArrayOffset).To(_ => Lists.Repeat(stream.ReadUIntByBigEndian).Take(numPalettes))];
 
         ushort[] paletteLabels = paletteLabelsArrayOffset == 0 ? []
-            : [.. stream.SeekTo(position + paletteLabelsArrayOffset).To(_ => Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(numPalettes))];
+            : [.. stream.SeekTo(position + paletteLabelsArrayOffset).To(_ => Lists.Repeat(stream.ReadUShortByBigEndian).Take(numPalettes))];
 
         ushort[] paletteEntryLabels = paletteEntryLabelsArrayOffset == 0 ? []
-            : [.. stream.SeekTo(position + paletteEntryLabelsArrayOffset).To(_ => Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(numPaletteEntries))];
+            : [.. stream.SeekTo(position + paletteEntryLabelsArrayOffset).To(_ => Lists.Repeat(stream.ReadUShortByBigEndian).Take(numPaletteEntries))];
 
         return new()
         {
