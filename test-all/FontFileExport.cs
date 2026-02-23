@@ -1,7 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.OpenType;
 using System.IO;
-using Encodings = PicoPDF.OpenType.Encodings;
 
 namespace PicoPDF.TestAll;
 

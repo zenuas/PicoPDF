@@ -27,11 +27,11 @@ public class NameRecord
     {
         ((ushort)Platforms.Unicode, _, _) => Encoding.BigEndianUnicode,
         ((ushort)Platforms.Windows, 0 or 1 or 10, _) => Encoding.BigEndianUnicode,
-        ((ushort)Platforms.Windows, 2, _) => Mina.Extension.Encodings.GetEncodingOrUtf8("shift_jis"),
-        ((ushort)Platforms.Windows, 4, _) => Mina.Extension.Encodings.GetEncodingOrUtf8("big5"),
-        ((ushort)Platforms.Windows, 5, _) => Mina.Extension.Encodings.GetEncodingOrUtf8("x-cp20949"),
-        ((ushort)Platforms.Windows, 6, _) => Mina.Extension.Encodings.GetEncodingOrUtf8("Johab"),
-        ((ushort)Platforms.Macintosh, 1, _) => Mina.Extension.Encodings.GetEncodingOrUtf8("shift_jis"),
+        ((ushort)Platforms.Windows, 2, _) => Encoding.GetEncodingOrUtf8("shift_jis"),
+        ((ushort)Platforms.Windows, 4, _) => Encoding.GetEncodingOrUtf8("big5"),
+        ((ushort)Platforms.Windows, 5, _) => Encoding.GetEncodingOrUtf8("x-cp20949"),
+        ((ushort)Platforms.Windows, 6, _) => Encoding.GetEncodingOrUtf8("Johab"),
+        ((ushort)Platforms.Macintosh, 1, _) => Encoding.GetEncodingOrUtf8("shift_jis"),
         _ => Encoding.UTF8,
     };
 
