@@ -15,6 +15,7 @@ public class ColorTable : IExportable
     public required BaseGlyphRecord[] BaseGlyphRecords { get; init; }
     public required LayerRecord[] LayerRecords { get; init; }
     public required BaseGlyphListRecord? BaseGlyphListRecord { get; init; }
+    public required LayerListRecord? LayerListRecord { get; init; }
 
 
     public static ColorTable ReadFrom(Stream stream)
@@ -47,6 +48,9 @@ public class ColorTable : IExportable
         var baseGlyphList = baseGlyphListOffset == 0 ? null
             : stream.SeekTo(position + baseGlyphListOffset).To(BaseGlyphListRecord.ReadFrom);
 
+        var layerList = layerListOffset == 0 ? null
+            : stream.SeekTo(position + layerListOffset).To(LayerListRecord.ReadFrom);
+
         return new()
         {
             Version = version,
@@ -57,6 +61,7 @@ public class ColorTable : IExportable
             BaseGlyphRecords = baseGlyphRecords,
             LayerRecords = layerRecords,
             BaseGlyphListRecord = baseGlyphList,
+            LayerListRecord = layerList,
         };
     }
 
