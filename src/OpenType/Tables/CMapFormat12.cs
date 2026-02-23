@@ -43,7 +43,7 @@ public class CMapFormat12 : ICMapFormat
         {
             Format = 12,
             Reserved = 0,
-            Length = (uint)(16 + groups.Length * 12), // sizeof(Format) + sizeof(Reserved) + sizeof(Length) + sizeof(Language) + sizeof(NumberOfGroups) + NumberOfGroups * sizeof(Groups)
+            Length = (uint)(/* sizeof(Format) + sizeof(Reserved) + sizeof(Length) + sizeof(Language) + sizeof(NumberOfGroups) */16 + (groups.Length * /* sizeof(Groups) */12)),
             Language = 0,
             NumberOfGroups = (uint)groups.Length,
             Groups = groups,

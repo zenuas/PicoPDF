@@ -72,9 +72,9 @@ public class ColorPaletteTable : IExportable
 
     public void WriteTo(Stream stream)
     {
-        var colorRecordsArrayOffset = /* sizeof(Version) + sizeof(NumberPaletteEntries) + sizeof(NumberPalettes) + sizeof(NumberColorRecords) + sizeof(ColorRecordsArrayOffset) */12
+        var colorRecordsArrayOffset = Version.SizeOf() + NumberPaletteEntries.SizeOf() + NumberPalettes.SizeOf() + NumberColorRecords.SizeOf() + ColorRecordsArrayOffset.SizeOf()
             + (/* sizeof(ColorRecordIndices) */2 * ColorRecordIndices.Length)
-            + /* sizeof(PaletteTypesArrayOffset) + sizeof(PaletteLabelsArrayOffset) + sizeof(PaletteEntryLabelsArrayOffset) */12;
+            + PaletteTypesArrayOffset.SizeOf() + PaletteLabelsArrayOffset.SizeOf() + PaletteEntryLabelsArrayOffset.SizeOf();
 
         stream.WriteUShortByBigEndian(Version);
         stream.WriteUShortByBigEndian(NumberPaletteEntries);

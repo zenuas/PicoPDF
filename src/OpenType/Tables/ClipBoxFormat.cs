@@ -41,5 +41,5 @@ public class ClipBoxFormat
         }
     }
 
-    public int SizeOf() => /* sizeof(Format) + sizeof(XMin) + sizeof(YMin) + sizeof(XMax) + sizeof(YMax) */9 + (Format >= 2 ? /* sizeof(VarIndexBase) */4 : 0);
+    public int SizeOf() => Format.SizeOf() + XMin.SizeOf() + YMin.SizeOf() + XMax.SizeOf() + YMax.SizeOf() + (Format >= 2 ? VarIndexBase.SizeOf() : 0);
 }
