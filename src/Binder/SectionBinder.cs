@@ -50,8 +50,8 @@ public static class SectionBinder
         var sections = (Section: page.SubSection, Depth: 1).Travers(x => x.Section is Section s ? [(s.SubSection, x.Depth + 1)] : []).ToArray();
         var detail = sections.Select(x => x.Section).OfType<DetailSection>().First();
         var hierarchy = sections.Where(x => x.Section is Section).Select(x => (x.Section.Cast<Section>(), x.Depth)).AppendHierarchy().ToArray();
-        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, Section: x.Section.Header!, x.Depth)).PrependIf(page.Header, 0).ToArray();
-        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, Section: x.Section.Footer!, x.Depth)).ToArray();
+        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, x.Section.Header!, x.Depth)).PrependIf(page.Header, 0).ToArray();
+        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, x.Section.Footer!, x.Depth)).ToArray();
         var keys = sections.Select(x => x.Section).OfType<Section>().Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
 
         var bind = new BindSummaryMapper<T>() { Mapper = mapper };
