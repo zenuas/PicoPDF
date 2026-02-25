@@ -165,9 +165,8 @@ public class BindSummaryMapper<T>
 
     public void BreakSection(SectionModel model)
     {
-        var depth = model.Depth ?? throw new();
-        CrossSectionGoBack.Take(depth + 1).Flatten().Each(x => x.TargetSection = model);
-        CrossSectionGoBack[depth].Clear();
+        CrossSectionGoBack.Take(model.Depth + 1).Flatten().Each(x => x.TargetSection = model);
+        CrossSectionGoBack[model.Depth].Clear();
     }
 
     public void PageBreakSection(SectionModel model)
