@@ -173,19 +173,19 @@ public static class SectionBinder
     {
         switch (element)
         {
-            case TextElement x: return CreateTextModel(x, x.Text, page);
+            case TextElement x: return CreateTextModel(x, x.Text, page.DefaultFont);
 
-            case BindElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.Mapper[x.Bind](data), x.Format, x.Culture ?? page.DefaultCulture), page);
+            case BindElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.Mapper[x.Bind](data), x.Format, x.Culture ?? page.DefaultCulture), page.DefaultFont);
 
             case SummaryElement x when x.SummaryMethod is SummaryMethod.All or SummaryMethod.Page or SummaryMethod.CrossSectionPage or SummaryMethod.Group:
                 {
-                    var model = CreateMutableTextModel(x, "", page);
+                    var model = CreateMutableTextModel(x, "", page.DefaultFont);
                     var keycount = x.BreakKey == "" ? keys.Length - 1 : allkeys.FindLastIndex(y => y == x.BreakKey);
                     bind.AddSummaryGoBack(x, model, keycount);
                     return model;
                 }
 
-            case SummaryElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format, x.Culture ?? page.DefaultCulture, x.NaN), page);
+            case SummaryElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format, x.Culture ?? page.DefaultCulture, x.NaN), page.DefaultFont);
 
             case LineElement x:
                 return new LineModel()
@@ -287,13 +287,13 @@ public static class SectionBinder
         throw new();
     }
 
-    public static TextModel CreateTextModel(ITextElement element, string text, PageSection page) => new()
+    public static TextModel CreateTextModel(ITextElement element, string text, string[] default_fonts) => new()
     {
         Element = element,
         X = element.X,
         Y = element.Y,
         Text = text,
-        Font = [.. element.Font.Concat(page.DefaultFont)],
+        Font = [.. element.Font, .. default_fonts],
         Size = element.Size,
         Alignment = element.Alignment,
         Style = element.Style,
@@ -302,13 +302,13 @@ public static class SectionBinder
         Color = element.Color,
     };
 
-    public static MutableTextModel CreateMutableTextModel(ITextElement element, string text, PageSection page) => new()
+    public static MutableTextModel CreateMutableTextModel(ITextElement element, string text, string[] default_fonts) => new()
     {
         Element = element,
         X = element.X,
         Y = element.Y,
         Text = text,
-        Font = [.. element.Font.Concat(page.DefaultFont)],
+        Font = [.. element.Font, .. default_fonts],
         Size = element.Size,
         Alignment = element.Alignment,
         Style = element.Style,
