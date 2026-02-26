@@ -50,12 +50,12 @@ public static class SectionBinder
         SectionInfo[] FootersWithoutPageFooter,
         DetailSection Detail,
         string[] BreakKeys)
-        GetSectionInfo(PageSection page)
+        GetSectionInfo(ISubSection subsection, IHeaderSection? pageheader)
     {
-        var sections = (Section: page.SubSection, Depth: 1).Travers(x => x.Section is Section s ? [(s.SubSection, x.Depth + 1)] : []).ToArray();
+        var sections = (Section: subsection, Depth: 1).Travers(x => x.Section is Section s ? [(s.SubSection, x.Depth + 1)] : []).ToArray();
         var detail = sections.Select(x => x.Section).OfType<DetailSection>().First();
         var hierarchy = sections.Where(x => x.Section is Section).Select(x => (x.Section.Cast<Section>(), x.Depth)).AppendHierarchy().ToArray();
-        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, x.Section.Header!, x.Depth)).PrependIf(page.Header, 0).ToArray();
+        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, x.Section.Header!, x.Depth)).PrependIf(pageheader, 0).ToArray();
         var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, x.Section.Footer!, x.Depth)).ToArray();
         var keys = sections.Select(x => x.Section).OfType<Section>().Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
 
@@ -64,7 +64,7 @@ public static class SectionBinder
 
     public static IEnumerable<SectionModel[]> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
     {
-        var (headers, footers, detail, keys) = GetSectionInfo(page);
+        var (headers, footers, detail, keys) = GetSectionInfo(page.SubSection, page.Header);
 
         var bind = new BindSummaryMapper<T>() { Mapper = mapper };
         bind.CreatePool(page, keys);
