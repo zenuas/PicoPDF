@@ -71,22 +71,20 @@ public static class SectionBinder
         bind.CreateSummaryGoBack(keys.Length);
         bind.CreateCrossSectionGoBack(headers.LastOrDefault()?.Depth ?? 0);
 
-        T lastdata = default!;
-        SectionModel lastdetail = default!;
-
         var left = page.Padding.Left;
         var sectioninfo_to_section = (SectionInfo section, T data) => new SectionModel() { Section = section.Section, Depth = section.Depth, Left = left, Elements = BindElements(section.Section.Elements, data, bind, page, section.BreakKeyHierarchy, keys, section.Depth) };
         var pagefooter_to_section = (ISection section, T data) => new SectionModel() { Section = section, Depth = 0, Left = left, Elements = BindElements(section.Elements, data, bind, page, [], keys, null) };
         if (datas.IsLast)
         {
+            T nodata = default!;
             var models = new List<SectionModel>();
             bind.SetPageCount(1);
-            headers.Select(x => sectioninfo_to_section(x, lastdata)).Each(models.Add);
-            footers.FooterSort().Select(x => sectioninfo_to_section(x, lastdata).Return(bind.BreakSection)).Each(models.Add);
-            if (page.Footer is ISection lastfooter) models.Add(pagefooter_to_section(lastfooter, lastdata).Return(bind.BreakSection));
-            bind.KeyBreak(lastdata, keys.Length, keys, page);
-            bind.PageBreak(lastdata, page);
-            bind.LastBreak(lastdata, page);
+            headers.Select(x => sectioninfo_to_section(x, nodata)).Each(models.Add);
+            footers.FooterSort().Select(x => sectioninfo_to_section(x, nodata).Return(bind.BreakSection)).Each(models.Add);
+            if (page.Footer is ISection lastfooter) models.Add(pagefooter_to_section(lastfooter, nodata).Return(bind.BreakSection));
+            bind.KeyBreak(nodata, keys.Length, keys, page);
+            bind.PageBreak(nodata, page);
+            bind.LastBreak(nodata, page);
             yield return [.. models];
             yield break;
         }
@@ -95,6 +93,8 @@ public static class SectionBinder
         var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
         var pageheight_minus_everypagefooter = page.Size.GetPageSize(page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
+        T lastdata = default!;
+        SectionModel lastdetail = default!;
         while (!datas.IsLast)
         {
             var models = new List<SectionModel>();
