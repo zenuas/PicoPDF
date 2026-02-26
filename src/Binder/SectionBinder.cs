@@ -45,7 +45,12 @@ public static class SectionBinder
         view.GetIterator().OfType<DataRowView>(),
         view.Table!.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRowView, object>>(x => x.ColumnName, x => (row) => row?[x.ColumnName]!));
 
-    public static IEnumerable<SectionModel[]> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
+    public static (
+        SectionInfo[] Headers,
+        SectionInfo[] FootersWithoutPageFooter,
+        DetailSection Detail,
+        string[] BreakKeys)
+        GetSectionInfo(PageSection page)
     {
         var sections = (Section: page.SubSection, Depth: 1).Travers(x => x.Section is Section s ? [(s.SubSection, x.Depth + 1)] : []).ToArray();
         var detail = sections.Select(x => x.Section).OfType<DetailSection>().First();
@@ -53,6 +58,13 @@ public static class SectionBinder
         var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, x.Section.Header!, x.Depth)).PrependIf(page.Header, 0).ToArray();
         var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, x.Section.Footer!, x.Depth)).ToArray();
         var keys = sections.Select(x => x.Section).OfType<Section>().Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
+
+        return (headers, footers, detail, keys);
+    }
+
+    public static IEnumerable<SectionModel[]> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
+    {
+        var (headers, footers, detail, keys) = GetSectionInfo(page);
 
         var bind = new BindSummaryMapper<T>() { Mapper = mapper };
         bind.CreatePool(page, keys);
