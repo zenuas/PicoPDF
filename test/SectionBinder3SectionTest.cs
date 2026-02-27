@@ -100,7 +100,7 @@ public class SectionBinder3SectionTest
     public static PageModel[] CreatePageModel(IEnumerable<(int, string, string)> datas)
     {
         var mapper = new Dictionary<string, Func<(int, string, string), object>> { ["Foo"] = (x) => x!.Item1!, ["Key1"] = (x) => x!.Item2!, ["Key2"] = (x) => x!.Item3! };
-        return SectionBinder.Bind(PageSection, datas, mapper);
+        return SectionBinder.Bind<(int, string, string), PageModel>(PageSection, datas, mapper);
     }
 
     public static IEnumerable<(int, string, string)> MakeSectionData(string key1, string key2, int from, int to) => Lists.RangeTo(from, to).Select(x => (x, key1, key2));

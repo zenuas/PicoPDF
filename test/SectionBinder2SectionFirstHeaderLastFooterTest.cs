@@ -74,7 +74,7 @@ public class SectionBinder2SectionFirstHeaderLastFooterTest
     public static PageModel[] CreatePageModel<T>(IEnumerable<(T, T)> datas)
     {
         var mapper = new Dictionary<string, Func<(T, T), object>> { ["Foo"] = (x) => x!.Item1!, ["Key1"] = (x) => x!.Item2! };
-        return SectionBinder.Bind(PageSection, datas, mapper);
+        return SectionBinder.Bind<(T, T), PageModel>(PageSection, datas, mapper);
     }
 
     public static IEnumerable<(int, int)> MakeSectionData(int key1, int from, int to) => Lists.RangeTo(from, to).Select(x => (x, key1));

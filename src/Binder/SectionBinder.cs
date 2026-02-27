@@ -13,31 +13,39 @@ namespace PicoPDF.Binder;
 
 public static class SectionBinder
 {
-    public static PageModel[] Bind<T>(PageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null) => [.. BindPageModels(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? InstanceMapper.CreateGetMapper<T>())
+    public static R[] Bind<T, R>(PageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null)
+        where R : IPageModel
+        => [.. BindPageModels(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? InstanceMapper.CreateGetMapper<T>())
         .Select(models =>
         {
             // header or detail top-down order
             int top = page.Padding.Top;
-            models.Where(x => x.Section is not FooterSection).Each(x => x.Top = (top += x.Section.Height) - x.Section.Height);
+            models.Where(x => !x.IsFooter).Each(x => x.Top = (top += x.Height) - x.Height);
 
             // footer bottom-up order
             var (width, height) = page.Size.GetPageSize(page.Orientation);
             int bottom = height - page.Padding.Bottom;
-            models.Where(x => x.Section is FooterSection).Reverse().Each(x => x.Top = bottom -= x.Section.Height);
+            models.Where(x => x.IsFooter).Reverse().Each(x => x.Top = bottom -= x.Height);
             
             // cross section update position
             models.Each(x => x.UpdatePosition());
 
-            return new PageModel() { Width = width, Height = height, Models = models };
+            return R.CreatePageModel(width, height, models).Cast<R>();
         })];
 
-    public static PageModel[] Bind(PageSection page, DataTable table) => Bind(page,
-        table.Rows.GetIterator().OfType<DataRow>(),
-        table.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRow, object>>(x => x.ColumnName, x => (row) => row?[x]!));
+    public static R[] Bind<R>(PageSection page, DataTable table)
+        where R : IPageModel
+        => Bind<DataRow, R>(
+            page,
+            table.Rows.GetIterator().OfType<DataRow>(),
+            table.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRow, object>>(x => x.ColumnName, x => (row) => row?[x]!));
 
-    public static PageModel[] Bind(PageSection page, DataView view) => Bind(page,
-        view.GetIterator().OfType<DataRowView>(),
-        view.Table!.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRowView, object>>(x => x.ColumnName, x => (row) => row?[x.ColumnName]!));
+    public static R[] Bind<R>(PageSection page, DataView view)
+        where R : IPageModel
+        => Bind<DataRowView, R>(
+            page,
+            view.GetIterator().OfType<DataRowView>(),
+            view.Table!.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRowView, object>>(x => x.ColumnName, x => (row) => row?[x.ColumnName]!));
 
     public static (
         SectionInfo[] Headers,
@@ -56,7 +64,7 @@ public static class SectionBinder
         return (headers, footers, detail, keys);
     }
 
-    public static IEnumerable<SectionModel[]> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
+    public static IEnumerable<ISectionModel[]> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
     {
         var (headers, footers, detail, keys) = GetSectionInfo(page.SubSection, page.Header);
 
