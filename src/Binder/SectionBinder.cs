@@ -121,9 +121,7 @@ public static class SectionBinder
 
                 var existnext = datas.Next(count, out var next);
                 breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next))).Count() : 0);
-                var breakfooter = (existnext ? footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next))) : footers)
-                    .FooterSort()
-                    .ToArray();
+                var breakfooter = (existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next)))] : footers);
 
                 if (height < (count * detail.Height) + breakfooter.Select(x => x.Section.Height).Sum())
                 {
@@ -133,7 +131,7 @@ public static class SectionBinder
                         break;
                     }
                     breakcount = 0;
-                    breakfooter = [.. footers.SkipWhileOrEveryPage(_ => false).FooterSort()];
+                    breakfooter = [.. footers.SkipWhileOrEveryPage(_ => false)];
                 }
                 if (!page_first) bind.SectionBreak(lastdata, page);
                 breakheader?.Select(x => create_section(x.Section, current, x.BreakKeyHierarchy, x.Depth)).Each(models.Add);
@@ -145,8 +143,9 @@ public static class SectionBinder
                     models.Add(create_section(detail, x, keys, null));
                 }
                 lastdetail = models.Last();
-                breakfooter.Select(x => create_section(x.Section, lastdata, x.BreakKeyHierarchy, x.Depth).Return(bind.BreakSection)).Each(models.Add);
-                if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
+                var sortedfooter = breakfooter.FooterSort().ToArray();
+                sortedfooter.Select(x => create_section(x.Section, lastdata, x.BreakKeyHierarchy, x.Depth).Return(bind.BreakSection)).Each(models.Add);
+                if (sortedfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
                 {
                     if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(bind.BreakSection));
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys, page);
