@@ -6,9 +6,9 @@ public interface ICrossSectionModel
     public int Y { get; init; }
     public int Height { get; set; }
 
-    public void UpdatePosition(SectionModel current)
+    public void UpdatePosition(ISectionModel current)
     {
-        var overflow_height = Y + Height - current.Section.Height;
+        var overflow_height = Y + Height - current.Height;
         if (overflow_height < 0) return;
 
         var world_top = current.Top + Y;
