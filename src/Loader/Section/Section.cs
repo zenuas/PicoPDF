@@ -1,6 +1,6 @@
 ﻿using Binder.Data;
 
-namespace PicoPDF.Binder.Data;
+namespace PicoPDF.Loader.Section;
 
 public class Section : ISubSection, IParentSection, IBreakKey
 {

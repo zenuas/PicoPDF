@@ -1,5 +1,5 @@
-﻿using PicoPDF.Binder.Data;
-using PicoPDF.Binder.Element;
+﻿using PicoPDF.Loader.Element;
+using PicoPDF.Loader.Section;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
 using System.Text;

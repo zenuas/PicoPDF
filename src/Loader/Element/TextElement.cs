@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace PicoPDF.Binder.Element;
+namespace PicoPDF.Loader.Element;
 
 public class TextElement : ITextElement
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PicoPDF.Binder.Element;
+namespace PicoPDF.Loader.Element;
 
 [Flags]
 public enum TextStyle

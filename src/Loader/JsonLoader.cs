@@ -1,7 +1,7 @@
 ﻿using Binder.Data;
 using Mina.Extension;
-using PicoPDF.Binder.Data;
-using PicoPDF.Binder.Element;
+using PicoPDF.Loader.Element;
+using PicoPDF.Loader.Section;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace PicoPDF.Binder;
+namespace PicoPDF.Loader;
 
 public static class JsonLoader
 {

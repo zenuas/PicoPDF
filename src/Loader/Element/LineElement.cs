@@ -1,9 +1,9 @@
 ﻿using Binder.Data;
 using System.Drawing;
 
-namespace PicoPDF.Binder.Element;
+namespace PicoPDF.Loader.Element;
 
-public class CrossSectionLineElement : ICrossSectionElement
+public class LineElement : IElement
 {
     public required int X { get; init; }
     public required int Y { get; init; }

@@ -1,7 +1,7 @@
 ﻿using Binder.Data;
 using System.Globalization;
 
-namespace PicoPDF.Binder.Data;
+namespace PicoPDF.Loader.Section;
 
 public class PageSection : IPageSection
 {

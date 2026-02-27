@@ -2,6 +2,7 @@
 using Binder.Data;
 using Mina.Extension;
 using PicoPDF.Binder.Data;
+using PicoPDF.Loader.Section;
 using System;
 using Xunit;
 

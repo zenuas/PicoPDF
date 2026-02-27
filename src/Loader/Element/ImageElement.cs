@@ -1,6 +1,6 @@
 ﻿using Binder.Data;
 
-namespace PicoPDF.Binder.Element;
+namespace PicoPDF.Loader.Element;
 
 public class ImageElement : IElement
 {

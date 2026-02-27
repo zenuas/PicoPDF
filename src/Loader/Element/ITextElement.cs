@@ -1,7 +1,7 @@
 ﻿using Binder.Data;
 using System.Drawing;
 
-namespace PicoPDF.Binder.Element;
+namespace PicoPDF.Loader.Element;
 
 public interface ITextElement : IElement
 {

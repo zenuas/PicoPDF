@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace PicoPDF.Binder.Data;
+namespace PicoPDF.Loader.Section;
 
 public class PageSize : ISpanParsable<PageSize>, IComparable<PageSize>
 {

@@ -2,8 +2,8 @@
 using Binder.Data;
 using Binder.Model;
 using Mina.Extension;
-using PicoPDF.Binder.Data;
-using PicoPDF.Binder.Element;
+using PicoPDF.Loader.Element;
+using PicoPDF.Loader.Section;
 using PicoPDF.Model.Element;
 using System.Linq;
 

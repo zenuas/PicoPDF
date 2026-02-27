@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Binder.Element;
+﻿namespace PicoPDF.Loader.Element;
 
 public enum TextAlignment
 {

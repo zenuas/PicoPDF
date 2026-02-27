@@ -1,7 +1,7 @@
 ﻿using Binder.Data;
 using System;
 
-namespace PicoPDF.Binder.Data;
+namespace PicoPDF.Loader.Section;
 
 public class DetailSection : IDetailSection, ISubSection
 {
