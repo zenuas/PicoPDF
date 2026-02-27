@@ -139,7 +139,11 @@ public static class SectionBinder
                 breakheader?.Select(x => create_section(x.Section, current, x.BreakKeyHierarchy, x.Depth)).Each(models.Add);
 
                 _ = datas.Next(count - 1, out lastdata);
-                datas.GetRange(count).Select(x => new SectionModel() { Section = detail, Depth = 0, Left = left, Elements = BindElements(detail.Elements, x, bind.Return(y => y.DataBind(x)), page, keys, keys, null) }).Each(models.Add);
+                foreach (var x in datas.GetRange(count))
+                {
+                    bind.DataBind(x);
+                    models.Add(create_section(detail, x, keys, null));
+                }
                 lastdetail = models.Last();
                 breakfooter.Select(x => create_section(x.Section, lastdata, x.BreakKeyHierarchy, x.Depth).Return(bind.BreakSection)).Each(models.Add);
                 if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
