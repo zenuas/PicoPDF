@@ -1,4 +1,7 @@
-﻿namespace PicoPDF.Model;
+﻿using PicoPDF.Binder;
+using PicoPDF.Binder.Data;
+
+namespace PicoPDF.Model;
 
 public interface ISectionModel
 {
@@ -9,4 +12,6 @@ public interface ISectionModel
     public bool IsFooter { get; init; }
 
     public void UpdatePosition();
+
+    public abstract static ISectionModel CreateSectionModel<T>(PageSection page, ISection section, int left, T data, BindSummaryMapper<T> bind, string[] breaks, string[] allkeys, int? depth);
 }

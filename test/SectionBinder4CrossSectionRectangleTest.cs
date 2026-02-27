@@ -15,7 +15,7 @@ public class SectionBinder4CrossSectionRectangleTest
     public static PageModel[] CreatePageModel(PageSection page, IEnumerable<(int, string, string, string)> datas)
     {
         var mapper = new Dictionary<string, Func<(int, string, string, string), object>> { ["Foo"] = (x) => x!.Item1!, ["Key1"] = (x) => x!.Item2!, ["Key2"] = (x) => x!.Item3!, ["Key3"] = (x) => x!.Item4! };
-        return SectionBinder.Bind<(int, string, string, string), PageModel>(page, datas, mapper);
+        return SectionBinder.Bind<(int, string, string, string), SectionModel, PageModel>(page, datas, mapper);
     }
 
     public static IEnumerable<(int, string, string, string)> MakeSectionData(string key1, string key2, string key3, int from, int to) => Lists.RangeTo(from, to).Select(x => (x, key1, key2, key3));

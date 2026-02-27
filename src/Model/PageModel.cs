@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.Linq;
+﻿using System.Linq;
 
 namespace PicoPDF.Model;
 
@@ -10,10 +8,12 @@ public class PageModel : IPageModel
     public required int Height { get; init; }
     public SectionModel[] Models { get; init; } = [];
 
-    public static IPageModel CreatePageModel(int width, int height, ISectionModel[] models) => new PageModel()
-    {
-        Width = width,
-        Height = height,
-        Models = [.. models.Select(x => x as SectionModel ?? throw new InvalidCastException())]
-    };
+    public static IPageModel CreatePageModel<M>(int width, int height, M[] models)
+        where M : ISectionModel
+        => new PageModel()
+        {
+            Width = width,
+            Height = height,
+            Models = [.. models.OfType<SectionModel>()]
+        };
 }

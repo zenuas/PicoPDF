@@ -3,7 +3,6 @@ using Mina.Mapper;
 using PicoPDF.Binder.Data;
 using PicoPDF.Binder.Element;
 using PicoPDF.Model;
-using PicoPDF.Model.Element;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,9 +12,10 @@ namespace PicoPDF.Binder;
 
 public static class SectionBinder
 {
-    public static R[] Bind<T, R>(PageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null)
+    public static R[] Bind<T, M, R>(PageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null)
+        where M : ISectionModel
         where R : IPageModel
-        => [.. BindPageModels(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? InstanceMapper.CreateGetMapper<T>())
+        => [.. BindPageModels<T, M>(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? InstanceMapper.CreateGetMapper<T>())
         .Select(models =>
         {
             // header or detail top-down order
@@ -30,19 +30,21 @@ public static class SectionBinder
             // cross section update position
             models.Each(x => x.UpdatePosition());
 
-            return R.CreatePageModel(width, height, models).Cast<R>();
+            return R.CreatePageModel<M>(width, height, models).Cast<R>();
         })];
 
-    public static R[] Bind<R>(PageSection page, DataTable table)
+    public static R[] Bind<M, R>(PageSection page, DataTable table)
+        where M : ISectionModel
         where R : IPageModel
-        => Bind<DataRow, R>(
+        => Bind<DataRow, M, R>(
             page,
             table.Rows.GetIterator().OfType<DataRow>(),
             table.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRow, object>>(x => x.ColumnName, x => (row) => row?[x]!));
 
-    public static R[] Bind<R>(PageSection page, DataView view)
+    public static R[] Bind<M, R>(PageSection page, DataView view)
+        where M : ISectionModel
         where R : IPageModel
-        => Bind<DataRowView, R>(
+        => Bind<DataRowView, M, R>(
             page,
             view.GetIterator().OfType<DataRowView>(),
             view.Table!.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRowView, object>>(x => x.ColumnName, x => (row) => row?[x.ColumnName]!));
@@ -54,17 +56,18 @@ public static class SectionBinder
         string[] BreakKeys)
         GetSectionInfo(ISubSection subsection, IHeaderSection? pageheader)
     {
-        var sections = (Section: subsection, Depth: 1).Travers(x => x.Section is Section s ? [(s.SubSection, x.Depth + 1)] : []).ToArray();
+        var sections = (Section: subsection, Depth: 1, BreakKey: (subsection as IBreakKey)?.BreakKey ?? "").Travers(x => x.Section is IParentSection s ? [(s.SubSection, x.Depth + 1, (s.SubSection as IBreakKey)?.BreakKey ?? "")] : []).ToArray();
         var detail = sections.Select(x => x.Section).OfType<DetailSection>().First();
-        var hierarchy = sections.Where(x => x.Section is Section).Select(x => (x.Section.Cast<Section>(), x.Depth)).AppendHierarchy().ToArray();
-        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, x.Section.Header!, x.Depth)).PrependIf(pageheader, 0).ToArray();
-        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.Section.BreakKey, x.BreakKeyHierarchy, x.Section.Footer!, x.Depth)).ToArray();
-        var keys = sections.Select(x => x.Section).OfType<Section>().Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
+        var hierarchy = sections.Where(x => x.Section is IParentSection).Select(x => (x.Section.Cast<IParentSection>(), x.Depth, x.BreakKey)).AppendHierarchy().ToArray();
+        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakKeyHierarchy, x.Section.Header!, x.Depth)).PrependIf(pageheader, 0).ToArray();
+        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakKeyHierarchy, x.Section.Footer!, x.Depth)).ToArray();
+        var keys = sections.Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
 
         return (headers, footers, detail, keys);
     }
 
-    public static IEnumerable<ISectionModel[]> BindPageModels<T>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
+    public static IEnumerable<M[]> BindPageModels<T, M>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
+        where M : ISectionModel
     {
         var (headers, footers, detail, keys) = GetSectionInfo(page.SubSection, page.Header);
 
@@ -74,21 +77,15 @@ public static class SectionBinder
         bind.CreateCrossSectionGoBack(headers.LastOrDefault()?.Depth ?? 0);
 
         var left = page.Padding.Left;
-        SectionModel create_section(ISection section, T data, string[] breaks, int? depth) => new()
-        {
-            Section = section,
-            Depth = depth ?? 0,
-            Left = left,
-            Elements = BindElements(section.Elements, data, bind, page, breaks, keys, depth)
-        };
+        M create_section(ISection section, T data, string[] breaks, int? depth) => M.CreateSectionModel(page, section, left, data, bind, breaks, keys, depth).Cast<M>();
         if (datas.IsLast)
         {
             T nodata = default!;
-            var models = new List<SectionModel>();
+            var models = new List<M>();
             bind.SetPageCount(1);
             headers.Select(x => create_section(x.Section, nodata, x.BreakKeyHierarchy, x.Depth)).Each(models.Add);
-            footers.FooterSort().Select(x => create_section(x.Section, nodata, x.BreakKeyHierarchy, x.Depth).Return(bind.BreakSection)).Each(models.Add);
-            if (page.Footer is ISection lastfooter) models.Add(create_section(lastfooter, nodata, [], null).Return(bind.BreakSection));
+            footers.FooterSort().Select(x => create_section(x.Section, nodata, x.BreakKeyHierarchy, x.Depth).Return(x => bind.BreakSection(x))).Each(models.Add);
+            if (page.Footer is ISection lastfooter) models.Add(create_section(lastfooter, nodata, [], null).Return(x => bind.BreakSection(x)));
             bind.KeyBreak(nodata, keys.Length, keys, page);
             bind.PageBreak(nodata, page);
             bind.LastBreak(nodata, page);
@@ -101,10 +98,10 @@ public static class SectionBinder
         var pageheight_minus_everypagefooter = page.Size.GetPageSize(page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
         T lastdata = default!;
-        SectionModel lastdetail = default!;
+        ISectionModel lastdetail = default!;
         while (!datas.IsLast)
         {
-            var models = new List<SectionModel>();
+            var models = new List<M>();
             bind.SetPageCount(++page_count);
             _ = datas.Next(0, out var firstdata);
             if (page_count == 1) lastdata = firstdata;
@@ -119,11 +116,11 @@ public static class SectionBinder
             {
                 _ = datas.Next(0, out var current);
                 var breakheader = page_first ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
-                var height = pageheight_minus_everypagefooter - (breakheader?.Select(x => x.Section.Height).Sum() ?? 0) - models.Select(x => x.Section.Height).Sum();
+                var height = pageheight_minus_everypagefooter - (breakheader?.Select(x => x.Section.Height).Sum() ?? 0) - models.Select(x => x.Height).Sum();
                 var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
                 if (count == 0)
                 {
-                    if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(bind.BreakSection));
+                    if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(x => bind.BreakSection(x)));
                     break;
                 }
 
@@ -135,7 +132,7 @@ public static class SectionBinder
                 {
                     if (--count <= 0)
                     {
-                        if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(bind.BreakSection));
+                        if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(x => bind.BreakSection(x)));
                         break;
                     }
                     breakcount = 0;
@@ -151,10 +148,10 @@ public static class SectionBinder
                     models.Add(create_section(detail, x, keys, null));
                 }
                 lastdetail = models.Last();
-                breakfooter.FooterSort().Select(x => create_section(x.Section, lastdata, x.BreakKeyHierarchy, x.Depth).Return(bind.BreakSection)).Each(models.Add);
+                breakfooter.FooterSort().Select(x => create_section(x.Section, lastdata, x.BreakKeyHierarchy, x.Depth).Return(x => bind.BreakSection(x))).Each(models.Add);
                 if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
                 {
-                    if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(bind.BreakSection));
+                    if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(x => bind.BreakSection(x)));
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys, page);
                     break;
                 }
@@ -190,165 +187,16 @@ public static class SectionBinder
         return maxcount;
     }
 
-    public static IModelElement[] BindElements<T>(IElement[] elements, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys, int? depth) => [.. elements.Select(x => BindElement(x, data, bind, page, keys, allkeys, depth))];
-
-    public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys, int? depth)
-    {
-        switch (element)
-        {
-            case TextElement x: return CreateTextModel(x, x.Text, page.DefaultFont);
-
-            case BindElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.Mapper[x.Bind](data), x.Format, x.Culture ?? page.DefaultCulture), page.DefaultFont);
-
-            case SummaryElement x when x.SummaryMethod is SummaryMethod.All or SummaryMethod.Page or SummaryMethod.CrossSectionPage or SummaryMethod.Group:
-                {
-                    var model = CreateMutableTextModel(x, "", page.DefaultFont);
-                    var keycount = x.BreakKey == "" ? keys.Length - 1 : allkeys.FindLastIndex(y => y == x.BreakKey);
-                    bind.AddSummaryGoBack(x, model, keycount);
-                    return model;
-                }
-
-            case SummaryElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format, x.Culture ?? page.DefaultCulture, x.NaN), page.DefaultFont);
-
-            case LineElement x:
-                return new LineModel()
-                {
-                    Element = x,
-                    X = x.X,
-                    Y = x.Y,
-                    Width = x.Width,
-                    Height = x.Height,
-                    Color = x.Color,
-                    LineWidth = x.LineWidth,
-                };
-
-            case CrossSectionLineElement x:
-                {
-                    var model = new MutableLineModel()
-                    {
-                        Element = x,
-                        X = x.X,
-                        Y = x.Y,
-                        Width = x.Width,
-                        Height = x.Height,
-                        Color = x.Color,
-                        LineWidth = x.LineWidth,
-                    };
-                    if (depth is { } dp) bind.AddCrossSectionGoBack(model, dp);
-                    return model;
-                }
-
-            case RectangleElement x:
-                return new RectangleModel()
-                {
-                    Element = x,
-                    X = x.X,
-                    Y = x.Y,
-                    Width = x.Width,
-                    Height = x.Height,
-                    Color = x.Color,
-                    LineWidth = x.LineWidth,
-                };
-
-            case CrossSectionRectangleElement x:
-                {
-                    var model = new MutableRectangleModel()
-                    {
-                        Element = x,
-                        X = x.X,
-                        Y = x.Y,
-                        Width = x.Width,
-                        Height = x.Height,
-                        Color = x.Color,
-                        LineWidth = x.LineWidth,
-                    };
-                    if (depth is { } dp) bind.AddCrossSectionGoBack(model, dp);
-                    return model;
-                }
-
-            case FillRectangleElement x:
-                return new FillRectangleModel()
-                {
-                    Element = x,
-                    X = x.X,
-                    Y = x.Y,
-                    Width = x.Width,
-                    Height = x.Height,
-                    LineColor = x.LineColor,
-                    FillColor = x.FillColor,
-                    LineWidth = x.LineWidth,
-                };
-
-            case CrossSectionFillRectangleElement x:
-                {
-                    var model = new MutableFillRectangleModel()
-                    {
-                        Element = x,
-                        X = x.X,
-                        Y = x.Y,
-                        Width = x.Width,
-                        Height = x.Height,
-                        LineColor = x.LineColor,
-                        FillColor = x.FillColor,
-                        LineWidth = x.LineWidth,
-                    };
-                    if (depth is { } dp) bind.AddCrossSectionGoBack(model, dp);
-                    return model;
-                }
-
-            case ImageElement x:
-                return new ImageModel()
-                {
-                    Element = x,
-                    X = x.X,
-                    Y = x.Y,
-                    Path = x.Bind == "" ? x.Path : bind.Mapper[x.Bind](data).ToString()!,
-                    ZoomWidth = x.ZoomWidth,
-                    ZoomHeight = x.ZoomHeight,
-                };
-        }
-        throw new();
-    }
-
-    public static TextModel CreateTextModel(ITextElement element, string text, string[] default_fonts) => new()
-    {
-        Element = element,
-        X = element.X,
-        Y = element.Y,
-        Text = text,
-        Font = [.. element.Font, .. default_fonts],
-        Size = element.Size,
-        Alignment = element.Alignment,
-        Style = element.Style,
-        Width = element.Width,
-        Height = element.Height,
-        Color = element.Color,
-    };
-
-    public static MutableTextModel CreateMutableTextModel(ITextElement element, string text, string[] default_fonts) => new()
-    {
-        Element = element,
-        X = element.X,
-        Y = element.Y,
-        Text = text,
-        Font = [.. element.Font, .. default_fonts],
-        Size = element.Size,
-        Alignment = element.Alignment,
-        Style = element.Style,
-        Width = element.Width,
-        Height = element.Height,
-        Color = element.Color,
-    };
-
     public static IEnumerable<(string[] BreakKeys, SummaryElement Summary)> GetBreakKeyWithSummary(string[] keys, ISubSection subsection)
     {
         if (subsection is DetailSection detail)
         {
             foreach (var e in detail.Elements.OfType<SummaryElement>()) yield return (keys, e);
         }
-        else if (subsection is Section section)
+        else if (subsection is IParentSection section)
         {
-            var newkeys = section.BreakKey == "" ? keys : [.. keys, section.BreakKey];
+            var key = (section as IBreakKey)?.BreakKey ?? "";
+            var newkeys = key == "" ? keys : [.. keys, key];
 
             foreach (var e in section.Header?.Elements.OfType<SummaryElement>() ?? []) yield return (newkeys, e);
             foreach (var e in section.Footer?.Elements.OfType<SummaryElement>() ?? []) yield return (newkeys, e);
@@ -397,13 +245,13 @@ public static class SectionBinder
 
     public static IEnumerable<SectionInfo> PrependIf(this IEnumerable<SectionInfo> self, ISection? section, int depth) => section is { } ? self.Prepend(new("", [], section, depth)) : self;
 
-    public static IEnumerable<(string[] BreakKeyHierarchy, Section Section, int Depth)> AppendHierarchy(this IEnumerable<(Section Section, int Depth)> self)
+    public static IEnumerable<(string[] BreakKeyHierarchy, IParentSection Section, int Depth, string BreakKey)> AppendHierarchy(this IEnumerable<(IParentSection Section, int Depth, string BreakKey)> self)
     {
         var keys = new List<string>();
         foreach (var x in self)
         {
-            if (x.Section.BreakKey != "") keys.Add(x.Section.BreakKey);
-            yield return ([.. keys], x.Section, x.Depth);
+            if (x.BreakKey != "") keys.Add(x.BreakKey);
+            yield return ([.. keys], x.Section, x.Depth, x.BreakKey);
         }
     }
 }

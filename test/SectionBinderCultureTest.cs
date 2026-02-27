@@ -53,7 +53,7 @@ public class SectionBinderCultureTest
     {
         var count = 0;
         var mapper = new Dictionary<string, Func<T, object>> { ["Foo"] = (x) => x!, ["Bar"] = (x) => d.AddDays(count++) };
-        return SectionBinder.Bind<T, PageModel>(PageSection, datas, mapper);
+        return SectionBinder.Bind<T, SectionModel, PageModel>(PageSection, datas, mapper);
     }
 
     public static string ToSectionString(SectionModel section) => $"{section.Section.Name}/{section.Elements.OfType<ITextModel>().Select(x => x.Text).Join("|")}";

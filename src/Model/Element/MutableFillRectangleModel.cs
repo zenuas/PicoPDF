@@ -6,7 +6,7 @@ namespace PicoPDF.Model.Element;
 public class MutableFillRectangleModel : IFillRectangleModel, ICrossSectionModel
 {
     public required IElement Element { get; init; }
-    public SectionModel? TargetSection { get; set; }
+    public ISectionModel? TargetSection { get; set; }
     public required int X { get; init; }
     public required int Y { get; init; }
     public required int Width { get; init; }
