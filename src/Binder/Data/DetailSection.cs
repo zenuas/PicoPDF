@@ -3,7 +3,7 @@ using System;
 
 namespace PicoPDF.Binder.Data;
 
-public class DetailSection : ISection, ISubSection
+public class DetailSection : IDetailSection, ISubSection
 {
     public required string Name { get; init; }
     public required int Height { get; init; }

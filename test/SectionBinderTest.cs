@@ -11,7 +11,7 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_DetailOnly()
     {
-        ISubSection subsection = new DetailSection() { Name = "detail", Height = 100 };
+        var subsection = new DetailSection() { Name = "detail", Height = 100 };
         var sections = SectionBinder.GetSectionInfo(subsection, null);
 
         Assert.Equal(sections.Headers.Length, 0);
@@ -24,7 +24,7 @@ public class SectionBinderTest
     public void GetSectionInfo_Single()
     {
         var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        ISubSection subsection = new DetailSection() { Name = "detail", Height = 100 };
+        var subsection = new DetailSection() { Name = "detail", Height = 100 };
         var sections = SectionBinder.GetSectionInfo(subsection, pageheader);
 
         Assert.Equal(sections.Headers.Length, 1);

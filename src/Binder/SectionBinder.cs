@@ -52,12 +52,12 @@ public static class SectionBinder
     public static (
         SectionInfo[] Headers,
         SectionInfo[] FootersWithoutPageFooter,
-        DetailSection Detail,
+        IDetailSection Detail,
         string[] BreakKeys)
         GetSectionInfo(ISubSection subsection, IHeaderSection? pageheader)
     {
         var sections = (Section: subsection, Depth: 1, BreakKey: (subsection as IBreakKey)?.BreakKey ?? "").Travers(x => x.Section is IParentSection s ? [(s.SubSection, x.Depth + 1, (s.SubSection as IBreakKey)?.BreakKey ?? "")] : []).ToArray();
-        var detail = sections.Select(x => x.Section).OfType<DetailSection>().First();
+        var detail = sections.Select(x => x.Section).OfType<IDetailSection>().First();
         var hierarchy = sections.Where(x => x.Section is IParentSection).Select(x => (x.Section.Cast<IParentSection>(), x.Depth, x.BreakKey)).AppendHierarchy().ToArray();
         var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakKeyHierarchy, x.Section.Header!, x.Depth)).PrependIf(pageheader, 0).ToArray();
         var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakKeyHierarchy, x.Section.Footer!, x.Depth)).ToArray();
@@ -189,7 +189,7 @@ public static class SectionBinder
 
     public static IEnumerable<(string[] BreakKeys, SummaryElement Summary)> GetBreakKeyWithSummary(string[] keys, ISubSection subsection)
     {
-        if (subsection is DetailSection detail)
+        if (subsection is IDetailSection detail)
         {
             foreach (var e in detail.Elements.OfType<SummaryElement>()) yield return (keys, e);
         }
