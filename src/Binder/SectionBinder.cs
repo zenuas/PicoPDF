@@ -98,7 +98,7 @@ public static class SectionBinder
         var pageheight_minus_everypagefooter = page.Size.GetPageSize(page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
         T lastdata = default!;
-        ISectionModel lastdetail = default!;
+        M lastdetail = default!;
         while (!datas.IsLast)
         {
             var models = new List<M>();
