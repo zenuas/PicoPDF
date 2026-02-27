@@ -72,7 +72,13 @@ public static class SectionBinder
         bind.CreateCrossSectionGoBack(headers.LastOrDefault()?.Depth ?? 0);
 
         var left = page.Padding.Left;
-        var create_section = (ISection section, T data, string[] breaks, int? depth) => new SectionModel() { Section = section, Depth = depth ?? 0, Left = left, Elements = BindElements(section.Elements, data, bind, page, breaks, keys, depth) };
+        SectionModel create_section(ISection section, T data, string[] breaks, int? depth) => new()
+        {
+            Section = section,
+            Depth = depth ?? 0,
+            Left = left,
+            Elements = BindElements(section.Elements, data, bind, page, breaks, keys, depth)
+        };
         if (datas.IsLast)
         {
             T nodata = default!;
