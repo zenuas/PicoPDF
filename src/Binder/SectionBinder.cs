@@ -1,7 +1,6 @@
 ﻿using Mina.Extension;
 using Mina.Mapper;
 using PicoPDF.Binder.Data;
-using PicoPDF.Binder.Element;
 using PicoPDF.Model;
 using System;
 using System.Collections.Generic;
@@ -185,27 +184,6 @@ public static class SectionBinder
                 !keys.All(x => prevkey[x].Equals(bind.Mapper[x](data)))) return i;
         }
         return maxcount;
-    }
-
-    public static IEnumerable<(string[] BreakKeys, SummaryElement Summary)> GetBreakKeyWithSummary(string[] keys, ISubSection subsection)
-    {
-        if (subsection is IDetailSection detail)
-        {
-            foreach (var e in detail.Elements.OfType<SummaryElement>()) yield return (keys, e);
-        }
-        else if (subsection is IParentSection section)
-        {
-            var key = (section as IBreakKey)?.BreakKey ?? "";
-            var newkeys = key == "" ? keys : [.. keys, key];
-
-            foreach (var e in section.Header?.Elements.OfType<SummaryElement>() ?? []) yield return (newkeys, e);
-            foreach (var e in section.Footer?.Elements.OfType<SummaryElement>() ?? []) yield return (newkeys, e);
-
-            if (section.SubSection is { })
-            {
-                foreach (var x in GetBreakKeyWithSummary(newkeys, section.SubSection)) yield return x;
-            }
-        }
     }
 
     public static IEnumerable<SectionInfo> SkipWhileOrPageFirst(this IEnumerable<SectionInfo> self, Func<SectionInfo, bool> f)
