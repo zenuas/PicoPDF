@@ -14,7 +14,7 @@ public class SectionModel : ISectionModel
     public int Top { get; set; }
     public required int Left { get; init; }
     public int Height { get => field = Section.Height; init; }
-    public bool IsFooter { get => field = Section is FooterSection; init; }
+    public bool IsFooter { get => field = Section is IFooterSection footer && footer.IsFooter; init; }
     public IModelElement[] Elements { get; init; } = [];
 
     public void UpdatePosition() => Elements

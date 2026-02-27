@@ -94,7 +94,7 @@ public static class SectionBinder
         }
 
         var page_count = 0;
-        var everyfooter = page.Footer is FooterSection footer && footer.ViewMode == ViewModes.Every ? footer : null;
+        var everyfooter = page.Footer is { } footer && footer.IsFooter && footer.ViewMode == ViewModes.Every ? footer : null;
         var pageheight_minus_everypagefooter = page.Size.GetPageSize(page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
         T lastdata = default!;
@@ -238,9 +238,9 @@ public static class SectionBinder
     {
         var footer = self.ToArray();
         return footer
-            .Where(x => x.Section is TotalSection)
+            .Where(x => !x.Section.Cast<IFooterSection>().IsFooter)
             .Reverse()
-            .Concat(footer.Where(x => x.Section is FooterSection));
+            .Concat(footer.Where(x => x.Section.Cast<IFooterSection>().IsFooter));
     }
 
     public static IEnumerable<SectionInfo> PrependIf(this IEnumerable<SectionInfo> self, ISection? section, int depth) => section is { } ? self.Prepend(new("", [], section, depth)) : self;
