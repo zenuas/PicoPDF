@@ -143,9 +143,8 @@ public static class SectionBinder
                     models.Add(create_section(detail, x, keys, null));
                 }
                 lastdetail = models.Last();
-                var sortedfooter = breakfooter.FooterSort().ToArray();
-                sortedfooter.Select(x => create_section(x.Section, lastdata, x.BreakKeyHierarchy, x.Depth).Return(bind.BreakSection)).Each(models.Add);
-                if (sortedfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
+                breakfooter.FooterSort().Select(x => create_section(x.Section, lastdata, x.BreakKeyHierarchy, x.Depth).Return(bind.BreakSection)).Each(models.Add);
+                if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
                 {
                     if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(bind.BreakSection));
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys, page);
