@@ -72,16 +72,15 @@ public static class SectionBinder
         bind.CreateCrossSectionGoBack(headers.LastOrDefault()?.Depth ?? 0);
 
         var left = page.Padding.Left;
-        var sectioninfo_to_section = (SectionInfo section, T data) => new SectionModel() { Section = section.Section, Depth = section.Depth, Left = left, Elements = BindElements(section.Section.Elements, data, bind, page, section.BreakKeyHierarchy, keys, section.Depth) };
-        var pagefooter_to_section = (ISection section, T data) => new SectionModel() { Section = section, Depth = 0, Left = left, Elements = BindElements(section.Elements, data, bind, page, [], keys, null) };
+        var create_section = (ISection section, T data, string[] breaks, int? depth) => new SectionModel() { Section = section, Depth = depth ?? 0, Left = left, Elements = BindElements(section.Elements, data, bind, page, breaks, keys, depth) };
         if (datas.IsLast)
         {
             T nodata = default!;
             var models = new List<SectionModel>();
             bind.SetPageCount(1);
-            headers.Select(x => sectioninfo_to_section(x, nodata)).Each(models.Add);
-            footers.FooterSort().Select(x => sectioninfo_to_section(x, nodata).Return(bind.BreakSection)).Each(models.Add);
-            if (page.Footer is ISection lastfooter) models.Add(pagefooter_to_section(lastfooter, nodata).Return(bind.BreakSection));
+            headers.Select(x => create_section(x.Section, nodata, x.BreakKeyHierarchy, x.Depth)).Each(models.Add);
+            footers.FooterSort().Select(x => create_section(x.Section, nodata, x.BreakKeyHierarchy, x.Depth).Return(bind.BreakSection)).Each(models.Add);
+            if (page.Footer is ISection lastfooter) models.Add(create_section(lastfooter, nodata, [], null).Return(bind.BreakSection));
             bind.KeyBreak(nodata, keys.Length, keys, page);
             bind.PageBreak(nodata, page);
             bind.LastBreak(nodata, page);
@@ -103,7 +102,7 @@ public static class SectionBinder
             if (page_count == 1) lastdata = firstdata;
             headers
                 .SkipWhileOrPageFirst(x => page_count == 1 || (x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](firstdata))))
-                .Select(x => sectioninfo_to_section(x, firstdata))
+                .Select(x => create_section(x.Section, firstdata, x.BreakKeyHierarchy, x.Depth))
                 .Each(models.Add);
             var page_first = true;
             var breakcount = 0;
@@ -116,7 +115,7 @@ public static class SectionBinder
                 var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
                 if (count == 0)
                 {
-                    if (everyfooter is { }) models.Add(pagefooter_to_section(everyfooter, lastdata).Return(bind.BreakSection));
+                    if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(bind.BreakSection));
                     break;
                 }
 
@@ -130,22 +129,22 @@ public static class SectionBinder
                 {
                     if (--count <= 0)
                     {
-                        if (everyfooter is { }) models.Add(pagefooter_to_section(everyfooter, lastdata).Return(bind.BreakSection));
+                        if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(bind.BreakSection));
                         break;
                     }
                     breakcount = 0;
                     breakfooter = [.. footers.SkipWhileOrEveryPage(_ => false).FooterSort()];
                 }
                 if (!page_first) bind.SectionBreak(lastdata, page);
-                breakheader?.Select(x => sectioninfo_to_section(x, current)).Each(models.Add);
+                breakheader?.Select(x => create_section(x.Section, current, x.BreakKeyHierarchy, x.Depth)).Each(models.Add);
 
                 _ = datas.Next(count - 1, out lastdata);
                 datas.GetRange(count).Select(x => new SectionModel() { Section = detail, Depth = 0, Left = left, Elements = BindElements(detail.Elements, x, bind.Return(y => y.DataBind(x)), page, keys, keys, null) }).Each(models.Add);
                 lastdetail = models.Last();
-                breakfooter.Select(x => sectioninfo_to_section(x, lastdata).Return(bind.BreakSection)).Each(models.Add);
+                breakfooter.Select(x => create_section(x.Section, lastdata, x.BreakKeyHierarchy, x.Depth).Return(bind.BreakSection)).Each(models.Add);
                 if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
                 {
-                    if (everyfooter is { }) models.Add(pagefooter_to_section(everyfooter, lastdata).Return(bind.BreakSection));
+                    if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(bind.BreakSection));
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys, page);
                     break;
                 }
@@ -154,7 +153,7 @@ public static class SectionBinder
 
                 if (datas.IsLast)
                 {
-                    if (page.Footer is ISection lastfooter) models.Add(pagefooter_to_section(lastfooter, lastdata));
+                    if (page.Footer is ISection lastfooter) models.Add(create_section(lastfooter, lastdata, [], null));
                     break;
                 }
             }
