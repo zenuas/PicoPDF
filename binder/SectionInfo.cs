@@ -1,5 +1,5 @@
-﻿using PicoPDF.Binder.Data;
+﻿using Binder.Data;
 
-namespace PicoPDF.Binder;
+namespace Binder;
 
 public record class SectionInfo(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Depth);

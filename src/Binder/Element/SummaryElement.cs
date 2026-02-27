@@ -1,9 +1,10 @@
-﻿using System.Drawing;
+﻿using Binder.Data;
+using System.Drawing;
 using System.Globalization;
 
 namespace PicoPDF.Binder.Element;
 
-public class SummaryElement : ITextElement
+public class SummaryElement : ITextElement, ISummaryElement
 {
     public required int X { get; init; }
     public required int Y { get; init; }

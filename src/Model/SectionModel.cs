@@ -1,5 +1,7 @@
-﻿using Mina.Extension;
-using PicoPDF.Binder;
+﻿using Binder;
+using Binder.Data;
+using Binder.Model;
+using Mina.Extension;
 using PicoPDF.Binder.Data;
 using PicoPDF.Binder.Element;
 using PicoPDF.Model.Element;
@@ -22,12 +24,12 @@ public class SectionModel : ISectionModel
         .Where(x => x.TargetSection is { })
         .Each(x => x.UpdatePosition(this));
 
-    public static ISectionModel CreateSectionModel<T>(PageSection page, ISection section, int left, T data, BindSummaryMapper<T> bind, string[] breaks, string[] allkeys, int? depth) => new SectionModel()
+    public static ISectionModel CreateSectionModel<T>(IPageSection page, ISection section, int left, T data, BindSummaryMapper<T> bind, string[] breaks, string[] allkeys, int? depth) => new SectionModel()
     {
         Section = section,
         Depth = depth ?? 0,
         Left = left,
-        Elements = BindElements(section.Elements, data, bind, page, breaks, allkeys, depth)
+        Elements = BindElements(section.Elements, data, bind, page.Cast<PageSection>(), breaks, allkeys, depth)
     };
 
     public static IModelElement[] BindElements<T>(IElement[] elements, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys, int? depth) => [.. elements.Select(x => BindElement(x, data, bind, page, keys, allkeys, depth))];

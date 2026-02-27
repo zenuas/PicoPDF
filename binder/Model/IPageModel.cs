@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Model;
+﻿namespace Binder.Model;
 
 public interface IPageModel
 {

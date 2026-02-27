@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Binder.Element;
+﻿namespace Binder.Data;
 
 public enum SummaryMethod
 {

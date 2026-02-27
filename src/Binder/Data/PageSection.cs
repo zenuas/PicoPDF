@@ -1,8 +1,9 @@
-﻿using System.Globalization;
+﻿using Binder.Data;
+using System.Globalization;
 
 namespace PicoPDF.Binder.Data;
 
-public class PageSection : IParentSection
+public class PageSection : IPageSection
 {
     public required PageSize Size { get; init; }
     public required Orientation Orientation { get; init; }
@@ -12,4 +13,6 @@ public class PageSection : IParentSection
     public IFooterSection? Footer { get; init; } = null;
     public AllSides Padding { get; init; } = new(0, 0, 0, 0);
     public CultureInfo DefaultCulture { get; init; } = CultureInfo.InvariantCulture;
+    public int Width { get => field = Size.GetPageSize(Orientation).Width; init => field = value; }
+    public int Height { get => field = Size.GetPageSize(Orientation).Height; init => field = value; }
 }

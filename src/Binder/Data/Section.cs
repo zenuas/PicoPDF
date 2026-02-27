@@ -1,4 +1,6 @@
-﻿namespace PicoPDF.Binder.Data;
+﻿using Binder.Data;
+
+namespace PicoPDF.Binder.Data;
 
 public class Section : ISubSection, IParentSection, IBreakKey
 {

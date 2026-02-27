@@ -1,4 +1,6 @@
-﻿namespace PicoPDF.Binder.Element;
+﻿using Binder.Data;
+
+namespace PicoPDF.Binder.Element;
 
 public class ImageElement : IElement
 {

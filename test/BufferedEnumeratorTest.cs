@@ -1,4 +1,4 @@
-﻿using PicoPDF.Binder;
+﻿using Binder;
 using System;
 using System.Collections.Generic;
 using Xunit;

@@ -1,17 +1,17 @@
-﻿using Mina.Extension;
+﻿using Binder.Data;
+using Binder.Model;
+using Mina.Extension;
 using Mina.Mapper;
-using PicoPDF.Binder.Data;
-using PicoPDF.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace PicoPDF.Binder;
+namespace Binder;
 
 public static class SectionBinder
 {
-    public static R[] Bind<T, M, R>(PageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null)
+    public static R[] Bind<T, M, R>(IPageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null)
         where M : ISectionModel
         where R : IPageModel
         => [.. BindPageModels<T, M>(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? InstanceMapper.CreateGetMapper<T>())
@@ -22,17 +22,17 @@ public static class SectionBinder
             models.Where(x => !x.IsFooter).Each(x => x.Top = (top += x.Height) - x.Height);
 
             // footer bottom-up order
-            var (width, height) = page.Size.GetPageSize(page.Orientation);
+            var height = page.Height;
             int bottom = height - page.Padding.Bottom;
             models.Where(x => x.IsFooter).Reverse().Each(x => x.Top = bottom -= x.Height);
             
             // cross section update position
             models.Each(x => x.UpdatePosition());
 
-            return R.CreatePageModel<M>(width, height, models).Cast<R>();
+            return R.CreatePageModel(page.Width, height, models).Cast<R>();
         })];
 
-    public static R[] Bind<M, R>(PageSection page, DataTable table)
+    public static R[] Bind<M, R>(IPageSection page, DataTable table)
         where M : ISectionModel
         where R : IPageModel
         => Bind<DataRow, M, R>(
@@ -40,7 +40,7 @@ public static class SectionBinder
             table.Rows.GetIterator().OfType<DataRow>(),
             table.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRow, object>>(x => x.ColumnName, x => (row) => row?[x]!));
 
-    public static R[] Bind<M, R>(PageSection page, DataView view)
+    public static R[] Bind<M, R>(IPageSection page, DataView view)
         where M : ISectionModel
         where R : IPageModel
         => Bind<DataRowView, M, R>(
@@ -65,7 +65,7 @@ public static class SectionBinder
         return (headers, footers, detail, keys);
     }
 
-    public static IEnumerable<M[]> BindPageModels<T, M>(PageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
+    public static IEnumerable<M[]> BindPageModels<T, M>(IPageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
         where M : ISectionModel
     {
         var (headers, footers, detail, keys) = GetSectionInfo(page.SubSection, page.Header);
@@ -94,7 +94,7 @@ public static class SectionBinder
 
         var page_count = 0;
         var everyfooter = page.Footer is { } footer && footer.IsFooter && footer.ViewMode == ViewModes.Every ? footer : null;
-        var pageheight_minus_everypagefooter = page.Size.GetPageSize(page.Orientation).Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
+        var pageheight_minus_everypagefooter = page.Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
         var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
         T lastdata = default!;
         M lastdetail = default!;

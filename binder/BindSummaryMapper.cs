@@ -1,23 +1,21 @@
-﻿using Mina.Extension;
-using PicoPDF.Binder.Data;
-using PicoPDF.Binder.Element;
-using PicoPDF.Model;
-using PicoPDF.Model.Element;
+﻿using Binder.Data;
+using Binder.Model;
+using Mina.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PicoPDF.Binder;
+namespace Binder;
 
 public class BindSummaryMapper<T>
 {
     public required Dictionary<string, Func<T, object>> Mapper { get; init; }
     public Dictionary<string, ClearableDynamicValue> SummaryPool { get; init; } = [];
     public List<Action<T>> SummaryAction { get; init; } = [];
-    public List<List<(SummaryElement SummaryElement, MutableTextModel TextModel)>> SummaryGoBack { get; init; } = [];
+    public List<List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>> SummaryGoBack { get; init; } = [];
     public List<List<ICrossSectionModel>> CrossSectionGoBack { get; init; } = [];
 
-    public void CreatePool(PageSection page, string[] allkeys)
+    public void CreatePool(IPageSection page, string[] allkeys)
     {
         SummaryPool.Add("#:PAGECOUNT()", new() { Value = 1, Clear = _ => { } });
         TraversSummaryElement([], page).Each(sr =>
@@ -103,7 +101,7 @@ public class BindSummaryMapper<T>
 
     public void CreateCrossSectionGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count).Each(_ => CrossSectionGoBack.Add([]));
 
-    public void AddSummaryGoBack(SummaryElement summary, MutableTextModel model, int hierarchy_count)
+    public void AddSummaryGoBack(ISummaryElement summary, IMutableTextModel model, int hierarchy_count)
     {
         switch (summary.SummaryMethod)
         {
@@ -127,14 +125,14 @@ public class BindSummaryMapper<T>
 
     public void AddCrossSectionGoBack(ICrossSectionModel model, int depth) => CrossSectionGoBack[depth].Add(model);
 
-    public void SectionBreak(T data, PageSection page)
+    public void SectionBreak(T data, IPageSection page)
     {
         SummaryGoBack[1].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
         SummaryGoBack[1].Clear();
         SummaryPool.Keys.Where(x => x.StartsWith('&')).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
-    public void PageBreak(T data, PageSection page)
+    public void PageBreak(T data, IPageSection page)
     {
         SectionBreak(data, page);
 
@@ -143,7 +141,7 @@ public class BindSummaryMapper<T>
         SummaryPool.Keys.Where(x => x.StartsWith('%')).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
-    public void KeyBreak(T data, int hierarchy_count, string[] allkeys, PageSection page)
+    public void KeyBreak(T data, int hierarchy_count, string[] allkeys, IPageSection page)
     {
         for (int i = SummaryGoBack.Count - hierarchy_count; i < SummaryGoBack.Count; i++)
         {
@@ -157,7 +155,7 @@ public class BindSummaryMapper<T>
         SummaryPool.Keys.Where(x => x.StartsWith(sumkey_via_prefix) || x.StartsWith(sumkey_direct_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
-    public void LastBreak(T data, PageSection page)
+    public void LastBreak(T data, IPageSection page)
     {
         SummaryGoBack[0].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
         SummaryGoBack[0].Clear();
@@ -196,7 +194,7 @@ public class BindSummaryMapper<T>
 
     public void DataBind(T data) => SummaryAction.Each(x => x(data));
 
-    public object GetSummary(SummaryElement x, T data)
+    public object GetSummary(ISummaryElement x, T data)
     {
         switch (x.SummaryType)
         {
@@ -214,9 +212,9 @@ public class BindSummaryMapper<T>
         throw new();
     }
 
-    public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IParentSection section)
+    public static IEnumerable<(string[] BreakKeys, ISummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IParentSection section)
     {
-        if (section is Section sec && sec.BreakKey != "") keys = [.. keys, sec.BreakKey];
+        if (section is IBreakKey sec && sec.BreakKey != "") keys = [.. keys, sec.BreakKey];
 
         if (section.Header is ISection header) foreach (var x in TraversSummaryElement(keys, header.Elements)) yield return x;
         if (section.SubSection is ISection detail) foreach (var x in TraversSummaryElement(keys, detail.Elements)) yield return x;
@@ -224,5 +222,5 @@ public class BindSummaryMapper<T>
         if (section.Footer is ISection footer) foreach (var x in TraversSummaryElement(keys, footer.Elements)) yield return x;
     }
 
-    public static IEnumerable<(string[] BreakKeys, SummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IElement[] elements) => elements.OfType<SummaryElement>().Select(x => (keys, x));
+    public static IEnumerable<(string[] BreakKeys, ISummaryElement SummaryElement)> TraversSummaryElement(string[] keys, IElement[] elements) => elements.OfType<ISummaryElement>().Select(x => (keys, x));
 }

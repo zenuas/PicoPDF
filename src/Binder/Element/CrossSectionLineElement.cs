@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using Binder.Data;
+using System.Drawing;
 
 namespace PicoPDF.Binder.Element;
 

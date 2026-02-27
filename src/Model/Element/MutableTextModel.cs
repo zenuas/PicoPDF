@@ -1,9 +1,11 @@
-﻿using PicoPDF.Binder.Element;
+﻿using Binder.Data;
+using Binder.Model;
+using PicoPDF.Binder.Element;
 using System.Drawing;
 
 namespace PicoPDF.Model.Element;
 
-public class MutableTextModel : ITextModel
+public class MutableTextModel : ITextModel, IMutableTextModel
 {
     public required IElement Element { get; init; }
     public required int X { get; init; }

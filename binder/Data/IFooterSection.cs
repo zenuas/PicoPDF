@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Binder.Data;
+﻿namespace Binder.Data;
 
 public interface IFooterSection : ISection
 {

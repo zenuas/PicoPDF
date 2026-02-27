@@ -1,6 +1,4 @@
-﻿using PicoPDF.Binder.Element;
-
-namespace PicoPDF.Binder.Data;
+﻿namespace Binder.Data;
 
 public interface ISection
 {

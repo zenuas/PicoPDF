@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Binder;
 using Mina.Extension;
 using PicoPDF.Binder;
 using PicoPDF.Binder.Data;

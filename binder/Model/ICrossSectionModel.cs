@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Model.Element;
+﻿namespace Binder.Model;
 
 public interface ICrossSectionModel
 {

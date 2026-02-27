@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Binder.Data;
+﻿namespace Binder.Data;
 
 public enum ViewModes
 {

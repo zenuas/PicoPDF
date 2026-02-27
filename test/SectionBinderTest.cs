@@ -1,5 +1,6 @@
-﻿using Mina.Extension;
-using PicoPDF.Binder;
+﻿using Binder;
+using Binder.Data;
+using Mina.Extension;
 using PicoPDF.Binder.Data;
 using System;
 using Xunit;
