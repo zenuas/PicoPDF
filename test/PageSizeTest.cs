@@ -1,4 +1,4 @@
-﻿using PicoPDF.Loader.Section;
+﻿using PicoPDF.Loader.Sections;
 using Xunit;
 
 namespace PicoPDF.Test;

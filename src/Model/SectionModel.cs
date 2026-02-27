@@ -2,9 +2,9 @@
 using Binder.Data;
 using Binder.Model;
 using Mina.Extension;
-using PicoPDF.Loader.Element;
-using PicoPDF.Loader.Section;
-using PicoPDF.Model.Element;
+using PicoPDF.Loader.Elements;
+using PicoPDF.Loader.Sections;
+using PicoPDF.Model.Elements;
 using System.Linq;
 
 namespace PicoPDF.Model;

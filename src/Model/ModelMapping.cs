@@ -1,6 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Image;
-using PicoPDF.Model.Element;
+using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;

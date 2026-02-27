@@ -1,4 +1,4 @@
-﻿using PicoPDF.Pdf.Element;
+﻿using PicoPDF.Pdf.Elements;
 
 namespace PicoPDF.Pdf.Font;
 

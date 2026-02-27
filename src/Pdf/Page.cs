@@ -1,5 +1,5 @@
 ﻿using Mina.Extension;
-using PicoPDF.Pdf.Element;
+using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;
 using System.Linq;

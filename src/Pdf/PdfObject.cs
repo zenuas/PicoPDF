@@ -1,4 +1,4 @@
-﻿using PicoPDF.Pdf.Element;
+﻿using PicoPDF.Pdf.Elements;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;

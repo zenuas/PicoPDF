@@ -1,9 +1,9 @@
 ﻿using Binder;
 using Mina.Extension;
 using PicoPDF.Loader;
-using PicoPDF.Loader.Section;
+using PicoPDF.Loader.Sections;
 using PicoPDF.Model;
-using PicoPDF.Model.Element;
+using PicoPDF.Model.Elements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
