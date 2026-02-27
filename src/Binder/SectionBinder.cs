@@ -26,13 +26,7 @@ public static class SectionBinder
             models.Where(x => x.Section is FooterSection).Reverse().Each(x => x.Top = bottom -= x.Section.Height);
             
             // cross section update position
-            foreach(var model in models)
-            {
-                model.Elements
-                    .OfType<ICrossSectionModel>()
-                    .Where(x => x.TargetSection is { })
-                    .Each(x => x.UpdatePosition(model));
-            }
+            models.Each(x => x.UpdatePosition());
 
             return new PageModel() { Width = width, Height = height, Models = models };
         })];
