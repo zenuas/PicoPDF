@@ -15,8 +15,8 @@ public class SectionModel : ISectionModel
     public required int Depth { get; init; }
     public int Top { get; set; }
     public required int Left { get; init; }
-    public int Height { get => field = Section.Height; init; }
-    public bool IsFooter { get => field = Section is IFooterSection footer && footer.IsFooter; init; }
+    public required int Height { get; init; }
+    public required bool IsFooter { get; init; }
     public IModelElement[] Elements { get; init; } = [];
 
     public void UpdatePosition() => Elements
@@ -29,6 +29,8 @@ public class SectionModel : ISectionModel
         Section = section,
         Depth = depth ?? 0,
         Left = left,
+        Height = section.Height,
+        IsFooter = section is IFooterSection footer && footer.IsFooter,
         Elements = BindElements(section.Elements, data, bind, page.Cast<PageSection>(), breaks, allkeys, depth)
     };
 
