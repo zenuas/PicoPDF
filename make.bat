@@ -47,3 +47,18 @@
 :bench
 	dotnet run --project bench/PicoPDF.Benchmark.csproj --no-launch-profile -c Release %*
 	@exit /b %ERRORLEVEL%
+
+:publish
+	@call :release
+	
+	@call :setenv VERSION_NAME "powershell -Command Get-Date -Format yyyy.M.d"
+	@call :setenv BUILD_NAME   "powershell -Command Get-Date -Format HHmm"
+	@set      VERSION=%VERSION_NAME%
+	git tag %VERSION%
+	git push origin %VERSION%
+	gh release create %VERSION% PicoPDF-lib-%DATE:/=%.zip -t %VERSION% > nul
+	@exit /b %ERRORLEVEL%
+
+:setenv
+	@for /f "usebackq delims=" %%x in (`%~2`) do @set %1=%%x
+	@exit /b %ERRORLEVEL%
