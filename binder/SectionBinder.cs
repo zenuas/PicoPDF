@@ -61,7 +61,7 @@ public static class SectionBinder
         var hierarchy = sections.Where(x => x.Section is IParentSection).Select(x => (BreakCount: x.BreakKey != "" ? ++break_count : break_count, Section: x.Section.Cast<IParentSection>(), x.Depth, x.BreakKey)).ToArray();
         var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Header!, x.Depth)).To(x => pageheader is { } ? x.Prepend(new("", 0, pageheader, 0)) : x);
         var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Footer!, x.Depth));
-        var keys = sections.Select(x => x.BreakKey).Where(x => x.Length > 0);
+        var keys = sections.Where(x => x.BreakKey != "").Select(x => x.BreakKey);
 
         return ([.. headers], [.. footers], detail, [.. keys]);
     }
