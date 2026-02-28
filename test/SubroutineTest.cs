@@ -1,4 +1,4 @@
-﻿using PicoPDF.OpenType.Tables.PostScript;
+﻿using OpenType.Tables.PostScript;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;

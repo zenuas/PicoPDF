@@ -1,6 +1,6 @@
 ﻿using Mina.Extension;
-using PicoPDF.OpenType.Extension;
-using PicoPDF.OpenType.Tables.PostScript;
+using OpenType.Extension;
+using OpenType.Tables.PostScript;
 using System;
 using System.Collections.Generic;
 using System.IO;

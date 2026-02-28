@@ -1,4 +1,4 @@
-﻿using PicoPDF.OpenType;
+﻿using OpenType;
 using System;
 
 namespace PicoPDF.TestAll;

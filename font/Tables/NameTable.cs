@@ -1,0 +1,98 @@
+﻿using Mina.Extension;
+using System.IO;
+using System.Linq;
+using System.Text;
+
+namespace OpenType.Tables;
+
+public class NameTable : IExportable
+{
+    public required ushort Format { get; init; }
+    public required ushort Count { get; init; }
+    public required ushort StringOffset { get; init; }
+    public required (string Name, NameRecord NameRecord)[] NameRecords { get; init; }
+    public ushort LanguageTagCount { get; init; } = 0;
+    public (string Name, LanguageTagRecord LanguageTagRecord)[] LanguageTagRecords { get; init; } = [];
+
+    public static NameTable ReadFrom(Stream stream)
+    {
+        var position = stream.Position;
+
+        var format = stream.ReadUShortByBigEndian();
+        var count = stream.ReadUShortByBigEndian();
+        var string_offset = stream.ReadUShortByBigEndian();
+
+        var records = Lists.Repeat(() => NameRecord.ReadFrom(stream))
+            .Take(count)
+            .ToArray();
+
+        ushort lang_tag_count = 0;
+        LanguageTagRecord[] tags = [];
+        if (format == 1)
+        {
+            lang_tag_count = stream.ReadUShortByBigEndian();
+
+            tags = [.. Lists.Repeat(() => LanguageTagRecord.ReadFrom(stream)).Take(lang_tag_count)];
+        }
+
+        var name_records = records
+            .Select(x => (x.GetEncoding().GetString(stream.SeekTo(position + string_offset + x.Offset).ReadExactly(x.Length)), x))
+            .ToArray();
+
+        var lang_tags = tags
+            .Select(x => (Encoding.BigEndianUnicode.GetString(stream.SeekTo(position + string_offset + x.LanguageTagOffset).ReadExactly(x.Length)), x))
+            .ToArray();
+
+        return new()
+        {
+            Format = format,
+            Count = count,
+            StringOffset = string_offset,
+            NameRecords = name_records,
+            LanguageTagCount = lang_tag_count,
+            LanguageTagRecords = lang_tags,
+        };
+    }
+
+    public void WriteTo(Stream stream)
+    {
+        var string_offset = 6 + (/* sizeof(NameRecord) */12 * Count) + (/* sizeof(LanguageTagRecord) */4 * LanguageTagRecords.Length);
+
+        stream.WriteUShortByBigEndian(Format);
+        stream.WriteUShortByBigEndian(Count);
+        stream.WriteUShortByBigEndian((ushort)string_offset);
+
+        using var strings = new MemoryStream();
+
+        NameRecords.Each(x =>
+        {
+            var offset = strings.Position;
+            strings.Write(x.NameRecord.GetEncoding().GetBytes(x.Name));
+
+            stream.WriteUShortByBigEndian(x.NameRecord.PlatformID);
+            stream.WriteUShortByBigEndian(x.NameRecord.EncodingID);
+            stream.WriteUShortByBigEndian(x.NameRecord.LanguageID);
+            stream.WriteUShortByBigEndian(x.NameRecord.NameID);
+            stream.WriteUShortByBigEndian((ushort)(strings.Position - offset));
+            stream.WriteUShortByBigEndian((ushort)offset);
+        });
+
+        if (Format == 1)
+        {
+            stream.WriteUShortByBigEndian((ushort)LanguageTagRecords.Length);
+
+            LanguageTagRecords.Each(x =>
+            {
+                var offset = strings.Position;
+                strings.Write(Encoding.BigEndianUnicode.GetBytes(x.Name));
+
+                stream.WriteUShortByBigEndian(x.LanguageTagRecord.Length);
+                stream.WriteUShortByBigEndian((ushort)offset);
+            });
+        }
+
+        stream.Write(strings.ToArray());
+    }
+
+    public override string ToString() => $"Format={Format}, Count={Count}, StringOffset={StringOffset}";
+}

@@ -1,6 +1,7 @@
 <Solution>
   <Project Path="bench/PicoPDF.Benchmark.csproj" />
   <Project Path="binder/Binder.csproj" />
+  <Project Path="font/OpenType.csproj" />
   <Project Path="src/PicoPDF.csproj" />
   <Project Path="test-all/PicoPDF.TestAll.csproj" />
   <Project Path="test/PicoPDF.Test.csproj" />

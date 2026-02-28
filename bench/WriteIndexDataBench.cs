@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using PicoPDF.OpenType.Tables.PostScript;
+using OpenType.Tables.PostScript;
 using System.Collections.Generic;
 using System.IO;
 

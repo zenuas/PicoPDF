@@ -2,7 +2,7 @@
 using Mina.Text;
 using PicoPDF.Image;
 using PicoPDF.Image.Png;
-using PicoPDF.OpenType;
+using OpenType;
 using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;

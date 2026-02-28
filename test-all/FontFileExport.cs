@@ -1,5 +1,5 @@
 ﻿using Mina.Extension;
-using PicoPDF.OpenType;
+using OpenType;
 using System.IO;
 
 namespace PicoPDF.TestAll;
