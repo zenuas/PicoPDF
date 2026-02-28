@@ -58,8 +58,8 @@ public static class SectionBinder
         var sections = (Section: subsection, Depth: 1, BreakKey: (subsection as IBreakKey)?.BreakKey ?? "").Travers(x => x.Section is IParentSection s ? [(s.SubSection, x.Depth + 1, (s.SubSection as IBreakKey)?.BreakKey ?? "")] : []).ToArray();
         var detail = sections.Select(x => x.Section).OfType<IDetailSection>().First();
         var hierarchy = sections.Where(x => x.Section is IParentSection).Select(x => (x.Section.Cast<IParentSection>(), x.Depth, x.BreakKey)).AppendHierarchy().ToArray();
-        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakKeyHierarchy, x.Section.Header!, x.Depth)).PrependIf(pageheader, 0).ToArray();
-        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakKeyHierarchy, x.Section.Footer!, x.Depth)).ToArray();
+        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Header!, x.Depth)).PrependIf(pageheader, 0).ToArray();
+        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Footer!, x.Depth)).ToArray();
         var keys = sections.Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
 
         return (headers, footers, detail, keys);
@@ -70,21 +70,21 @@ public static class SectionBinder
     {
         var (headers, footers, detail, keys) = GetSectionInfo(page.SubSection, page.Header);
 
-        var bind = new BindSummaryMapper<T>() { Mapper = mapper };
-        bind.CreatePool(page, keys);
-        bind.CreateSummaryGoBack(keys.Length);
+        var bind = new BindSummaryMapper<T>() { Mapper = mapper, Keys = keys };
+        bind.CreatePool(page);
+        bind.CreateSummaryGoBack();
         bind.CreateCrossSectionGoBack(headers.LastOrDefault()?.Depth ?? 0);
 
         var left = page.Padding.Left;
-        M create_section(ISection section, T data, string[] breaks, int? depth) => M.CreateSectionModel(page, section, left, data, bind, breaks, keys, depth).Cast<M>();
+        M create_section(ISection section, T data, int break_count, int? depth) => M.CreateSectionModel(page, section, left, data, bind, break_count, depth).Cast<M>();
         if (datas.IsLast)
         {
             T nodata = default!;
             var models = new List<M>();
             bind.SetPageCount(1);
-            headers.Select(x => create_section(x.Section, nodata, x.BreakKeyHierarchy, x.Depth)).Each(models.Add);
-            footers.FooterSort().Select(x => create_section(x.Section, nodata, x.BreakKeyHierarchy, x.Depth).Return(x => bind.BreakSection(x))).Each(models.Add);
-            if (page.Footer is ISection lastfooter) models.Add(create_section(lastfooter, nodata, [], null).Return(x => bind.BreakSection(x)));
+            headers.Select(x => create_section(x.Section, nodata, x.BreakCount, x.Depth)).Each(models.Add);
+            footers.FooterSort().Select(x => create_section(x.Section, nodata, x.BreakCount, x.Depth).Return(x => bind.BreakSection(x))).Each(models.Add);
+            if (page.Footer is ISection lastfooter) models.Add(create_section(lastfooter, nodata, 0, null).Return(x => bind.BreakSection(x)));
             bind.KeyBreak(nodata, keys.Length, keys, page);
             bind.PageBreak(nodata, page);
             bind.LastBreak(nodata, page);
@@ -106,7 +106,7 @@ public static class SectionBinder
             if (page_count == 1) lastdata = firstdata;
             headers
                 .SkipWhileOrPageFirst(x => page_count == 1 || (x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](firstdata))))
-                .Select(x => create_section(x.Section, firstdata, x.BreakKeyHierarchy, x.Depth))
+                .Select(x => create_section(x.Section, firstdata, x.BreakCount, x.Depth))
                 .Each(models.Add);
             var page_first = true;
             var breakcount = 0;
@@ -119,7 +119,7 @@ public static class SectionBinder
                 var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
                 if (count == 0)
                 {
-                    if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(x => bind.BreakSection(x)));
+                    if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, 0, null).Return(x => bind.BreakSection(x)));
                     break;
                 }
 
@@ -131,26 +131,26 @@ public static class SectionBinder
                 {
                     if (--count <= 0)
                     {
-                        if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(x => bind.BreakSection(x)));
+                        if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, 0, null).Return(x => bind.BreakSection(x)));
                         break;
                     }
                     breakcount = 0;
                     breakfooter = [.. footers.SkipWhileOrEveryPage(_ => false)];
                 }
                 if (!page_first) bind.SectionBreak(lastdata, page);
-                breakheader?.Select(x => create_section(x.Section, current, x.BreakKeyHierarchy, x.Depth)).Each(models.Add);
+                breakheader?.Select(x => create_section(x.Section, current, x.BreakCount, x.Depth)).Each(models.Add);
 
                 _ = datas.Next(count - 1, out lastdata);
                 foreach (var x in datas.GetRange(count))
                 {
                     bind.DataBind(x);
-                    models.Add(create_section(detail, x, keys, null));
+                    models.Add(create_section(detail, x, keys.Length, null));
                 }
                 lastdetail = models.Last();
-                breakfooter.FooterSort().Select(x => create_section(x.Section, lastdata, x.BreakKeyHierarchy, x.Depth).Return(x => bind.BreakSection(x))).Each(models.Add);
+                breakfooter.FooterSort().Select(x => create_section(x.Section, lastdata, x.BreakCount, x.Depth).Return(x => bind.BreakSection(x))).Each(models.Add);
                 if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
                 {
-                    if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, [], null).Return(x => bind.BreakSection(x)));
+                    if (everyfooter is { }) models.Add(create_section(everyfooter, lastdata, 0, null).Return(x => bind.BreakSection(x)));
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys, page);
                     break;
                 }
@@ -159,7 +159,7 @@ public static class SectionBinder
 
                 if (datas.IsLast)
                 {
-                    if (page.Footer is ISection lastfooter) models.Add(create_section(lastfooter, lastdata, [], null));
+                    if (page.Footer is ISection lastfooter) models.Add(create_section(lastfooter, lastdata, 0, null));
                     break;
                 }
             }
@@ -221,15 +221,15 @@ public static class SectionBinder
             .Concat(footer.Where(x => x.Section.Cast<IFooterSection>().IsFooter));
     }
 
-    public static IEnumerable<SectionInfo> PrependIf(this IEnumerable<SectionInfo> self, ISection? section, int depth) => section is { } ? self.Prepend(new("", [], section, depth)) : self;
+    public static IEnumerable<SectionInfo> PrependIf(this IEnumerable<SectionInfo> self, ISection? section, int depth) => section is { } ? self.Prepend(new("", 0, section, depth)) : self;
 
-    public static IEnumerable<(string[] BreakKeyHierarchy, IParentSection Section, int Depth, string BreakKey)> AppendHierarchy(this IEnumerable<(IParentSection Section, int Depth, string BreakKey)> self)
+    public static IEnumerable<(int BreakCount, IParentSection Section, int Depth, string BreakKey)> AppendHierarchy(this IEnumerable<(IParentSection Section, int Depth, string BreakKey)> self)
     {
-        var keys = new List<string>();
+        var break_count = 0;
         foreach (var x in self)
         {
-            if (x.BreakKey != "") keys.Add(x.BreakKey);
-            yield return ([.. keys], x.Section, x.Depth, x.BreakKey);
+            if (x.BreakKey != "") break_count++;
+            yield return (break_count, x.Section, x.Depth, x.BreakKey);
         }
     }
 }

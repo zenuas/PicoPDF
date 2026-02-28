@@ -10,17 +10,18 @@ namespace Binder;
 public class BindSummaryMapper<T>
 {
     public required Dictionary<string, Func<T, object>> Mapper { get; init; }
+    public required string[] Keys { get; init; }
     public Dictionary<string, ClearableDynamicValue> SummaryPool { get; init; } = [];
     public List<Action<T>> SummaryAction { get; init; } = [];
     public List<List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>> SummaryGoBack { get; init; } = [];
     public List<List<ICrossSectionModel>> CrossSectionGoBack { get; init; } = [];
 
-    public void CreatePool(IPageSection page, string[] allkeys)
+    public void CreatePool(IPageSection page)
     {
         SummaryPool.Add("#:PAGECOUNT()", new() { Value = 1, Clear = _ => { } });
         TraversSummaryElement([], page).Each(sr =>
         {
-            var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : [.. allkeys.Take(allkeys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1)];
+            var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : [.. Keys.Take(Keys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1)];
             var breakpoint =
                 sr.SummaryElement.SummaryMethod is SummaryMethod.All or SummaryMethod.AllIncremental ? "#" :
                 sr.SummaryElement.SummaryMethod is SummaryMethod.Page or SummaryMethod.PageIncremental ? $"&{keys.Join(".")}" :
@@ -97,11 +98,11 @@ public class BindSummaryMapper<T>
         });
     }
 
-    public void CreateSummaryGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count + 2).Each(_ => SummaryGoBack.Add([]));
+    public void CreateSummaryGoBack() => Lists.RangeTo(0, Keys.Length + 2).Each(_ => SummaryGoBack.Add([]));
 
     public void CreateCrossSectionGoBack(int depth) => Lists.RangeTo(0, depth).Each(_ => CrossSectionGoBack.Add([]));
 
-    public void AddSummaryGoBack(ISummaryElement summary, IMutableTextModel model, int hierarchy_count)
+    public void AddSummaryGoBack(ISummaryElement summary, IMutableTextModel model, int break_count)
     {
         switch (summary.SummaryMethod)
         {
@@ -118,6 +119,7 @@ public class BindSummaryMapper<T>
                 break;
 
             case SummaryMethod.Group:
+                var hierarchy_count = summary.BreakKey == "" ? break_count - 1 : Keys.FindLastIndex(y => y == summary.BreakKey);
                 SummaryGoBack[hierarchy_count + 3].Add((summary, model));
                 break;
         }

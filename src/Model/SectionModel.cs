@@ -24,19 +24,19 @@ public class SectionModel : ISectionModel
         .Where(x => x.TargetSection is { })
         .Each(x => x.UpdatePosition(this));
 
-    public static ISectionModel CreateSectionModel<T>(IPageSection page, ISection section, int left, T data, BindSummaryMapper<T> bind, string[] breaks, string[] allkeys, int? depth) => new SectionModel()
+    public static ISectionModel CreateSectionModel<T>(IPageSection page, ISection section, int left, T data, BindSummaryMapper<T> bind, int break_count, int? depth) => new SectionModel()
     {
         Section = section,
         Depth = depth ?? 0,
         Left = left,
         Height = section.Height,
         IsFooter = section is IFooterSection footer && footer.IsFooter,
-        Elements = BindElements(section.Elements, data, bind, page.Cast<PageSection>(), breaks, allkeys, depth)
+        Elements = BindElements(section.Elements, data, bind, page.Cast<PageSection>(), break_count, depth)
     };
 
-    public static IModelElement[] BindElements<T>(IElement[] elements, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys, int? depth) => [.. elements.Select(x => BindElement(x, data, bind, page, keys, allkeys, depth))];
+    public static IModelElement[] BindElements<T>(IElement[] elements, T data, BindSummaryMapper<T> bind, PageSection page, int break_count, int? depth) => [.. elements.Select(x => BindElement(x, data, bind, page, break_count, depth))];
 
-    public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page, string[] keys, string[] allkeys, int? depth)
+    public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page, int break_count, int? depth)
     {
         switch (element)
         {
@@ -47,8 +47,7 @@ public class SectionModel : ISectionModel
             case SummaryElement x when x.SummaryMethod is SummaryMethod.All or SummaryMethod.Page or SummaryMethod.CrossSectionPage or SummaryMethod.Group:
                 {
                     var model = CreateMutableTextModel(x, "", page.DefaultFont);
-                    var keycount = x.BreakKey == "" ? keys.Length - 1 : allkeys.FindLastIndex(y => y == x.BreakKey);
-                    bind.AddSummaryGoBack(x, model, keycount);
+                    bind.AddSummaryGoBack(x, model, break_count);
                     return model;
                 }
 

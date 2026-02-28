@@ -2,4 +2,4 @@
 
 namespace Binder;
 
-public record class SectionInfo(string BreakKey, string[] BreakKeyHierarchy, ISection Section, int Depth);
+public record class SectionInfo(string BreakKey, int BreakCount, ISection Section, int Depth);
