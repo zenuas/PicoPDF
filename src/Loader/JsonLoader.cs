@@ -112,6 +112,8 @@ public static class JsonLoader
             case "SummaryElement":
                 {
                     var sumtype = json["SummaryType"] is { } sum ? Enum.Parse<SummaryType>(sum.ToString()) : SummaryType.Summary;
+                    var summethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethod>(method.ToString()) : (sumtype == SummaryType.PageCount ? SummaryMethod.Page : SummaryMethod.Group);
+                    if (json["BreakKey"] is not null && summethod is not (SummaryMethod.Group or SummaryMethod.GroupIncremental)) throw new($"when SummaryElement is SummaryMethod={summethod}, BreakKey is invalid");
                     return new SummaryElement()
                     {
                         X = posx,
@@ -126,7 +128,7 @@ public static class JsonLoader
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
                         SummaryType = sumtype,
-                        SummaryMethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethod>(method.ToString()) : (sumtype == SummaryType.PageCount ? SummaryMethod.Page : SummaryMethod.Group),
+                        SummaryMethod = summethod,
                         BreakKey = json["BreakKey"]?.ToString() ?? "",
                         Culture = json["Culture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
                     };
