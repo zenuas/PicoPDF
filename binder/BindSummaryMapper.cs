@@ -99,7 +99,7 @@ public class BindSummaryMapper<T>
 
     public void CreateSummaryGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count + 2).Each(_ => SummaryGoBack.Add([]));
 
-    public void CreateCrossSectionGoBack(int hierarchy_count) => Lists.RangeTo(0, hierarchy_count).Each(_ => CrossSectionGoBack.Add([]));
+    public void CreateCrossSectionGoBack(int depth) => Lists.RangeTo(0, depth).Each(_ => CrossSectionGoBack.Add([]));
 
     public void AddSummaryGoBack(ISummaryElement summary, IMutableTextModel model, int hierarchy_count)
     {
