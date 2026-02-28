@@ -12,8 +12,8 @@ namespace Binder;
 public static class SectionBinder
 {
     public static R[] Bind<T, M, R>(IPageSection page, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null)
-        where M : ISectionModel
-        where R : IPageModel
+        where M : ISectionModel<M>
+        where R : IPageModel<R, M>
         => [.. BindPageModels<T, M>(page, new BufferedEnumerator<T>() { BaseEnumerator = datas.GetEnumerator() }, mapper ?? InstanceMapper.CreateGetMapper<T>())
         .Select(models =>
         {
@@ -29,20 +29,20 @@ public static class SectionBinder
             // cross section update position
             models.Each(x => x.UpdatePosition());
 
-            return R.CreatePageModel(page.Width, height, models).Cast<R>();
+            return R.CreatePageModel(page.Width, height, models);
         })];
 
     public static R[] Bind<M, R>(IPageSection page, DataTable table)
-        where M : ISectionModel
-        where R : IPageModel
+        where M : ISectionModel<M>
+        where R : IPageModel<R, M>
         => Bind<DataRow, M, R>(
             page,
             table.Rows.GetIterator().OfType<DataRow>(),
             table.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRow, object>>(x => x.ColumnName, x => (row) => row?[x]!));
 
     public static R[] Bind<M, R>(IPageSection page, DataView view)
-        where M : ISectionModel
-        where R : IPageModel
+        where M : ISectionModel<M>
+        where R : IPageModel<R, M>
         => Bind<DataRowView, M, R>(
             page,
             view.GetIterator().OfType<DataRowView>(),
@@ -66,17 +66,17 @@ public static class SectionBinder
     }
 
     public static IEnumerable<M[]> BindPageModels<T, M>(IPageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
-        where M : ISectionModel
+        where M : ISectionModel<M>
     {
         var (headers, footers, detail, keys) = GetSectionInfo(page.SubSection, page.Header);
 
-        var bind = new BindSummaryMapper<T>() { Mapper = mapper, Keys = keys };
+        var bind = new BindSummaryMapper<M, T>() { Mapper = mapper, Keys = keys };
         bind.CreatePool(page);
         bind.CreateSummaryGoBack();
         bind.CreateCrossSectionGoBack(headers.LastOrDefault()?.Depth ?? 0);
 
         var left = page.Padding.Left;
-        M create_section(ISection section, T data, int break_count, int? depth) => M.CreateSectionModel(page, section, left, data, bind, break_count, depth).Cast<M>();
+        M create_section(ISection section, T data, int break_count, int? depth) => M.CreateSectionModel(page, section, left, data, bind, break_count, depth);
         if (datas.IsLast)
         {
             T nodata = default!;
@@ -171,7 +171,8 @@ public static class SectionBinder
         }
     }
 
-    public static int GetBreakOrTakeCount<T>(BufferedEnumerator<T> datas, BindSummaryMapper<T> bind, string[] keys, int maxcount)
+    public static int GetBreakOrTakeCount<M, T>(BufferedEnumerator<T> datas, BindSummaryMapper<M, T> bind, string[] keys, int maxcount)
+        where M : ISectionModel<M>
     {
         if (maxcount <= 0) return 0;
 

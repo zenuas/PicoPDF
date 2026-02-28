@@ -7,14 +7,14 @@ using System.Linq;
 
 namespace Binder;
 
-public class BindSummaryMapper<T>
+public class BindSummaryMapper<M, T> where M : ISectionModel<M>
 {
     public required Dictionary<string, Func<T, object>> Mapper { get; init; }
     public required string[] Keys { get; init; }
     public Dictionary<string, ClearableDynamicValue> SummaryPool { get; init; } = [];
     public List<Action<T>> SummaryAction { get; init; } = [];
     public List<List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>> SummaryGoBack { get; init; } = [];
-    public List<List<ICrossSectionModel>> CrossSectionGoBack { get; init; } = [];
+    public List<List<ICrossSectionModel<M>>> CrossSectionGoBack { get; init; } = [];
 
     public void CreatePool(IPageSection page)
     {
@@ -125,7 +125,7 @@ public class BindSummaryMapper<T>
         }
     }
 
-    public void AddCrossSectionGoBack(ICrossSectionModel model, int depth) => CrossSectionGoBack[depth].Add(model);
+    public void AddCrossSectionGoBack(ICrossSectionModel<M> model, int depth) => CrossSectionGoBack[depth].Add(model);
 
     public void SectionBreak(T data, IPageSection page)
     {
@@ -163,13 +163,13 @@ public class BindSummaryMapper<T>
         SummaryGoBack[0].Clear();
     }
 
-    public void BreakSection(ISectionModel model)
+    public void BreakSection(ISectionModel<M> model)
     {
         CrossSectionGoBack.Take(model.Depth + 1).Flatten().Each(x => x.TargetSection = model);
         CrossSectionGoBack[model.Depth].Clear();
     }
 
-    public void PageBreakSection(ISectionModel model)
+    public void PageBreakSection(ISectionModel<M> model)
     {
         for (var i = 0; i < CrossSectionGoBack.Count; i++)
         {

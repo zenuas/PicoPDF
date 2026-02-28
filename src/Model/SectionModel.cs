@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace PicoPDF.Model;
 
-public class SectionModel : ISectionModel
+public class SectionModel : ISectionModel<SectionModel>
 {
     public required ISection Section { get; init; }
     public required int Depth { get; init; }
@@ -20,11 +20,11 @@ public class SectionModel : ISectionModel
     public IModelElement[] Elements { get; init; } = [];
 
     public void UpdatePosition() => Elements
-        .OfType<ICrossSectionModel>()
+        .OfType<ICrossSectionModel<SectionModel>>()
         .Where(x => x.TargetSection is { })
         .Each(x => x.UpdatePosition(this));
 
-    public static ISectionModel CreateSectionModel<T>(IPageSection page, ISection section, int left, T data, BindSummaryMapper<T> bind, int break_count, int? depth) => new SectionModel()
+    public static SectionModel CreateSectionModel<T>(IPageSection page, ISection section, int left, T data, BindSummaryMapper<SectionModel, T> bind, int break_count, int? depth) => new()
     {
         Section = section,
         Depth = depth ?? 0,
@@ -34,15 +34,15 @@ public class SectionModel : ISectionModel
         Elements = BindElements(section.Elements, data, bind, page.Cast<PageSection>(), break_count, depth)
     };
 
-    public static IModelElement[] BindElements<T>(IElement[] elements, T data, BindSummaryMapper<T> bind, PageSection page, int break_count, int? depth) => [.. elements.Select(x => BindElement(x, data, bind, page, break_count, depth))];
+    public static IModelElement[] BindElements<T>(IElement[] elements, T data, BindSummaryMapper<SectionModel, T> bind, PageSection page, int break_count, int? depth) => [.. elements.Select(x => BindElement(x, data, bind, page, break_count, depth))];
 
-    public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T> bind, PageSection page, int break_count, int? depth)
+    public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<SectionModel, T> bind, PageSection page, int break_count, int? depth)
     {
         switch (element)
         {
             case TextElement x: return CreateTextModel(x, x.Text, page.DefaultFont);
 
-            case BindElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.Mapper[x.Bind](data), x.Format, x.Culture ?? page.DefaultCulture), page.DefaultFont);
+            case BindElement x: return CreateTextModel(x, BindSummaryMapper<SectionModel, T>.BindFormat(bind.Mapper[x.Bind](data), x.Format, x.Culture ?? page.DefaultCulture), page.DefaultFont);
 
             case SummaryElement x when x.SummaryMethod is SummaryMethod.All or SummaryMethod.Page or SummaryMethod.CrossSectionPage or SummaryMethod.Group:
                 {
@@ -51,7 +51,7 @@ public class SectionModel : ISectionModel
                     return model;
                 }
 
-            case SummaryElement x: return CreateTextModel(x, BindSummaryMapper<T>.BindFormat(bind.GetSummary(x, data), x.Format, x.Culture ?? page.DefaultCulture, x.NaN), page.DefaultFont);
+            case SummaryElement x: return CreateTextModel(x, BindSummaryMapper<SectionModel, T>.BindFormat(bind.GetSummary(x, data), x.Format, x.Culture ?? page.DefaultCulture, x.NaN), page.DefaultFont);
 
             case LineElement x:
                 return new LineModel()
