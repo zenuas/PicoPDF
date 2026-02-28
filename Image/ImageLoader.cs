@@ -1,11 +1,11 @@
-﻿using Mina.Extension;
-using PicoPDF.Image.Bmp;
-using PicoPDF.Image.Jpeg;
-using PicoPDF.Image.Png;
+﻿using Image.Bmp;
+using Image.Jpeg;
+using Image.Png;
+using Mina.Extension;
 using System.IO;
 using System.Linq;
 
-namespace PicoPDF.Image;
+namespace Image;
 
 public static class ImageLoader
 {

@@ -8,7 +8,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
-namespace PicoPDF.Image.Png;
+namespace Image.Png;
 
 public class PngFile : IImageCanvas
 {

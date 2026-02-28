@@ -11,10 +11,4 @@
     <PackageReference Include="Zenu.Mina" Version="2026.2.23" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\binder\Binder.csproj" />
-    <ProjectReference Include="..\font\OpenType.csproj" />
-    <ProjectReference Include="..\Image\Image.csproj" />
-  </ItemGroup>
-
 </Project>

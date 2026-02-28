@@ -1,5 +1,5 @@
-﻿using PicoPDF.Image;
-using PicoPDF.Image.Jpeg;
+﻿using Image;
+using Image.Jpeg;
 using Xunit;
 
 namespace PicoPDF.Test;

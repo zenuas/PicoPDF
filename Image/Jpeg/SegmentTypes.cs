@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Image.Jpeg;
+﻿namespace Image.Jpeg;
 
 public enum SegmentTypes : ushort
 {

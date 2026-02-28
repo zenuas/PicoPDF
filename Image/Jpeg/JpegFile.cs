@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace PicoPDF.Image.Jpeg;
+namespace Image.Jpeg;
 
 public class JpegFile : IImage
 {

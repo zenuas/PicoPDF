@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace PicoPDF.Image;
+namespace Image;
 
 public interface IImageWritable
 {

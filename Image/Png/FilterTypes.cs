@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Image.Png;
+﻿namespace Image.Png;
 
 public enum FilterTypes : byte
 {

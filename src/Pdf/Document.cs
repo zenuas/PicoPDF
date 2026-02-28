@@ -1,7 +1,7 @@
-﻿using Mina.Extension;
+﻿using Image;
+using Image.Png;
+using Mina.Extension;
 using Mina.Text;
-using PicoPDF.Image;
-using PicoPDF.Image.Png;
 using OpenType;
 using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Font;

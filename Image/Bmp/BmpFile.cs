@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 
-namespace PicoPDF.Image.Bmp;
+namespace Image.Bmp;
 
 public class BmpFile : IImageCanvas, IImageWritable
 {

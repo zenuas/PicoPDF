@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Image;
+﻿namespace Image;
 
 public interface IImage
 {

@@ -1,4 +1,4 @@
-﻿using PicoPDF.Image;
+﻿using Image;
 using System.IO;
 using Xunit;
 

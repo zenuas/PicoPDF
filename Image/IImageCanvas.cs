@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace PicoPDF.Image;
+namespace Image;
 
 public interface IImageCanvas : IImage
 {
