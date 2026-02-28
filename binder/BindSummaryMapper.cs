@@ -25,8 +25,8 @@ public class BindSummaryMapper<T, TSection>
             var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : [.. Keys.Take(Keys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1)];
             var breakpoint =
                 sr.SummaryElement.SummaryMethod is SummaryMethod.All or SummaryMethod.AllIncremental ? "#" :
-                sr.SummaryElement.SummaryMethod is SummaryMethod.Page or SummaryMethod.PageIncremental ? $"&{keys.Join(".")}" :
-                sr.SummaryElement.SummaryMethod is SummaryMethod.CrossSectionPage or SummaryMethod.CrossSectionPageIncremental ? $"%{keys.Join(".")}" :
+                sr.SummaryElement.SummaryMethod is SummaryMethod.Page or SummaryMethod.PageIncremental ? "&" :
+                sr.SummaryElement.SummaryMethod is SummaryMethod.CrossSectionPage or SummaryMethod.CrossSectionPageIncremental ? "%" :
                 $"${keys.Join(".")}";
             switch (sr.SummaryElement.SummaryType)
             {
