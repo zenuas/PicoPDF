@@ -48,12 +48,7 @@ public static class SectionBinder
             view.GetIterator().OfType<DataRowView>(),
             view.Table!.Columns.GetIterator().OfType<DataColumn>().ToDictionary<DataColumn, string, Func<DataRowView, object>>(x => x.ColumnName, x => (row) => row?[x.ColumnName]!));
 
-    public static (
-        SectionInfo[] Headers,
-        SectionInfo[] FootersWithoutPageFooter,
-        IDetailSection Detail,
-        string[] BreakKeys)
-        GetSectionInfo(ISubSection subsection, IHeaderSection? pageheader)
+    public static (SectionInfo[] Headers, SectionInfo[] Footers, IDetailSection Detail, string[] BreakKeys) GetSectionInfo(ISubSection subsection, IHeaderSection? pageheader)
     {
         var sections = (Section: subsection, Depth: 1, BreakKey: (subsection as IBreakKey)?.BreakKey ?? "").Travers(x => x.Section is IParentSection s ? [(s.SubSection, x.Depth + 1, (s.SubSection as IBreakKey)?.BreakKey ?? "")] : []).ToArray();
         var detail = sections.Select(x => x.Section).OfType<IDetailSection>().First();

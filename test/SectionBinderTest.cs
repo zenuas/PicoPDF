@@ -16,7 +16,7 @@ public class SectionBinderTest
         var sections = SectionBinder.GetSectionInfo(subsection, null);
 
         Assert.Equal(sections.Headers.Length, 0);
-        Assert.Equal(sections.FootersWithoutPageFooter.Length, 0);
+        Assert.Equal(sections.Footers.Length, 0);
         Assert.Equal(sections.Detail, subsection);
         Assert.Equal(sections.BreakKeys.Length, 0);
     }
@@ -33,7 +33,7 @@ public class SectionBinderTest
         Assert.Equal(sections.Headers[0].Depth, 0);
         Assert.Equal(sections.Headers[0].BreakKey, "");
         Assert.Equal(sections.Headers[0].BreakCount, 0);
-        Assert.Equal(sections.FootersWithoutPageFooter.Length, 0);
+        Assert.Equal(sections.Footers.Length, 0);
         Assert.Equal(sections.Detail, subsection);
         Assert.Equal(sections.BreakKeys.Length, 0);
     }
@@ -54,7 +54,7 @@ public class SectionBinderTest
         Assert.Equal(sections.Headers[0].Depth, 0);
         Assert.Equal(sections.Headers[0].BreakKey, "");
         Assert.Equal(sections.Headers[0].BreakCount, 0);
-        Assert.Equal(sections.FootersWithoutPageFooter.Length, 0);
+        Assert.Equal(sections.Footers.Length, 0);
         Assert.Equal(sections.Detail, detail);
         Assert.Equal(sections.BreakKeys.Length, 0);
     }
@@ -76,7 +76,7 @@ public class SectionBinderTest
         Assert.Equal(sections.Headers[0].Depth, 0);
         Assert.Equal(sections.Headers[0].BreakKey, "");
         Assert.Equal(sections.Headers[0].BreakCount, 0);
-        Assert.Equal(sections.FootersWithoutPageFooter.Length, 0);
+        Assert.Equal(sections.Footers.Length, 0);
         Assert.Equal(sections.Detail, detail);
         Assert.Equal(sections.BreakKeys, new string[] { "break" });
     }
@@ -104,11 +104,11 @@ public class SectionBinderTest
         Assert.Equal(sections.Headers[1].Depth, 1);
         Assert.Equal(sections.Headers[1].BreakKey, "break");
         Assert.Equal(sections.Headers[1].BreakCount, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter.Length, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Section, subsection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Depth, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakKey, "break");
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakCount, 1);
+        Assert.Equal(sections.Footers.Length, 1);
+        Assert.Equal(sections.Footers[0].Section, subsection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[0].Depth, 1);
+        Assert.Equal(sections.Footers[0].BreakKey, "break");
+        Assert.Equal(sections.Footers[0].BreakCount, 1);
         Assert.Equal(sections.Detail, detail);
         Assert.Equal(sections.BreakKeys, new string[] { "break" });
     }
@@ -146,15 +146,15 @@ public class SectionBinderTest
         Assert.Equal(sections.Headers[2].Depth, 2);
         Assert.Equal(sections.Headers[2].BreakKey, "break2");
         Assert.Equal(sections.Headers[2].BreakCount, 2);
-        Assert.Equal(sections.FootersWithoutPageFooter.Length, 2);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Section, subsection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Depth, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakKey, "break1");
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakCount, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].Section, subsection.Cast<Section>().SubSection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].Depth, 2);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].BreakKey, "break2");
-        Assert.Equal(sections.FootersWithoutPageFooter[1].BreakCount, 2);
+        Assert.Equal(sections.Footers.Length, 2);
+        Assert.Equal(sections.Footers[0].Section, subsection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[0].Depth, 1);
+        Assert.Equal(sections.Footers[0].BreakKey, "break1");
+        Assert.Equal(sections.Footers[0].BreakCount, 1);
+        Assert.Equal(sections.Footers[1].Section, subsection.Cast<Section>().SubSection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[1].Depth, 2);
+        Assert.Equal(sections.Footers[1].BreakKey, "break2");
+        Assert.Equal(sections.Footers[1].BreakCount, 2);
         Assert.Equal(sections.Detail, detail);
         Assert.Equal(sections.BreakKeys, new string[] { "break1", "break2" });
     }
@@ -202,19 +202,19 @@ public class SectionBinderTest
         Assert.Equal(sections.Headers[3].Depth, 3);
         Assert.Equal(sections.Headers[3].BreakKey, "break3");
         Assert.Equal(sections.Headers[3].BreakCount, 3);
-        Assert.Equal(sections.FootersWithoutPageFooter.Length, 3);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Section, subsection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Depth, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakKey, "break1");
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakCount, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].Section, subsection.Cast<Section>().SubSection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].Depth, 2);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].BreakKey, "break2");
-        Assert.Equal(sections.FootersWithoutPageFooter[1].BreakCount, 2);
-        Assert.Equal(sections.FootersWithoutPageFooter[2].Section, subsection.Cast<Section>().SubSection.Cast<Section>().SubSection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[2].Depth, 3);
-        Assert.Equal(sections.FootersWithoutPageFooter[2].BreakKey, "break3");
-        Assert.Equal(sections.FootersWithoutPageFooter[2].BreakCount, 3);
+        Assert.Equal(sections.Footers.Length, 3);
+        Assert.Equal(sections.Footers[0].Section, subsection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[0].Depth, 1);
+        Assert.Equal(sections.Footers[0].BreakKey, "break1");
+        Assert.Equal(sections.Footers[0].BreakCount, 1);
+        Assert.Equal(sections.Footers[1].Section, subsection.Cast<Section>().SubSection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[1].Depth, 2);
+        Assert.Equal(sections.Footers[1].BreakKey, "break2");
+        Assert.Equal(sections.Footers[1].BreakCount, 2);
+        Assert.Equal(sections.Footers[2].Section, subsection.Cast<Section>().SubSection.Cast<Section>().SubSection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[2].Depth, 3);
+        Assert.Equal(sections.Footers[2].BreakKey, "break3");
+        Assert.Equal(sections.Footers[2].BreakCount, 3);
         Assert.Equal(sections.Detail, detail);
         Assert.Equal(sections.BreakKeys, new string[] { "break1", "break2", "break3" });
     }
@@ -262,19 +262,19 @@ public class SectionBinderTest
         Assert.Equal(sections.Headers[3].Depth, 3);
         Assert.Equal(sections.Headers[3].BreakKey, "break3");
         Assert.Equal(sections.Headers[3].BreakCount, 2);
-        Assert.Equal(sections.FootersWithoutPageFooter.Length, 3);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Section, subsection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Depth, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakKey, "break1");
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakCount, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].Section, subsection.Cast<Section>().SubSection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].Depth, 2);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].BreakKey, "");
-        Assert.Equal(sections.FootersWithoutPageFooter[1].BreakCount, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[2].Section, subsection.Cast<Section>().SubSection.Cast<Section>().SubSection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[2].Depth, 3);
-        Assert.Equal(sections.FootersWithoutPageFooter[2].BreakKey, "break3");
-        Assert.Equal(sections.FootersWithoutPageFooter[2].BreakCount, 2);
+        Assert.Equal(sections.Footers.Length, 3);
+        Assert.Equal(sections.Footers[0].Section, subsection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[0].Depth, 1);
+        Assert.Equal(sections.Footers[0].BreakKey, "break1");
+        Assert.Equal(sections.Footers[0].BreakCount, 1);
+        Assert.Equal(sections.Footers[1].Section, subsection.Cast<Section>().SubSection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[1].Depth, 2);
+        Assert.Equal(sections.Footers[1].BreakKey, "");
+        Assert.Equal(sections.Footers[1].BreakCount, 1);
+        Assert.Equal(sections.Footers[2].Section, subsection.Cast<Section>().SubSection.Cast<Section>().SubSection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[2].Depth, 3);
+        Assert.Equal(sections.Footers[2].BreakKey, "break3");
+        Assert.Equal(sections.Footers[2].BreakCount, 2);
         Assert.Equal(sections.Detail, detail);
         Assert.Equal(sections.BreakKeys, new string[] { "break1", "break3" });
     }
@@ -318,19 +318,19 @@ public class SectionBinderTest
         Assert.Equal(sections.Headers[2].Depth, 3);
         Assert.Equal(sections.Headers[2].BreakKey, "break3");
         Assert.Equal(sections.Headers[2].BreakCount, 3);
-        Assert.Equal(sections.FootersWithoutPageFooter.Length, 3);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Section, subsection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Depth, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakKey, "break1");
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakCount, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].Section, subsection.Cast<Section>().SubSection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].Depth, 2);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].BreakKey, "break2");
-        Assert.Equal(sections.FootersWithoutPageFooter[1].BreakCount, 2);
-        Assert.Equal(sections.FootersWithoutPageFooter[2].Section, subsection.Cast<Section>().SubSection.Cast<Section>().SubSection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[2].Depth, 3);
-        Assert.Equal(sections.FootersWithoutPageFooter[2].BreakKey, "break3");
-        Assert.Equal(sections.FootersWithoutPageFooter[2].BreakCount, 3);
+        Assert.Equal(sections.Footers.Length, 3);
+        Assert.Equal(sections.Footers[0].Section, subsection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[0].Depth, 1);
+        Assert.Equal(sections.Footers[0].BreakKey, "break1");
+        Assert.Equal(sections.Footers[0].BreakCount, 1);
+        Assert.Equal(sections.Footers[1].Section, subsection.Cast<Section>().SubSection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[1].Depth, 2);
+        Assert.Equal(sections.Footers[1].BreakKey, "break2");
+        Assert.Equal(sections.Footers[1].BreakCount, 2);
+        Assert.Equal(sections.Footers[2].Section, subsection.Cast<Section>().SubSection.Cast<Section>().SubSection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[2].Depth, 3);
+        Assert.Equal(sections.Footers[2].BreakKey, "break3");
+        Assert.Equal(sections.Footers[2].BreakCount, 3);
         Assert.Equal(sections.Detail, detail);
         Assert.Equal(sections.BreakKeys, new string[] { "break1", "break2", "break3" });
     }
@@ -378,15 +378,15 @@ public class SectionBinderTest
         Assert.Equal(sections.Headers[3].Depth, 3);
         Assert.Equal(sections.Headers[3].BreakKey, "break3");
         Assert.Equal(sections.Headers[3].BreakCount, 3);
-        Assert.Equal(sections.FootersWithoutPageFooter.Length, 2);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Section, subsection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].Depth, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakKey, "break1");
-        Assert.Equal(sections.FootersWithoutPageFooter[0].BreakCount, 1);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].Section, subsection.Cast<Section>().SubSection.Cast<Section>().SubSection.Cast<Section>().Footer);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].Depth, 3);
-        Assert.Equal(sections.FootersWithoutPageFooter[1].BreakKey, "break3");
-        Assert.Equal(sections.FootersWithoutPageFooter[1].BreakCount, 3);
+        Assert.Equal(sections.Footers.Length, 2);
+        Assert.Equal(sections.Footers[0].Section, subsection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[0].Depth, 1);
+        Assert.Equal(sections.Footers[0].BreakKey, "break1");
+        Assert.Equal(sections.Footers[0].BreakCount, 1);
+        Assert.Equal(sections.Footers[1].Section, subsection.Cast<Section>().SubSection.Cast<Section>().SubSection.Cast<Section>().Footer);
+        Assert.Equal(sections.Footers[1].Depth, 3);
+        Assert.Equal(sections.Footers[1].BreakKey, "break3");
+        Assert.Equal(sections.Footers[1].BreakCount, 3);
         Assert.Equal(sections.Detail, detail);
         Assert.Equal(sections.BreakKeys, new string[] { "break1", "break2", "break3" });
     }
