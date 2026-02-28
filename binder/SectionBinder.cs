@@ -57,12 +57,13 @@ public static class SectionBinder
     {
         var sections = (Section: subsection, Depth: 1, BreakKey: (subsection as IBreakKey)?.BreakKey ?? "").Travers(x => x.Section is IParentSection s ? [(s.SubSection, x.Depth + 1, (s.SubSection as IBreakKey)?.BreakKey ?? "")] : []).ToArray();
         var detail = sections.Select(x => x.Section).OfType<IDetailSection>().First();
-        var hierarchy = sections.Where(x => x.Section is IParentSection).Select(x => (x.Section.Cast<IParentSection>(), x.Depth, x.BreakKey)).AppendHierarchy().ToArray();
-        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Header!, x.Depth)).PrependIf(pageheader, 0).ToArray();
-        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Footer!, x.Depth)).ToArray();
-        var keys = sections.Select(x => x.BreakKey).Where(x => x.Length > 0).ToArray();
+        var break_count = 0;
+        var hierarchy = sections.Where(x => x.Section is IParentSection).Select(x => (BreakCount: x.BreakKey != "" ? ++break_count : break_count, Section: x.Section.Cast<IParentSection>(), x.Depth, x.BreakKey)).ToArray();
+        var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Header!, x.Depth)).To(x => pageheader is { } ? x.Prepend(new("", 0, pageheader, 0)) : x);
+        var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Footer!, x.Depth));
+        var keys = sections.Select(x => x.BreakKey).Where(x => x.Length > 0);
 
-        return (headers, footers, detail, keys);
+        return ([.. headers], [.. footers], detail, [.. keys]);
     }
 
     public static IEnumerable<M[]> BindPageModels<T, M>(IPageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
@@ -218,17 +219,5 @@ public static class SectionBinder
             .Where(x => !x.Section.Cast<IFooterSection>().IsFooter)
             .Reverse()
             .Concat(footer.Where(x => x.Section.Cast<IFooterSection>().IsFooter));
-    }
-
-    public static IEnumerable<SectionInfo> PrependIf(this IEnumerable<SectionInfo> self, ISection? section, int depth) => section is { } ? self.Prepend(new("", 0, section, depth)) : self;
-
-    public static IEnumerable<(int BreakCount, IParentSection Section, int Depth, string BreakKey)> AppendHierarchy(this IEnumerable<(IParentSection Section, int Depth, string BreakKey)> self)
-    {
-        var break_count = 0;
-        foreach (var x in self)
-        {
-            if (x.BreakKey != "") break_count++;
-            yield return (break_count, x.Section, x.Depth, x.BreakKey);
-        }
     }
 }
