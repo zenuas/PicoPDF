@@ -11,5 +11,5 @@ public interface ISectionModel<M> where M : ISectionModel<M>
 
     public void UpdatePosition();
 
-    public abstract static M CreateSectionModel<T>(IPageSection page, ISection section, int left, T data, BindSummaryMapper<M, T> bind, int break_count, int? depth);
+    public abstract static M CreateSectionModel<T>(IPageSection page, ISection section, T data, BindSummaryMapper<M, T> bind, int break_count, int? depth);
 }

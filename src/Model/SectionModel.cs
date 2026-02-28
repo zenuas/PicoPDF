@@ -24,11 +24,11 @@ public class SectionModel : ISectionModel<SectionModel>
         .Where(x => x.TargetSection is { })
         .Each(x => x.UpdatePosition(this));
 
-    public static SectionModel CreateSectionModel<T>(IPageSection page, ISection section, int left, T data, BindSummaryMapper<SectionModel, T> bind, int break_count, int? depth) => new()
+    public static SectionModel CreateSectionModel<T>(IPageSection page, ISection section, T data, BindSummaryMapper<SectionModel, T> bind, int break_count, int? depth) => new()
     {
         Section = section,
         Depth = depth ?? 0,
-        Left = left,
+        Left = page.Padding.Left,
         Height = section.Height,
         IsFooter = section is IFooterSection footer && footer.IsFooter,
         Elements = BindElements(section.Elements, data, bind, page.Cast<PageSection>(), break_count, depth)
