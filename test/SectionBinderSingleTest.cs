@@ -54,7 +54,7 @@ public class SectionBinderSingleTest
     public static PageModel[] CreatePageModel<T>(IEnumerable<T> datas)
     {
         var mapper = new Dictionary<string, Func<T, object>> { ["Foo"] = (x) => x! };
-        return SectionBinder.Bind<T, SectionModel, PageModel>(PageSection, datas, mapper);
+        return SectionBinder.Bind<T, PageModel, SectionModel>(PageSection, datas, mapper);
     }
 
     public static string ToSectionString(SectionModel section) => $"{section.Section.Name}/{section.Elements.OfType<ITextModel>().Select(x => x.Text).Join("/")}";

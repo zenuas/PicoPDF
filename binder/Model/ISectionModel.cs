@@ -2,7 +2,8 @@
 
 namespace Binder.Model;
 
-public interface ISectionModel<M> where M : ISectionModel<M>
+public interface ISectionModel<TSection>
+    where TSection : ISectionModel<TSection>
 {
     public int Depth { get; init; }
     public int Top { get; set; }
@@ -11,5 +12,5 @@ public interface ISectionModel<M> where M : ISectionModel<M>
 
     public void UpdatePosition();
 
-    public abstract static M CreateSectionModel<T>(IPageSection page, ISection section, T data, BindSummaryMapper<M, T> bind, int break_count, int? depth);
+    public abstract static TSection CreateSectionModel<T>(IPageSection page, ISection section, T data, BindSummaryMapper<T, TSection> bind, int break_count, int? depth);
 }
