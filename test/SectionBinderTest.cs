@@ -7,6 +7,7 @@ using Xunit;
 
 namespace PicoPDF.Test;
 
+[Collection("SectionBinder")]
 public class SectionBinderTest
 {
     [Fact]

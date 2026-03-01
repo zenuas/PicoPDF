@@ -12,6 +12,7 @@ using Xunit;
 
 namespace PicoPDF.Test;
 
+[Collection("SectionBinder")]
 public class SectionBinderCultureTest
 {
     public static PageSection PageSection { get; } = JsonLoader.LoadJsonString("""

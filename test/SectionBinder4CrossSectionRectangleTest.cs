@@ -11,6 +11,7 @@ using Xunit;
 
 namespace PicoPDF.Test;
 
+[Collection("SectionBinder")]
 public class SectionBinder4CrossSectionRectangleTest
 {
     public static PageModel[] CreatePageModel(PageSection page, IEnumerable<(int, string, string, string)> datas)
