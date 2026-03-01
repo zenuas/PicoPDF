@@ -17,6 +17,7 @@ public class ColorTable : IExportable
     public required BaseGlyphListRecord? BaseGlyphListRecord { get; init; }
     public required LayerListRecord? LayerListRecord { get; init; }
     public required ClipListRecord? ClipListRecord { get; init; }
+    public required DeltaSetIndexMapRecord? DeltaSetIndexMapRecord { get; init; }
 
 
     public static ColorTable ReadFrom(Stream stream)
@@ -55,6 +56,9 @@ public class ColorTable : IExportable
         var clipList = clipListOffset == 0 ? null
             : stream.SeekTo(position + clipListOffset).To(ClipListRecord.ReadFrom);
 
+        var varIndexMap = varIndexMapOffset == 0 ? null
+            : stream.SeekTo(position + varIndexMapOffset).To(DeltaSetIndexMapRecord.ReadFrom);
+
         return new()
         {
             Version = version,
@@ -67,6 +71,7 @@ public class ColorTable : IExportable
             BaseGlyphListRecord = baseGlyphList,
             LayerListRecord = layerList,
             ClipListRecord = clipList,
+            DeltaSetIndexMapRecord = varIndexMap,
         };
     }
 
