@@ -10,20 +10,25 @@ namespace Binder;
 public class BindSummaryMapper<T, TSection>
     where TSection : ISectionModel<TSection>
 {
-    public IReadOnlyDictionary<string, Func<T, object>> Mapper { get; init; }
-    public string[] Keys { get; init; }
-    public IReadOnlyDictionary<string, ClearableDynamicValue> SummaryPool { get; init; }
+    public required IReadOnlyDictionary<string, Func<T, object>> Mapper { get; init; }
+    public string[] Keys { get; init; } = [];
+    public required IReadOnlyDictionary<string, ClearableDynamicValue> SummaryPool { get; init; }
     public Action<T>[] SummaryAction { get; init; } = [];
-    public List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>[] SummaryGoBack { get; init; }
-    public List<ICrossSectionModel<TSection>>[] CrossSectionGoBack { get; init; }
+    public required List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>[] SummaryGoBack { get; init; }
+    public required List<ICrossSectionModel<TSection>>[] CrossSectionGoBack { get; init; }
 
-    public BindSummaryMapper(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] keys, int depth)
+    public static BindSummaryMapper<T, TSection> Create(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] keys, int depth)
     {
-        (SummaryPool, SummaryAction) = CreatePool(page, mapper, keys);
-        SummaryGoBack = CreateSummaryGoBack(keys.Length);
-        CrossSectionGoBack = CreateCrossSectionGoBack(depth);
-        Mapper = mapper;
-        Keys = keys;
+        var (pool, actions) = CreatePool(page, mapper, keys);
+        return new()
+        {
+            Mapper = mapper,
+            Keys = keys,
+            SummaryPool = pool,
+            SummaryAction = actions,
+            SummaryGoBack = CreateSummaryGoBack(keys.Length),
+            CrossSectionGoBack = CreateCrossSectionGoBack(depth),
+        };
     }
 
     public static (Dictionary<string, ClearableDynamicValue> Pool, Action<T>[] Actions) CreatePool(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] allkeys)
