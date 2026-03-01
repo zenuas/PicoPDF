@@ -60,7 +60,7 @@ public static class JsonLoader
         return json["Type"]!.ToString() switch
         {
             "HeaderSection" => new HeaderSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode },
-            "DetailSection" => new DetailSection() { Name = name, Height = height, Elements = elements },
+            "DetailSection" => new DetailSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode },
             "TotalSection" => new TotalSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, PageBreak = pagebreak },
             "FooterSection" => new FooterSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, PageBreak = pagebreak },
             _ => throw new(),
