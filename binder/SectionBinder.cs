@@ -65,11 +65,7 @@ public static class SectionBinder
         where TSection : ISectionModel<TSection>
     {
         var (headers, footers, detail, keys) = GetSectionInfo(page.SubSection, page.Header);
-
-        var bind = new BindSummaryMapper<T, TSection>() { Mapper = mapper, Keys = keys };
-        bind.CreatePool(page);
-        bind.CreateSummaryGoBack();
-        bind.CreateCrossSectionGoBack(headers.LastOrDefault()?.Depth ?? 0);
+        var bind = new BindSummaryMapper<T, TSection>(page, mapper, keys, headers.LastOrDefault()?.Depth ?? 0);
 
         if (datas.IsLast)
         {

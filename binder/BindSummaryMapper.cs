@@ -10,19 +10,31 @@ namespace Binder;
 public class BindSummaryMapper<T, TSection>
     where TSection : ISectionModel<TSection>
 {
-    public required Dictionary<string, Func<T, object>> Mapper { get; init; }
-    public required string[] Keys { get; init; }
-    public Dictionary<string, ClearableDynamicValue> SummaryPool { get; init; } = [];
-    public List<Action<T>> SummaryAction { get; init; } = [];
-    public List<List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>> SummaryGoBack { get; init; } = [];
-    public List<List<ICrossSectionModel<TSection>>> CrossSectionGoBack { get; init; } = [];
+    public IReadOnlyDictionary<string, Func<T, object>> Mapper { get; init; }
+    public string[] Keys { get; init; }
+    public IReadOnlyDictionary<string, ClearableDynamicValue> SummaryPool { get; init; }
+    public Action<T>[] SummaryAction { get; init; } = [];
+    public List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>[] SummaryGoBack { get; init; }
+    public List<ICrossSectionModel<TSection>>[] CrossSectionGoBack { get; init; }
 
-    public void CreatePool(IPageSection page)
+    public BindSummaryMapper(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] keys, int depth)
     {
-        SummaryPool.Add("#:PAGECOUNT()", new() { Value = 1, Clear = _ => { } });
+        (SummaryPool, SummaryAction) = CreatePool(page, mapper, keys);
+        SummaryGoBack = CreateSummaryGoBack(keys.Length);
+        CrossSectionGoBack = CreateCrossSectionGoBack(depth);
+        Mapper = mapper;
+        Keys = keys;
+    }
+
+    public static (Dictionary<string, ClearableDynamicValue> Pool, Action<T>[] Actions) CreatePool(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] allkeys)
+    {
+        var pool = new Dictionary<string, ClearableDynamicValue>();
+        var actions = new List<Action<T>>();
+
+        pool.Add("#:PAGECOUNT()", new() { Value = 1, Clear = _ => { } });
         TraversSummaryElement([], page).Each(sr =>
         {
-            var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : [.. Keys.Take(Keys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1)];
+            var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : [.. allkeys.Take(allkeys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1)];
             var breakpoint =
                 sr.SummaryElement.SummaryMethod is SummaryMethod.All or SummaryMethod.AllIncremental ? "#" :
                 sr.SummaryElement.SummaryMethod is SummaryMethod.Page or SummaryMethod.PageIncremental ? "&" :
@@ -34,12 +46,12 @@ public class BindSummaryMapper<T, TSection>
                 case SummaryType.Average:
                     {
                         var key = $"{breakpoint}:{sr.SummaryElement.Bind}";
-                        if (!SummaryPool.ContainsKey(key))
+                        if (!pool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = 0, Clear = x => x.Value = 0 };
-                            SummaryPool.Add(key, v);
-                            Mapper.Add(key, _ => v.Value);
-                            SummaryAction.Add(x => v.Value += (dynamic)Mapper[sr.SummaryElement.Bind](x));
+                            pool.Add(key, v);
+                            mapper.Add(key, _ => v.Value);
+                            actions.Add(x => v.Value += (dynamic)mapper[sr.SummaryElement.Bind](x));
                         }
                         sr.SummaryElement.SummaryBind = key;
                         if (sr.SummaryElement.SummaryType == SummaryType.Average) goto case SummaryType.Count;
@@ -49,12 +61,12 @@ public class BindSummaryMapper<T, TSection>
                 case SummaryType.Count:
                     {
                         var key = $"{breakpoint}:COUNT()";
-                        if (!SummaryPool.ContainsKey(key))
+                        if (!pool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = 0, Clear = x => x.Value = 0 };
-                            SummaryPool.Add(key, v);
-                            Mapper.Add(key, _ => v.Value);
-                            SummaryAction.Add(x => v.Value++);
+                            pool.Add(key, v);
+                            mapper.Add(key, _ => v.Value);
+                            actions.Add(x => v.Value++);
                         }
                         sr.SummaryElement.SummaryCount = key;
                     }
@@ -63,14 +75,14 @@ public class BindSummaryMapper<T, TSection>
                 case SummaryType.Maximum:
                     {
                         var key = $"{breakpoint}:MAX({sr.SummaryElement.Bind})";
-                        if (!SummaryPool.ContainsKey(key))
+                        if (!pool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = null, Clear = x => x.Value = null };
-                            SummaryPool.Add(key, v);
-                            Mapper.Add(key, _ => v.Value!);
-                            SummaryAction.Add(x =>
+                            pool.Add(key, v);
+                            mapper.Add(key, _ => v.Value!);
+                            actions.Add(x =>
                             {
-                                var value = (dynamic)Mapper[sr.SummaryElement.Bind](x);
+                                var value = (dynamic)mapper[sr.SummaryElement.Bind](x);
                                 v.Value = v.Value is null ? value : (v.Value < value ? value : v.Value);
                             });
                         }
@@ -81,14 +93,14 @@ public class BindSummaryMapper<T, TSection>
                 case SummaryType.Minimum:
                     {
                         var key = $"{breakpoint}:MIN({sr.SummaryElement.Bind})";
-                        if (!SummaryPool.ContainsKey(key))
+                        if (!pool.ContainsKey(key))
                         {
                             var v = new ClearableDynamicValue() { Value = null, Clear = x => x.Value = null };
-                            SummaryPool.Add(key, v);
-                            Mapper.Add(key, _ => v.Value!);
-                            SummaryAction.Add(x =>
+                            pool.Add(key, v);
+                            mapper.Add(key, _ => v.Value!);
+                            actions.Add(x =>
                             {
-                                var value = (dynamic)Mapper[sr.SummaryElement.Bind](x);
+                                var value = (dynamic)mapper[sr.SummaryElement.Bind](x);
                                 v.Value = v.Value is null ? value : (v.Value > value ? value : v.Value);
                             });
                         }
@@ -97,11 +109,12 @@ public class BindSummaryMapper<T, TSection>
                     break;
             }
         });
+        return (pool, [.. actions]);
     }
 
-    public void CreateSummaryGoBack() => Lists.RangeTo(0, Keys.Length + 2).Each(_ => SummaryGoBack.Add([]));
+    public static List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>[] CreateSummaryGoBack(int key_count) => [.. Lists.RangeTo(0, key_count + 2).Select(_ => new List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>())];
 
-    public void CreateCrossSectionGoBack(int depth) => Lists.RangeTo(0, depth).Each(_ => CrossSectionGoBack.Add([]));
+    public static List<ICrossSectionModel<TSection>>[] CreateCrossSectionGoBack(int depth) => [.. Lists.RangeTo(0, depth).Select(_ => new List<ICrossSectionModel<TSection>>())];
 
     public void AddSummaryGoBack(ISummaryElement summary, IMutableTextModel model, int break_count)
     {
@@ -146,7 +159,7 @@ public class BindSummaryMapper<T, TSection>
 
     public void KeyBreak(T data, int hierarchy_count, string[] allkeys, IPageSection page)
     {
-        for (int i = SummaryGoBack.Count - hierarchy_count; i < SummaryGoBack.Count; i++)
+        for (int i = SummaryGoBack.Length - hierarchy_count; i < SummaryGoBack.Length; i++)
         {
             SummaryGoBack[i].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
             SummaryGoBack[i].Clear();
@@ -172,7 +185,7 @@ public class BindSummaryMapper<T, TSection>
 
     public void PageBreakSection(ISectionModel<TSection> model)
     {
-        for (var i = 0; i < CrossSectionGoBack.Count; i++)
+        for (var i = 0; i < CrossSectionGoBack.Length; i++)
         {
             CrossSectionGoBack[i].Each(x => x.TargetSection ??= model);
             CrossSectionGoBack[i].Clear();
