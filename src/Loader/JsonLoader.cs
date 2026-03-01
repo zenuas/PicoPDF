@@ -230,12 +230,10 @@ public static class JsonLoader
         throw new();
     }
 
-    public static string[] ToStringArray(JsonNode? node)
-    {
-        if (node is JsonValue v) return [(string)v!];
-        if (node is JsonArray xs) return [.. xs.Select(x => x?.AsValue() is { } value ? (string)value! : "")];
-        return [];
-    }
+    public static string[] ToStringArray(JsonNode? node) =>
+        node is JsonValue v ? [(string)v!] :
+        node is JsonArray xs ? [.. xs.Select(x => x?.AsValue() is { } value ? (string)value! : "")] :
+        [];
 
     public static AllSides LoadAllSides(JsonNode? node)
     {
