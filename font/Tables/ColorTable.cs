@@ -81,16 +81,17 @@ public class ColorTable : IExportable
 
     public void WriteTo(Stream stream)
     {
-        stream.WriteUShortByBigEndian(Version);
-        stream.WriteUShortByBigEndian(NumberBaseGlyphRecords);
-        stream.WriteUIntByBigEndian(BaseGlyphRecordsOffset);
-        stream.WriteUIntByBigEndian(LayerRecordsOffset);
-        stream.WriteUShortByBigEndian(NumberLayerRecords);
+        var offset = Version.SizeOf() + NumberBaseGlyphRecords.SizeOf() + BaseGlyphRecordsOffset.SizeOf() + LayerRecordsOffset.SizeOf() + NumberLayerRecords.SizeOf() + (Version >= 1 ? sizeof(uint) * 5 : 0);
+        var sizeof_BaseGlyphRecords = BaseGlyphRecords.Select(x => x.SizeOf()).Sum();
+        var sizeof_LayerRecords = LayerRecords.Select(x => x.SizeOf()).Sum();
 
-        var offset = Version.SizeOf() + NumberBaseGlyphRecords.SizeOf() + BaseGlyphRecordsOffset.SizeOf() + LayerRecordsOffset.SizeOf() + NumberLayerRecords.SizeOf() +
-            BaseGlyphRecords.Select(x => x.SizeOf()).Sum() +
-            LayerRecords.Select(x => x.SizeOf()).Sum() +
-            (Version >= 1 ? sizeof(uint) * 5 : 0);
+        stream.WriteUShortByBigEndian(Version);
+        stream.WriteUShortByBigEndian((ushort)BaseGlyphRecords.Length);
+        stream.WriteUIntByBigEndian((uint)offset);
+        stream.WriteUIntByBigEndian((uint)(offset + sizeof_BaseGlyphRecords));
+        stream.WriteUShortByBigEndian((ushort)LayerRecords.Length);
+
+        offset += sizeof_BaseGlyphRecords + sizeof_LayerRecords;
         if (Version >= 1)
         {
             stream.WriteUIntByBigEndian(BaseGlyphListRecord is { } ? (uint)offset : 0); offset += BaseGlyphListRecord?.SizeOf() ?? 0;
