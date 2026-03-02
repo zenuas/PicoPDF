@@ -26,7 +26,12 @@ public static class FontExporter
 
     public static void Export(TrueTypeFont font, Stream stream, long start_stream_position = 0)
     {
-        var table_names = new string[] { "cmap", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "name", "post" }.If(_ => font.OS2 is { }, xs => [.. xs.Prepend("OS/2")], xs => xs);
+        var table_names = new string[] { "cmap", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "name", "post" }
+            .If(_ => font.Color is { }, xs => xs.Concat("COLR"), xs => xs)
+            .If(_ => font.ColorPalette is { }, xs => xs.Concat("CPAL"), xs => xs)
+            .If(_ => font.OS2 is { }, xs => xs.Concat("OS/2"), xs => xs)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
         var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
 
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
@@ -47,6 +52,8 @@ public static class FontExporter
             WriteTableRecord(stream, table);
         });
 
+        if (font.Color is { }) ExportTable(stream, start_stream_position, tables["COLR"], font.Color);
+        if (font.ColorPalette is { }) ExportTable(stream, start_stream_position, tables["CPAL"], font.ColorPalette);
         if (font.OS2 is { }) ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
         ExportTable(stream, start_stream_position, tables["cmap"], font.CMap);
         ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0));
@@ -103,7 +110,12 @@ public static class FontExporter
 
     public static void Export(PostScriptFont font, Stream stream, long start_stream_position = 0)
     {
-        var table_names = new string[] { "CFF ", "cmap", "head", "hhea", "hmtx", "maxp", "name", "post" }.If(_ => font.OS2 is { }, xs => [.. xs.Concat("OS/2").Order(StringComparer.Ordinal)], xs => xs);
+        var table_names = new string[] { "CFF ", "cmap", "head", "hhea", "hmtx", "maxp", "name", "post" }
+            .If(_ => font.Color is { }, xs => xs.Concat("COLR"), xs => xs)
+            .If(_ => font.ColorPalette is { }, xs => xs.Concat("CPAL"), xs => xs)
+            .If(_ => font.OS2 is { }, xs => xs.Concat("OS/2"), xs => xs)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
         var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
 
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
@@ -125,6 +137,8 @@ public static class FontExporter
         });
 
         ExportTable(stream, start_stream_position, tables["CFF "], font.CompactFontFormat);
+        if (font.Color is { }) ExportTable(stream, start_stream_position, tables["COLR"], font.Color);
+        if (font.ColorPalette is { }) ExportTable(stream, start_stream_position, tables["CPAL"], font.ColorPalette);
         if (font.OS2 is { }) ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
         ExportTable(stream, start_stream_position, tables["cmap"], font.CMap);
         ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0));

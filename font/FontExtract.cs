@@ -64,8 +64,8 @@ public static class FontExtract
             Glyphs = glyf,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
-            Color = null,
-            ColorPalette = null,
+            Color = font.Color,
+            ColorPalette = font.ColorPalette,
             StandardBitmapGraphics = null,
             ScalableVectorGraphics = null,
         };
@@ -198,8 +198,8 @@ public static class FontExtract
             CompactFontFormat = cff,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
-            Color = null,
-            ColorPalette = null,
+            Color = font.Color,
+            ColorPalette = font.ColorPalette,
             StandardBitmapGraphics = null,
             ScalableVectorGraphics = null,
         };
