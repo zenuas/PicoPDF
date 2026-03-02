@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using System;
 using System.IO;
 using System.Linq;
 
@@ -82,6 +81,34 @@ public class ColorTable : IExportable
 
     public void WriteTo(Stream stream)
     {
-        throw new NotImplementedException();
+        stream.WriteUShortByBigEndian(Version);
+        stream.WriteUShortByBigEndian(NumberBaseGlyphRecords);
+        stream.WriteUIntByBigEndian(BaseGlyphRecordsOffset);
+        stream.WriteUIntByBigEndian(LayerRecordsOffset);
+        stream.WriteUShortByBigEndian(NumberLayerRecords);
+
+        var offset = Version.SizeOf() + NumberBaseGlyphRecords.SizeOf() + BaseGlyphRecordsOffset.SizeOf() + LayerRecordsOffset.SizeOf() + NumberLayerRecords.SizeOf() +
+            BaseGlyphRecords.Select(x => x.SizeOf()).Sum() +
+            LayerRecords.Select(x => x.SizeOf()).Sum() +
+            (Version >= 1 ? sizeof(uint) * 5 : 0);
+        if (Version >= 1)
+        {
+            stream.WriteUIntByBigEndian(BaseGlyphListRecord is { } ? (uint)offset : 0); offset += BaseGlyphListRecord?.SizeOf() ?? 0;
+            stream.WriteUIntByBigEndian(LayerListRecord is { } ? (uint)offset : 0); offset += LayerListRecord?.SizeOf() ?? 0;
+            stream.WriteUIntByBigEndian(ClipListRecord is { } ? (uint)offset : 0); offset += ClipListRecord?.SizeOf() ?? 0;
+            stream.WriteUIntByBigEndian(DeltaSetIndexMapRecord is { } ? (uint)offset : 0); offset += DeltaSetIndexMapRecord?.SizeOf() ?? 0;
+            stream.WriteUIntByBigEndian(ItemVariationStoreRecord is { } ? (uint)offset : 0); offset += ItemVariationStoreRecord?.SizeOf() ?? 0;
+        }
+
+        BaseGlyphRecords.Each(x => x.WriteTo(stream));
+        LayerRecords.Each(x => x.WriteTo(stream));
+        if (Version >= 1)
+        {
+            if (BaseGlyphListRecord is { }) BaseGlyphListRecord.WriteTo(stream);
+            if (LayerListRecord is { }) LayerListRecord.WriteTo(stream);
+            if (ClipListRecord is { }) ClipListRecord.WriteTo(stream);
+            if (DeltaSetIndexMapRecord is { }) DeltaSetIndexMapRecord.WriteTo(stream);
+            if (ItemVariationStoreRecord is { }) ItemVariationStoreRecord.WriteTo(stream);
+        }
     }
 }

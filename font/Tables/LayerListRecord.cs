@@ -25,4 +25,6 @@ public class LayerListRecord
         stream.WriteUIntByBigEndian(NumberLayers);
         PaintOffsets.Each(stream.WriteUIntByBigEndian);
     }
+
+    public int SizeOf() => NumberLayers.SizeOf() + (sizeof(uint) * PaintOffsets.Length);
 }

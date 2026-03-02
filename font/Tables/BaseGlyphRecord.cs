@@ -22,4 +22,6 @@ public class BaseGlyphRecord
         stream.WriteUShortByBigEndian(FirstLayerIndex);
         stream.WriteUShortByBigEndian(NumberLayers);
     }
+
+    public int SizeOf() => GlyphID.SizeOf() + FirstLayerIndex.SizeOf() + NumberLayers.SizeOf();
 }

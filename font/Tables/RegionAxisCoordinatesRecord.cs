@@ -17,4 +17,6 @@ public class RegionAxisCoordinatesRecord
     {
         RegionAxes.Each(stream.WriteUShortByBigEndian);
     }
+
+    public int SizeOf() => sizeof(ushort) * RegionAxes.Length;
 }

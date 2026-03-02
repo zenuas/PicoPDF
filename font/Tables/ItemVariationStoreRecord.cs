@@ -45,4 +45,6 @@ public class ItemVariationStoreRecord
 
         if (VariationRegionListRecord is { }) VariationRegionListRecord.WriteTo(stream);
     }
+
+    public int SizeOf() => Format.SizeOf() + VariationRegionListOffset.SizeOf() + ItemVariationDataCount.SizeOf() + (sizeof(uint) * ItemVariationDataOffsets.Length) + (VariationRegionListRecord?.SizeOf() ?? 0);
 }

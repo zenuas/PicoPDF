@@ -30,4 +30,6 @@ public class VariationRegionListRecord
         stream.WriteUShortByBigEndian(RegionCount);
         VariationRegions.Each(x => x.WriteTo(stream));
     }
+
+    public int SizeOf() => AxisCount.SizeOf() + RegionCount.SizeOf() + VariationRegions.Select(x => x.SizeOf()).Sum();
 }

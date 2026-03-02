@@ -47,4 +47,6 @@ public class ClipListRecord
         }
         ClipBoxFormats.Each(x => x.WriteTo(stream));
     }
+
+    public int SizeOf() => Format.SizeOf() + NumberClips.SizeOf() + ((sizeof(ushort) + sizeof(ushort) + sizeof(int)) * Clips.Length) + ClipBoxFormats.Select(x => x.SizeOf()).Sum();
 }

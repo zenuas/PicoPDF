@@ -42,4 +42,6 @@ public class DeltaSetIndexMapRecord
         }
         stream.Write(MapData);
     }
+
+    public int SizeOf() => Format.SizeOf() + EntryFormat.SizeOf() + (Format == 0 ? sizeof(ushort) : MapCount.SizeOf()) + (sizeof(byte) * MapData.Length);
 }

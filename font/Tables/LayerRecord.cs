@@ -19,4 +19,6 @@ public class LayerRecord
         stream.WriteUShortByBigEndian(GlyphID);
         stream.WriteUShortByBigEndian(PaletteIndex);
     }
+
+    public int SizeOf() => GlyphID.SizeOf() + PaletteIndex.SizeOf();
 }

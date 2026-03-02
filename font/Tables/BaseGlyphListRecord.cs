@@ -29,4 +29,6 @@ public class BaseGlyphListRecord
             stream.WriteUIntByBigEndian(x.PaintOffset);
         }
     }
+
+    public int SizeOf() => NumberBaseGlyphPaintRecords.SizeOf() + ((sizeof(ushort) + sizeof(uint)) * BaseGlyphPaintRecord.Length);
 }
