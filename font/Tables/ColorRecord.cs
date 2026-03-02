@@ -25,4 +25,6 @@ public class ColorRecord
         stream.WriteByte(Red);
         stream.WriteByte(Alpha);
     }
+
+    public int SizeOf() => Blue.SizeOf() + Green.SizeOf() + Red.SizeOf() + Alpha.SizeOf();
 }

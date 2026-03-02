@@ -13,4 +13,6 @@ public class LanguageTagRecord
         Length = stream.ReadUShortByBigEndian(),
         LanguageTagOffset = stream.ReadUShortByBigEndian(),
     };
+
+    public int SizeOf() => Length.SizeOf() + LanguageTagOffset.SizeOf();
 }

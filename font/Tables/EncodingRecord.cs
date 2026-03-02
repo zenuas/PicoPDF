@@ -18,5 +18,7 @@ public class EncodingRecord
         Offset = stream.ReadUIntByBigEndian(),
     };
 
+    public int SizeOf() => PlatformID.SizeOf() + EncodingID.SizeOf() + Offset.SizeOf();
+
     public override string ToString() => $"PlatformID={PlatformID}, EncodingID={EncodingID}";
 }

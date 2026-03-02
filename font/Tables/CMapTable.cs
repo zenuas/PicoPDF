@@ -52,7 +52,7 @@ public class CMapTable : IExportable
             .ThenBy(x => x.EncodingID)
             .ToArray();
 
-        var cmap_offset = Version.SizeOf() + NumberOfTables.SizeOf() + (/* sizeof(EncodingRecord) */8 * export_cmap_keys.Length);
+        var cmap_offset = Version.SizeOf() + NumberOfTables.SizeOf() + export_cmap_keys.Select(x => x.SizeOf()).Sum();
         stream.WriteUShortByBigEndian(Version);
         stream.WriteUShortByBigEndian((ushort)export_cmap_keys.Length);
 

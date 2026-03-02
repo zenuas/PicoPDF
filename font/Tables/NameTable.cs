@@ -56,10 +56,12 @@ public class NameTable : IExportable
 
     public void WriteTo(Stream stream)
     {
-        var string_offset = 6 + (/* sizeof(NameRecord) */12 * Count) + (/* sizeof(LanguageTagRecord) */4 * LanguageTagRecords.Length);
+        var string_offset = Format.SizeOf() + Count.SizeOf() + StringOffset.SizeOf() +
+            NameRecords.Select(x => x.NameRecord.SizeOf()).Sum() +
+            LanguageTagRecords.Select(x => x.LanguageTagRecord.SizeOf()).Sum();
 
         stream.WriteUShortByBigEndian(Format);
-        stream.WriteUShortByBigEndian(Count);
+        stream.WriteUShortByBigEndian((ushort)NameRecords.Length);
         stream.WriteUShortByBigEndian((ushort)string_offset);
 
         using var strings = new MemoryStream();

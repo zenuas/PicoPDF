@@ -35,5 +35,7 @@ public class NameRecord
         _ => Encoding.UTF8,
     };
 
+    public int SizeOf() => PlatformID.SizeOf() + EncodingID.SizeOf() + LanguageID.SizeOf() + NameID.SizeOf() + Length.SizeOf() + Offset.SizeOf();
+
     public override string ToString() => $"PlatformID={PlatformID}, EncodingID={EncodingID}, LanguageID={LanguageID}, NameID={NameID}";
 }

@@ -35,7 +35,7 @@ public class ClipListRecord
         var clipBoxOffsets = new int[Clips.Length];
         _ = ClipBoxFormats
             .Select((x, i) => (ClipBoxFormat: x, Index: i))
-            .Accumulator((acc, x) => (clipBoxOffsets[x.Index] = acc) + x.ClipBoxFormat.SizeOf(), Format.SizeOf() + NumberClips.SizeOf() + (/* sizeof(Clips) */8 * Clips.Length));
+            .Accumulator((acc, x) => (clipBoxOffsets[x.Index] = acc) + x.ClipBoxFormat.SizeOf(), Format.SizeOf() + NumberClips.SizeOf() + ((sizeof(ushort) + sizeof(ushort) + sizeof(int)) * Clips.Length));
 
         stream.WriteByte(Format);
         stream.WriteUIntByBigEndian(NumberClips);
