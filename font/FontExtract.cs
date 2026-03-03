@@ -16,19 +16,20 @@ public static class FontExtract
         var char_glyph = chars
             .Select((c, i) => (Char: c, Index: i + 1, GID: font.CharToGID(c)))
             .ToDictionary(x => x.Char, x => (
-                    x.Index,
+                    NewGID: x.Index,
+                    OldGID: x.GID,
                     Glyph: font.Glyphs[x.GID],
                     HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
                 ));
         var gid_glyph = char_glyph.Values
-            .DistinctBy(x => x.Index)
-            .ToDictionary(x => x.Index, x => (x.Glyph, x.HorizontalMetrics));
+            .DistinctBy(x => x.NewGID)
+            .ToDictionary(x => x.NewGID, x => (x.Glyph, x.HorizontalMetrics));
         var num_of_glyph = gid_glyph.Keys.Max();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(chars.ToDictionary(x => x, x => (uint)char_glyph[x].Index));
+        var cmapN = CMapFormat12.CreateFormat(chars.ToDictionary(x => x, x => (uint)char_glyph[x].NewGID));
         var cmap = CreateCMapTable(cmapN, opt);
 
         var hmtx = new HorizontalMetricsTable()
@@ -78,15 +79,16 @@ public static class FontExtract
         var char_glyph = chars
             .Select((c, i) => (Char: c, Index: i + 1, GID: font.CharToGID(c)))
             .ToDictionary(x => x.Char, x => (
-                    x.Index,
+                    NewGID: x.Index,
+                    OldGID: x.GID,
                     Glyph: font.CompactFontFormat.TopDict.CharStrings[x.GID],
                     Charset: x.GID == 0 ? (ushort)0 : charsets.Glyph[x.GID - 1],
                     HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)],
                     FontDictSelect: x.GID >= font.CompactFontFormat.TopDict.FontDictSelect.Length ? (byte)0 : font.CompactFontFormat.TopDict.FontDictSelect[x.GID]
                 ));
         var gid_glyph = char_glyph.Values
-            .DistinctBy(x => x.Index)
-            .ToDictionary(x => x.Index, x => (x.Glyph, x.Charset, x.HorizontalMetrics, x.FontDictSelect));
+            .DistinctBy(x => x.NewGID)
+            .ToDictionary(x => x.NewGID, x => (x.Glyph, x.Charset, x.HorizontalMetrics, x.FontDictSelect));
         var fdselect_index = char_glyph.Values
             .Select(x => x.FontDictSelect)
             .Distinct()
@@ -103,7 +105,7 @@ public static class FontExtract
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(chars.ToDictionary(x => x, x => (uint)char_glyph[x].Index));
+        var cmapN = CMapFormat12.CreateFormat(chars.ToDictionary(x => x, x => (uint)char_glyph[x].NewGID));
         var cmap = CreateCMapTable(cmapN, opt);
 
         var hmtx = new HorizontalMetricsTable()
