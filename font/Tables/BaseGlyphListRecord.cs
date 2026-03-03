@@ -22,7 +22,7 @@ public class BaseGlyphListRecord
 
     public void WriteTo(Stream stream)
     {
-        stream.WriteUIntByBigEndian(NumberBaseGlyphPaintRecords);
+        stream.WriteUIntByBigEndian((uint)BaseGlyphPaintRecord.Length);
         foreach (var x in BaseGlyphPaintRecord)
         {
             stream.WriteUShortByBigEndian(x.GlyphID);

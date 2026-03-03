@@ -38,7 +38,7 @@ public class ClipListRecord
             .Accumulator((acc, x) => (clipBoxOffsets[x.Index] = acc) + x.ClipBoxFormat.SizeOf(), Format.SizeOf() + NumberClips.SizeOf() + ((sizeof(ushort) + sizeof(ushort) + sizeof(int)) * Clips.Length));
 
         stream.WriteByte(Format);
-        stream.WriteUIntByBigEndian(NumberClips);
+        stream.WriteUIntByBigEndian((uint)Clips.Length);
         for (int i = 0; i < Clips.Length; i++)
         {
             stream.WriteUShortByBigEndian(Clips[i].StartGlyphID);

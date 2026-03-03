@@ -22,7 +22,7 @@ public class LayerListRecord
 
     public void WriteTo(Stream stream)
     {
-        stream.WriteUIntByBigEndian(NumberLayers);
+        stream.WriteUIntByBigEndian((uint)PaintOffsets.Length);
         PaintOffsets.Each(stream.WriteUIntByBigEndian);
     }
 
