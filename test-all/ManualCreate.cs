@@ -38,5 +38,6 @@ public static class ManualCreate
         _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 220, 300, 12, [ttf, emoji], 65, 60, style: TextStyle.Border | TextStyle.Clipping);
 
         doc.Save("test-case/manual-create.pdf", opt);
+        FontFileExport.Export(fontreg.LoadComplete(emoji.Font), new() { FontExportChars = "🍣", OutputFontFile = "test-case/manual-create.ttf" });
     }
 }

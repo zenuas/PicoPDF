@@ -31,6 +31,7 @@ public static class FontExtract
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
         var cmapN = CMapFormat12.CreateFormat(chars.ToDictionary(x => x, x => (uint)char_glyph[x].NewGID));
         var cmap = CreateCMapTable(cmapN, opt);
+        var colr = font.Color is null ? null : ExtractColorTable(font.Color, [.. char_glyph.Where(kv => kv.Value.NewGID > 0).Select(kv => (kv.Value.OldGID, (uint)kv.Value.NewGID))]);
 
         var hmtx = new HorizontalMetricsTable()
         {
@@ -65,7 +66,7 @@ public static class FontExtract
             Glyphs = glyf,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
-            Color = font.Color,
+            Color = colr,
             ColorPalette = font.ColorPalette,
             StandardBitmapGraphics = null,
             ScalableVectorGraphics = null,
@@ -107,6 +108,7 @@ public static class FontExtract
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
         var cmapN = CMapFormat12.CreateFormat(chars.ToDictionary(x => x, x => (uint)char_glyph[x].NewGID));
         var cmap = CreateCMapTable(cmapN, opt);
+        var colr = font.Color is null ? null : ExtractColorTable(font.Color, [.. char_glyph.Where(kv => kv.Value.NewGID > 0).Select(kv => (kv.Value.OldGID, (uint)kv.Value.NewGID))]);
 
         var hmtx = new HorizontalMetricsTable()
         {
@@ -200,7 +202,7 @@ public static class FontExtract
             CompactFontFormat = cff,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
-            Color = font.Color,
+            Color = colr,
             ColorPalette = font.ColorPalette,
             StandardBitmapGraphics = null,
             ScalableVectorGraphics = null,
@@ -270,6 +272,53 @@ public static class FontExtract
             Version = 0,
             NumberOfTables = (ushort)cmaps.Length,
             EncodingRecords = cmaps.ToDictionary(x => x, _ => cmap_format),
+        };
+    }
+
+    public static ColorTable ExtractColorTable(ColorTable colr, (uint OldGID, uint NewGID)[] mapper)
+    {
+        var baseGlyphRecords = mapper.Select(x =>
+            {
+                var record = colr.BaseGlyphRecords.Where(r => r.GlyphID == x.OldGID).FirstOrDefault();
+                return record is null ? null : new BaseGlyphRecord { GlyphID = (ushort)x.NewGID, FirstLayerIndex = record.FirstLayerIndex, NumberLayers = record.NumberLayers };
+            })
+            .OfType<BaseGlyphRecord>()
+            .ToArray();
+
+        var layerRecords = mapper.Select(x =>
+            {
+                var record = colr.LayerRecords.Where(r => r.GlyphID == x.OldGID).FirstOrDefault();
+                return record is null ? null : new LayerRecord { GlyphID = (ushort)x.NewGID, PaletteIndex = record.PaletteIndex };
+            })
+            .OfType<LayerRecord>()
+            .ToArray();
+
+        var baseGlyphListRecord = colr.BaseGlyphListRecord is null ? null :
+            new BaseGlyphListRecord
+            {
+                NumberBaseGlyphPaintRecords = 0,
+                BaseGlyphPaintRecord = [.. mapper.Select(x =>
+                    {
+                        var record = colr.BaseGlyphListRecord.BaseGlyphPaintRecord.Where(r => r.GlyphID == x.OldGID).FirstOrDefault();
+                        return ((ushort)x.NewGID, record.PaintOffset);
+                    })
+                    .Where(x => x != default)],
+            };
+
+        return new()
+        {
+            Version = colr.Version,
+            NumberBaseGlyphRecords = (ushort)baseGlyphRecords.Length,
+            BaseGlyphRecordsOffset = 0,
+            LayerRecordsOffset = 0,
+            NumberLayerRecords = (ushort)layerRecords.Length,
+            BaseGlyphRecords = baseGlyphRecords,
+            LayerRecords = layerRecords,
+            BaseGlyphListRecord = baseGlyphListRecord?.BaseGlyphPaintRecord.Length == 0 ? null : baseGlyphListRecord,
+            LayerListRecord = colr.LayerListRecord,
+            ClipListRecord = colr.ClipListRecord,
+            DeltaSetIndexMapRecord = colr.DeltaSetIndexMapRecord,
+            ItemVariationStoreRecord = colr.ItemVariationStoreRecord,
         };
     }
 }
