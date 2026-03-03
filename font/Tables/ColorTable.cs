@@ -44,8 +44,11 @@ public class ColorTable : IExportable
             itemVariationStoreOffset = stream.ReadUIntByBigEndian();
         }
 
-        var baseGlyphRecords = stream.SeekTo(position + baseGlyphRecordsOffset).To(_ => Lists.Repeat(() => BaseGlyphRecord.ReadFrom(stream)).Take(numBaseGlyphRecords).ToArray());
-        var layerRecords = stream.SeekTo(position + layerRecordsOffset).To(_ => Lists.Repeat(() => LayerRecord.ReadFrom(stream)).Take(numLayerRecords).ToArray());
+        var baseGlyphRecords = baseGlyphRecordsOffset == 0 || numBaseGlyphRecords == 0 ? [] :
+            stream.SeekTo(position + baseGlyphRecordsOffset).To(_ => Lists.Repeat(() => BaseGlyphRecord.ReadFrom(stream)).Take(numBaseGlyphRecords).ToArray());
+
+        var layerRecords = layerRecordsOffset == 0 || numLayerRecords == 0 ? [] :
+            stream.SeekTo(position + layerRecordsOffset).To(_ => Lists.Repeat(() => LayerRecord.ReadFrom(stream)).Take(numLayerRecords).ToArray());
 
         var baseGlyphList = baseGlyphListOffset == 0 ? null
             : stream.SeekTo(position + baseGlyphListOffset).To(BaseGlyphListRecord.ReadFrom);
