@@ -90,8 +90,8 @@ public class ColorTable : IExportable
 
         stream.WriteUShortByBigEndian(Version);
         stream.WriteUShortByBigEndian((ushort)BaseGlyphRecords.Length);
-        stream.WriteUIntByBigEndian((uint)offset);
-        stream.WriteUIntByBigEndian((uint)(offset + sizeof_BaseGlyphRecords));
+        stream.WriteUIntByBigEndian(BaseGlyphRecords.Length == 0 ? 0 : (uint)offset);
+        stream.WriteUIntByBigEndian(LayerRecords.Length == 0 ? 0 : (uint)(offset + sizeof_BaseGlyphRecords));
         stream.WriteUShortByBigEndian((ushort)LayerRecords.Length);
 
         offset += sizeof_BaseGlyphRecords + sizeof_LayerRecords;
