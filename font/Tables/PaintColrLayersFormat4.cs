@@ -39,7 +39,7 @@ public class PaintColrLayersFormat4 : IPaintColrLayersFormat
         stream.WriteShortByBigEndian(Y2);
     }
 
-    public int SizeOf() => Format.SizeOf() + ColorLineOffset.SizeOf() +
+    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset sizeof(Offset24) */3 +
         X0.SizeOf() + Y0.SizeOf() +
         X1.SizeOf() + Y1.SizeOf() +
         X2.SizeOf() + Y2.SizeOf();
