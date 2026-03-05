@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class ItemVariationStoreRecord
+public class ItemVariationStoreRecord : IExportable
 {
     public required ushort Format { get; init; }
     public required uint VariationRegionListOffset { get; init; }

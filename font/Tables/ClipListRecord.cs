@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class ClipListRecord
+public class ClipListRecord : IExportable
 {
     public required byte Format { get; init; }
     public required uint NumberClips { get; init; }

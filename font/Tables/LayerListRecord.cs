@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class LayerListRecord
+public class LayerListRecord : IExportable
 {
     public required uint NumberLayers { get; init; }
     public required uint[] PaintOffsets { get; init; }

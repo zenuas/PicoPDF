@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class ColorRecord
+public class ColorRecord : IExportable
 {
     public required byte Blue { get; init; }
     public required byte Green { get; init; }

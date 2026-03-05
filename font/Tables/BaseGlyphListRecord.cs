@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class BaseGlyphListRecord
+public class BaseGlyphListRecord : IExportable
 {
     public required uint NumberBaseGlyphPaintRecords { get; init; }
     public required (ushort GlyphID, uint PaintOffset)[] BaseGlyphPaintRecord { get; init; }

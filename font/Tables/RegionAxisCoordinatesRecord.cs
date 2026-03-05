@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class RegionAxisCoordinatesRecord
+public class RegionAxisCoordinatesRecord : IExportable
 {
     public required ushort[] RegionAxes { get; init; }
 

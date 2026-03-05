@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class BaseGlyphRecord
+public class BaseGlyphRecord : IExportable
 {
     public required ushort GlyphID { get; init; }
     public required ushort FirstLayerIndex { get; init; }

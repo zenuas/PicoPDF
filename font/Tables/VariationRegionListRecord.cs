@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class VariationRegionListRecord
+public class VariationRegionListRecord : IExportable
 {
     public required ushort AxisCount { get; init; }
     public required ushort RegionCount { get; init; }

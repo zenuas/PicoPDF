@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class LayerRecord
+public class LayerRecord : IExportable
 {
     public required ushort GlyphID { get; init; }
     public required ushort PaletteIndex { get; init; }

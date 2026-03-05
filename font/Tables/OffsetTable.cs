@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class OffsetTable
+public class OffsetTable : IExportable
 {
     public required uint Version { get; init; }
     public required ushort NumberOfTables { get; init; }

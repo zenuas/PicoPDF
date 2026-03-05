@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class ClipBoxFormat
+public class ClipBoxFormat : IExportable
 {
     public required byte Format { get; init; }
     public required short XMin { get; init; }

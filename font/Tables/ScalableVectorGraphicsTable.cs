@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class ScalableVectorGraphicsTable
+public class ScalableVectorGraphicsTable : IExportable
 {
     public static ScalableVectorGraphicsTable ReadFrom(Stream stream)
     {

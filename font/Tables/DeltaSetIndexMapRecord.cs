@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class DeltaSetIndexMapRecord
+public class DeltaSetIndexMapRecord : IExportable
 {
     public required byte Format { get; init; }
     public required byte EntryFormat { get; init; }
