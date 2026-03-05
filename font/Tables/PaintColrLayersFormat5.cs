@@ -18,7 +18,7 @@ public class PaintColrLayersFormat5 : IPaintColrLayersFormat
 
     public static PaintColrLayersFormat5 ReadFrom(Stream stream) => new()
     {
-        Format = 4,
+        Format = 5,
         ColorLineOffset = stream.Read3BytesByBigEndian(),
         X0 = stream.ReadUShortByBigEndian(),
         Y0 = stream.ReadUShortByBigEndian(),
