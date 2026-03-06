@@ -18,7 +18,7 @@ public class PaintRadialGradient : IPaintFormat
     public static PaintRadialGradient ReadFrom(Stream stream) => new()
     {
         Format = 6,
-        ColorLineOffset = stream.Read3BytesByBigEndian(),
+        ColorLineOffset = stream.ReadOffset24(),
         X0 = stream.ReadFWORD(),
         Y0 = stream.ReadFWORD(),
         Radius0 = stream.ReadUFWORD(),
@@ -30,7 +30,7 @@ public class PaintRadialGradient : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(ColorLineOffset);
+        stream.WriteOffset24(ColorLineOffset);
         stream.WriteFWORD(X0);
         stream.WriteFWORD(Y0);
         stream.WriteUFWORD(Radius0);

@@ -14,7 +14,7 @@ public class PaintVarRotate : IPaintFormat
     public static PaintVarRotate ReadFrom(Stream stream) => new()
     {
         Format = 25,
-        PaintOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
         Angle = stream.ReadF2DOT14(),
         VarIndexBase = stream.ReadUIntByBigEndian(),
     };
@@ -22,7 +22,7 @@ public class PaintVarRotate : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
+        stream.WriteOffset24(PaintOffset);
         stream.WriteF2DOT14(Angle);
         stream.WriteUIntByBigEndian(VarIndexBase);
     }

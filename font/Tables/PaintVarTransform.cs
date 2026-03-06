@@ -13,15 +13,15 @@ public class PaintVarTransform : IPaintFormat
     public static PaintVarTransform ReadFrom(Stream stream) => new()
     {
         Format = 13,
-        PaintOffset = stream.Read3BytesByBigEndian(),
-        TransformOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
+        TransformOffset = stream.ReadOffset24(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
-        stream.Write3BytesByBigEndian(TransformOffset);
+        stream.WriteOffset24(PaintOffset);
+        stream.WriteOffset24(TransformOffset);
     }
 
     public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 + /* TransformOffset.SizeOf() */Const.SizeofOffset24;

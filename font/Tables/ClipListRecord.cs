@@ -18,7 +18,7 @@ public class ClipListRecord : IExportable
 
         var format = stream.ReadUByte();
         var numClips = stream.ReadUIntByBigEndian();
-        var clips = Lists.Repeat(() => (stream.ReadUShortByBigEndian(), stream.ReadUShortByBigEndian(), ClipBoxOffset: stream.Read3BytesByBigEndian())).Take((int)numClips).ToArray();
+        var clips = Lists.Repeat(() => (stream.ReadUShortByBigEndian(), stream.ReadUShortByBigEndian(), ClipBoxOffset: stream.ReadOffset24())).Take((int)numClips).ToArray();
         var clipBoxFormats = clips.Select(x => stream.SeekTo(position + x.ClipBoxOffset).To(ClipBoxFormat.ReadFrom)).ToArray();
 
         return new()
@@ -43,7 +43,7 @@ public class ClipListRecord : IExportable
         {
             stream.WriteUShortByBigEndian(Clips[i].StartGlyphID);
             stream.WriteUShortByBigEndian(Clips[i].EndGlyphID);
-            stream.Write3BytesByBigEndian(clipBoxOffsets[i]);
+            stream.WriteOffset24(clipBoxOffsets[i]);
         }
         ClipBoxFormats.Each(x => x.WriteTo(stream));
     }

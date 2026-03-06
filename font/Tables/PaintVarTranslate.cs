@@ -15,7 +15,7 @@ public class PaintVarTranslate : IPaintFormat
     public static PaintVarTranslate ReadFrom(Stream stream) => new()
     {
         Format = 15,
-        PaintOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
         DX = stream.ReadFWORD(),
         DY = stream.ReadFWORD(),
         VarIndexBase = stream.ReadUIntByBigEndian(),
@@ -24,7 +24,7 @@ public class PaintVarTranslate : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
+        stream.WriteOffset24(PaintOffset);
         stream.WriteFWORD(DX);
         stream.WriteFWORD(DY);
         stream.WriteUIntByBigEndian(VarIndexBase);

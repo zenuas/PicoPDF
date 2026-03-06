@@ -14,7 +14,7 @@ public class PaintScale : IPaintFormat
     public static PaintScale ReadFrom(Stream stream) => new()
     {
         Format = 16,
-        PaintOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
         ScaleX = stream.ReadF2DOT14(),
         ScaleY = stream.ReadF2DOT14(),
     };
@@ -22,7 +22,7 @@ public class PaintScale : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
+        stream.WriteOffset24(PaintOffset);
         stream.WriteF2DOT14(ScaleX);
         stream.WriteF2DOT14(ScaleY);
     }

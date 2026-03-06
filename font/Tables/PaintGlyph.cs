@@ -13,14 +13,14 @@ public class PaintGlyph : IPaintFormat
     public static PaintGlyph ReadFrom(Stream stream) => new()
     {
         Format = 10,
-        PaintOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
         GlyphID = stream.ReadUShortByBigEndian(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
+        stream.WriteOffset24(PaintOffset);
         stream.WriteUShortByBigEndian(GlyphID);
     }
 

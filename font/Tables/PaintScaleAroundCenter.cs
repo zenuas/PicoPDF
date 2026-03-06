@@ -16,7 +16,7 @@ public class PaintScaleAroundCenter : IPaintFormat
     public static PaintScaleAroundCenter ReadFrom(Stream stream) => new()
     {
         Format = 18,
-        PaintOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
         ScaleX = stream.ReadF2DOT14(),
         ScaleY = stream.ReadF2DOT14(),
         CenterX = stream.ReadFWORD(),
@@ -26,7 +26,7 @@ public class PaintScaleAroundCenter : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
+        stream.WriteOffset24(PaintOffset);
         stream.WriteF2DOT14(ScaleX);
         stream.WriteF2DOT14(ScaleY);
         stream.WriteFWORD(CenterX);

@@ -14,17 +14,17 @@ public class PaintComposite : IPaintFormat
     public static PaintComposite ReadFrom(Stream stream) => new()
     {
         Format = 32,
-        SourcePaintOffset = stream.Read3BytesByBigEndian(),
+        SourcePaintOffset = stream.ReadOffset24(),
         CompositeMode = stream.ReadUByte(),
-        BackdropPaintOffset = stream.Read3BytesByBigEndian(),
+        BackdropPaintOffset = stream.ReadOffset24(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(SourcePaintOffset);
+        stream.WriteOffset24(SourcePaintOffset);
         stream.WriteByte(CompositeMode);
-        stream.Write3BytesByBigEndian(BackdropPaintOffset);
+        stream.WriteOffset24(BackdropPaintOffset);
     }
 
     public int SizeOf() => Format.SizeOf() +

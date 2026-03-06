@@ -14,7 +14,7 @@ public class PaintVarScaleUniform : IPaintFormat
     public static PaintVarScaleUniform ReadFrom(Stream stream) => new()
     {
         Format = 21,
-        PaintOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
         Scale = stream.ReadF2DOT14(),
         VarIndexBase = stream.ReadUIntByBigEndian(),
     };
@@ -22,7 +22,7 @@ public class PaintVarScaleUniform : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
+        stream.WriteOffset24(PaintOffset);
         stream.WriteF2DOT14(Scale);
         stream.WriteUIntByBigEndian(VarIndexBase);
     }

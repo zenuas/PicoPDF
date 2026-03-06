@@ -14,7 +14,7 @@ public class PaintTranslate : IPaintFormat
     public static PaintTranslate ReadFrom(Stream stream) => new()
     {
         Format = 14,
-        PaintOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
         DX = stream.ReadFWORD(),
         DY = stream.ReadFWORD(),
     };
@@ -22,7 +22,7 @@ public class PaintTranslate : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
+        stream.WriteOffset24(PaintOffset);
         stream.WriteFWORD(DX);
         stream.WriteFWORD(DY);
     }

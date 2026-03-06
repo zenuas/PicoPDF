@@ -19,7 +19,7 @@ public class PaintVarLinearGradient : IPaintFormat
     public static PaintVarLinearGradient ReadFrom(Stream stream) => new()
     {
         Format = 5,
-        ColorLineOffset = stream.Read3BytesByBigEndian(),
+        ColorLineOffset = stream.ReadOffset24(),
         X0 = stream.ReadFWORD(),
         Y0 = stream.ReadFWORD(),
         X1 = stream.ReadFWORD(),
@@ -32,7 +32,7 @@ public class PaintVarLinearGradient : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(ColorLineOffset);
+        stream.WriteOffset24(ColorLineOffset);
         stream.WriteFWORD(X0);
         stream.WriteFWORD(Y0);
         stream.WriteFWORD(X1);

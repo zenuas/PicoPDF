@@ -17,7 +17,7 @@ public class PaintVarSkewAroundCenter : IPaintFormat
     public static PaintVarSkewAroundCenter ReadFrom(Stream stream) => new()
     {
         Format = 31,
-        PaintOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
         XSkewAngle = stream.ReadF2DOT14(),
         YSkewAngle = stream.ReadF2DOT14(),
         CenterX = stream.ReadFWORD(),
@@ -28,7 +28,7 @@ public class PaintVarSkewAroundCenter : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
+        stream.WriteOffset24(PaintOffset);
         stream.WriteF2DOT14(XSkewAngle);
         stream.WriteF2DOT14(YSkewAngle);
         stream.WriteFWORD(CenterX);

@@ -16,7 +16,7 @@ public class PaintSweepGradient : IPaintFormat
     public static PaintSweepGradient ReadFrom(Stream stream) => new()
     {
         Format = 8,
-        ColorLineOffset = stream.Read3BytesByBigEndian(),
+        ColorLineOffset = stream.ReadOffset24(),
         CenterX = stream.ReadFWORD(),
         CenterY = stream.ReadFWORD(),
         StartAngle = stream.ReadF2DOT14(),
@@ -26,7 +26,7 @@ public class PaintSweepGradient : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(ColorLineOffset);
+        stream.WriteOffset24(ColorLineOffset);
         stream.WriteFWORD(CenterX);
         stream.WriteFWORD(CenterY);
         stream.WriteF2DOT14(StartAngle);

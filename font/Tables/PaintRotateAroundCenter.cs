@@ -15,7 +15,7 @@ public class PaintRotateAroundCenter : IPaintFormat
     public static PaintRotateAroundCenter ReadFrom(Stream stream) => new()
     {
         Format = 26,
-        PaintOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
         Angle = stream.ReadF2DOT14(),
         CenterX = stream.ReadFWORD(),
         CenterY = stream.ReadFWORD(),
@@ -24,7 +24,7 @@ public class PaintRotateAroundCenter : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
+        stream.WriteOffset24(PaintOffset);
         stream.WriteF2DOT14(Angle);
         stream.WriteFWORD(CenterX);
         stream.WriteFWORD(CenterY);

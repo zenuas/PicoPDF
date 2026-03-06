@@ -15,7 +15,7 @@ public class PaintVarSkew : IPaintFormat
     public static PaintVarSkew ReadFrom(Stream stream) => new()
     {
         Format = 29,
-        PaintOffset = stream.Read3BytesByBigEndian(),
+        PaintOffset = stream.ReadOffset24(),
         XSkewAngle = stream.ReadF2DOT14(),
         YSkewAngle = stream.ReadF2DOT14(),
         VarIndexBase = stream.ReadUIntByBigEndian(),
@@ -24,7 +24,7 @@ public class PaintVarSkew : IPaintFormat
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.Write3BytesByBigEndian(PaintOffset);
+        stream.WriteOffset24(PaintOffset);
         stream.WriteF2DOT14(XSkewAngle);
         stream.WriteF2DOT14(YSkewAngle);
         stream.WriteUIntByBigEndian(VarIndexBase);
