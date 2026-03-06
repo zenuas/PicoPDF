@@ -35,7 +35,7 @@ public class ClipListRecord : IExportable
         var clipBoxOffsets = new int[Clips.Length];
         _ = ClipBoxFormats
             .Select((x, i) => (ClipBoxFormat: x, Index: i))
-            .Accumulator((acc, x) => (clipBoxOffsets[x.Index] = acc) + x.ClipBoxFormat.SizeOf(), Format.SizeOf() + NumberClips.SizeOf() + ((sizeof(ushort) + sizeof(ushort) + sizeof(int)) * Clips.Length));
+            .Accumulator((acc, x) => (clipBoxOffsets[x.Index] = acc) + x.ClipBoxFormat.SizeOf(), Format.SizeOf() + NumberClips.SizeOf() + ((sizeof(ushort) + sizeof(ushort) + Const.SizeofOffset24) * Clips.Length));
 
         stream.WriteByte(Format);
         stream.WriteUIntByBigEndian((uint)Clips.Length);
@@ -48,5 +48,5 @@ public class ClipListRecord : IExportable
         ClipBoxFormats.Each(x => x.WriteTo(stream));
     }
 
-    public int SizeOf() => Format.SizeOf() + NumberClips.SizeOf() + ((sizeof(ushort) + sizeof(ushort) + sizeof(int)) * Clips.Length) + ClipBoxFormats.Select(x => x.SizeOf()).Sum();
+    public int SizeOf() => Format.SizeOf() + NumberClips.SizeOf() + ((sizeof(ushort) + sizeof(ushort) + Const.SizeofOffset24) * Clips.Length) + ClipBoxFormats.Select(x => x.SizeOf()).Sum();
 }
