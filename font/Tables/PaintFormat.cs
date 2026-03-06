@@ -15,6 +15,8 @@ public static class PaintFormat
         7 => PaintVarRadialGradient.ReadFrom(stream),
         8 => PaintSweepGradient.ReadFrom(stream),
         9 => PaintVarSweepGradient.ReadFrom(stream),
+        10 => PaintGlyph.ReadFrom(stream),
+        11 => PaintColrGlyph.ReadFrom(stream),
         _ => throw new()
     };
 }
