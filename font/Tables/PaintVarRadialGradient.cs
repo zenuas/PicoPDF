@@ -15,9 +15,12 @@ public class PaintVarRadialGradient : IPaintFormat
     public required short Y1 { get; init; }
     public required ushort Radius1 { get; init; }
     public required uint VarIndexBase { get; init; }
+    public required VarColorLine ColorLine { get; init; }
 
     public static PaintVarRadialGradient ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var colorLineOffset = stream.ReadOffset24();
         return new()
         {
@@ -30,13 +33,14 @@ public class PaintVarRadialGradient : IPaintFormat
             Y1 = stream.ReadFWORD(),
             Radius1 = stream.ReadUFWORD(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
+            ColorLine = VarColorLine.ReadFrom(stream.SeekTo(position + colorLineOffset)),
         };
     }
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.WriteOffset24(ColorLineOffset);
+        stream.WriteOffset24(SizeOf());
         stream.WriteFWORD(X0);
         stream.WriteFWORD(Y0);
         stream.WriteUFWORD(Radius0);
@@ -44,6 +48,7 @@ public class PaintVarRadialGradient : IPaintFormat
         stream.WriteFWORD(Y1);
         stream.WriteUFWORD(Radius1);
         stream.WriteUIntByBigEndian(VarIndexBase);
+        ColorLine.WriteTo(stream);
     }
 
     public int SizeOf() => Format.SizeOf() + /* ColorLineOffset.SizeOf() */Const.SizeofOffset24 +

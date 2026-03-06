@@ -12,9 +12,12 @@ public class PaintSweepGradient : IPaintFormat
     public required short CenterY { get; init; }
     public required ushort StartAngle { get; init; }
     public required ushort EndAngle { get; init; }
+    public required ColorLine ColorLine { get; init; }
 
     public static PaintSweepGradient ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var colorLineOffset = stream.ReadOffset24();
         return new()
         {
@@ -24,17 +27,19 @@ public class PaintSweepGradient : IPaintFormat
             CenterY = stream.ReadFWORD(),
             StartAngle = stream.ReadF2DOT14(),
             EndAngle = stream.ReadF2DOT14(),
+            ColorLine = ColorLine.ReadFrom(stream.SeekTo(position + colorLineOffset)),
         };
     }
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.WriteOffset24(ColorLineOffset);
+        stream.WriteOffset24(SizeOf());
         stream.WriteFWORD(CenterX);
         stream.WriteFWORD(CenterY);
         stream.WriteF2DOT14(StartAngle);
         stream.WriteF2DOT14(EndAngle);
+        ColorLine.WriteTo(stream);
     }
 
     public int SizeOf() => Format.SizeOf() + /* ColorLineOffset.SizeOf() */Const.SizeofOffset24 +
