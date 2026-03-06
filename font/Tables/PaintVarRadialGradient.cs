@@ -16,18 +16,22 @@ public class PaintVarRadialGradient : IPaintFormat
     public required ushort Radius1 { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintVarRadialGradient ReadFrom(Stream stream) => new()
+    public static PaintVarRadialGradient ReadFrom(Stream stream)
     {
-        Format = 7,
-        ColorLineOffset = stream.ReadOffset24(),
-        X0 = stream.ReadFWORD(),
-        Y0 = stream.ReadFWORD(),
-        Radius0 = stream.ReadUFWORD(),
-        X1 = stream.ReadFWORD(),
-        Y1 = stream.ReadFWORD(),
-        Radius1 = stream.ReadUFWORD(),
-        VarIndexBase = stream.ReadUIntByBigEndian(),
-    };
+        var colorLineOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 7,
+            ColorLineOffset = colorLineOffset,
+            X0 = stream.ReadFWORD(),
+            Y0 = stream.ReadFWORD(),
+            Radius0 = stream.ReadUFWORD(),
+            X1 = stream.ReadFWORD(),
+            Y1 = stream.ReadFWORD(),
+            Radius1 = stream.ReadUFWORD(),
+            VarIndexBase = stream.ReadUIntByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

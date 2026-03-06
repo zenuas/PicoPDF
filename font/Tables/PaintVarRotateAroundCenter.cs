@@ -13,15 +13,19 @@ public class PaintVarRotateAroundCenter : IPaintFormat
     public required short CenterY { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintVarRotateAroundCenter ReadFrom(Stream stream) => new()
+    public static PaintVarRotateAroundCenter ReadFrom(Stream stream)
     {
-        Format = 27,
-        PaintOffset = stream.ReadOffset24(),
-        Angle = stream.ReadF2DOT14(),
-        CenterX = stream.ReadFWORD(),
-        CenterY = stream.ReadFWORD(),
-        VarIndexBase = stream.ReadUIntByBigEndian(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 27,
+            PaintOffset = paintOffset,
+            Angle = stream.ReadF2DOT14(),
+            CenterX = stream.ReadFWORD(),
+            CenterY = stream.ReadFWORD(),
+            VarIndexBase = stream.ReadUIntByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

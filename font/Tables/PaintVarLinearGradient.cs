@@ -16,18 +16,22 @@ public class PaintVarLinearGradient : IPaintFormat
     public required short Y2 { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintVarLinearGradient ReadFrom(Stream stream) => new()
+    public static PaintVarLinearGradient ReadFrom(Stream stream)
     {
-        Format = 5,
-        ColorLineOffset = stream.ReadOffset24(),
-        X0 = stream.ReadFWORD(),
-        Y0 = stream.ReadFWORD(),
-        X1 = stream.ReadFWORD(),
-        Y1 = stream.ReadFWORD(),
-        X2 = stream.ReadFWORD(),
-        Y2 = stream.ReadFWORD(),
-        VarIndexBase = stream.ReadUIntByBigEndian(),
-    };
+        var colorLineOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 5,
+            ColorLineOffset = colorLineOffset,
+            X0 = stream.ReadFWORD(),
+            Y0 = stream.ReadFWORD(),
+            X1 = stream.ReadFWORD(),
+            Y1 = stream.ReadFWORD(),
+            X2 = stream.ReadFWORD(),
+            Y2 = stream.ReadFWORD(),
+            VarIndexBase = stream.ReadUIntByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

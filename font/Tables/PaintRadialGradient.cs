@@ -15,17 +15,21 @@ public class PaintRadialGradient : IPaintFormat
     public required short Y1 { get; init; }
     public required ushort Radius1 { get; init; }
 
-    public static PaintRadialGradient ReadFrom(Stream stream) => new()
+    public static PaintRadialGradient ReadFrom(Stream stream)
     {
-        Format = 6,
-        ColorLineOffset = stream.ReadOffset24(),
-        X0 = stream.ReadFWORD(),
-        Y0 = stream.ReadFWORD(),
-        Radius0 = stream.ReadUFWORD(),
-        X1 = stream.ReadFWORD(),
-        Y1 = stream.ReadFWORD(),
-        Radius1 = stream.ReadUFWORD(),
-    };
+        var colorLineOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 6,
+            ColorLineOffset = colorLineOffset,
+            X0 = stream.ReadFWORD(),
+            Y0 = stream.ReadFWORD(),
+            Radius0 = stream.ReadUFWORD(),
+            X1 = stream.ReadFWORD(),
+            Y1 = stream.ReadFWORD(),
+            Radius1 = stream.ReadUFWORD(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

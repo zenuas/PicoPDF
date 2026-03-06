@@ -13,15 +13,19 @@ public class PaintSweepGradient : IPaintFormat
     public required ushort StartAngle { get; init; }
     public required ushort EndAngle { get; init; }
 
-    public static PaintSweepGradient ReadFrom(Stream stream) => new()
+    public static PaintSweepGradient ReadFrom(Stream stream)
     {
-        Format = 8,
-        ColorLineOffset = stream.ReadOffset24(),
-        CenterX = stream.ReadFWORD(),
-        CenterY = stream.ReadFWORD(),
-        StartAngle = stream.ReadF2DOT14(),
-        EndAngle = stream.ReadF2DOT14(),
-    };
+        var colorLineOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 8,
+            ColorLineOffset = colorLineOffset,
+            CenterX = stream.ReadFWORD(),
+            CenterY = stream.ReadFWORD(),
+            StartAngle = stream.ReadF2DOT14(),
+            EndAngle = stream.ReadF2DOT14(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

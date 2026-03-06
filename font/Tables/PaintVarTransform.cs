@@ -10,12 +10,17 @@ public class PaintVarTransform : IPaintFormat
     public required int PaintOffset { get; init; }
     public required int TransformOffset { get; init; }
 
-    public static PaintVarTransform ReadFrom(Stream stream) => new()
+    public static PaintVarTransform ReadFrom(Stream stream)
     {
-        Format = 13,
-        PaintOffset = stream.ReadOffset24(),
-        TransformOffset = stream.ReadOffset24(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        var transformOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 13,
+            PaintOffset = paintOffset,
+            TransformOffset = transformOffset,
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

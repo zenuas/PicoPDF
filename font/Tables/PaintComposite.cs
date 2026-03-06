@@ -11,13 +11,18 @@ public class PaintComposite : IPaintFormat
     public required byte CompositeMode { get; init; }
     public required int BackdropPaintOffset { get; init; }
 
-    public static PaintComposite ReadFrom(Stream stream) => new()
+    public static PaintComposite ReadFrom(Stream stream)
     {
-        Format = 32,
-        SourcePaintOffset = stream.ReadOffset24(),
-        CompositeMode = stream.ReadUByte(),
-        BackdropPaintOffset = stream.ReadOffset24(),
-    };
+        var sourcePaintOffset = stream.ReadOffset24();
+        var backdropPaintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 32,
+            SourcePaintOffset = sourcePaintOffset,
+            CompositeMode = stream.ReadUByte(),
+            BackdropPaintOffset = backdropPaintOffset,
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

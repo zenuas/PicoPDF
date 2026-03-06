@@ -12,14 +12,18 @@ public class PaintVarTranslate : IPaintFormat
     public required short DY { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintVarTranslate ReadFrom(Stream stream) => new()
+    public static PaintVarTranslate ReadFrom(Stream stream)
     {
-        Format = 15,
-        PaintOffset = stream.ReadOffset24(),
-        DX = stream.ReadFWORD(),
-        DY = stream.ReadFWORD(),
-        VarIndexBase = stream.ReadUIntByBigEndian(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 15,
+            PaintOffset = paintOffset,
+            DX = stream.ReadFWORD(),
+            DY = stream.ReadFWORD(),
+            VarIndexBase = stream.ReadUIntByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

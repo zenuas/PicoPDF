@@ -12,14 +12,18 @@ public class PaintRotateAroundCenter : IPaintFormat
     public required short CenterX { get; init; }
     public required short CenterY { get; init; }
 
-    public static PaintRotateAroundCenter ReadFrom(Stream stream) => new()
+    public static PaintRotateAroundCenter ReadFrom(Stream stream)
     {
-        Format = 26,
-        PaintOffset = stream.ReadOffset24(),
-        Angle = stream.ReadF2DOT14(),
-        CenterX = stream.ReadFWORD(),
-        CenterY = stream.ReadFWORD(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 26,
+            PaintOffset = paintOffset,
+            Angle = stream.ReadF2DOT14(),
+            CenterX = stream.ReadFWORD(),
+            CenterY = stream.ReadFWORD(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

@@ -11,13 +11,17 @@ public class PaintTranslate : IPaintFormat
     public required short DX { get; init; }
     public required short DY { get; init; }
 
-    public static PaintTranslate ReadFrom(Stream stream) => new()
+    public static PaintTranslate ReadFrom(Stream stream)
     {
-        Format = 14,
-        PaintOffset = stream.ReadOffset24(),
-        DX = stream.ReadFWORD(),
-        DY = stream.ReadFWORD(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 14,
+            PaintOffset = paintOffset,
+            DX = stream.ReadFWORD(),
+            DY = stream.ReadFWORD(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

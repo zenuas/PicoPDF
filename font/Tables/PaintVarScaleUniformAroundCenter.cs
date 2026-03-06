@@ -13,15 +13,19 @@ public class PaintVarScaleUniformAroundCenter : IPaintFormat
     public required short CenterY { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintVarScaleUniformAroundCenter ReadFrom(Stream stream) => new()
+    public static PaintVarScaleUniformAroundCenter ReadFrom(Stream stream)
     {
-        Format = 23,
-        PaintOffset = stream.ReadOffset24(),
-        Scale = stream.ReadF2DOT14(),
-        CenterX = stream.ReadFWORD(),
-        CenterY = stream.ReadFWORD(),
-        VarIndexBase = stream.ReadUIntByBigEndian(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 23,
+            PaintOffset = paintOffset,
+            Scale = stream.ReadF2DOT14(),
+            CenterX = stream.ReadFWORD(),
+            CenterY = stream.ReadFWORD(),
+            VarIndexBase = stream.ReadUIntByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

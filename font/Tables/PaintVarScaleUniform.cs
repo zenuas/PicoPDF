@@ -11,13 +11,17 @@ public class PaintVarScaleUniform : IPaintFormat
     public required ushort Scale { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintVarScaleUniform ReadFrom(Stream stream) => new()
+    public static PaintVarScaleUniform ReadFrom(Stream stream)
     {
-        Format = 21,
-        PaintOffset = stream.ReadOffset24(),
-        Scale = stream.ReadF2DOT14(),
-        VarIndexBase = stream.ReadUIntByBigEndian(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 21,
+            PaintOffset = paintOffset,
+            Scale = stream.ReadF2DOT14(),
+            VarIndexBase = stream.ReadUIntByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

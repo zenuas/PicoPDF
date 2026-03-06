@@ -11,13 +11,17 @@ public class PaintScale : IPaintFormat
     public required ushort ScaleX { get; init; }
     public required ushort ScaleY { get; init; }
 
-    public static PaintScale ReadFrom(Stream stream) => new()
+    public static PaintScale ReadFrom(Stream stream)
     {
-        Format = 16,
-        PaintOffset = stream.ReadOffset24(),
-        ScaleX = stream.ReadF2DOT14(),
-        ScaleY = stream.ReadF2DOT14(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 16,
+            PaintOffset = paintOffset,
+            ScaleX = stream.ReadF2DOT14(),
+            ScaleY = stream.ReadF2DOT14(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

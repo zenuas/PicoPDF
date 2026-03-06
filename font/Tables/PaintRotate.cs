@@ -10,12 +10,16 @@ public class PaintRotate : IPaintFormat
     public required int PaintOffset { get; init; }
     public required ushort Angle { get; init; }
 
-    public static PaintRotate ReadFrom(Stream stream) => new()
+    public static PaintRotate ReadFrom(Stream stream)
     {
-        Format = 24,
-        PaintOffset = stream.ReadOffset24(),
-        Angle = stream.ReadF2DOT14(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 24,
+            PaintOffset = paintOffset,
+            Angle = stream.ReadF2DOT14(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

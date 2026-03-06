@@ -12,14 +12,18 @@ public class PaintVarSkew : IPaintFormat
     public required ushort YSkewAngle { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintVarSkew ReadFrom(Stream stream) => new()
+    public static PaintVarSkew ReadFrom(Stream stream)
     {
-        Format = 29,
-        PaintOffset = stream.ReadOffset24(),
-        XSkewAngle = stream.ReadF2DOT14(),
-        YSkewAngle = stream.ReadF2DOT14(),
-        VarIndexBase = stream.ReadUIntByBigEndian(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 29,
+            PaintOffset = paintOffset,
+            XSkewAngle = stream.ReadF2DOT14(),
+            YSkewAngle = stream.ReadF2DOT14(),
+            VarIndexBase = stream.ReadUIntByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

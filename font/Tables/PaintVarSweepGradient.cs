@@ -14,16 +14,20 @@ public class PaintVarSweepGradient : IPaintFormat
     public required ushort EndAngle { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintVarSweepGradient ReadFrom(Stream stream) => new()
+    public static PaintVarSweepGradient ReadFrom(Stream stream)
     {
-        Format = 9,
-        ColorLineOffset = stream.ReadOffset24(),
-        CenterX = stream.ReadFWORD(),
-        CenterY = stream.ReadFWORD(),
-        StartAngle = stream.ReadF2DOT14(),
-        EndAngle = stream.ReadF2DOT14(),
-        VarIndexBase = stream.ReadUIntByBigEndian(),
-    };
+        var colorLineOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 9,
+            ColorLineOffset = colorLineOffset,
+            CenterX = stream.ReadFWORD(),
+            CenterY = stream.ReadFWORD(),
+            StartAngle = stream.ReadF2DOT14(),
+            EndAngle = stream.ReadF2DOT14(),
+            VarIndexBase = stream.ReadUIntByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

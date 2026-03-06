@@ -15,17 +15,21 @@ public class PaintLinearGradient : IPaintFormat
     public required short X2 { get; init; }
     public required short Y2 { get; init; }
 
-    public static PaintLinearGradient ReadFrom(Stream stream) => new()
+    public static PaintLinearGradient ReadFrom(Stream stream)
     {
-        Format = 4,
-        ColorLineOffset = stream.ReadOffset24(),
-        X0 = stream.ReadFWORD(),
-        Y0 = stream.ReadFWORD(),
-        X1 = stream.ReadFWORD(),
-        Y1 = stream.ReadFWORD(),
-        X2 = stream.ReadFWORD(),
-        Y2 = stream.ReadFWORD(),
-    };
+        var colorLineOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 4,
+            ColorLineOffset = colorLineOffset,
+            X0 = stream.ReadFWORD(),
+            Y0 = stream.ReadFWORD(),
+            X1 = stream.ReadFWORD(),
+            Y1 = stream.ReadFWORD(),
+            X2 = stream.ReadFWORD(),
+            Y2 = stream.ReadFWORD(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

@@ -11,13 +11,17 @@ public class PaintVarRotate : IPaintFormat
     public required ushort Angle { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintVarRotate ReadFrom(Stream stream) => new()
+    public static PaintVarRotate ReadFrom(Stream stream)
     {
-        Format = 25,
-        PaintOffset = stream.ReadOffset24(),
-        Angle = stream.ReadF2DOT14(),
-        VarIndexBase = stream.ReadUIntByBigEndian(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 25,
+            PaintOffset = paintOffset,
+            Angle = stream.ReadF2DOT14(),
+            VarIndexBase = stream.ReadUIntByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

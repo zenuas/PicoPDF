@@ -13,15 +13,19 @@ public class PaintSkewAroundCenter : IPaintFormat
     public required short CenterX { get; init; }
     public required short CenterY { get; init; }
 
-    public static PaintSkewAroundCenter ReadFrom(Stream stream) => new()
+    public static PaintSkewAroundCenter ReadFrom(Stream stream)
     {
-        Format = 30,
-        PaintOffset = stream.ReadOffset24(),
-        XSkewAngle = stream.ReadF2DOT14(),
-        YSkewAngle = stream.ReadF2DOT14(),
-        CenterX = stream.ReadFWORD(),
-        CenterY = stream.ReadFWORD(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 30,
+            PaintOffset = paintOffset,
+            XSkewAngle = stream.ReadF2DOT14(),
+            YSkewAngle = stream.ReadF2DOT14(),
+            CenterX = stream.ReadFWORD(),
+            CenterY = stream.ReadFWORD(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

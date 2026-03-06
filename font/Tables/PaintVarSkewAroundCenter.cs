@@ -14,16 +14,20 @@ public class PaintVarSkewAroundCenter : IPaintFormat
     public required short CenterY { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintVarSkewAroundCenter ReadFrom(Stream stream) => new()
+    public static PaintVarSkewAroundCenter ReadFrom(Stream stream)
     {
-        Format = 31,
-        PaintOffset = stream.ReadOffset24(),
-        XSkewAngle = stream.ReadF2DOT14(),
-        YSkewAngle = stream.ReadF2DOT14(),
-        CenterX = stream.ReadFWORD(),
-        CenterY = stream.ReadFWORD(),
-        VarIndexBase = stream.ReadUIntByBigEndian(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 31,
+            PaintOffset = paintOffset,
+            XSkewAngle = stream.ReadF2DOT14(),
+            YSkewAngle = stream.ReadF2DOT14(),
+            CenterX = stream.ReadFWORD(),
+            CenterY = stream.ReadFWORD(),
+            VarIndexBase = stream.ReadUIntByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

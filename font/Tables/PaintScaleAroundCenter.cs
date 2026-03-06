@@ -13,15 +13,19 @@ public class PaintScaleAroundCenter : IPaintFormat
     public required short CenterX { get; init; }
     public required short CenterY { get; init; }
 
-    public static PaintScaleAroundCenter ReadFrom(Stream stream) => new()
+    public static PaintScaleAroundCenter ReadFrom(Stream stream)
     {
-        Format = 18,
-        PaintOffset = stream.ReadOffset24(),
-        ScaleX = stream.ReadF2DOT14(),
-        ScaleY = stream.ReadF2DOT14(),
-        CenterX = stream.ReadFWORD(),
-        CenterY = stream.ReadFWORD(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 18,
+            PaintOffset = paintOffset,
+            ScaleX = stream.ReadF2DOT14(),
+            ScaleY = stream.ReadF2DOT14(),
+            CenterX = stream.ReadFWORD(),
+            CenterY = stream.ReadFWORD(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

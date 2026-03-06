@@ -10,12 +10,16 @@ public class PaintGlyph : IPaintFormat
     public required int PaintOffset { get; init; }
     public required ushort GlyphID { get; init; }
 
-    public static PaintGlyph ReadFrom(Stream stream) => new()
+    public static PaintGlyph ReadFrom(Stream stream)
     {
-        Format = 10,
-        PaintOffset = stream.ReadOffset24(),
-        GlyphID = stream.ReadUShortByBigEndian(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 10,
+            PaintOffset = paintOffset,
+            GlyphID = stream.ReadUShortByBigEndian(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

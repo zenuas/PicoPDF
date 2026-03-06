@@ -11,13 +11,17 @@ public class PaintSkew : IPaintFormat
     public required ushort XSkewAngle { get; init; }
     public required ushort YSkewAngle { get; init; }
 
-    public static PaintSkew ReadFrom(Stream stream) => new()
+    public static PaintSkew ReadFrom(Stream stream)
     {
-        Format = 28,
-        PaintOffset = stream.ReadOffset24(),
-        XSkewAngle = stream.ReadF2DOT14(),
-        YSkewAngle = stream.ReadF2DOT14(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 28,
+            PaintOffset = paintOffset,
+            XSkewAngle = stream.ReadF2DOT14(),
+            YSkewAngle = stream.ReadF2DOT14(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {

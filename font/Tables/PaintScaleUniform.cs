@@ -10,12 +10,16 @@ public class PaintScaleUniform : IPaintFormat
     public required int PaintOffset { get; init; }
     public required ushort Scale { get; init; }
 
-    public static PaintScaleUniform ReadFrom(Stream stream) => new()
+    public static PaintScaleUniform ReadFrom(Stream stream)
     {
-        Format = 20,
-        PaintOffset = stream.ReadOffset24(),
-        Scale = stream.ReadF2DOT14(),
-    };
+        var paintOffset = stream.ReadOffset24();
+        return new()
+        {
+            Format = 20,
+            PaintOffset = paintOffset,
+            Scale = stream.ReadF2DOT14(),
+        };
+    }
 
     public void WriteTo(Stream stream)
     {
