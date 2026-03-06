@@ -21,6 +21,8 @@ public static class PaintFormat
         13 => PaintVarTransform.ReadFrom(stream),
         14 => PaintTranslate.ReadFrom(stream),
         15 => PaintVarTranslate.ReadFrom(stream),
+        16 => PaintScale.ReadFrom(stream),
+        17 => PaintVarScale.ReadFrom(stream),
         _ => throw new()
     };
 }
