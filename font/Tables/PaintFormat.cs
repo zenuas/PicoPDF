@@ -19,6 +19,8 @@ public static class PaintFormat
         11 => PaintColrGlyph.ReadFrom(stream),
         12 => PaintTransform.ReadFrom(stream),
         13 => PaintVarTransform.ReadFrom(stream),
+        14 => PaintTranslate.ReadFrom(stream),
+        15 => PaintVarTranslate.ReadFrom(stream),
         _ => throw new()
     };
 }
