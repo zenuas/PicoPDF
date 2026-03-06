@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class PaintColrLayersFormat4 : IPaintColrLayersFormat
+public class PaintLinearGradient : IPaintFormat
 {
     public required byte Format { get; init; }
     public required int ColorLineOffset { get; init; }
@@ -15,7 +15,7 @@ public class PaintColrLayersFormat4 : IPaintColrLayersFormat
     public required short X2 { get; init; }
     public required short Y2 { get; init; }
 
-    public static PaintColrLayersFormat4 ReadFrom(Stream stream) => new()
+    public static PaintLinearGradient ReadFrom(Stream stream) => new()
     {
         Format = 4,
         ColorLineOffset = stream.Read3BytesByBigEndian(),

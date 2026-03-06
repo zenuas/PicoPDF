@@ -3,14 +3,14 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class PaintColrLayersFormat3 : IPaintColrLayersFormat
+public class PaintVarSolid : IPaintFormat
 {
     public required byte Format { get; init; }
     public required ushort PaletteIndex { get; init; }
     public required ushort Alpha { get; init; }
     public required uint VarIndexBase { get; init; }
 
-    public static PaintColrLayersFormat3 ReadFrom(Stream stream) => new()
+    public static PaintVarSolid ReadFrom(Stream stream) => new()
     {
         Format = 3,
         PaletteIndex = stream.ReadUShortByBigEndian(),

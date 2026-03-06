@@ -1,6 +1,6 @@
 ﻿namespace OpenType.Tables;
 
-public interface IPaintColrLayersFormat : IExportable
+public interface IPaintFormat : IExportable
 {
     public byte Format { get; init; }
 
