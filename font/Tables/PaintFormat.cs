@@ -33,6 +33,10 @@ public static class PaintFormat
         25 => PaintVarRotate.ReadFrom(stream),
         26 => PaintRotateAroundCenter.ReadFrom(stream),
         27 => PaintVarRotateAroundCenter.ReadFrom(stream),
+        28 => PaintSkew.ReadFrom(stream),
+        29 => PaintVarSkew.ReadFrom(stream),
+        30 => PaintSkewAroundCenter.ReadFrom(stream),
+        31 => PaintVarSkewAroundCenter.ReadFrom(stream),
         _ => throw new()
     };
 }
