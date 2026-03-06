@@ -17,20 +17,20 @@ public class PaintSweepGradient : IPaintFormat
     {
         Format = 8,
         ColorLineOffset = stream.Read3BytesByBigEndian(),
-        CenterX = stream.ReadShortByBigEndian(),
-        CenterY = stream.ReadShortByBigEndian(),
-        StartAngle = stream.ReadUShortByBigEndian(),
-        EndAngle = stream.ReadUShortByBigEndian(),
+        CenterX = stream.ReadFWORD(),
+        CenterY = stream.ReadFWORD(),
+        StartAngle = stream.ReadF2DOT14(),
+        EndAngle = stream.ReadF2DOT14(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
         stream.Write3BytesByBigEndian(ColorLineOffset);
-        stream.WriteShortByBigEndian(CenterX);
-        stream.WriteShortByBigEndian(CenterY);
-        stream.WriteUShortByBigEndian(StartAngle);
-        stream.WriteUShortByBigEndian(EndAngle);
+        stream.WriteFWORD(CenterX);
+        stream.WriteFWORD(CenterY);
+        stream.WriteF2DOT14(StartAngle);
+        stream.WriteF2DOT14(EndAngle);
     }
 
     public int SizeOf() => Format.SizeOf() + /* ColorLineOffset.SizeOf() */Const.SizeofOffset24 +

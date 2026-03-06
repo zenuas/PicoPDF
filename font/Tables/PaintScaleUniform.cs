@@ -14,14 +14,14 @@ public class PaintScaleUniform : IPaintFormat
     {
         Format = 20,
         PaintOffset = stream.Read3BytesByBigEndian(),
-        Scale = stream.ReadUShortByBigEndian(),
+        Scale = stream.ReadF2DOT14(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
         stream.Write3BytesByBigEndian(PaintOffset);
-        stream.WriteUShortByBigEndian(Scale);
+        stream.WriteF2DOT14(Scale);
     }
 
     public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +

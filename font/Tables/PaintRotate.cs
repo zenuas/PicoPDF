@@ -14,14 +14,14 @@ public class PaintRotate : IPaintFormat
     {
         Format = 24,
         PaintOffset = stream.Read3BytesByBigEndian(),
-        Angle = stream.ReadUShortByBigEndian(),
+        Angle = stream.ReadF2DOT14(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
         stream.Write3BytesByBigEndian(PaintOffset);
-        stream.WriteUShortByBigEndian(Angle);
+        stream.WriteF2DOT14(Angle);
     }
 
     public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +

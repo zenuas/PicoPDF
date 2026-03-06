@@ -17,9 +17,9 @@ public class PaintVarRotateAroundCenter : IPaintFormat
     {
         Format = 27,
         PaintOffset = stream.Read3BytesByBigEndian(),
-        Angle = stream.ReadUShortByBigEndian(),
-        CenterX = stream.ReadShortByBigEndian(),
-        CenterY = stream.ReadShortByBigEndian(),
+        Angle = stream.ReadF2DOT14(),
+        CenterX = stream.ReadFWORD(),
+        CenterY = stream.ReadFWORD(),
         VarIndexBase = stream.ReadUIntByBigEndian(),
     };
 
@@ -27,9 +27,9 @@ public class PaintVarRotateAroundCenter : IPaintFormat
     {
         stream.WriteByte(Format);
         stream.Write3BytesByBigEndian(PaintOffset);
-        stream.WriteUShortByBigEndian(Angle);
-        stream.WriteShortByBigEndian(CenterX);
-        stream.WriteShortByBigEndian(CenterY);
+        stream.WriteF2DOT14(Angle);
+        stream.WriteFWORD(CenterX);
+        stream.WriteFWORD(CenterY);
         stream.WriteUIntByBigEndian(VarIndexBase);
     }
 

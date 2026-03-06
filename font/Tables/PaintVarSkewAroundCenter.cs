@@ -18,10 +18,10 @@ public class PaintVarSkewAroundCenter : IPaintFormat
     {
         Format = 31,
         PaintOffset = stream.Read3BytesByBigEndian(),
-        XSkewAngle = stream.ReadUShortByBigEndian(),
-        YSkewAngle = stream.ReadUShortByBigEndian(),
-        CenterX = stream.ReadShortByBigEndian(),
-        CenterY = stream.ReadShortByBigEndian(),
+        XSkewAngle = stream.ReadF2DOT14(),
+        YSkewAngle = stream.ReadF2DOT14(),
+        CenterX = stream.ReadFWORD(),
+        CenterY = stream.ReadFWORD(),
         VarIndexBase = stream.ReadUIntByBigEndian(),
     };
 
@@ -29,10 +29,10 @@ public class PaintVarSkewAroundCenter : IPaintFormat
     {
         stream.WriteByte(Format);
         stream.Write3BytesByBigEndian(PaintOffset);
-        stream.WriteUShortByBigEndian(XSkewAngle);
-        stream.WriteUShortByBigEndian(YSkewAngle);
-        stream.WriteShortByBigEndian(CenterX);
-        stream.WriteShortByBigEndian(CenterY);
+        stream.WriteF2DOT14(XSkewAngle);
+        stream.WriteF2DOT14(YSkewAngle);
+        stream.WriteFWORD(CenterX);
+        stream.WriteFWORD(CenterY);
         stream.WriteUIntByBigEndian(VarIndexBase);
     }
 

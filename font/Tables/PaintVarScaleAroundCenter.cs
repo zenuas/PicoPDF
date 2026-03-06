@@ -18,10 +18,10 @@ public class PaintVarScaleAroundCenter : IPaintFormat
     {
         Format = 19,
         PaintOffset = stream.Read3BytesByBigEndian(),
-        ScaleX = stream.ReadUShortByBigEndian(),
-        ScaleY = stream.ReadUShortByBigEndian(),
-        CenterX = stream.ReadShortByBigEndian(),
-        CenterY = stream.ReadShortByBigEndian(),
+        ScaleX = stream.ReadF2DOT14(),
+        ScaleY = stream.ReadF2DOT14(),
+        CenterX = stream.ReadFWORD(),
+        CenterY = stream.ReadFWORD(),
         VarIndexBase = stream.ReadUIntByBigEndian(),
     };
 
@@ -29,10 +29,10 @@ public class PaintVarScaleAroundCenter : IPaintFormat
     {
         stream.WriteByte(Format);
         stream.Write3BytesByBigEndian(PaintOffset);
-        stream.WriteUShortByBigEndian(ScaleX);
-        stream.WriteUShortByBigEndian(ScaleY);
-        stream.WriteShortByBigEndian(CenterX);
-        stream.WriteShortByBigEndian(CenterY);
+        stream.WriteF2DOT14(ScaleX);
+        stream.WriteF2DOT14(ScaleY);
+        stream.WriteFWORD(CenterX);
+        stream.WriteFWORD(CenterY);
         stream.WriteUIntByBigEndian(VarIndexBase);
     }
 

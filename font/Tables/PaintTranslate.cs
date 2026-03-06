@@ -15,16 +15,16 @@ public class PaintTranslate : IPaintFormat
     {
         Format = 14,
         PaintOffset = stream.Read3BytesByBigEndian(),
-        DX = stream.ReadShortByBigEndian(),
-        DY = stream.ReadShortByBigEndian(),
+        DX = stream.ReadFWORD(),
+        DY = stream.ReadFWORD(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
         stream.Write3BytesByBigEndian(PaintOffset);
-        stream.WriteShortByBigEndian(DX);
-        stream.WriteShortByBigEndian(DY);
+        stream.WriteFWORD(DX);
+        stream.WriteFWORD(DY);
     }
 
     public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +

@@ -15,16 +15,16 @@ public class PaintScale : IPaintFormat
     {
         Format = 16,
         PaintOffset = stream.Read3BytesByBigEndian(),
-        ScaleX = stream.ReadUShortByBigEndian(),
-        ScaleY = stream.ReadUShortByBigEndian(),
+        ScaleX = stream.ReadF2DOT14(),
+        ScaleY = stream.ReadF2DOT14(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
         stream.Write3BytesByBigEndian(PaintOffset);
-        stream.WriteUShortByBigEndian(ScaleX);
-        stream.WriteUShortByBigEndian(ScaleY);
+        stream.WriteF2DOT14(ScaleX);
+        stream.WriteF2DOT14(ScaleY);
     }
 
     public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +

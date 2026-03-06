@@ -15,16 +15,16 @@ public class PaintSkew : IPaintFormat
     {
         Format = 28,
         PaintOffset = stream.Read3BytesByBigEndian(),
-        XSkewAngle = stream.ReadUShortByBigEndian(),
-        YSkewAngle = stream.ReadUShortByBigEndian(),
+        XSkewAngle = stream.ReadF2DOT14(),
+        YSkewAngle = stream.ReadF2DOT14(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
         stream.Write3BytesByBigEndian(PaintOffset);
-        stream.WriteUShortByBigEndian(XSkewAngle);
-        stream.WriteUShortByBigEndian(YSkewAngle);
+        stream.WriteF2DOT14(XSkewAngle);
+        stream.WriteF2DOT14(YSkewAngle);
     }
 
     public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +

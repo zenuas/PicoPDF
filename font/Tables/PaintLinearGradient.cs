@@ -19,24 +19,24 @@ public class PaintLinearGradient : IPaintFormat
     {
         Format = 4,
         ColorLineOffset = stream.Read3BytesByBigEndian(),
-        X0 = stream.ReadShortByBigEndian(),
-        Y0 = stream.ReadShortByBigEndian(),
-        X1 = stream.ReadShortByBigEndian(),
-        Y1 = stream.ReadShortByBigEndian(),
-        X2 = stream.ReadShortByBigEndian(),
-        Y2 = stream.ReadShortByBigEndian(),
+        X0 = stream.ReadFWORD(),
+        Y0 = stream.ReadFWORD(),
+        X1 = stream.ReadFWORD(),
+        Y1 = stream.ReadFWORD(),
+        X2 = stream.ReadFWORD(),
+        Y2 = stream.ReadFWORD(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
         stream.Write3BytesByBigEndian(ColorLineOffset);
-        stream.WriteShortByBigEndian(X0);
-        stream.WriteShortByBigEndian(Y0);
-        stream.WriteShortByBigEndian(X1);
-        stream.WriteShortByBigEndian(Y1);
-        stream.WriteShortByBigEndian(X2);
-        stream.WriteShortByBigEndian(Y2);
+        stream.WriteFWORD(X0);
+        stream.WriteFWORD(Y0);
+        stream.WriteFWORD(X1);
+        stream.WriteFWORD(Y1);
+        stream.WriteFWORD(X2);
+        stream.WriteFWORD(Y2);
     }
 
     public int SizeOf() => Format.SizeOf() + /* ColorLineOffset.SizeOf() */Const.SizeofOffset24 +

@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
 
 namespace OpenType.Tables;
@@ -14,7 +15,7 @@ public class PaintVarSolid : IPaintFormat
     {
         Format = 3,
         PaletteIndex = stream.ReadUShortByBigEndian(),
-        Alpha = stream.ReadUShortByBigEndian(),
+        Alpha = stream.ReadF2DOT14(),
         VarIndexBase = stream.ReadUIntByBigEndian(),
     };
 
@@ -22,7 +23,7 @@ public class PaintVarSolid : IPaintFormat
     {
         stream.WriteByte(Format);
         stream.WriteUShortByBigEndian(PaletteIndex);
-        stream.WriteUShortByBigEndian(Alpha);
+        stream.WriteF2DOT14(Alpha);
         stream.WriteUIntByBigEndian(VarIndexBase);
     }
 
