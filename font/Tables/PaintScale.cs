@@ -27,6 +27,6 @@ public class PaintScale : IPaintFormat
         stream.WriteUShortByBigEndian(ScaleY);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset sizeof(Offset24) */3 +
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +
         ScaleX.SizeOf() + ScaleY.SizeOf();
 }

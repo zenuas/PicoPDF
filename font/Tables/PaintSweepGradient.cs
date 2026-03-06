@@ -33,7 +33,7 @@ public class PaintSweepGradient : IPaintFormat
         stream.WriteUShortByBigEndian(EndAngle);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset sizeof(Offset24) */3 +
+    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset.SizeOf() */Const.SizeofOffset24 +
         CenterX.SizeOf() + CenterY.SizeOf() +
         StartAngle.SizeOf() + EndAngle.SizeOf();
 }

@@ -33,7 +33,7 @@ public class PaintVarScaleUniformAroundCenter : IPaintFormat
         stream.WriteUIntByBigEndian(VarIndexBase);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset sizeof(Offset24) */3 +
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +
         Scale.SizeOf() +
         CenterX.SizeOf() + CenterY.SizeOf() +
         VarIndexBase.SizeOf();

@@ -39,7 +39,7 @@ public class PaintRadialGradient : IPaintFormat
         stream.WriteUShortByBigEndian(Radius1);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset sizeof(Offset24) */3 +
+    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset.SizeOf() */Const.SizeofOffset24 +
         X0.SizeOf() + Y0.SizeOf() +
         Radius0.SizeOf() +
         X1.SizeOf() + Y1.SizeOf() +

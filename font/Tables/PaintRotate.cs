@@ -24,6 +24,6 @@ public class PaintRotate : IPaintFormat
         stream.WriteUShortByBigEndian(Angle);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset sizeof(Offset24) */3 +
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +
         Angle.SizeOf();
 }

@@ -24,5 +24,5 @@ public class PaintGlyph : IPaintFormat
         stream.WriteUShortByBigEndian(GlyphID);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset sizeof(Offset24) */3 + GlyphID.SizeOf();
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 + GlyphID.SizeOf();
 }

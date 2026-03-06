@@ -27,7 +27,7 @@ public class PaintVarScaleUniform : IPaintFormat
         stream.WriteUIntByBigEndian(VarIndexBase);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset sizeof(Offset24) */3 +
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +
         Scale.SizeOf() +
         VarIndexBase.SizeOf();
 }

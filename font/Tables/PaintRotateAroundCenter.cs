@@ -30,7 +30,7 @@ public class PaintRotateAroundCenter : IPaintFormat
         stream.WriteShortByBigEndian(CenterY);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset sizeof(Offset24) */3 +
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +
         Angle.SizeOf() +
         CenterX.SizeOf() + CenterY.SizeOf();
 }

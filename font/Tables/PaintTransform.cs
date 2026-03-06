@@ -24,5 +24,5 @@ public class PaintTransform : IPaintFormat
         stream.Write3BytesByBigEndian(TransformOffset);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset sizeof(Offset24) */3 + /* TransformOffset sizeof(Offset24) */3;
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 + /* TransformOffset.SizeOf() */Const.SizeofOffset24;
 }
