@@ -15,9 +15,12 @@ public class PaintVarLinearGradient : IPaintFormat
     public required short X2 { get; init; }
     public required short Y2 { get; init; }
     public required uint VarIndexBase { get; init; }
+    public required VarColorLine ColorLine { get; init; }
 
     public static PaintVarLinearGradient ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var colorLineOffset = stream.ReadOffset24();
         return new()
         {
@@ -30,13 +33,14 @@ public class PaintVarLinearGradient : IPaintFormat
             X2 = stream.ReadFWORD(),
             Y2 = stream.ReadFWORD(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
+            ColorLine = VarColorLine.ReadFrom(stream.SeekTo(position + colorLineOffset)),
         };
     }
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.WriteOffset24(ColorLineOffset);
+        stream.WriteOffset24(SizeOf());
         stream.WriteFWORD(X0);
         stream.WriteFWORD(Y0);
         stream.WriteFWORD(X1);
@@ -44,6 +48,7 @@ public class PaintVarLinearGradient : IPaintFormat
         stream.WriteFWORD(X2);
         stream.WriteFWORD(Y2);
         stream.WriteUIntByBigEndian(VarIndexBase);
+        ColorLine.WriteTo(stream);
     }
 
     public int SizeOf() => Format.SizeOf() + /* ColorLineOffset.SizeOf() */Const.SizeofOffset24 +
