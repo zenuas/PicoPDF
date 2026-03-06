@@ -25,6 +25,10 @@ public static class PaintFormat
         17 => PaintVarScale.ReadFrom(stream),
         18 => PaintScaleAroundCenter.ReadFrom(stream),
         19 => PaintVarScaleAroundCenter.ReadFrom(stream),
+        20 => PaintScaleUniform.ReadFrom(stream),
+        21 => PaintVarScaleUniform.ReadFrom(stream),
+        22 => PaintScaleUniformAroundCenter.ReadFrom(stream),
+        23 => PaintVarScaleUniformAroundCenter.ReadFrom(stream),
         _ => throw new()
     };
 }
