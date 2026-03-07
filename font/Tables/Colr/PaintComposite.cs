@@ -15,7 +15,7 @@ public class PaintComposite : IPaintFormat
 
     public static PaintComposite ReadFrom(Stream stream)
     {
-        var position = stream.Position;
+        var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
         var sourcePaintOffset = stream.ReadOffset24();
         var compositeMode = stream.ReadUByte();

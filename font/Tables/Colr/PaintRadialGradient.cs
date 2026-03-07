@@ -18,7 +18,7 @@ public class PaintRadialGradient : IPaintFormat
 
     public static PaintRadialGradient ReadFrom(Stream stream)
     {
-        var position = stream.Position;
+        var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
         var colorLineOffset = stream.ReadOffset24();
         return new()

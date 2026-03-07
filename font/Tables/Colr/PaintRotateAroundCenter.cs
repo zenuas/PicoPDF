@@ -15,7 +15,7 @@ public class PaintRotateAroundCenter : IPaintFormat
 
     public static PaintRotateAroundCenter ReadFrom(Stream stream)
     {
-        var position = stream.Position;
+        var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
         var paintOffset = stream.ReadOffset24();
         return new()

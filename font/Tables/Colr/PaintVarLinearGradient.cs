@@ -19,7 +19,7 @@ public class PaintVarLinearGradient : IPaintFormat
 
     public static PaintVarLinearGradient ReadFrom(Stream stream)
     {
-        var position = stream.Position;
+        var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
         var colorLineOffset = stream.ReadOffset24();
         return new()
