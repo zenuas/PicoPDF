@@ -38,6 +38,6 @@ public static class PaintFormat
         30 => PaintSkewAroundCenter.ReadFrom(stream),
         31 => PaintVarSkewAroundCenter.ReadFrom(stream),
         32 => PaintComposite.ReadFrom(stream),
-        _ => throw new()
+        var format => new PaintN { Format = (byte)format },
     };
 }
