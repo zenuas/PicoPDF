@@ -287,12 +287,11 @@ public static class FontExtract
             .OfType<BaseGlyphRecord>()
             .ToArray();
 
-        var layerRecords = mapper.Select(x =>
+        var layerRecords = colr.LayerRecords.Select(x =>
             {
-                var record = colr.LayerRecords.Where(r => r.GlyphID == x.OldGID).FirstOrDefault();
-                return record is null ? null : new LayerRecord { GlyphID = (ushort)x.NewGID, PaletteIndex = record.PaletteIndex };
+                var record = mapper.Where(r => x.GlyphID == r.OldGID).FirstOrDefault();
+                return new LayerRecord { GlyphID = (ushort)(record == default ? 0 : record.NewGID), PaletteIndex = x.PaletteIndex };
             })
-            .OfType<LayerRecord>()
             .ToArray();
 
         var baseGlyphListRecord = colr.BaseGlyphListRecord is null ? null :
