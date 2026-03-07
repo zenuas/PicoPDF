@@ -10,26 +10,38 @@ public class PaintComposite : IPaintFormat
     public required int SourcePaintOffset { get; init; }
     public required byte CompositeMode { get; init; }
     public required int BackdropPaintOffset { get; init; }
+    public required IPaintFormat SourcePaint { get; init; }
+    public required IPaintFormat BackdropPaint { get; init; }
 
     public static PaintComposite ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var sourcePaintOffset = stream.ReadOffset24();
+        var compositeMode = stream.ReadUByte();
         var backdropPaintOffset = stream.ReadOffset24();
         return new()
         {
             Format = 32,
             SourcePaintOffset = sourcePaintOffset,
-            CompositeMode = stream.ReadUByte(),
+            CompositeMode = compositeMode,
             BackdropPaintOffset = backdropPaintOffset,
+            SourcePaint = PaintFormat.ReadFrom(stream.SeekTo(position + sourcePaintOffset)),
+            BackdropPaint = PaintFormat.ReadFrom(stream.SeekTo(position + backdropPaintOffset)),
         };
     }
 
     public void WriteTo(Stream stream)
     {
+        using var mem = new MemoryStream();
+        SourcePaint.WriteTo(mem);
+
         stream.WriteByte(Format);
-        stream.WriteOffset24(SourcePaintOffset);
+        stream.WriteOffset24(SizeOf());
         stream.WriteByte(CompositeMode);
-        stream.WriteOffset24(BackdropPaintOffset);
+        stream.WriteOffset24(SizeOf() + (int)mem.Length);
+        stream.Write(mem.ToArray());
+        BackdropPaint.WriteTo(stream);
     }
 
     public int SizeOf() => Format.SizeOf() +
