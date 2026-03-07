@@ -9,23 +9,28 @@ public class PaintScaleUniform : IPaintFormat
     public required byte Format { get; init; }
     public required int PaintOffset { get; init; }
     public required ushort Scale { get; init; }
+    public required IPaintFormat Paint { get; init; }
 
     public static PaintScaleUniform ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var paintOffset = stream.ReadOffset24();
         return new()
         {
             Format = 20,
             PaintOffset = paintOffset,
             Scale = stream.ReadF2DOT14(),
+            Paint = PaintFormat.ReadFrom(stream.SeekTo(position + paintOffset)),
         };
     }
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.WriteOffset24(PaintOffset);
+        stream.WriteOffset24(SizeOf());
         stream.WriteF2DOT14(Scale);
+        Paint.WriteTo(stream);
     }
 
     public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +

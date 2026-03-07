@@ -10,9 +10,12 @@ public class PaintSkew : IPaintFormat
     public required int PaintOffset { get; init; }
     public required ushort XSkewAngle { get; init; }
     public required ushort YSkewAngle { get; init; }
+    public required IPaintFormat Paint { get; init; }
 
     public static PaintSkew ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var paintOffset = stream.ReadOffset24();
         return new()
         {
@@ -20,15 +23,17 @@ public class PaintSkew : IPaintFormat
             PaintOffset = paintOffset,
             XSkewAngle = stream.ReadF2DOT14(),
             YSkewAngle = stream.ReadF2DOT14(),
+            Paint = PaintFormat.ReadFrom(stream.SeekTo(position + paintOffset)),
         };
     }
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.WriteOffset24(PaintOffset);
+        stream.WriteOffset24(SizeOf());
         stream.WriteF2DOT14(XSkewAngle);
         stream.WriteF2DOT14(YSkewAngle);
+        Paint.WriteTo(stream);
     }
 
     public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +

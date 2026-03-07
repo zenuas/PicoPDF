@@ -12,9 +12,12 @@ public class PaintVarRotateAroundCenter : IPaintFormat
     public required short CenterX { get; init; }
     public required short CenterY { get; init; }
     public required uint VarIndexBase { get; init; }
+    public required IPaintFormat Paint { get; init; }
 
     public static PaintVarRotateAroundCenter ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var paintOffset = stream.ReadOffset24();
         return new()
         {
@@ -24,17 +27,19 @@ public class PaintVarRotateAroundCenter : IPaintFormat
             CenterX = stream.ReadFWORD(),
             CenterY = stream.ReadFWORD(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
+            Paint = PaintFormat.ReadFrom(stream.SeekTo(position + paintOffset)),
         };
     }
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.WriteOffset24(PaintOffset);
+        stream.WriteOffset24(SizeOf());
         stream.WriteF2DOT14(Angle);
         stream.WriteFWORD(CenterX);
         stream.WriteFWORD(CenterY);
         stream.WriteUIntByBigEndian(VarIndexBase);
+        Paint.WriteTo(stream);
     }
 
     public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +
