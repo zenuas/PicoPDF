@@ -10,6 +10,7 @@ public class PaintVarTransform : IPaintFormat
     public required int PaintOffset { get; init; }
     public required int TransformOffset { get; init; }
     public required IPaintFormat Paint { get; init; }
+    public required VarAffine2x3 Transform { get; init; }
 
     public static PaintVarTransform ReadFrom(Stream stream)
     {
@@ -23,14 +24,16 @@ public class PaintVarTransform : IPaintFormat
             PaintOffset = paintOffset,
             TransformOffset = transformOffset,
             Paint = PaintFormat.ReadFrom(stream.SeekTo(position + paintOffset)),
+            Transform = VarAffine2x3.ReadFrom(stream.SeekTo(position + transformOffset)),
         };
     }
 
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
+        stream.WriteOffset24(SizeOf() + Transform.SizeOf());
         stream.WriteOffset24(SizeOf());
-        stream.WriteOffset24(TransformOffset);
+        Transform.WriteTo(stream);
         Paint.WriteTo(stream);
     }
 
