@@ -8,26 +8,35 @@ public class BaseGlyphListRecord : IExportable
 {
     public required uint NumberBaseGlyphPaintRecords { get; init; }
     public required (ushort GlyphID, uint PaintOffset)[] BaseGlyphPaintRecord { get; init; }
+    public required IPaintFormat[] Paints { get; init; }
 
     public static BaseGlyphListRecord ReadFrom(Stream stream)
     {
+        var position = stream.Position;
+
         var numBaseGlyphPaintRecords = stream.ReadUIntByBigEndian();
+        var baseGlyphPaintRecord = Lists.Repeat(() => (GlyphID: stream.ReadUShortByBigEndian(), PaintOffset: stream.ReadUIntByBigEndian())).Take((int)numBaseGlyphPaintRecords).ToArray();
 
         return new()
         {
             NumberBaseGlyphPaintRecords = numBaseGlyphPaintRecords,
-            BaseGlyphPaintRecord = [.. Lists.Repeat(() => (stream.ReadUShortByBigEndian(), stream.ReadUIntByBigEndian())).Take((int)numBaseGlyphPaintRecords)],
+            BaseGlyphPaintRecord = baseGlyphPaintRecord,
+            Paints = [.. baseGlyphPaintRecord.Select(x => PaintFormat.ReadFrom(stream.SeekTo(position + x.PaintOffset)))],
         };
     }
 
     public void WriteTo(Stream stream)
     {
         stream.WriteUIntByBigEndian((uint)BaseGlyphPaintRecord.Length);
-        foreach (var x in BaseGlyphPaintRecord)
+
+        using var mem = new MemoryStream();
+        for (var i = 0; i < BaseGlyphPaintRecord.Length; i++)
         {
-            stream.WriteUShortByBigEndian(x.GlyphID);
-            stream.WriteUIntByBigEndian(x.PaintOffset);
+            stream.WriteUShortByBigEndian(BaseGlyphPaintRecord[i].GlyphID);
+            stream.WriteUIntByBigEndian((uint)(SizeOf() + mem.Length));
+            Paints[i].WriteTo(mem);
         }
+        stream.Write(mem.ToArray());
     }
 
     public int SizeOf() => NumberBaseGlyphPaintRecords.SizeOf() + ((sizeof(ushort) + sizeof(uint)) * BaseGlyphPaintRecord.Length);

@@ -296,16 +296,20 @@ public static class FontExtract
             .ToArray();
 
         var baseGlyphListRecord = colr.BaseGlyphListRecord is null ? null :
-            new BaseGlyphListRecord
+            colr.BaseGlyphListRecord.To(glyphs =>
             {
-                NumberBaseGlyphPaintRecords = 0,
-                BaseGlyphPaintRecord = [.. mapper.Select(x =>
-                    {
-                        var record = colr.BaseGlyphListRecord.BaseGlyphPaintRecord.Where(r => r.GlyphID == x.OldGID).FirstOrDefault();
-                        return ((ushort)x.NewGID, record.PaintOffset);
-                    })
-                    .Where(x => x != default)],
-            };
+                var glyphsWithIndex = glyphs.BaseGlyphPaintRecord.Zip(Lists.Sequence(0)).ToArray();
+                var newGlyphs = mapper.Select(x => glyphsWithIndex.Where(r => r.First.GlyphID == x.OldGID).FirstOrDefault())
+                    .Where(x => x != default)
+                    .ToArray();
+
+                return new BaseGlyphListRecord
+                {
+                    NumberBaseGlyphPaintRecords = 0,
+                    BaseGlyphPaintRecord = [.. newGlyphs.Select(x => (x.First.GlyphID, 0U))],
+                    Paints = [.. newGlyphs.Select(x => glyphs.Paints[x.Second])],
+                };
+            });
 
         return new()
         {
