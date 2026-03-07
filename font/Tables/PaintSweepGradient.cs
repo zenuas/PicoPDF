@@ -42,7 +42,7 @@ public class PaintSweepGradient : IPaintFormat
         ColorLine.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset.SizeOf() */Const.SizeofOffset24 +
+    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset */Const.SizeofOffset24 +
         CenterX.SizeOf() + CenterY.SizeOf() +
         StartAngle.SizeOf() + EndAngle.SizeOf();
 }

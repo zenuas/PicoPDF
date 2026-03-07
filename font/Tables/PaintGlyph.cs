@@ -33,5 +33,5 @@ public class PaintGlyph : IPaintFormat
         Paint.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 + GlyphID.SizeOf();
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Const.SizeofOffset24 + GlyphID.SizeOf();
 }

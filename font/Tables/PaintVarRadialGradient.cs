@@ -51,7 +51,7 @@ public class PaintVarRadialGradient : IPaintFormat
         ColorLine.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset.SizeOf() */Const.SizeofOffset24 +
+    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset */Const.SizeofOffset24 +
         X0.SizeOf() + Y0.SizeOf() +
         Radius0.SizeOf() +
         X1.SizeOf() + Y1.SizeOf() +

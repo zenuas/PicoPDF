@@ -42,7 +42,7 @@ public class PaintScaleAroundCenter : IPaintFormat
         Paint.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Const.SizeofOffset24 +
         ScaleX.SizeOf() + ScaleY.SizeOf() +
         CenterX.SizeOf() + CenterY.SizeOf();
 }

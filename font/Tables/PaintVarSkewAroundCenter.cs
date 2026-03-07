@@ -45,7 +45,7 @@ public class PaintVarSkewAroundCenter : IPaintFormat
         Paint.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset.SizeOf() */Const.SizeofOffset24 +
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Const.SizeofOffset24 +
         XSkewAngle.SizeOf() + YSkewAngle.SizeOf() +
         CenterX.SizeOf() + CenterY.SizeOf() +
         VarIndexBase.SizeOf();

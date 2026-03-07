@@ -45,7 +45,7 @@ public class PaintComposite : IPaintFormat
     }
 
     public int SizeOf() => Format.SizeOf() +
-        /* SourcePaintOffset.SizeOf() */Const.SizeofOffset24 +
+        /* SourcePaintOffset */Const.SizeofOffset24 +
         CompositeMode.SizeOf() +
-        /* BackdropPaintOffset.SizeOf() */Const.SizeofOffset24;
+        /* BackdropPaintOffset */Const.SizeofOffset24;
 }
