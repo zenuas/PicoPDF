@@ -96,10 +96,32 @@ public class ColorTable : IExportable
         stream.WriteUShortByBigEndian((ushort)LayerRecords.Length);
 
         offset += sizeof_BaseGlyphRecords + sizeof_LayerRecords;
+        using var baseGlyphList = new MemoryStream();
+        using var layerList = new MemoryStream();
         if (Version >= 1)
         {
-            stream.WriteUIntByBigEndian(BaseGlyphListRecord is { } ? (uint)offset : 0); offset += BaseGlyphListRecord?.SizeOf() ?? 0;
-            stream.WriteUIntByBigEndian(LayerListRecord is { } ? (uint)offset : 0); offset += LayerListRecord?.SizeOf() ?? 0;
+            if (BaseGlyphListRecord is { })
+            {
+                stream.WriteUIntByBigEndian((uint)offset);
+                BaseGlyphListRecord.WriteTo(baseGlyphList);
+                offset += (int)baseGlyphList.Length;
+            }
+            else
+            {
+                stream.WriteUIntByBigEndian(0);
+            }
+
+            if (LayerListRecord is { })
+            {
+                stream.WriteUIntByBigEndian((uint)offset);
+                LayerListRecord.WriteTo(layerList);
+                offset += (int)layerList.Length;
+
+            }
+            else
+            {
+                stream.WriteUIntByBigEndian(0);
+            }
             stream.WriteUIntByBigEndian(ClipListRecord is { } ? (uint)offset : 0); offset += ClipListRecord?.SizeOf() ?? 0;
             stream.WriteUIntByBigEndian(DeltaSetIndexMapRecord is { } ? (uint)offset : 0); offset += DeltaSetIndexMapRecord?.SizeOf() ?? 0;
             stream.WriteUIntByBigEndian(ItemVariationStoreRecord is { } ? (uint)offset : 0); offset += ItemVariationStoreRecord?.SizeOf() ?? 0;
@@ -109,8 +131,8 @@ public class ColorTable : IExportable
         LayerRecords.Each(x => x.WriteTo(stream));
         if (Version >= 1)
         {
-            if (BaseGlyphListRecord is { }) BaseGlyphListRecord.WriteTo(stream);
-            if (LayerListRecord is { }) LayerListRecord.WriteTo(stream);
+            if (BaseGlyphListRecord is { }) stream.Write(baseGlyphList.ToArray());
+            if (LayerListRecord is { }) stream.Write(layerList.ToArray());
             if (ClipListRecord is { }) ClipListRecord.WriteTo(stream);
             if (DeltaSetIndexMapRecord is { }) DeltaSetIndexMapRecord.WriteTo(stream);
             if (ItemVariationStoreRecord is { }) ItemVariationStoreRecord.WriteTo(stream);
