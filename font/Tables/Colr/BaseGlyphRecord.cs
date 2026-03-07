@@ -7,21 +7,21 @@ public class BaseGlyphRecord : IExportable
 {
     public required ushort GlyphID { get; init; }
     public required ushort FirstLayerIndex { get; init; }
-    public required ushort NumberLayers { get; init; }
+    public required ushort NumberOfLayers { get; init; }
 
     public static BaseGlyphRecord ReadFrom(Stream stream) => new()
     {
         GlyphID = stream.ReadUShortByBigEndian(),
         FirstLayerIndex = stream.ReadUShortByBigEndian(),
-        NumberLayers = stream.ReadUShortByBigEndian(),
+        NumberOfLayers = stream.ReadUShortByBigEndian(),
     };
 
     public void WriteTo(Stream stream)
     {
         stream.WriteUShortByBigEndian(GlyphID);
         stream.WriteUShortByBigEndian(FirstLayerIndex);
-        stream.WriteUShortByBigEndian(NumberLayers);
+        stream.WriteUShortByBigEndian(NumberOfLayers);
     }
 
-    public int SizeOf() => GlyphID.SizeOf() + FirstLayerIndex.SizeOf() + NumberLayers.SizeOf();
+    public int SizeOf() => GlyphID.SizeOf() + FirstLayerIndex.SizeOf() + NumberOfLayers.SizeOf();
 }

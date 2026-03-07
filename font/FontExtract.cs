@@ -282,7 +282,7 @@ public static class FontExtract
         var baseGlyphRecords = mapper.Select(x =>
             {
                 var record = colr.BaseGlyphRecords.Where(r => r.GlyphID == x.OldGID).FirstOrDefault();
-                return record is null ? null : new BaseGlyphRecord { GlyphID = (ushort)x.NewGID, FirstLayerIndex = record.FirstLayerIndex, NumberLayers = record.NumberLayers };
+                return record is null ? null : new BaseGlyphRecord { GlyphID = (ushort)x.NewGID, FirstLayerIndex = record.FirstLayerIndex, NumberOfLayers = record.NumberOfLayers };
             })
             .OfType<BaseGlyphRecord>()
             .ToArray();
