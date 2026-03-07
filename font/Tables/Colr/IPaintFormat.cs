@@ -1,0 +1,8 @@
+﻿namespace OpenType.Tables.Colr;
+
+public interface IPaintFormat : IExportable
+{
+    public byte Format { get; init; }
+
+    public int SizeOf();
+}

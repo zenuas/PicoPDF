@@ -1,5 +1,7 @@
 ﻿using Mina.Extension;
 using OpenType.Tables;
+using OpenType.Tables.CMap;
+using OpenType.Tables.Colr;
 using OpenType.Tables.PostScript;
 using OpenType.Tables.TrueType;
 using System;

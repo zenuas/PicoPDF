@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Tables.Colr;
 using System.IO;
 using System.Linq;
 

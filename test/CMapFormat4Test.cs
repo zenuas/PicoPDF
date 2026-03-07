@@ -1,4 +1,4 @@
-﻿using OpenType.Tables;
+﻿using OpenType.Tables.CMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
