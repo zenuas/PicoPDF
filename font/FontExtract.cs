@@ -283,9 +283,9 @@ public static class FontExtract
 
     public static IEnumerable<uint> GetGIDWithColorGlyph(IEnumerable<uint> chars, ColorTable colr)
     {
-        var gids = chars.ToHashSet();
         foreach (var x in chars) yield return x;
 
+        var gids = chars.ToHashSet();
         foreach (var record in colr.BaseGlyphRecords
             .Where(x => gids.Contains(x.GlyphID))
             .ToArray())
