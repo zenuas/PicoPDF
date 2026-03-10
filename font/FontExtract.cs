@@ -15,10 +15,12 @@ public static class FontExtract
     public static TrueTypeFont Extract(TrueTypeFont font, FontExtractOption opt)
     {
         var chars = opt.ExtractChars.Order().ToArray();
-        var char_glyph = chars
-            .Select((c, i) => (Char: c, Index: i + 1, GID: font.CharToGID(c)))
-            .ToDictionary(x => x.Char, x => (
-                    NewGID: x.Index,
+        var gids = chars.Select(font.CharToGID).To(xs => font.Color is { } ? GetGIDWithColorGlyph(xs, font.Color) : xs).ToArray();
+        var char_glyph = gids
+            .Select((c, i) => (Index: i, GID: c))
+            .ToDictionary(x => x.GID, x => (
+                    Char: x.Index < chars.Length ? chars[x.Index] : 0,
+                    NewGID: x.Index + 1,
                     OldGID: x.GID,
                     Glyph: font.Glyphs[x.GID],
                     HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
@@ -31,7 +33,7 @@ public static class FontExtract
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(chars.ToDictionary(x => x, x => (uint)char_glyph[x].NewGID));
+        var cmapN = CMapFormat12.CreateFormat(gids[0..chars.Length].ToDictionary(x => char_glyph[x].Char, x => (uint)char_glyph[x].NewGID));
         var cmap = CreateCMapTable(cmapN, opt);
         var colr = font.Color is null ? null : ExtractColorTable(font.Color, [.. char_glyph.Where(kv => kv.Value.NewGID > 0).Select(kv => (kv.Value.OldGID, (uint)kv.Value.NewGID))]);
 
@@ -78,11 +80,13 @@ public static class FontExtract
     public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
     {
         var chars = opt.ExtractChars.Order().ToArray();
+        var gids = chars.Select(font.CharToGID).To(xs => font.Color is { } ? GetGIDWithColorGlyph(xs, font.Color) : xs).ToArray();
         var charsets = font.CompactFontFormat.TopDict.Charsets.Try();
-        var char_glyph = chars
-            .Select((c, i) => (Char: c, Index: i + 1, GID: font.CharToGID(c)))
-            .ToDictionary(x => x.Char, x => (
-                    NewGID: x.Index,
+        var char_glyph = gids
+            .Select((c, i) => (Index: i, GID: c))
+            .ToDictionary(x => x.GID, x => (
+                    Char: x.Index < chars.Length ? chars[x.Index] : 0,
+                    NewGID: x.Index + 1,
                     OldGID: x.GID,
                     Glyph: font.CompactFontFormat.TopDict.CharStrings[x.GID],
                     Charset: x.GID == 0 ? (ushort)0 : charsets.Glyph[x.GID - 1],
@@ -108,7 +112,7 @@ public static class FontExtract
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(chars.ToDictionary(x => x, x => (uint)char_glyph[x].NewGID));
+        var cmapN = CMapFormat12.CreateFormat(gids[0..chars.Length].ToDictionary(x => char_glyph[x].Char, x => (uint)char_glyph[x].NewGID));
         var cmap = CreateCMapTable(cmapN, opt);
         var colr = font.Color is null ? null : ExtractColorTable(font.Color, [.. char_glyph.Where(kv => kv.Value.NewGID > 0).Select(kv => (kv.Value.OldGID, (uint)kv.Value.NewGID))]);
 
@@ -275,6 +279,22 @@ public static class FontExtract
             NumberOfTables = (ushort)cmaps.Length,
             EncodingRecords = cmaps.ToDictionary(x => x, _ => cmap_format),
         };
+    }
+
+    public static IEnumerable<uint> GetGIDWithColorGlyph(IEnumerable<uint> chars, ColorTable colr)
+    {
+        var gids = chars.ToHashSet();
+        foreach (var x in chars) yield return x;
+
+        foreach (var record in colr.BaseGlyphRecords
+            .Where(x => gids.Contains(x.GlyphID))
+            .ToArray())
+        {
+            foreach (var x in colr.LayerRecords[record.FirstLayerIndex..(record.FirstLayerIndex + record.NumberOfLayers)])
+            {
+                if (gids.Add(x.GlyphID)) yield return x.GlyphID;
+            }
+        }
     }
 
     public static ColorTable ExtractColorTable(ColorTable colr, (uint OldGID, uint NewGID)[] mapper)
