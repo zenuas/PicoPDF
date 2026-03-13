@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables.Colr;
 
-public class PaintSkew : IPaintFormat
+public class PaintSkew : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
     public required int PaintOffset { get; init; }

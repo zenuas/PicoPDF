@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables.Colr;
 
-public class PaintScaleUniformAroundCenter : IPaintFormat
+public class PaintScaleUniformAroundCenter : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
     public required int PaintOffset { get; init; }

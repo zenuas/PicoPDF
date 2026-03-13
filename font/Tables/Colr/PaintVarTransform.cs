@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables.Colr;
 
-public class PaintVarTransform : IPaintFormat
+public class PaintVarTransform : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
     public required int PaintOffset { get; init; }

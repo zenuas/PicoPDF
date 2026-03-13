@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables.Colr;
 
-public class PaintColrGlyph : IPaintFormat
+public class PaintColrGlyph : IPaintFormat, IHaveGlyph
 {
     public required byte Format { get; init; }
     public required ushort GlyphID { get; init; }
