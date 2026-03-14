@@ -164,7 +164,7 @@ public class BindSummaryMapper<T, TSection>
 
     public void KeyBreak(T data, int hierarchy_count, string[] allkeys, IPageSection page)
     {
-        for (int i = SummaryGoBack.Length - hierarchy_count; i < SummaryGoBack.Length; i++)
+        for (var i = SummaryGoBack.Length - hierarchy_count; i < SummaryGoBack.Length; i++)
         {
             SummaryGoBack[i].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
             SummaryGoBack[i].Clear();

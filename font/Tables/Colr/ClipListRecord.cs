@@ -35,7 +35,7 @@ public class ClipListRecord : IExportable
         stream.WriteByte(Format);
         stream.WriteUIntByBigEndian((uint)Clips.Length);
         var clipBoxOffset = SizeOfWithoutClipBoxFormats();
-        for (int i = 0; i < Clips.Length; i++)
+        for (var i = 0; i < Clips.Length; i++)
         {
             stream.WriteUShortByBigEndian(Clips[i].StartGlyphID);
             stream.WriteUShortByBigEndian(Clips[i].EndGlyphID);
