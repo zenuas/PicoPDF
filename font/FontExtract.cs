@@ -307,13 +307,13 @@ public static class FontExtract
                 switch (paint)
                 {
                     case PaintColrLayers p:
-                        layerList.AddRange(colr.LayerListRecord!.Paints[(int)p.FirstLayerIndex..(int)(p.FirstLayerIndex + p.NumberOfLayers)]);
                         paints.Add(p, new PaintColrLayers
                         {
                             Format = p.Format,
                             NumberOfLayers = p.NumberOfLayers,
-                            FirstLayerIndex = (uint)(layerList.Count - p.NumberOfLayers),
+                            FirstLayerIndex = (uint)layerList.Count,
                         });
+                        layerList.AddRange(colr.LayerListRecord!.Paints[(int)p.FirstLayerIndex..(int)(p.FirstLayerIndex + p.NumberOfLayers)]);
                         break;
 
                     case PaintSolid p:
