@@ -16,7 +16,7 @@ public class PaintVarSkewAroundCenter : IPaintFormat, IHavePaint
     public required uint VarIndexBase { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintVarSkewAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
+    public static PaintVarSkewAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -30,7 +30,7 @@ public class PaintVarSkewAroundCenter : IPaintFormat, IHavePaint
             CenterX = stream.ReadFWORD(),
             CenterY = stream.ReadFWORD(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache, affineCache),
         };
     }
 

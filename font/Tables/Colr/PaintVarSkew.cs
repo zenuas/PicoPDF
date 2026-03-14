@@ -14,7 +14,7 @@ public class PaintVarSkew : IPaintFormat, IHavePaint
     public required uint VarIndexBase { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintVarSkew ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
+    public static PaintVarSkew ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -26,7 +26,7 @@ public class PaintVarSkew : IPaintFormat, IHavePaint
             XSkewAngle = stream.ReadF2DOT14(),
             YSkewAngle = stream.ReadF2DOT14(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache, affineCache),
         };
     }
 

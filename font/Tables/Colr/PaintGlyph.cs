@@ -12,7 +12,7 @@ public class PaintGlyph : IPaintFormat, IHaveGlyph, IHavePaint
     public required ushort GlyphID { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintGlyph ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
+    public static PaintGlyph ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -22,7 +22,7 @@ public class PaintGlyph : IPaintFormat, IHaveGlyph, IHavePaint
             Format = 10,
             PaintOffset = paintOffset,
             GlyphID = stream.ReadUShortByBigEndian(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache, affineCache),
         };
     }
 

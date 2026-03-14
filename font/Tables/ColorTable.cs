@@ -53,12 +53,13 @@ public class ColorTable : IExportable
 
         var paintCache = new Dictionary<long, IPaintFormat>();
         var colorLineCache = new Dictionary<long, IColorLine>();
+        var affineCache = new Dictionary<long, IAffine2x3>();
 
         var baseGlyphList = baseGlyphListOffset == 0 ? null
-            : stream.SeekTo(position + baseGlyphListOffset).To(x => BaseGlyphListRecord.ReadFrom(x, paintCache, colorLineCache));
+            : stream.SeekTo(position + baseGlyphListOffset).To(x => BaseGlyphListRecord.ReadFrom(x, paintCache, colorLineCache, affineCache));
 
         var layerList = layerListOffset == 0 ? null
-            : stream.SeekTo(position + layerListOffset).To(x => LayerListRecord.ReadFrom(x, paintCache, colorLineCache));
+            : stream.SeekTo(position + layerListOffset).To(x => LayerListRecord.ReadFrom(x, paintCache, colorLineCache, affineCache));
 
         var clipList = clipListOffset == 0 ? null
             : stream.SeekTo(position + clipListOffset).To(ClipListRecord.ReadFrom);

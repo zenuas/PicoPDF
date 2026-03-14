@@ -1,10 +1,12 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using OpenType.Tables.Colr;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenType.Tables;
 
-public class VarAffine2x3 : IExportable
+public class VarAffine2x3 : IExportable, IAffine2x3
 {
     public required uint XX { get; init; }
     public required uint YX { get; init; }
@@ -13,6 +15,8 @@ public class VarAffine2x3 : IExportable
     public required uint DX { get; init; }
     public required uint DY { get; init; }
     public required uint VarIndexBase { get; init; }
+
+    public static VarAffine2x3 ReadFrom(Stream stream, long position, Dictionary<long, IAffine2x3> colorLineCache) => (VarAffine2x3)(colorLineCache.TryGetValue(position, out var line) ? line : colorLineCache[position] = ReadFrom(stream.SeekTo(position)));
 
     public static VarAffine2x3 ReadFrom(Stream stream) => new()
     {

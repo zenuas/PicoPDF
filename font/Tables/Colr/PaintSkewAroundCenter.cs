@@ -15,7 +15,7 @@ public class PaintSkewAroundCenter : IPaintFormat, IHavePaint
     public required short CenterY { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintSkewAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
+    public static PaintSkewAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -28,7 +28,7 @@ public class PaintSkewAroundCenter : IPaintFormat, IHavePaint
             YSkewAngle = stream.ReadF2DOT14(),
             CenterX = stream.ReadFWORD(),
             CenterY = stream.ReadFWORD(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache, affineCache),
         };
     }
 
