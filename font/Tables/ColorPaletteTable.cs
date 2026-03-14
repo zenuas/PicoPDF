@@ -72,9 +72,12 @@ public class ColorPaletteTable : IExportable
 
     public void WriteTo(Stream stream)
     {
-        var colorRecordsArrayOffset = Version.SizeOf() + NumberPaletteEntries.SizeOf() + NumberPalettes.SizeOf() + NumberColorRecords.SizeOf() + ColorRecordsArrayOffset.SizeOf()
-            + (sizeof(ushort) * ColorRecordIndices.Length)
-            + PaletteTypesArrayOffset.SizeOf() + PaletteLabelsArrayOffset.SizeOf() + PaletteEntryLabelsArrayOffset.SizeOf();
+        var colorRecordsArrayOffset = Version.SizeOf() +
+            NumberPaletteEntries.SizeOf() +
+            NumberPalettes.SizeOf() +
+            NumberColorRecords.SizeOf() +
+            ColorRecordsArrayOffset.SizeOf() +
+            (sizeof(ushort) * ColorRecordIndices.Length);
 
         stream.WriteUShortByBigEndian(Version);
         stream.WriteUShortByBigEndian(NumberPaletteEntries);
@@ -93,9 +96,14 @@ public class ColorPaletteTable : IExportable
             var sizeof_PaletteTypes = sizeof(uint) * PaletteTypes.Length;
             var sizeof_PaletteLabels = sizeof(ushort) * PaletteLabels.Length;
 
-            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffset + sizeof_ColorRecords));
-            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffset + sizeof_ColorRecords + sizeof_PaletteTypes));
-            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffset + sizeof_ColorRecords + sizeof_PaletteTypes + sizeof_PaletteLabels));
+            var colorRecordsArrayOffsetV1 = colorRecordsArrayOffset +
+                PaletteTypesArrayOffset.SizeOf() +
+                PaletteLabelsArrayOffset.SizeOf() +
+                PaletteEntryLabelsArrayOffset.SizeOf();
+
+            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffsetV1 + sizeof_ColorRecords));
+            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffsetV1 + sizeof_ColorRecords + sizeof_PaletteTypes));
+            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffsetV1 + sizeof_ColorRecords + sizeof_PaletteTypes + sizeof_PaletteLabels));
 
             ColorRecords.Each(x => x.WriteTo(stream));
             PaletteTypes.Each(stream.WriteUIntByBigEndian);
