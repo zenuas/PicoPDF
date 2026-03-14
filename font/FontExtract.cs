@@ -20,7 +20,7 @@ public static class FontExtract
             .Select((c, i) => (Index: i, GID: c))
             .ToDictionary(x => x.GID, x => (
                     Char: x.Index < chars.Length ? chars[x.Index] : 0,
-                    NewGID: x.Index + 1,
+                    NewGID: (uint)(x.Index + 1),
                     OldGID: x.GID,
                     Glyph: font.Glyphs[x.GID],
                     HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
@@ -28,25 +28,25 @@ public static class FontExtract
         var gid_glyph = char_glyph.Values
             .DistinctBy(x => x.NewGID)
             .ToDictionary(x => x.NewGID, x => (x.Glyph, x.HorizontalMetrics));
-        var num_of_glyph = gid_glyph.Keys.Max();
+        var num_of_glyph = (int)gid_glyph.Keys.Max();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(gids[0..chars.Length].ToDictionary(x => char_glyph[x].Char, x => (uint)char_glyph[x].NewGID));
+        var cmapN = CMapFormat12.CreateFormat(gids[0..chars.Length].ToDictionary(x => char_glyph[x].Char, x => char_glyph[x].NewGID));
         var cmap = CreateCMapTable(cmapN, opt);
-        var colr = font.Color is null ? null : ExtractColorTable(font.Color, [.. char_glyph.Where(kv => kv.Value.NewGID > 0).Select(kv => (kv.Value.OldGID, (uint)kv.Value.NewGID))]);
+        var colr = font.Color is null ? null : ExtractColorTable(font.Color, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
 
         var hmtx = new HorizontalMetricsTable()
         {
             Metrics = [.. Lists.RangeTo(1, num_of_glyph)
-                .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
+                .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
                 .Prepend(font.HorizontalMetrics.Metrics[0])],
             LeftSideBearing = [],
         };
 
         var glyf = Lists.RangeTo(1, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.Glyph : new NotdefGlyph())
+            .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.Glyph : new NotdefGlyph())
             .Prepend(new NotdefGlyph())
             .ToArray();
 
@@ -86,7 +86,7 @@ public static class FontExtract
             .Select((c, i) => (Index: i, GID: c))
             .ToDictionary(x => x.GID, x => (
                     Char: x.Index < chars.Length ? chars[x.Index] : 0,
-                    NewGID: x.Index + 1,
+                    NewGID: (uint)(x.Index + 1),
                     OldGID: x.GID,
                     Glyph: font.CompactFontFormat.TopDict.CharStrings[x.GID],
                     Charset: x.GID == 0 ? (ushort)0 : charsets.Glyph[x.GID - 1],
@@ -107,32 +107,32 @@ public static class FontExtract
             gid_glyph[0] = (font.CompactFontFormat.TopDict.CharStrings[0], 0, font.HorizontalMetrics.Metrics[0], font.CompactFontFormat.TopDict.FontDictSelect[0]);
             fdselect_index[font.CompactFontFormat.TopDict.FontDictSelect[0]] = 0;
         }
-        var num_of_glyph = gid_glyph.Keys.Max();
+        var num_of_glyph = (int)gid_glyph.Keys.Max();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(gids[0..chars.Length].ToDictionary(x => char_glyph[x].Char, x => (uint)char_glyph[x].NewGID));
+        var cmapN = CMapFormat12.CreateFormat(gids[0..chars.Length].ToDictionary(x => char_glyph[x].Char, x => char_glyph[x].NewGID));
         var cmap = CreateCMapTable(cmapN, opt);
-        var colr = font.Color is null ? null : ExtractColorTable(font.Color, [.. char_glyph.Where(kv => kv.Value.NewGID > 0).Select(kv => (kv.Value.OldGID, (uint)kv.Value.NewGID))]);
+        var colr = font.Color is null ? null : ExtractColorTable(font.Color, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
 
         var hmtx = new HorizontalMetricsTable()
         {
             Metrics = [.. Lists.RangeTo(1, num_of_glyph)
-                .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
+                .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
                 .Prepend(font.HorizontalMetrics.Metrics[0])],
             LeftSideBearing = [],
         };
 
         var char_strings = Lists.RangeTo(1, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.Glyph : font.CompactFontFormat.TopDict.CharStrings[0])
+            .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.Glyph : font.CompactFontFormat.TopDict.CharStrings[0])
             .Prepend(font.CompactFontFormat.TopDict.CharStrings[0])
             .ToArray();
 
         var fdselect = font.CompactFontFormat.TopDict.FontDictSelect.Length == 0
             ? []
             : Lists.RangeTo(0, num_of_glyph)
-                .Select(x => gid_glyph.TryGetValue(x, out var glyph) ? glyph.FontDictSelect : (byte)0)
+                .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.FontDictSelect : (byte)0)
                 .ToArray();
 
         var global_subr = font.CompactFontFormat.GlobalSubroutines;
@@ -142,7 +142,7 @@ public static class FontExtract
         fdselect_unique.Each(x => local_subr_mark.Add(fdselect_index[x], []));
         for (var i = 0; i < char_strings.Length; i++)
         {
-            var fdindex = gid_glyph[i].FontDictSelect;
+            var fdindex = gid_glyph[(uint)i].FontDictSelect;
             var local_subr = font.CompactFontFormat.TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
             var current_subr_mark = local_subr_mark[fdselect_index[fdindex]];
             Subroutine.EnumSubroutines(char_strings[i], local_subr, global_subr, (global, index) => (global ? global_subr_mark : current_subr_mark).Add(index));
@@ -346,27 +346,25 @@ public static class FontExtract
         }
     }
 
-    public static ColorTable ExtractColorTable(ColorTable colr, (uint OldGID, uint NewGID)[] mapper)
+    public static ColorTable ExtractColorTable(ColorTable colr, Dictionary<uint, uint> mapper)
     {
-        var baseGlyphRecords = mapper.Select(x =>
-            {
-                var record = colr.BaseGlyphRecords.Where(r => r.GlyphID == x.OldGID).FirstOrDefault();
-                return record is null ? null : new BaseGlyphRecord { GlyphID = (ushort)x.NewGID, FirstLayerIndex = record.FirstLayerIndex, NumberOfLayers = record.NumberOfLayers };
-            })
-            .OfType<BaseGlyphRecord>()
-            .ToArray();
+        var layerRecords = new List<LayerRecord>();
 
-        var layerRecords = colr.LayerRecords.Select(x =>
+        var baseGlyphRecords = colr.BaseGlyphRecords
+            .Where(kv => mapper.ContainsKey(kv.GlyphID))
+            .Select(record =>
             {
-                var record = mapper.Where(r => x.GlyphID == r.OldGID).FirstOrDefault();
-                return new LayerRecord { GlyphID = (ushort)(record == default ? 0 : record.NewGID), PaletteIndex = x.PaletteIndex };
+                layerRecords.AddRange(colr.LayerRecords[record.FirstLayerIndex..(record.FirstLayerIndex + record.NumberOfLayers)]
+                    .Select(x => new LayerRecord() { GlyphID = (ushort)mapper[x.GlyphID], PaletteIndex = x.PaletteIndex }));
+
+                return new BaseGlyphRecord { GlyphID = (ushort)mapper[record.GlyphID], FirstLayerIndex = (ushort)(layerRecords.Count - record.NumberOfLayers), NumberOfLayers = record.NumberOfLayers };
             })
             .ToArray();
 
         var baseGlyphListRecord = colr.BaseGlyphListRecord?.To(glyphs =>
             {
                 var glyphsWithIndex = glyphs.BaseGlyphPaintRecord.Zip(Lists.Sequence(0)).ToArray();
-                var newGlyphs = mapper.Select(x => glyphsWithIndex.Where(r => r.First.GlyphID == x.OldGID).FirstOrDefault())
+                var newGlyphs = mapper.Select(x => glyphsWithIndex.Where(r => mapper.ContainsKey(r.First.GlyphID)).FirstOrDefault())
                     .Where(x => x != default)
                     .ToArray();
 
@@ -384,9 +382,9 @@ public static class FontExtract
             NumberBaseGlyphRecords = (ushort)baseGlyphRecords.Length,
             BaseGlyphRecordsOffset = 0,
             LayerRecordsOffset = 0,
-            NumberLayerRecords = (ushort)layerRecords.Length,
+            NumberLayerRecords = (ushort)layerRecords.Count,
             BaseGlyphRecords = baseGlyphRecords,
-            LayerRecords = layerRecords,
+            LayerRecords = [.. layerRecords],
             BaseGlyphListRecord = baseGlyphListRecord?.BaseGlyphPaintRecord.Length == 0 ? null : baseGlyphListRecord,
             LayerListRecord = colr.LayerListRecord,
             ClipListRecord = colr.ClipListRecord,
