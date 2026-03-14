@@ -11,7 +11,7 @@ public class BaseGlyphListRecord : IExportable
     public required (ushort GlyphID, uint PaintOffset)[] BaseGlyphPaintRecord { get; init; }
     public required IPaintFormat[] Paints { get; init; }
 
-    public static BaseGlyphListRecord ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
+    public static BaseGlyphListRecord ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position;
 
@@ -22,7 +22,7 @@ public class BaseGlyphListRecord : IExportable
         {
             NumberBaseGlyphPaintRecords = numBaseGlyphPaintRecords,
             BaseGlyphPaintRecord = baseGlyphPaintRecord,
-            Paints = [.. baseGlyphPaintRecord.Select(x => PaintFormat.ReadFrom(stream, position + x.PaintOffset, paintCache))],
+            Paints = [.. baseGlyphPaintRecord.Select(x => PaintFormat.ReadFrom(stream, position + x.PaintOffset, paintCache, colorLineCache))],
         };
     }
 

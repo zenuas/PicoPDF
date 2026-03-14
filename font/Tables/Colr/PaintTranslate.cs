@@ -13,7 +13,7 @@ public class PaintTranslate : IPaintFormat, IHavePaint
     public required short DY { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintTranslate ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
+    public static PaintTranslate ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -24,7 +24,7 @@ public class PaintTranslate : IPaintFormat, IHavePaint
             PaintOffset = paintOffset,
             DX = stream.ReadFWORD(),
             DY = stream.ReadFWORD(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
         };
     }
 

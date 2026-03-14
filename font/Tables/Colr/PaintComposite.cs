@@ -14,7 +14,7 @@ public class PaintComposite : IPaintFormat
     public required IPaintFormat SourcePaint { get; init; }
     public required IPaintFormat BackdropPaint { get; init; }
 
-    public static PaintComposite ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
+    public static PaintComposite ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -27,8 +27,8 @@ public class PaintComposite : IPaintFormat
             SourcePaintOffset = sourcePaintOffset,
             CompositeMode = compositeMode,
             BackdropPaintOffset = backdropPaintOffset,
-            SourcePaint = PaintFormat.ReadFrom(stream, position + sourcePaintOffset, paintCache),
-            BackdropPaint = PaintFormat.ReadFrom(stream, position + backdropPaintOffset, paintCache),
+            SourcePaint = PaintFormat.ReadFrom(stream, position + sourcePaintOffset, paintCache, colorLineCache),
+            BackdropPaint = PaintFormat.ReadFrom(stream, position + backdropPaintOffset, paintCache, colorLineCache),
         };
     }
 

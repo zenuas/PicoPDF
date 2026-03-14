@@ -45,19 +45,20 @@ public class ColorTable : IExportable
             itemVariationStoreOffset = stream.ReadUIntByBigEndian();
         }
 
-        var paintCache = new Dictionary<long, IPaintFormat>();
-
         var baseGlyphRecords = baseGlyphRecordsOffset == 0 || numBaseGlyphRecords == 0 ? [] :
             stream.SeekTo(position + baseGlyphRecordsOffset).To(_ => Lists.Repeat(() => BaseGlyphRecord.ReadFrom(stream)).Take(numBaseGlyphRecords).ToArray());
 
         var layerRecords = layerRecordsOffset == 0 || numLayerRecords == 0 ? [] :
             stream.SeekTo(position + layerRecordsOffset).To(_ => Lists.Repeat(() => LayerRecord.ReadFrom(stream)).Take(numLayerRecords).ToArray());
 
+        var paintCache = new Dictionary<long, IPaintFormat>();
+        var colorLineCache = new Dictionary<long, IColorLine>();
+
         var baseGlyphList = baseGlyphListOffset == 0 ? null
-            : stream.SeekTo(position + baseGlyphListOffset).To(x => BaseGlyphListRecord.ReadFrom(x, paintCache));
+            : stream.SeekTo(position + baseGlyphListOffset).To(x => BaseGlyphListRecord.ReadFrom(x, paintCache, colorLineCache));
 
         var layerList = layerListOffset == 0 ? null
-            : stream.SeekTo(position + layerListOffset).To(x => LayerListRecord.ReadFrom(x, paintCache));
+            : stream.SeekTo(position + layerListOffset).To(x => LayerListRecord.ReadFrom(x, paintCache, colorLineCache));
 
         var clipList = clipListOffset == 0 ? null
             : stream.SeekTo(position + clipListOffset).To(ClipListRecord.ReadFrom);

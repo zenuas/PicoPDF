@@ -12,7 +12,7 @@ public class PaintRotate : IPaintFormat, IHavePaint
     public required ushort Angle { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintRotate ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
+    public static PaintRotate ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -22,7 +22,7 @@ public class PaintRotate : IPaintFormat, IHavePaint
             Format = 24,
             PaintOffset = paintOffset,
             Angle = stream.ReadF2DOT14(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
         };
     }
 

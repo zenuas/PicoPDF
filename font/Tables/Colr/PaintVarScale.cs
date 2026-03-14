@@ -14,7 +14,7 @@ public class PaintVarScale : IPaintFormat, IHavePaint
     public required uint VarIndexBase { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintVarScale ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
+    public static PaintVarScale ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -26,7 +26,7 @@ public class PaintVarScale : IPaintFormat, IHavePaint
             ScaleX = stream.ReadF2DOT14(),
             ScaleY = stream.ReadF2DOT14(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
         };
     }
 

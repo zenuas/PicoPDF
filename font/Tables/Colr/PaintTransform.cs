@@ -13,7 +13,7 @@ public class PaintTransform : IPaintFormat, IHavePaint
     public required IPaintFormat Paint { get; init; }
     public required Affine2x3 Transform { get; init; }
 
-    public static PaintTransform ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
+    public static PaintTransform ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -24,7 +24,7 @@ public class PaintTransform : IPaintFormat, IHavePaint
             Format = 12,
             PaintOffset = paintOffset,
             TransformOffset = transformOffset,
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
             Transform = Affine2x3.ReadFrom(stream.SeekTo(position + transformOffset)),
         };
     }

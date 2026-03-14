@@ -1,14 +1,18 @@
 ﻿using Mina.Extension;
+using OpenType.Tables.Colr;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace OpenType.Tables;
 
-public class VarColorLine : IExportable
+public class VarColorLine : IExportable, IColorLine
 {
     public required byte Extend { get; init; }
     public required ushort NumberOfStops { get; init; }
     public required VarColorStop[] ColorStops { get; init; }
+
+    public static VarColorLine ReadFrom(Stream stream, long position, Dictionary<long, IColorLine> colorLineCache) => (VarColorLine)(colorLineCache.TryGetValue(position, out var line) ? line : colorLineCache[position] = ReadFrom(stream.SeekTo(position)));
 
     public static VarColorLine ReadFrom(Stream stream)
     {

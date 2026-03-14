@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenType.Tables.Colr;
@@ -14,7 +15,7 @@ public class PaintSweepGradient : IPaintFormat
     public required ushort EndAngle { get; init; }
     public required ColorLine ColorLine { get; init; }
 
-    public static PaintSweepGradient ReadFrom(Stream stream)
+    public static PaintSweepGradient ReadFrom(Stream stream, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -27,7 +28,7 @@ public class PaintSweepGradient : IPaintFormat
             CenterY = stream.ReadFWORD(),
             StartAngle = stream.ReadF2DOT14(),
             EndAngle = stream.ReadF2DOT14(),
-            ColorLine = ColorLine.ReadFrom(stream.SeekTo(position + colorLineOffset)),
+            ColorLine = ColorLine.ReadFrom(stream, position + colorLineOffset, colorLineCache),
         };
     }
 

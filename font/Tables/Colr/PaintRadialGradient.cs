@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenType.Tables.Colr;
@@ -16,7 +17,7 @@ public class PaintRadialGradient : IPaintFormat
     public required ushort Radius1 { get; init; }
     public required ColorLine ColorLine { get; init; }
 
-    public static PaintRadialGradient ReadFrom(Stream stream)
+    public static PaintRadialGradient ReadFrom(Stream stream, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -31,7 +32,7 @@ public class PaintRadialGradient : IPaintFormat
             X1 = stream.ReadFWORD(),
             Y1 = stream.ReadFWORD(),
             Radius1 = stream.ReadUFWORD(),
-            ColorLine = ColorLine.ReadFrom(stream.SeekTo(position + colorLineOffset)),
+            ColorLine = ColorLine.ReadFrom(stream, position + colorLineOffset, colorLineCache),
         };
     }
 

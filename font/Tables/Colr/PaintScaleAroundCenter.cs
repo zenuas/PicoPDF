@@ -15,7 +15,7 @@ public class PaintScaleAroundCenter : IPaintFormat, IHavePaint
     public required short CenterY { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintScaleAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
+    public static PaintScaleAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -28,7 +28,7 @@ public class PaintScaleAroundCenter : IPaintFormat, IHavePaint
             ScaleY = stream.ReadF2DOT14(),
             CenterX = stream.ReadFWORD(),
             CenterY = stream.ReadFWORD(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
         };
     }
 

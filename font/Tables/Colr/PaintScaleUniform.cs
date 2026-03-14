@@ -12,7 +12,7 @@ public class PaintScaleUniform : IPaintFormat, IHavePaint
     public required ushort Scale { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintScaleUniform ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
+    public static PaintScaleUniform ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -22,7 +22,7 @@ public class PaintScaleUniform : IPaintFormat, IHavePaint
             Format = 20,
             PaintOffset = paintOffset,
             Scale = stream.ReadF2DOT14(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
         };
     }
 

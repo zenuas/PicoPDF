@@ -15,7 +15,7 @@ public class PaintVarRotateAroundCenter : IPaintFormat, IHavePaint
     public required uint VarIndexBase { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintVarRotateAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
+    public static PaintVarRotateAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -28,7 +28,7 @@ public class PaintVarRotateAroundCenter : IPaintFormat, IHavePaint
             CenterX = stream.ReadFWORD(),
             CenterY = stream.ReadFWORD(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache),
         };
     }
 
