@@ -751,7 +751,7 @@ public static class FontExtract
             BaseGlyphRecords = baseGlyphRecords,
             LayerRecords = [.. layerRecords],
             BaseGlyphListRecord = baseGlyphListRecord?.BaseGlyphPaintRecord.Length == 0 ? null : baseGlyphListRecord,
-            LayerListRecord = layerList.Count == 0 ? null : new LayerListRecord { NumberOfLayers = (uint)layerList.Count, PaintOffsets = [], Paints = [.. layerList.Select(x => paints[x])] },
+            LayerListRecord = layerList.Count == 0 ? null : new LayerListRecord { NumberOfLayers = 0, PaintOffsets = [], Paints = [.. layerList.Select(x => paints[x])] },
             ClipListRecord = clipListRecord?.Clips.Length == 0 ? null : clipListRecord,
             DeltaSetIndexMapRecord = colr.DeltaSetIndexMapRecord,
             ItemVariationStoreRecord = colr.ItemVariationStoreRecord,
