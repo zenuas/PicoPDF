@@ -286,63 +286,10 @@ public static class FontExtract
         foreach (var x in gids) yield return x;
 
         var hash = gids.ToHashSet();
+        var callback = new GIDTraverse() { GIDPreOrderCallback = hash.Add };
         foreach (var gid in gids)
         {
-            foreach (var x in EnumGIDWithColorGlyph(gid, colr, hash.Add)) yield return x;
-        }
-    }
-
-    public static IEnumerable<uint> EnumGIDWithColorGlyph(uint gid, ColorTable colr, Func<uint, bool> f)
-    {
-        foreach (var record in colr.BaseGlyphRecords.Where(x => x.GlyphID == gid))
-        {
-            foreach (var layer in colr.LayerRecords[record.FirstLayerIndex..(record.FirstLayerIndex + record.NumberOfLayers)])
-            {
-                if (f(layer.GlyphID))
-                {
-                    yield return layer.GlyphID;
-                    foreach (var x in EnumGIDWithColorGlyph(layer.GlyphID, colr, f)) yield return x;
-                }
-            }
-        }
-
-        for (var i = 0; i < colr.BaseGlyphListRecord?.BaseGlyphPaintRecord.Length; i++)
-        {
-            if (colr.BaseGlyphListRecord.BaseGlyphPaintRecord[i].GlyphID == gid)
-            {
-                foreach (var x in EnumGIDWithColorGlyph(colr.BaseGlyphListRecord.Paints[i], colr, f)) yield return x;
-            }
-        }
-    }
-
-    public static IEnumerable<uint> EnumGIDWithColorGlyph(IPaintFormat paint, ColorTable colr, Func<uint, bool> f)
-    {
-        if (paint is PaintColrLayers paintColrLayers)
-        {
-            foreach (var layer in colr.LayerRecords[(int)paintColrLayers.FirstLayerIndex..((int)paintColrLayers.FirstLayerIndex + paintColrLayers.NumberOfLayers)])
-            {
-                if (f(layer.GlyphID))
-                {
-                    yield return layer.GlyphID;
-                    foreach (var x in EnumGIDWithColorGlyph(layer.GlyphID, colr, f)) yield return x;
-                }
-            }
-        }
-        else if (paint is PaintComposite paintComposite)
-        {
-            foreach (var x in EnumGIDWithColorGlyph(paintComposite.SourcePaint, colr, f)) yield return x;
-            foreach (var x in EnumGIDWithColorGlyph(paintComposite.BackdropPaint, colr, f)) yield return x;
-        }
-        else
-        {
-            if (paint is IHaveGlyph glyph)
-            {
-                if (f(glyph.GlyphID)) yield return glyph.GlyphID;
-            }
-            if (paint is IHavePaint subpaint)
-            {
-                foreach (var x in EnumGIDWithColorGlyph(subpaint.Paint, colr, f)) yield return x;
-            }
+            foreach (var x in callback.EnumGID(gid, colr)) yield return x;
         }
     }
 
