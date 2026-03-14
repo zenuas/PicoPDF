@@ -782,19 +782,19 @@ public static class FontExtract
             },
             new()
             {
-                Version = cpal.Version,
-                NumberPaletteEntries = 0,
-                NumberPalettes = 0,
-                NumberColorRecords = 0,
+                Version = 0,
+                NumberOfPaletteEntries = 0,
+                NumberOfPalettes = 0,
+                NumberOfColorRecords = 0,
                 ColorRecordsArrayOffset = 0,
                 ColorRecordIndices = cpal.ColorRecordIndices,
                 PaletteTypesArrayOffset = 0,
                 PaletteLabelsArrayOffset = 0,
                 PaletteEntryLabelsArrayOffset = 0,
                 ColorRecords = [.. colorPalettes.OrderBy(kv => kv.Value).Select(kv => cpal.ColorRecords[kv.Key])],
-                PaletteTypes = cpal.PaletteTypes,
-                PaletteLabels = cpal.PaletteLabels,
-                PaletteEntryLabels = cpal.PaletteEntryLabels,
+                PaletteTypes = [],
+                PaletteLabels = [],
+                PaletteEntryLabels = [],
             });
     }
 }

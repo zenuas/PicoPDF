@@ -7,9 +7,9 @@ namespace OpenType.Tables;
 public class ColorPaletteTable : IExportable
 {
     public required ushort Version { get; init; }
-    public required ushort NumberPaletteEntries { get; init; }
-    public required ushort NumberPalettes { get; init; }
-    public required ushort NumberColorRecords { get; init; }
+    public required ushort NumberOfPaletteEntries { get; init; }
+    public required ushort NumberOfPalettes { get; init; }
+    public required ushort NumberOfColorRecords { get; init; }
     public required uint ColorRecordsArrayOffset { get; init; }
     public required ushort[] ColorRecordIndices { get; init; }
     public required uint PaletteTypesArrayOffset { get; init; }
@@ -55,9 +55,9 @@ public class ColorPaletteTable : IExportable
         return new()
         {
             Version = version,
-            NumberPaletteEntries = numPaletteEntries,
-            NumberPalettes = numPalettes,
-            NumberColorRecords = numColorRecords,
+            NumberOfPaletteEntries = numPaletteEntries,
+            NumberOfPalettes = numPalettes,
+            NumberOfColorRecords = numColorRecords,
             ColorRecordsArrayOffset = colorRecordsArrayOffset,
             ColorRecordIndices = colorRecordIndices,
             PaletteTypesArrayOffset = paletteTypesArrayOffset,
@@ -73,9 +73,9 @@ public class ColorPaletteTable : IExportable
     public void WriteTo(Stream stream)
     {
         var colorRecordsArrayOffset = Version.SizeOf() +
-            NumberPaletteEntries.SizeOf() +
-            NumberPalettes.SizeOf() +
-            NumberColorRecords.SizeOf() +
+            NumberOfPaletteEntries.SizeOf() +
+            NumberOfPalettes.SizeOf() +
+            NumberOfColorRecords.SizeOf() +
             ColorRecordsArrayOffset.SizeOf() +
             (sizeof(ushort) * ColorRecordIndices.Length);
 
