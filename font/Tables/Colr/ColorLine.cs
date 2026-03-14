@@ -25,7 +25,7 @@ public class ColorLine : IExportable
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Extend);
-        stream.WriteUShortByBigEndian(NumberOfStops);
+        stream.WriteUShortByBigEndian((ushort)ColorStops.Length);
         ColorStops.Each(x => x.WriteTo(stream));
     }
 
