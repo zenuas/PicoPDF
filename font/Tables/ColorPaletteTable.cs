@@ -80,9 +80,9 @@ public class ColorPaletteTable : IExportable
             (sizeof(ushort) * ColorRecordIndices.Length);
 
         stream.WriteUShortByBigEndian(Version);
-        stream.WriteUShortByBigEndian(NumberPaletteEntries);
-        stream.WriteUShortByBigEndian(NumberPalettes);
-        stream.WriteUShortByBigEndian(NumberColorRecords);
+        stream.WriteUShortByBigEndian((ushort)PaletteEntryLabels.Length);
+        stream.WriteUShortByBigEndian((ushort)ColorRecordIndices.Length);
+        stream.WriteUShortByBigEndian((ushort)ColorRecords.Length);
         stream.WriteUIntByBigEndian((uint)colorRecordsArrayOffset);
         ColorRecordIndices.Each(stream.WriteUShortByBigEndian);
 

@@ -35,7 +35,7 @@ public static class FontExtract
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
         var cmapN = CMapFormat12.CreateFormat(gids[0..chars.Length].ToDictionary(x => char_glyph[x].Char, x => char_glyph[x].NewGID));
         var cmap = CreateCMapTable(cmapN, opt);
-        var colr = font.Color is null ? null : ExtractColorTable(font.Color, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
+        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
 
         var hmtx = new HorizontalMetricsTable()
         {
@@ -71,7 +71,7 @@ public static class FontExtract
             ColorBitmapData = null,
             ColorBitmapLocation = null,
             Color = colr,
-            ColorPalette = font.ColorPalette,
+            ColorPalette = cpal,
             StandardBitmapGraphics = null,
             ScalableVectorGraphics = null,
         };
@@ -114,7 +114,7 @@ public static class FontExtract
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
         var cmapN = CMapFormat12.CreateFormat(gids[0..chars.Length].ToDictionary(x => char_glyph[x].Char, x => char_glyph[x].NewGID));
         var cmap = CreateCMapTable(cmapN, opt);
-        var colr = font.Color is null ? null : ExtractColorTable(font.Color, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
+        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
 
         var hmtx = new HorizontalMetricsTable()
         {
@@ -209,7 +209,7 @@ public static class FontExtract
             ColorBitmapData = null,
             ColorBitmapLocation = null,
             Color = colr,
-            ColorPalette = font.ColorPalette,
+            ColorPalette = cpal,
             StandardBitmapGraphics = null,
             ScalableVectorGraphics = null,
         };
@@ -293,11 +293,32 @@ public static class FontExtract
         }
     }
 
-    public static ColorTable ExtractColorTable(ColorTable colr, Dictionary<uint, uint> mapper)
+    public static (ColorTable, ColorPaletteTable) ExtractColorTable(ColorTable colr, ColorPaletteTable cpal, Dictionary<uint, uint> mapper)
     {
         var hash = new HashSet<uint>();
         var layerList = new List<IPaintFormat>();
         var paints = new Dictionary<IPaintFormat, IPaintFormat>();
+        var colorPalettes = new Dictionary<ushort, ushort>();
+
+        Func<ushort, ushort> addPalette = palette =>
+            palette == 0xFFFF ? (ushort)0xFFFF :
+            colorPalettes.ContainsKey(palette) ? colorPalettes[palette] :
+            colorPalettes[palette] = (ushort)colorPalettes.Count;
+
+        Func<ColorLine, ColorLine> addColorLine = colorLine => new()
+        {
+            Extend = colorLine.Extend,
+            NumberOfStops = 0,
+            ColorStops = [.. colorLine.ColorStops.Select(x => new ColorStop { StopOffset = x.StopOffset, PaletteIndex = addPalette(x.PaletteIndex), Alpha = x.Alpha })],
+        };
+
+        Func<VarColorLine, VarColorLine> addVarColorLine = colorLine => new()
+        {
+            Extend = colorLine.Extend,
+            NumberOfStops = 0,
+            ColorStops = [.. colorLine.ColorStops.Select(x => new VarColorStop() { StopOffset = x.StopOffset, PaletteIndex = addPalette(x.PaletteIndex), Alpha = x.Alpha, VarIndexBase = x.VarIndexBase })],
+        };
+
         _ = new GIDTraverse()
         {
             GIDPreOrderCallback = hash.Add,
@@ -320,7 +341,7 @@ public static class FontExtract
                         paints.Add(p, new PaintSolid
                         {
                             Format = p.Format,
-                            PaletteIndex = p.PaletteIndex,
+                            PaletteIndex = addPalette(p.PaletteIndex),
                             Alpha = p.Alpha,
                         });
                         break;
@@ -329,7 +350,7 @@ public static class FontExtract
                         paints.Add(p, new PaintVarSolid
                         {
                             Format = p.Format,
-                            PaletteIndex = p.PaletteIndex,
+                            PaletteIndex = addPalette(p.PaletteIndex),
                             Alpha = p.Alpha,
                             VarIndexBase = p.VarIndexBase,
                         });
@@ -346,7 +367,7 @@ public static class FontExtract
                             Y1 = p.Y1,
                             X2 = p.X2,
                             Y2 = p.Y2,
-                            ColorLine = p.ColorLine,
+                            ColorLine = addColorLine(p.ColorLine),
                         });
                         break;
 
@@ -361,7 +382,7 @@ public static class FontExtract
                             Y1 = p.Y1,
                             X2 = p.X2,
                             Y2 = p.Y2,
-                            ColorLine = p.ColorLine,
+                            ColorLine = addVarColorLine(p.ColorLine),
                             VarIndexBase = p.VarIndexBase,
                         });
                         break;
@@ -377,7 +398,7 @@ public static class FontExtract
                             X1 = p.X1,
                             Y1 = p.Y1,
                             Radius1 = p.Radius1,
-                            ColorLine = p.ColorLine,
+                            ColorLine = addColorLine(p.ColorLine),
                         });
                         break;
 
@@ -393,7 +414,7 @@ public static class FontExtract
                             Y1 = p.Y1,
                             Radius1 = p.Radius1,
                             VarIndexBase = p.VarIndexBase,
-                            ColorLine = p.ColorLine,
+                            ColorLine = addVarColorLine(p.ColorLine),
                         });
                         break;
 
@@ -406,7 +427,7 @@ public static class FontExtract
                             CenterY = p.CenterY,
                             StartAngle = p.StartAngle,
                             EndAngle = p.EndAngle,
-                            ColorLine = p.ColorLine,
+                            ColorLine = addColorLine(p.ColorLine),
                         });
                         break;
 
@@ -420,7 +441,7 @@ public static class FontExtract
                             StartAngle = p.StartAngle,
                             EndAngle = p.EndAngle,
                             VarIndexBase = p.VarIndexBase,
-                            ColorLine = p.ColorLine,
+                            ColorLine = addVarColorLine(p.ColorLine),
                         });
                         break;
 
@@ -743,20 +764,37 @@ public static class FontExtract
                 };
         });
 
-        return new()
-        {
-            Version = colr.Version,
-            NumberBaseGlyphRecords = 0,
-            BaseGlyphRecordsOffset = 0,
-            LayerRecordsOffset = 0,
-            NumberLayerRecords = 0,
-            BaseGlyphRecords = baseGlyphRecords,
-            LayerRecords = [.. layerRecords],
-            BaseGlyphListRecord = baseGlyphListRecord,
-            LayerListRecord = layerList.Count == 0 ? null : new LayerListRecord { NumberOfLayers = 0, PaintOffsets = [], Paints = [.. layerList.Select(x => paints[x])] },
-            ClipListRecord = clipListRecord,
-            DeltaSetIndexMapRecord = colr.DeltaSetIndexMapRecord,
-            ItemVariationStoreRecord = colr.ItemVariationStoreRecord,
-        };
+        return (
+            new()
+            {
+                Version = colr.Version,
+                NumberBaseGlyphRecords = 0,
+                BaseGlyphRecordsOffset = 0,
+                LayerRecordsOffset = 0,
+                NumberLayerRecords = 0,
+                BaseGlyphRecords = baseGlyphRecords,
+                LayerRecords = [.. layerRecords],
+                BaseGlyphListRecord = baseGlyphListRecord,
+                LayerListRecord = layerList.Count == 0 ? null : new LayerListRecord { NumberOfLayers = 0, PaintOffsets = [], Paints = [.. layerList.Select(x => paints[x])] },
+                ClipListRecord = clipListRecord,
+                DeltaSetIndexMapRecord = colr.DeltaSetIndexMapRecord,
+                ItemVariationStoreRecord = colr.ItemVariationStoreRecord,
+            },
+            new()
+            {
+                Version = cpal.Version,
+                NumberPaletteEntries = 0,
+                NumberPalettes = 0,
+                NumberColorRecords = 0,
+                ColorRecordsArrayOffset = 0,
+                ColorRecordIndices = cpal.ColorRecordIndices,
+                PaletteTypesArrayOffset = 0,
+                PaletteLabelsArrayOffset = 0,
+                PaletteEntryLabelsArrayOffset = 0,
+                ColorRecords = [.. colorPalettes.OrderBy(kv => kv.Value).Select(kv => cpal.ColorRecords[kv.Key])],
+                PaletteTypes = cpal.PaletteTypes,
+                PaletteLabels = cpal.PaletteLabels,
+                PaletteEntryLabels = cpal.PaletteEntryLabels,
+            });
     }
 }
