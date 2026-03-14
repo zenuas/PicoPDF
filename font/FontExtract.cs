@@ -715,12 +715,13 @@ public static class FontExtract
                     .Select(kv => (NewGID: kv.Value, PaintIndex: glyphsWithIndex[(ushort)kv.Key]))
                     .ToArray();
 
-                return new BaseGlyphListRecord
-                {
-                    NumberBaseGlyphPaintRecords = 0,
-                    BaseGlyphPaintRecord = [.. newGlyphs.Select(x => ((ushort)x.NewGID, 0U))],
-                    Paints = [.. newGlyphs.Select(x => paints[glyphs.Paints[x.PaintIndex]])],
-                };
+                return newGlyphs.Length == 0 ? null :
+                    new BaseGlyphListRecord
+                    {
+                        NumberBaseGlyphPaintRecords = 0,
+                        BaseGlyphPaintRecord = [.. newGlyphs.Select(x => ((ushort)x.NewGID, 0U))],
+                        Paints = [.. newGlyphs.Select(x => paints[glyphs.Paints[x.PaintIndex]])],
+                    };
             });
 
         var clipListRecord = colr.ClipListRecord?.To(record =>
@@ -732,13 +733,14 @@ public static class FontExtract
                 if (index >= 0) clipList.Add(((ushort)newGID, record.ClipBoxFormats[index]));
             }
 
-            return new ClipListRecord
-            {
-                Format = record.Format,
-                NumberClips = 0,
-                Clips = [.. clipList.Select(x => (x.GlyphID, x.GlyphID, 0))],
-                ClipBoxFormats = [.. clipList.Select(x => x.ClipBoxFormat)],
-            };
+            return clipList.Count == 0 ? null :
+                new ClipListRecord
+                {
+                    Format = record.Format,
+                    NumberClips = 0,
+                    Clips = [.. clipList.Select(x => (x.GlyphID, x.GlyphID, 0))],
+                    ClipBoxFormats = [.. clipList.Select(x => x.ClipBoxFormat)],
+                };
         });
 
         return new()
@@ -750,9 +752,9 @@ public static class FontExtract
             NumberLayerRecords = 0,
             BaseGlyphRecords = baseGlyphRecords,
             LayerRecords = [.. layerRecords],
-            BaseGlyphListRecord = baseGlyphListRecord?.BaseGlyphPaintRecord.Length == 0 ? null : baseGlyphListRecord,
+            BaseGlyphListRecord = baseGlyphListRecord,
             LayerListRecord = layerList.Count == 0 ? null : new LayerListRecord { NumberOfLayers = 0, PaintOffsets = [], Paints = [.. layerList.Select(x => paints[x])] },
-            ClipListRecord = clipListRecord?.Clips.Length == 0 ? null : clipListRecord,
+            ClipListRecord = clipListRecord,
             DeltaSetIndexMapRecord = colr.DeltaSetIndexMapRecord,
             ItemVariationStoreRecord = colr.ItemVariationStoreRecord,
         };
