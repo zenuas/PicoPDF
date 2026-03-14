@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenType.Tables.Colr;
@@ -12,7 +13,7 @@ public class PaintTranslate : IPaintFormat, IHavePaint
     public required short DY { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintTranslate ReadFrom(Stream stream)
+    public static PaintTranslate ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -23,7 +24,7 @@ public class PaintTranslate : IPaintFormat, IHavePaint
             PaintOffset = paintOffset,
             DX = stream.ReadFWORD(),
             DY = stream.ReadFWORD(),
-            Paint = PaintFormat.ReadFrom(stream.SeekTo(position + paintOffset)),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
         };
     }
 

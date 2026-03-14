@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,7 +11,7 @@ public class LayerListRecord : IExportable
     public required uint[] PaintOffsets { get; init; }
     public required IPaintFormat[] Paints { get; init; }
 
-    public static LayerListRecord ReadFrom(Stream stream)
+    public static LayerListRecord ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
     {
         var position = stream.Position;
 
@@ -21,7 +22,7 @@ public class LayerListRecord : IExportable
         {
             NumberOfLayers = numLayers,
             PaintOffsets = paintOffsets,
-            Paints = [.. paintOffsets.Select(x => PaintFormat.ReadFrom(stream.SeekTo(position + x)))],
+            Paints = [.. paintOffsets.Select(x => PaintFormat.ReadFrom(stream, position + x, paintCache))],
         };
     }
 

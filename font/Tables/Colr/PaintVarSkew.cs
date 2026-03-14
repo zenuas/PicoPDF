@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenType.Tables.Colr;
@@ -13,7 +14,7 @@ public class PaintVarSkew : IPaintFormat, IHavePaint
     public required uint VarIndexBase { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintVarSkew ReadFrom(Stream stream)
+    public static PaintVarSkew ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -25,7 +26,7 @@ public class PaintVarSkew : IPaintFormat, IHavePaint
             XSkewAngle = stream.ReadF2DOT14(),
             YSkewAngle = stream.ReadF2DOT14(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
-            Paint = PaintFormat.ReadFrom(stream.SeekTo(position + paintOffset)),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
         };
     }
 

@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenType.Tables.Colr;
@@ -12,7 +13,7 @@ public class PaintTransform : IPaintFormat, IHavePaint
     public required IPaintFormat Paint { get; init; }
     public required Affine2x3 Transform { get; init; }
 
-    public static PaintTransform ReadFrom(Stream stream)
+    public static PaintTransform ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -23,7 +24,7 @@ public class PaintTransform : IPaintFormat, IHavePaint
             Format = 12,
             PaintOffset = paintOffset,
             TransformOffset = transformOffset,
-            Paint = PaintFormat.ReadFrom(stream.SeekTo(position + paintOffset)),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
             Transform = Affine2x3.ReadFrom(stream.SeekTo(position + transformOffset)),
         };
     }

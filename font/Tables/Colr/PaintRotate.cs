@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenType.Tables.Colr;
@@ -11,7 +12,7 @@ public class PaintRotate : IPaintFormat, IHavePaint
     public required ushort Angle { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintRotate ReadFrom(Stream stream)
+    public static PaintRotate ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -21,7 +22,7 @@ public class PaintRotate : IPaintFormat, IHavePaint
             Format = 24,
             PaintOffset = paintOffset,
             Angle = stream.ReadF2DOT14(),
-            Paint = PaintFormat.ReadFrom(stream.SeekTo(position + paintOffset)),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
         };
     }
 

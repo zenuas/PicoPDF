@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenType.Tables.Colr;
@@ -13,7 +14,7 @@ public class PaintComposite : IPaintFormat
     public required IPaintFormat SourcePaint { get; init; }
     public required IPaintFormat BackdropPaint { get; init; }
 
-    public static PaintComposite ReadFrom(Stream stream)
+    public static PaintComposite ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -26,8 +27,8 @@ public class PaintComposite : IPaintFormat
             SourcePaintOffset = sourcePaintOffset,
             CompositeMode = compositeMode,
             BackdropPaintOffset = backdropPaintOffset,
-            SourcePaint = PaintFormat.ReadFrom(stream.SeekTo(position + sourcePaintOffset)),
-            BackdropPaint = PaintFormat.ReadFrom(stream.SeekTo(position + backdropPaintOffset)),
+            SourcePaint = PaintFormat.ReadFrom(stream, position + sourcePaintOffset, paintCache),
+            BackdropPaint = PaintFormat.ReadFrom(stream, position + backdropPaintOffset, paintCache),
         };
     }
 

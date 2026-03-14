@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenType.Tables.Colr;
@@ -15,7 +16,7 @@ public class PaintVarScaleAroundCenter : IPaintFormat, IHavePaint
     public required uint VarIndexBase { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintVarScaleAroundCenter ReadFrom(Stream stream)
+    public static PaintVarScaleAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -29,7 +30,7 @@ public class PaintVarScaleAroundCenter : IPaintFormat, IHavePaint
             CenterX = stream.ReadFWORD(),
             CenterY = stream.ReadFWORD(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
-            Paint = PaintFormat.ReadFrom(stream.SeekTo(position + paintOffset)),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
         };
     }
 

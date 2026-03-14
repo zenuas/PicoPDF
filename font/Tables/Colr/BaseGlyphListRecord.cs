@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,7 +11,7 @@ public class BaseGlyphListRecord : IExportable
     public required (ushort GlyphID, uint PaintOffset)[] BaseGlyphPaintRecord { get; init; }
     public required IPaintFormat[] Paints { get; init; }
 
-    public static BaseGlyphListRecord ReadFrom(Stream stream)
+    public static BaseGlyphListRecord ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
     {
         var position = stream.Position;
 
@@ -21,7 +22,7 @@ public class BaseGlyphListRecord : IExportable
         {
             NumberBaseGlyphPaintRecords = numBaseGlyphPaintRecords,
             BaseGlyphPaintRecord = baseGlyphPaintRecord,
-            Paints = [.. baseGlyphPaintRecord.Select(x => PaintFormat.ReadFrom(stream.SeekTo(position + x.PaintOffset)))],
+            Paints = [.. baseGlyphPaintRecord.Select(x => PaintFormat.ReadFrom(stream, position + x.PaintOffset, paintCache))],
         };
     }
 

@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenType.Tables.Colr;
@@ -12,7 +13,7 @@ public class PaintScale : IPaintFormat, IHavePaint
     public required ushort ScaleY { get; init; }
     public required IPaintFormat Paint { get; init; }
 
-    public static PaintScale ReadFrom(Stream stream)
+    public static PaintScale ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache)
     {
         var position = stream.Position - /* sizeof(Format) */sizeof(byte);
 
@@ -23,7 +24,7 @@ public class PaintScale : IPaintFormat, IHavePaint
             PaintOffset = paintOffset,
             ScaleX = stream.ReadF2DOT14(),
             ScaleY = stream.ReadF2DOT14(),
-            Paint = PaintFormat.ReadFrom(stream.SeekTo(position + paintOffset)),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache),
         };
     }
 
