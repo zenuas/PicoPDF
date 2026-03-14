@@ -723,6 +723,24 @@ public static class FontExtract
                 };
             });
 
+        var clipListRecord = colr.ClipListRecord?.To(record =>
+        {
+            var clipList = new List<(ushort GlyphID, ClipBoxFormat ClipBoxFormat)>();
+            foreach (var (oldGID, newGID) in mapper.OrderBy(kv => kv.Value))
+            {
+                var index = record.Clips.FindFirstIndex(x => x.StartGlyphID <= oldGID && oldGID <= x.EndGlyphID);
+                if (index >= 0) clipList.Add(((ushort)newGID, record.ClipBoxFormats[index]));
+            }
+
+            return new ClipListRecord
+            {
+                Format = record.Format,
+                NumberClips = 0,
+                Clips = [.. clipList.Select(x => (x.GlyphID, x.GlyphID, 0))],
+                ClipBoxFormats = [.. clipList.Select(x => x.ClipBoxFormat)],
+            };
+        });
+
         return new()
         {
             Version = colr.Version,
@@ -734,7 +752,7 @@ public static class FontExtract
             LayerRecords = [.. layerRecords],
             BaseGlyphListRecord = baseGlyphListRecord?.BaseGlyphPaintRecord.Length == 0 ? null : baseGlyphListRecord,
             LayerListRecord = layerList.Count == 0 ? null : new LayerListRecord { NumberOfLayers = (uint)layerList.Count, PaintOffsets = [], Paints = [.. layerList.Select(x => paints[x])] },
-            ClipListRecord = colr.ClipListRecord,
+            ClipListRecord = clipListRecord?.Clips.Length == 0 ? null : clipListRecord,
             DeltaSetIndexMapRecord = colr.DeltaSetIndexMapRecord,
             ItemVariationStoreRecord = colr.ItemVariationStoreRecord,
         };
