@@ -285,8 +285,7 @@ public static class FontExtract
     {
         foreach (var x in gids) yield return x;
 
-        var hash = gids.ToHashSet();
-        var callback = new GIDTraverse() { GIDPreOrderCallback = hash.Add };
+        var callback = new GIDTraverse() { GIDPreOrderCallback = gids.ToHashSet().Add };
         foreach (var gid in gids)
         {
             foreach (var x in callback.EnumGID(gid, colr)) yield return x;
@@ -295,9 +294,6 @@ public static class FontExtract
 
     public static (ColorTable, ColorPaletteTable) ExtractColorTable(ColorTable colr, ColorPaletteTable cpal, Dictionary<uint, uint> mapper)
     {
-        var hash = new HashSet<uint>();
-        var layerList = new List<IPaintFormat>();
-        var paints = new Dictionary<IPaintFormat, IPaintFormat>();
         var colorPalettes = new Dictionary<ushort, ushort>();
 
         Func<ushort, ushort> addPalette = palette =>
@@ -319,9 +315,11 @@ public static class FontExtract
             ColorStops = [.. colorLine.ColorStops.Select(x => new VarColorStop() { StopOffset = x.StopOffset, PaletteIndex = addPalette(x.PaletteIndex), Alpha = x.Alpha, VarIndexBase = x.VarIndexBase })],
         };
 
+        var layerList = new List<IPaintFormat>();
+        var paints = new Dictionary<IPaintFormat, IPaintFormat>();
         _ = new GIDTraverse()
         {
-            GIDPreOrderCallback = hash.Add,
+            GIDPreOrderCallback = new HashSet<uint>().Add,
             PaintPostOrderCallback = paint =>
             {
                 if (paints.ContainsKey(paint)) return;
