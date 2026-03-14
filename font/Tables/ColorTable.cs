@@ -20,7 +20,6 @@ public class ColorTable : IExportable
     public required DeltaSetIndexMapRecord? DeltaSetIndexMapRecord { get; init; }
     public required ItemVariationStoreRecord? ItemVariationStoreRecord { get; init; }
 
-
     public static ColorTable ReadFrom(Stream stream)
     {
         var position = stream.Position;
