@@ -61,7 +61,7 @@ public class CMapFormat12 : ICMapFormat
         for (var i = 1; i < chars.Length; i++)
         {
             if (start + i == chars[i] && gid + i == char_gid[chars[i]]) continue;
-            return [((uint)start, (uint)(start + i), gid), .. CreateStartEnds(chars[i..], char_gid)];
+            return [((uint)start, (uint)(start + i - 1), gid), .. CreateStartEnds(chars[i..], char_gid)];
         }
         return [((uint)start, (uint)chars[^1], gid)];
     }
