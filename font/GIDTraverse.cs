@@ -1,4 +1,5 @@
-﻿using OpenType.Tables;
+﻿using Mina.Extension;
+using OpenType.Tables;
 using OpenType.Tables.Colr;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,8 @@ public class GIDTraverse
 {
     public required Func<uint, bool> GIDPreOrderCallback { get; init; }
     public Action<IPaintFormat>? PaintPostOrderCallback { get; init; }
+
+    public uint[] Traverse(IEnumerable<uint> gids, ColorTable colr) => [.. gids.Select(x => EnumGID(x, colr)).Flatten()];
 
     public IEnumerable<uint> EnumGID(uint gid, ColorTable colr)
     {
@@ -38,13 +41,9 @@ public class GIDTraverse
     {
         if (paint is PaintColrLayers paintColrLayers)
         {
-            foreach (var layer in colr.LayerRecords[(int)paintColrLayers.FirstLayerIndex..((int)paintColrLayers.FirstLayerIndex + paintColrLayers.NumberOfLayers)])
+            foreach (var layer in colr.LayerListRecord!.Paints[(int)paintColrLayers.FirstLayerIndex..((int)paintColrLayers.FirstLayerIndex + paintColrLayers.NumberOfLayers)])
             {
-                if (GIDPreOrderCallback(layer.GlyphID))
-                {
-                    yield return layer.GlyphID;
-                    foreach (var x in EnumGID(layer.GlyphID, colr)) yield return x;
-                }
+                foreach (var x in EnumPaint(layer, colr)) yield return x;
             }
         }
         else if (paint is PaintComposite paintComposite)

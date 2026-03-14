@@ -295,6 +295,405 @@ public static class FontExtract
 
     public static ColorTable ExtractColorTable(ColorTable colr, Dictionary<uint, uint> mapper)
     {
+        var hash = new HashSet<uint>();
+        var layerList = new List<IPaintFormat>();
+        var paints = new Dictionary<IPaintFormat, IPaintFormat>();
+        _ = new GIDTraverse()
+        {
+            GIDPreOrderCallback = hash.Add,
+            PaintPostOrderCallback = paint =>
+            {
+                if (paints.ContainsKey(paint)) return;
+                switch (paint)
+                {
+                    case PaintColrLayers p:
+                        layerList.AddRange(colr.LayerListRecord!.Paints[(int)p.FirstLayerIndex..(int)(p.FirstLayerIndex + p.NumberOfLayers)]);
+                        paints.Add(p, new PaintColrLayers
+                        {
+                            Format = p.Format,
+                            NumberOfLayers = p.NumberOfLayers,
+                            FirstLayerIndex = (uint)(layerList.Count - p.NumberOfLayers),
+                        });
+                        break;
+
+                    case PaintSolid p:
+                        paints.Add(p, new PaintSolid
+                        {
+                            Format = p.Format,
+                            PaletteIndex = p.PaletteIndex,
+                            Alpha = p.Alpha,
+                        });
+                        break;
+
+                    case PaintVarSolid p:
+                        paints.Add(p, new PaintVarSolid
+                        {
+                            Format = p.Format,
+                            PaletteIndex = p.PaletteIndex,
+                            Alpha = p.Alpha,
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintLinearGradient p:
+                        paints.Add(p, new PaintLinearGradient
+                        {
+                            Format = p.Format,
+                            ColorLineOffset = 0,
+                            X0 = p.X0,
+                            Y0 = p.Y0,
+                            X1 = p.X1,
+                            Y1 = p.Y1,
+                            X2 = p.X2,
+                            Y2 = p.Y2,
+                            ColorLine = p.ColorLine,
+                        });
+                        break;
+
+                    case PaintVarLinearGradient p:
+                        paints.Add(p, new PaintVarLinearGradient
+                        {
+                            Format = p.Format,
+                            ColorLineOffset = 0,
+                            X0 = p.X0,
+                            Y0 = p.Y0,
+                            X1 = p.X1,
+                            Y1 = p.Y1,
+                            X2 = p.X2,
+                            Y2 = p.Y2,
+                            ColorLine = p.ColorLine,
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintRadialGradient p:
+                        paints.Add(p, new PaintRadialGradient
+                        {
+                            Format = p.Format,
+                            ColorLineOffset = 0,
+                            X0 = p.X0,
+                            Y0 = p.Y0,
+                            Radius0 = p.Radius0,
+                            X1 = p.X1,
+                            Y1 = p.Y1,
+                            Radius1 = p.Radius1,
+                            ColorLine = p.ColorLine,
+                        });
+                        break;
+
+                    case PaintVarRadialGradient p:
+                        paints.Add(p, new PaintVarRadialGradient
+                        {
+                            Format = p.Format,
+                            ColorLineOffset = 0,
+                            X0 = p.X0,
+                            Y0 = p.Y0,
+                            Radius0 = p.Radius0,
+                            X1 = p.X1,
+                            Y1 = p.Y1,
+                            Radius1 = p.Radius1,
+                            VarIndexBase = p.VarIndexBase,
+                            ColorLine = p.ColorLine,
+                        });
+                        break;
+
+                    case PaintSweepGradient p:
+                        paints.Add(p, new PaintSweepGradient
+                        {
+                            Format = p.Format,
+                            ColorLineOffset = 0,
+                            CenterX = p.CenterX,
+                            CenterY = p.CenterY,
+                            StartAngle = p.StartAngle,
+                            EndAngle = p.EndAngle,
+                            ColorLine = p.ColorLine,
+                        });
+                        break;
+
+                    case PaintVarSweepGradient p:
+                        paints.Add(p, new PaintVarSweepGradient
+                        {
+                            Format = p.Format,
+                            ColorLineOffset = 0,
+                            CenterX = p.CenterX,
+                            CenterY = p.CenterY,
+                            StartAngle = p.StartAngle,
+                            EndAngle = p.EndAngle,
+                            VarIndexBase = p.VarIndexBase,
+                            ColorLine = p.ColorLine,
+                        });
+                        break;
+
+                    case PaintGlyph p:
+                        paints.Add(p, new PaintGlyph
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            GlyphID = (ushort)mapper[p.GlyphID],
+                            Paint = paints[p.Paint],
+                        });
+                        break;
+
+                    case PaintColrGlyph p:
+                        paints.Add(p, new PaintColrGlyph
+                        {
+                            Format = p.Format,
+                            GlyphID = (ushort)mapper[p.GlyphID],
+                        });
+                        break;
+
+                    case PaintTransform p:
+                        paints.Add(p, new PaintTransform
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            TransformOffset = 0,
+                            Paint = paints[p.Paint],
+                            Transform = p.Transform,
+                        });
+                        break;
+
+                    case PaintVarTransform p:
+                        paints.Add(p, new PaintVarTransform
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            TransformOffset = 0,
+                            Paint = paints[p.Paint],
+                            Transform = p.Transform,
+                        });
+                        break;
+
+                    case PaintTranslate p:
+                        paints.Add(p, new PaintTranslate
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            DX = p.DX,
+                            DY = p.DY,
+                            Paint = paints[p.Paint],
+                        });
+                        break;
+
+                    case PaintVarTranslate p:
+                        paints.Add(p, new PaintVarTranslate
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            DX = p.DX,
+                            DY = p.DY,
+                            Paint = paints[p.Paint],
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintScale p:
+                        paints.Add(p, new PaintScale
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            ScaleX = p.ScaleX,
+                            ScaleY = p.ScaleY,
+                            Paint = paints[p.Paint],
+                        });
+                        break;
+
+                    case PaintVarScale p:
+                        paints.Add(p, new PaintVarScale
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            ScaleX = p.ScaleX,
+                            ScaleY = p.ScaleY,
+                            Paint = paints[p.Paint],
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintScaleAroundCenter p:
+                        paints.Add(p, new PaintScaleAroundCenter
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            ScaleX = p.ScaleX,
+                            ScaleY = p.ScaleY,
+                            CenterX = p.CenterX,
+                            CenterY = p.CenterY,
+                            Paint = paints[p.Paint],
+                        });
+                        break;
+
+                    case PaintVarScaleAroundCenter p:
+                        paints.Add(p, new PaintVarScaleAroundCenter
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            ScaleX = p.ScaleX,
+                            ScaleY = p.ScaleY,
+                            CenterX = p.CenterX,
+                            CenterY = p.CenterY,
+                            Paint = paints[p.Paint],
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintScaleUniform p:
+                        paints.Add(p, new PaintScaleUniform
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            Scale = p.Scale,
+                            Paint = paints[p.Paint],
+                        });
+                        break;
+
+                    case PaintVarScaleUniform p:
+                        paints.Add(p, new PaintVarScaleUniform
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            Scale = p.Scale,
+                            Paint = paints[p.Paint],
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintScaleUniformAroundCenter p:
+                        paints.Add(p, new PaintScaleUniformAroundCenter
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            Scale = p.Scale,
+                            CenterX = p.CenterX,
+                            CenterY = p.CenterY,
+                            Paint = paints[p.Paint],
+                        });
+                        break;
+
+                    case PaintVarScaleUniformAroundCenter p:
+                        paints.Add(p, new PaintVarScaleUniformAroundCenter
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            Scale = p.Scale,
+                            CenterX = p.CenterX,
+                            CenterY = p.CenterY,
+                            Paint = paints[p.Paint],
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintRotate p:
+                        paints.Add(p, new PaintRotate
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            Angle = p.Angle,
+                            Paint = paints[p.Paint],
+                        });
+                        break;
+
+                    case PaintVarRotate p:
+                        paints.Add(p, new PaintVarRotate
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            Angle = p.Angle,
+                            Paint = paints[p.Paint],
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintRotateAroundCenter p:
+                        paints.Add(p, new PaintRotateAroundCenter
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            Angle = p.Angle,
+                            CenterX = p.CenterX,
+                            CenterY = p.CenterY,
+                            Paint = paints[p.Paint],
+                        });
+                        break;
+
+                    case PaintVarRotateAroundCenter p:
+                        paints.Add(p, new PaintVarRotateAroundCenter
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            Angle = p.Angle,
+                            CenterX = p.CenterX,
+                            CenterY = p.CenterY,
+                            Paint = paints[p.Paint],
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintSkew p:
+                        paints.Add(p, new PaintSkew
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            XSkewAngle = p.XSkewAngle,
+                            YSkewAngle = p.YSkewAngle,
+                            Paint = paints[p.Paint],
+                        });
+                        break;
+
+                    case PaintVarSkew p:
+                        paints.Add(p, new PaintVarSkew
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            XSkewAngle = p.XSkewAngle,
+                            YSkewAngle = p.YSkewAngle,
+                            Paint = paints[p.Paint],
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintSkewAroundCenter p:
+                        paints.Add(p, new PaintSkewAroundCenter
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            XSkewAngle = p.XSkewAngle,
+                            YSkewAngle = p.YSkewAngle,
+                            CenterX = p.CenterX,
+                            CenterY = p.CenterY,
+                            Paint = paints[p.Paint],
+                        });
+                        break;
+
+                    case PaintVarSkewAroundCenter p:
+                        paints.Add(p, new PaintVarSkewAroundCenter
+                        {
+                            Format = p.Format,
+                            PaintOffset = 0,
+                            XSkewAngle = p.XSkewAngle,
+                            YSkewAngle = p.YSkewAngle,
+                            CenterX = p.CenterX,
+                            CenterY = p.CenterY,
+                            Paint = paints[p.Paint],
+                            VarIndexBase = p.VarIndexBase,
+                        });
+                        break;
+
+                    case PaintComposite p:
+                        paints.Add(p, new PaintComposite
+                        {
+                            Format = p.Format,
+                            SourcePaintOffset = 0,
+                            CompositeMode = p.CompositeMode,
+                            BackdropPaintOffset = 0,
+                            SourcePaint = paints[p.SourcePaint],
+                            BackdropPaint = paints[p.BackdropPaint],
+                        });
+                        break;
+                }
+            },
+        }.Traverse(mapper.Keys, colr);
+
         var layerRecords = new List<LayerRecord>();
 
         var baseGlyphRecords = colr.BaseGlyphRecords
@@ -310,16 +709,17 @@ public static class FontExtract
 
         var baseGlyphListRecord = colr.BaseGlyphListRecord?.To(glyphs =>
             {
-                var glyphsWithIndex = glyphs.BaseGlyphPaintRecord.Zip(Lists.Sequence(0)).ToArray();
-                var newGlyphs = mapper.Select(x => glyphsWithIndex.Where(r => mapper.ContainsKey(r.First.GlyphID)).FirstOrDefault())
-                    .Where(x => x != default)
+                var glyphsWithIndex = glyphs.BaseGlyphPaintRecord.Zip(Lists.Sequence(0)).ToDictionary(x => x.First.GlyphID, x => x.Second);
+                var newGlyphs = mapper
+                    .Where(kv => glyphsWithIndex.ContainsKey((ushort)kv.Key))
+                    .Select(kv => (NewGID: kv.Value, PaintIndex: glyphsWithIndex[(ushort)kv.Key]))
                     .ToArray();
 
                 return new BaseGlyphListRecord
                 {
                     NumberBaseGlyphPaintRecords = 0,
-                    BaseGlyphPaintRecord = [.. newGlyphs.Select(x => (x.First.GlyphID, 0U))],
-                    Paints = [.. newGlyphs.Select(x => glyphs.Paints[x.Second])],
+                    BaseGlyphPaintRecord = [.. newGlyphs.Select(x => ((ushort)x.NewGID, 0U))],
+                    Paints = [.. newGlyphs.Select(x => paints[glyphs.Paints[x.PaintIndex]])],
                 };
             });
 
@@ -333,7 +733,7 @@ public static class FontExtract
             BaseGlyphRecords = baseGlyphRecords,
             LayerRecords = [.. layerRecords],
             BaseGlyphListRecord = baseGlyphListRecord?.BaseGlyphPaintRecord.Length == 0 ? null : baseGlyphListRecord,
-            LayerListRecord = colr.LayerListRecord,
+            LayerListRecord = layerList.Count == 0 ? null : new LayerListRecord { NumberOfLayers = (uint)layerList.Count, PaintOffsets = [], Paints = [.. layerList.Select(x => paints[x])] },
             ClipListRecord = colr.ClipListRecord,
             DeltaSetIndexMapRecord = colr.DeltaSetIndexMapRecord,
             ItemVariationStoreRecord = colr.ItemVariationStoreRecord,
