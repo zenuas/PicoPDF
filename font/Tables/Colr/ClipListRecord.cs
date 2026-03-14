@@ -32,19 +32,15 @@ public class ClipListRecord : IExportable
 
     public void WriteTo(Stream stream)
     {
-        var clipBoxOffsets = new int[Clips.Length];
-        _ = ClipBoxFormats
-            .Select((x, i) => (ClipBoxFormat: x, Index: i))
-            .Accumulator((acc, x) => (clipBoxOffsets[x.Index] = acc) + x.ClipBoxFormat.SizeOf(), SizeOfWithoutClipBoxFormats())
-            .ToArray();
-
         stream.WriteByte(Format);
         stream.WriteUIntByBigEndian((uint)Clips.Length);
+        var clipBoxOffset = SizeOfWithoutClipBoxFormats();
         for (int i = 0; i < Clips.Length; i++)
         {
             stream.WriteUShortByBigEndian(Clips[i].StartGlyphID);
             stream.WriteUShortByBigEndian(Clips[i].EndGlyphID);
-            stream.WriteOffset24(clipBoxOffsets[i]);
+            stream.WriteOffset24(clipBoxOffset);
+            clipBoxOffset += ClipBoxFormats[i].SizeOf();
         }
         ClipBoxFormats.Each(x => x.WriteTo(stream));
     }
