@@ -379,10 +379,10 @@ public static class FontExtract
         return new()
         {
             Version = colr.Version,
-            NumberBaseGlyphRecords = (ushort)baseGlyphRecords.Length,
+            NumberBaseGlyphRecords = 0,
             BaseGlyphRecordsOffset = 0,
             LayerRecordsOffset = 0,
-            NumberLayerRecords = (ushort)layerRecords.Count,
+            NumberLayerRecords = 0,
             BaseGlyphRecords = baseGlyphRecords,
             LayerRecords = [.. layerRecords],
             BaseGlyphListRecord = baseGlyphListRecord?.BaseGlyphPaintRecord.Length == 0 ? null : baseGlyphListRecord,
