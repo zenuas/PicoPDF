@@ -296,19 +296,19 @@ public static class FontExtract
     {
         var colorPalettes = new Dictionary<ushort, ushort>();
 
-        Func<ushort, ushort> addPalette = palette =>
+        ushort addPalette(ushort palette) =>
             palette == 0xFFFF ? (ushort)0xFFFF :
             colorPalettes.TryGetValue(palette, out var x) ? x :
             colorPalettes[palette] = (ushort)colorPalettes.Count;
 
-        Func<ColorLine, ColorLine> addColorLine = colorLine => new()
+        ColorLine addColorLine(ColorLine colorLine) => new()
         {
             Extend = colorLine.Extend,
             NumberOfStops = 0,
             ColorStops = [.. colorLine.ColorStops.Select(x => new ColorStop { StopOffset = x.StopOffset, PaletteIndex = addPalette(x.PaletteIndex), Alpha = x.Alpha })],
         };
 
-        Func<VarColorLine, VarColorLine> addVarColorLine = colorLine => new()
+        VarColorLine addVarColorLine(VarColorLine colorLine) => new()
         {
             Extend = colorLine.Extend,
             NumberOfStops = 0,
