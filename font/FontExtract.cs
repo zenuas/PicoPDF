@@ -298,7 +298,7 @@ public static class FontExtract
 
         Func<ushort, ushort> addPalette = palette =>
             palette == 0xFFFF ? (ushort)0xFFFF :
-            colorPalettes.ContainsKey(palette) ? colorPalettes[palette] :
+            colorPalettes.TryGetValue(palette, out var x) ? x :
             colorPalettes[palette] = (ushort)colorPalettes.Count;
 
         Func<ColorLine, ColorLine> addColorLine = colorLine => new()
