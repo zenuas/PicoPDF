@@ -1,0 +1,27 @@
+{% if site.google_analytics %}
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', '{{ site.google_analytics }}');
+</script>
+{% endif %}
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+mermaid.init(
+{
+	startOnLoad: false,
+	theme: "base",
+	themeVariables: {
+		primaryColor: "#5E7CB0",
+		primaryTextColor: "#E4EFF6",
+		primaryBorderColor: "#CEC9E8",
+		lineColor: "#EFE9E8",
+		edgeLabelBackground : "#214A9F",
+	},
+}, document.querySelectorAll(".language-mermaid"));
+</script>

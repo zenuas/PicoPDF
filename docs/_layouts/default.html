@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="{{ site.lang | default: "ja-jp" }}">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ page.title }} | {{ site.title }}</title>
+    <meta name="keywords" content="{{ page.keywords | default: site.keywords }}">
+    <meta name="description" content="{{ page.description | default: site.description }}">
+    <meta name="author" content="{{ page.author | default: site.author }}">
+    <meta name="generator" content="Jekyll v{{ jekyll.version }}">
+    <link rel="stylesheet" href="{{ '/assets/styles.css?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="canonical" href="{{ page.url | replace_first: '/', '' | url_encode | absolute_url }}">
+    <script type="module" src="{{ '/assets/script.js?v=' | append: site.github.build_revision | relative_url }}"></script>
+    {% for scr in page.scripts %}
+    {% if scr contains 'https://' %}
+    <script src="{{ scr }}"></script>
+    {% else %}
+    <script src="{{ scr | prepend: '/assets/' | append: '?v=' | append: site.github.build_revision | relative_url }}"></script>
+    {% endif %}
+    {% endfor %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% include head-custom.html %}
+  </head>
+  <body>
+    <header>
+      <h1><a href="{{ site.github.url }}">{{ site.title | default: site.github.repository_name }}</a></h1>
+
+      <ul class="commands">
+        <li class="buttons"><a class="box github" href="{{ site.github.repository_url }}" target="_blank">GitHub</a></li>
+        <li class="buttons"><a class="box edit" href="{{ site.github.repository_url }}/edit/{{ site.github.source.branch }}/docs/{{ page.name }}" target="_blank">編集</a></li>
+        <li class="buttons"><a class="box document" href="https://raw.githubusercontent.com/{{ site.github.repository_nwo }}/{{ site.github.source.branch }}/docs/{{ page.name }}" target="_blank">ソース</a></li>
+        <li class="buttons"><a class="box history" href="https://github.com/{{ site.github.repository_nwo }}/commits/{{ site.github.source.branch }}/docs/{{ page.name }}" target="_blank">履歴</a></li>
+        <li><form action="search.html" target="_blank"><input type="text" name="q" placeholder="検索" required><input type="submit" class="buttons box search"></form></li>
+      </ul>
+    </header>
+
+    <div class="main-contents">
+      <article>
+        {% include anchor_headings.html html=content anchorBody="🔗" %}
+      </article>
+
+{% if page.nonav %}
+{% else %}
+      <nav>
+        <ul>
+          <li><a href="index.html">トップページ</a></li>
+          <li><a href="{{ "JSONローダー"         | url_encode }}.html">JSONローダー</a></li>
+          <li><a href="{{ "データバインダー"     | url_encode }}.html">データバインダー</a></li>
+          <li><a href="{{ "OpenTypeフォント抽出" | url_encode }}.html">OpenTypeフォント抽出</a></li>
+          <li><a href="{{ "PDF変換"              | url_encode }}.html">PDF変換</a></li>
+        </ul>
+      </nav>
+{% endif %}
+    </div>
+
+    <footer>
+      <address>
+        Posted by <a href="{{ site.github.owner_url }}">@{{ site.github.owner_name }}</a>.<br>
+      </address>
+      Posted at <time datetime="{{ site.time | date_to_xmlschema }}">{{ site.time | date: "%Y/%m/%d %T" }}Z</time>.<br>
+      Licensed by {{ site.github.license.name }}.<br>
+    </footer>
+  </body>
+</html>
