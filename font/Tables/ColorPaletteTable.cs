@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
 using System.Linq;
 
@@ -28,7 +29,7 @@ public class ColorPaletteTable : IExportable
         var numPaletteEntries = stream.ReadUShortByBigEndian();
         var numPalettes = stream.ReadUShortByBigEndian();
         var numColorRecords = stream.ReadUShortByBigEndian();
-        var colorRecordsArrayOffset = stream.ReadUIntByBigEndian();
+        var colorRecordsArrayOffset = stream.ReadOffset32();
         var colorRecordIndices = Lists.Repeat(stream.ReadUShortByBigEndian).Take(numPalettes).ToArray();
 
         uint paletteTypesArrayOffset = 0;
@@ -36,9 +37,9 @@ public class ColorPaletteTable : IExportable
         uint paletteEntryLabelsArrayOffset = 0;
         if (version >= 1)
         {
-            paletteTypesArrayOffset = stream.ReadUIntByBigEndian();
-            paletteLabelsArrayOffset = stream.ReadUIntByBigEndian();
-            paletteEntryLabelsArrayOffset = stream.ReadUIntByBigEndian();
+            paletteTypesArrayOffset = stream.ReadOffset32();
+            paletteLabelsArrayOffset = stream.ReadOffset32();
+            paletteEntryLabelsArrayOffset = stream.ReadOffset32();
         }
 
         var colorRecords = stream.SeekTo(position + colorRecordsArrayOffset).To(_ => Lists.Repeat(() => ColorRecord.ReadFrom(stream)).Take(numColorRecords).ToArray());
@@ -83,7 +84,7 @@ public class ColorPaletteTable : IExportable
         stream.WriteUShortByBigEndian((ushort)PaletteEntryLabels.Length);
         stream.WriteUShortByBigEndian((ushort)ColorRecordIndices.Length);
         stream.WriteUShortByBigEndian((ushort)ColorRecords.Length);
-        stream.WriteUIntByBigEndian((uint)colorRecordsArrayOffset);
+        stream.WriteOffset32((uint)colorRecordsArrayOffset);
         ColorRecordIndices.Each(stream.WriteUShortByBigEndian);
 
         if (Version == 0)
@@ -101,9 +102,9 @@ public class ColorPaletteTable : IExportable
                 PaletteLabelsArrayOffset.SizeOf() +
                 PaletteEntryLabelsArrayOffset.SizeOf();
 
-            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffsetV1 + sizeof_ColorRecords));
-            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffsetV1 + sizeof_ColorRecords + sizeof_PaletteTypes));
-            stream.WriteUIntByBigEndian((uint)(colorRecordsArrayOffsetV1 + sizeof_ColorRecords + sizeof_PaletteTypes + sizeof_PaletteLabels));
+            stream.WriteOffset32((uint)(colorRecordsArrayOffsetV1 + sizeof_ColorRecords));
+            stream.WriteOffset32((uint)(colorRecordsArrayOffsetV1 + sizeof_ColorRecords + sizeof_PaletteTypes));
+            stream.WriteOffset32((uint)(colorRecordsArrayOffsetV1 + sizeof_ColorRecords + sizeof_PaletteTypes + sizeof_PaletteLabels));
 
             ColorRecords.Each(x => x.WriteTo(stream));
             PaletteTypes.Each(stream.WriteUIntByBigEndian);
