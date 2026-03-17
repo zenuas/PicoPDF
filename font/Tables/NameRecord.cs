@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
 using System.Text;
 
@@ -20,7 +21,7 @@ public class NameRecord
         LanguageID = stream.ReadUShortByBigEndian(),
         NameID = stream.ReadUShortByBigEndian(),
         Length = stream.ReadUShortByBigEndian(),
-        Offset = stream.ReadUShortByBigEndian(),
+        Offset = stream.ReadOffset16(),
     };
 
     public Encoding GetEncoding() => (PlatformID, EncodingID, LanguageID) switch

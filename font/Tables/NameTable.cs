@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,7 @@ public class NameTable : IExportable
 
         var format = stream.ReadUShortByBigEndian();
         var count = stream.ReadUShortByBigEndian();
-        var string_offset = stream.ReadUShortByBigEndian();
+        var string_offset = stream.ReadOffset16();
 
         var records = Lists.Repeat(() => NameRecord.ReadFrom(stream))
             .Take(count)
@@ -62,7 +63,7 @@ public class NameTable : IExportable
 
         stream.WriteUShortByBigEndian(Format);
         stream.WriteUShortByBigEndian((ushort)NameRecords.Length);
-        stream.WriteUShortByBigEndian((ushort)string_offset);
+        stream.WriteOffset16((ushort)string_offset);
 
         using var strings = new MemoryStream();
 
@@ -76,7 +77,7 @@ public class NameTable : IExportable
             stream.WriteUShortByBigEndian(x.NameRecord.LanguageID);
             stream.WriteUShortByBigEndian(x.NameRecord.NameID);
             stream.WriteUShortByBigEndian((ushort)(strings.Position - offset));
-            stream.WriteUShortByBigEndian((ushort)offset);
+            stream.WriteOffset16((ushort)offset);
         });
 
         if (Format == 1)
@@ -89,7 +90,7 @@ public class NameTable : IExportable
                 strings.Write(Encoding.BigEndianUnicode.GetBytes(x.Name));
 
                 stream.WriteUShortByBigEndian(x.LanguageTagRecord.Length);
-                stream.WriteUShortByBigEndian((ushort)offset);
+                stream.WriteOffset16((ushort)offset);
             });
         }
 
