@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
 
 namespace OpenType.Tables;
@@ -15,7 +16,7 @@ public class EncodingRecord
     {
         PlatformID = stream.ReadUShortByBigEndian(),
         EncodingID = stream.ReadUShortByBigEndian(),
-        Offset = stream.ReadUIntByBigEndian(),
+        Offset = stream.ReadOffset32(),
     };
 
     public int SizeOf() => PlatformID.SizeOf() + EncodingID.SizeOf() + Offset.SizeOf();

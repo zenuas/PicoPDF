@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using OpenType.Tables.CMap;
 using System.Collections.Generic;
 using System.IO;
@@ -70,7 +71,7 @@ public class CMapTable : IExportable
 
                 stream.WriteUShortByBigEndian(x.Key.PlatformID);
                 stream.WriteUShortByBigEndian(x.Key.EncodingID);
-                stream.WriteUIntByBigEndian((uint)offset);
+                stream.WriteOffset32((uint)offset);
             });
 
         stream.Write(cmapformat.ToArray());
