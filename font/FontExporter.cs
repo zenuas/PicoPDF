@@ -48,7 +48,7 @@ public static class FontExporter
         table_names.Each(x =>
         {
             var table = tables[x];
-            stream.Write(x);
+            stream.WriteTag(x);
             table.Position = stream.Position;
             WriteTableRecord(stream, table);
         });
@@ -132,7 +132,7 @@ public static class FontExporter
         table_names.Each(x =>
         {
             var table = tables[x];
-            stream.Write(x);
+            stream.WriteTag(x);
             table.Position = stream.Position;
             WriteTableRecord(stream, table);
         });

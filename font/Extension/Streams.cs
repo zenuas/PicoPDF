@@ -2,6 +2,7 @@
 using System;
 using System.Buffers.Binary;
 using System.IO;
+using System.Text;
 
 namespace OpenType.Extension;
 
@@ -19,6 +20,7 @@ public static class Streams
     public static void WriteUFWORD(this Stream self, ushort n) => self.WriteUShortByBigEndian(n);
     public static void WriteF2DOT14(this Stream self, ushort n) => self.WriteUShortByBigEndian(n);
     public static void WriteLONGDATETIME(this Stream self, long n) => self.WriteLongByBigEndian(n);
+    public static void WriteTag(this Stream self, string s) => self.Write(s);
 
     public static int Read3BytesByLittleEndian(this Stream self) { Span<byte> buffer = stackalloc byte[3]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt24LittleEndian(buffer); }
     public static int Read3BytesByBigEndian(this Stream self) { Span<byte> buffer = stackalloc byte[3]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt24BigEndian(buffer); }
@@ -32,6 +34,7 @@ public static class Streams
     public static ushort ReadUFWORD(this Stream self) => self.ReadUShortByBigEndian();
     public static ushort ReadF2DOT14(this Stream self) => self.ReadUShortByBigEndian();
     public static long ReadLONGDATETIME(this Stream self) => self.ReadLongByBigEndian();
+    public static string ReadTag(this Stream self) => Encoding.ASCII.GetString(self.ReadExactly(4));
 
     public static void WriteInt24LittleEndian(Span<byte> source, int value)
     {
