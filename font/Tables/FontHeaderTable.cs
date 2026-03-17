@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
 
 namespace OpenType.Tables;
@@ -7,7 +8,7 @@ public class FontHeaderTable : IExportable
 {
     public required ushort MajorVersion { get; init; }
     public required ushort MinorVersion { get; init; }
-    public required int FontRevision { get; init; }
+    public required uint FontRevision { get; init; }
     public required uint ChecksumAdjustment { get; init; }
     public required uint MagicNumber { get; init; }
     public required ushort Flags { get; init; }
@@ -28,13 +29,13 @@ public class FontHeaderTable : IExportable
     {
         MajorVersion = stream.ReadUShortByBigEndian(),
         MinorVersion = stream.ReadUShortByBigEndian(),
-        FontRevision = stream.ReadIntByBigEndian(),
+        FontRevision = stream.ReadFixed(),
         ChecksumAdjustment = stream.ReadUIntByBigEndian(),
         MagicNumber = stream.ReadUIntByBigEndian(),
         Flags = stream.ReadUShortByBigEndian(),
         UnitsPerEm = stream.ReadUShortByBigEndian(),
-        Created = stream.ReadLongByBigEndian(),
-        Modified = stream.ReadLongByBigEndian(),
+        Created = stream.ReadLONGDATETIME(),
+        Modified = stream.ReadLONGDATETIME(),
         XMin = stream.ReadShortByBigEndian(),
         YMin = stream.ReadShortByBigEndian(),
         XMax = stream.ReadShortByBigEndian(),
@@ -52,13 +53,13 @@ public class FontHeaderTable : IExportable
     {
         stream.WriteUShortByBigEndian(MajorVersion);
         stream.WriteUShortByBigEndian(MinorVersion);
-        stream.WriteIntByBigEndian(FontRevision);
+        stream.WriteFixed(FontRevision);
         stream.WriteUIntByBigEndian(checksum);
         stream.WriteUIntByBigEndian(MagicNumber);
         stream.WriteUShortByBigEndian(Flags);
         stream.WriteUShortByBigEndian(UnitsPerEm);
-        stream.WriteLongByBigEndian(Created);
-        stream.WriteLongByBigEndian(Modified);
+        stream.WriteLONGDATETIME(Created);
+        stream.WriteLONGDATETIME(Modified);
         stream.WriteShortByBigEndian(XMin);
         stream.WriteShortByBigEndian(YMin);
         stream.WriteShortByBigEndian(XMax);
