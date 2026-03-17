@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
 
 namespace OpenType.Tables;
@@ -28,13 +29,13 @@ public class HorizontalHeaderTable : IExportable
     {
         MajorVersion = stream.ReadUShortByBigEndian(),
         MinorVersion = stream.ReadUShortByBigEndian(),
-        Ascender = stream.ReadShortByBigEndian(),
-        Descender = stream.ReadShortByBigEndian(),
-        LineGap = stream.ReadShortByBigEndian(),
-        AdvanceWidthMax = stream.ReadUShortByBigEndian(),
-        MinLeftSideBearing = stream.ReadShortByBigEndian(),
-        MinRightSideBearing = stream.ReadShortByBigEndian(),
-        XMaxExtent = stream.ReadShortByBigEndian(),
+        Ascender = stream.ReadFWORD(),
+        Descender = stream.ReadFWORD(),
+        LineGap = stream.ReadFWORD(),
+        AdvanceWidthMax = stream.ReadUFWORD(),
+        MinLeftSideBearing = stream.ReadFWORD(),
+        MinRightSideBearing = stream.ReadFWORD(),
+        XMaxExtent = stream.ReadFWORD(),
         CaretSlopeRise = stream.ReadShortByBigEndian(),
         CaretSlopeRun = stream.ReadShortByBigEndian(),
         CaretOffset = stream.ReadShortByBigEndian(),
@@ -50,13 +51,13 @@ public class HorizontalHeaderTable : IExportable
     {
         stream.WriteUShortByBigEndian(MajorVersion);
         stream.WriteUShortByBigEndian(MinorVersion);
-        stream.WriteShortByBigEndian(Ascender);
-        stream.WriteShortByBigEndian(Descender);
-        stream.WriteShortByBigEndian(LineGap);
-        stream.WriteUShortByBigEndian(AdvanceWidthMax);
-        stream.WriteShortByBigEndian(MinLeftSideBearing);
-        stream.WriteShortByBigEndian(MinRightSideBearing);
-        stream.WriteShortByBigEndian(XMaxExtent);
+        stream.WriteFWORD(Ascender);
+        stream.WriteFWORD(Descender);
+        stream.WriteFWORD(LineGap);
+        stream.WriteUFWORD(AdvanceWidthMax);
+        stream.WriteFWORD(MinLeftSideBearing);
+        stream.WriteFWORD(MinRightSideBearing);
+        stream.WriteFWORD(XMaxExtent);
         stream.WriteShortByBigEndian(CaretSlopeRise);
         stream.WriteShortByBigEndian(CaretSlopeRun);
         stream.WriteShortByBigEndian(CaretOffset);
