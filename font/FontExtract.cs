@@ -215,6 +215,63 @@ public static class FontExtract
         };
     }
 
+    public static NoOutlineFont Extract(NoOutlineFont font, FontExtractOption opt)
+    {
+        var chars = opt.ExtractChars.Order().ToArray();
+        var gids = chars.Select(font.CharToGID).To(xs => font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs).ToArray();
+        var char_glyph = gids
+            .Select((c, i) => (Index: i, GID: c))
+            .ToDictionary(x => x.GID, x => (
+                    Char: x.Index < chars.Length ? chars[x.Index] : 0,
+                    NewGID: (uint)(x.Index + 1),
+                    OldGID: x.GID,
+                    HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
+                ));
+        var gid_hmtx = char_glyph.Values
+            .DistinctBy(x => x.NewGID)
+            .ToDictionary(x => x.NewGID, x => x.HorizontalMetrics);
+        var num_of_glyph = (int)gid_hmtx.Keys.Max();
+
+        var name = ExtractNameTable(font.Name, opt);
+        var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
+        var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
+        var cmapN = CMapFormat12.CreateFormat(gids[0..chars.Length].ToDictionary(x => char_glyph[x].Char, x => char_glyph[x].NewGID));
+        var cmap = CreateCMapTable(cmapN, opt);
+        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
+
+        var hmtx = new HorizontalMetricsTable()
+        {
+            Metrics = [.. Lists.RangeTo(1, num_of_glyph)
+                .Select(x => gid_hmtx.TryGetValue((uint)x, out var hm) ? hm : font.HorizontalMetrics.Metrics[0])
+                .Prepend(font.HorizontalMetrics.Metrics[0])],
+            LeftSideBearing = [],
+        };
+
+        return new()
+        {
+            PostScriptName = font.PostScriptName,
+            Path = font.Path,
+            Position = font.Position,
+            TableRecords = font.TableRecords,
+            Offset = font.Offset,
+            Name = name,
+            FontHeader = font.FontHeader,
+            MaximumProfile = maxp,
+            PostScript = font.PostScript,
+            OS2 = font.OS2,
+            HorizontalHeader = hhea,
+            HorizontalMetrics = hmtx,
+            CMap = cmap,
+            CharToGID = cmapN.CreateCharToGID(),
+            ColorBitmapData = null,
+            ColorBitmapLocation = null,
+            Color = colr,
+            ColorPalette = cpal,
+            StandardBitmapGraphics = null,
+            ScalableVectorGraphics = null,
+        };
+    }
+
     public static NameTable ExtractNameTable(NameTable name, FontExtractOption opt)
     {
         var names = name.NameRecords.Where(name_record => opt.OutputNames.Contains(x =>

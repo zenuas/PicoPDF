@@ -1,11 +1,10 @@
 ﻿using OpenType.Tables;
-using OpenType.Tables.PostScript;
 using System;
 using System.Collections.Generic;
 
 namespace OpenType;
 
-public class PostScriptFont : IOpenTypeFont
+public class NoOutlineFont : IOpenTypeFont
 {
     public required string PostScriptName { get; init; }
     public required IFontPath Path { get; init; }
@@ -21,7 +20,6 @@ public class PostScriptFont : IOpenTypeFont
     public required HorizontalMetricsTable HorizontalMetrics { get; init; }
     public required CMapTable CMap { get; init; }
     public required Func<int, uint> CharToGID { get; init; }
-    public required CompactFontFormat CompactFontFormat { get; init; }
 
     public required ColorBitmapDataTable? ColorBitmapData { get; init; }
     public required ColorBitmapLocationTable? ColorBitmapLocation { get; init; }

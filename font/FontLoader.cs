@@ -104,9 +104,10 @@ public static class FontLoader
     {
         using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-        return font.Offset.ContainTrueType()
-            ? LoadTrueTypeFont(stream, font)
-            : LoadPostScriptFont(stream, font);
+        return
+            font.Offset.ContainCFF() ? LoadPostScriptFont(stream, font) :
+            font.TableRecords.ContainsKey("loca") && font.TableRecords.ContainsKey("glyf") ? LoadTrueTypeFont(stream, font) :
+            LoadNoOutlineFont(stream, font);
     }
 
     public static TrueTypeFont LoadTrueTypeFont(Stream stream, FontRequiredTables font)
@@ -189,6 +190,40 @@ public static class FontLoader
             CMap = font.CMap,
             CharToGID = font.CharToGID,
             CompactFontFormat = cff,
+            ColorBitmapData = cbdt,
+            ColorBitmapLocation = cblc,
+            Color = colr,
+            ColorPalette = cpal,
+            StandardBitmapGraphics = sbix,
+            ScalableVectorGraphics = svg,
+        };
+    }
+
+    public static NoOutlineFont LoadNoOutlineFont(Stream stream, FontRequiredTables font)
+    {
+        var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
+        var cblc = ReadTableRecord(font, "CBLC", stream, ColorBitmapLocationTable.ReadFrom);
+        var colr = ReadTableRecord(font, "COLR", stream, ColorTable.ReadFrom);
+        var cpal = ReadTableRecord(font, "CPAL", stream, ColorPaletteTable.ReadFrom);
+        var svg = ReadTableRecord(font, "SVG ", stream, ScalableVectorGraphicsTable.ReadFrom);
+        var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
+
+        return new()
+        {
+            PostScriptName = font.PostScriptName,
+            Path = font.Path,
+            Position = font.Position,
+            TableRecords = font.TableRecords,
+            Offset = font.Offset,
+            Name = font.Name,
+            FontHeader = font.FontHeader,
+            MaximumProfile = font.MaximumProfile,
+            PostScript = font.PostScript,
+            OS2 = font.OS2,
+            HorizontalHeader = font.HorizontalHeader,
+            HorizontalMetrics = font.HorizontalMetrics,
+            CMap = font.CMap,
+            CharToGID = font.CharToGID,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,

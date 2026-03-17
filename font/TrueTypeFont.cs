@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace OpenType;
 
-public class TrueTypeFont : IOpenTypeRequiredTables
+public class TrueTypeFont : IOpenTypeFont
 {
     public required string PostScriptName { get; init; }
     public required IFontPath Path { get; init; }
