@@ -9,60 +9,26 @@ public static class FontFileExport
     public static void Export(IOpenTypeRequiredTables font, Option opt)
     {
         using var stream = new FileStream(opt.OutputFontFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
-        if (font is TrueTypeFont ttf) FontExporter.Export(Extract(ttf, opt), stream);
-        else if (font is PostScriptFont psf) FontExporter.Export(Extract(psf, opt), stream);
-        else if (font is NoOutlineFont noo) FontExporter.Export(Extract(noo, opt), stream);
+        var extract_opt = CreateOption(opt);
+        if (font is TrueTypeFont ttf) FontExporter.Export(FontExtract.Extract(ttf, extract_opt), stream);
+        else if (font is PostScriptFont psf) FontExporter.Export(FontExtract.Extract(psf, extract_opt), stream);
+        else if (font is NoOutlineFont noo) FontExporter.Export(FontExtract.Extract(noo, extract_opt), stream);
     }
 
-    public static TrueTypeFont Extract(TrueTypeFont font, Option opt) => FontExtract.Extract(font,
-            new()
-            {
-                ExtractChars = [.. opt.FontExportChars.ToUtf32CharArray()],
-                OutputNames = [
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontFamilyName),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontSubfamilyName),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.UniqueFontIdentifier),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FullFontName),
-                ],
-                OutputCMap = [
-                    new(Platforms.Unicode, Encodings.Unicode2_0_BMPOnly),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP),
-                ],
-            });
-
-    public static PostScriptFont Extract(PostScriptFont font, Option opt) => FontExtract.Extract(font,
-            new()
-            {
-                ExtractChars = [.. opt.FontExportChars.ToUtf32CharArray()],
-                OutputNames = [
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontFamilyName),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontSubfamilyName),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.UniqueFontIdentifier),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FullFontName),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.Version),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.PostScriptName),
-                ],
-                OutputCMap = [
-                    new(Platforms.Unicode, Encodings.Unicode2_0_BMPOnly),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP),
-                ],
-            });
-
-    public static NoOutlineFont Extract(NoOutlineFont font, Option opt) => FontExtract.Extract(font,
-            new()
-            {
-                ExtractChars = [.. opt.FontExportChars.ToUtf32CharArray()],
-                OutputNames = [
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontFamilyName),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontSubfamilyName),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.UniqueFontIdentifier),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FullFontName),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.Version),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.PostScriptName),
-                ],
-                OutputCMap = [
-                    new(Platforms.Unicode, Encodings.Unicode2_0_BMPOnly),
-                    new(Platforms.Windows, Encodings.Windows_UnicodeBMP),
-                ],
-            });
+    public static FontExtractOption CreateOption(Option opt) => new()
+    {
+        ExtractChars = [.. opt.FontExportChars.ToUtf32CharArray()],
+        OutputNames = [
+            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontFamilyName),
+            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontSubfamilyName),
+            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.UniqueFontIdentifier),
+            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FullFontName),
+            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.Version),
+            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.PostScriptName),
+        ],
+        OutputCMap = [
+            new(Platforms.Unicode, Encodings.Unicode2_0_BMPOnly),
+            new(Platforms.Windows, Encodings.Windows_UnicodeBMP),
+        ],
+    };
 }
