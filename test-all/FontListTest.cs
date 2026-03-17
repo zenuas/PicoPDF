@@ -13,11 +13,11 @@ public static class FontListTest
             try
             {
                 var font = fontreg.LoadRequiredTables(kv.Value.Value.Path);
-                Console.WriteLine($"{kv.Key},\"{FontRegister.GetFontFilePath(font.Path)}\",Offset.Version=0x{font.Offset.Version:x8},OS2.FsType=0x{font.OS2?.FsType:x4}");
+                Console.WriteLine($"{kv.Key},\"{FontRegister.GetFontFilePath(font.Path)}\",Offset.SfntVersion=0x{font.Offset.SfntVersion:x8},OS2.FsType=0x{font.OS2?.FsType:x4}");
             }
             catch
             {
-                Console.WriteLine($"{kv.Key},\"{FontRegister.GetFontFilePath(kv.Value.Value.Path)}\",Offset.Version=0x{kv.Value.Value.Offset.Version:x8}");
+                Console.WriteLine($"{kv.Key},\"{FontRegister.GetFontFilePath(kv.Value.Value.Path)}\",Offset.SfntVersion=0x{kv.Value.Value.Offset.SfntVersion:x8}");
             }
         }
     }

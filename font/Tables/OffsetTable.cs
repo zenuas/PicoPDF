@@ -5,7 +5,7 @@ namespace OpenType.Tables;
 
 public class OffsetTable : IExportable
 {
-    public required uint Version { get; init; }
+    public required uint SfntVersion { get; init; }
     public required ushort NumberOfTables { get; init; }
     public required ushort SearchRange { get; init; }
     public required ushort EntrySelector { get; init; }
@@ -13,7 +13,7 @@ public class OffsetTable : IExportable
 
     public static OffsetTable ReadFrom(Stream stream) => new()
     {
-        Version = stream.ReadUIntByBigEndian(),
+        SfntVersion = stream.ReadUIntByBigEndian(),
         NumberOfTables = stream.ReadUShortByBigEndian(),
         SearchRange = stream.ReadUShortByBigEndian(),
         EntrySelector = stream.ReadUShortByBigEndian(),
@@ -22,7 +22,7 @@ public class OffsetTable : IExportable
 
     public void WriteTo(Stream stream)
     {
-        stream.WriteUIntByBigEndian(Version);
+        stream.WriteUIntByBigEndian(SfntVersion);
         stream.WriteUShortByBigEndian(NumberOfTables);
         stream.WriteUShortByBigEndian(SearchRange);
         stream.WriteUShortByBigEndian(EntrySelector);

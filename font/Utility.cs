@@ -7,9 +7,9 @@ namespace OpenType;
 
 public static class Utility
 {
-    public static bool ContainTrueType(this OffsetTable self) => self.Version == 0x00010000 || self.Version == 0x74727565;
+    public static bool ContainTrueType(this OffsetTable self) => self.SfntVersion == 0x00010000 || self.SfntVersion == 0x74727565;
 
-    public static bool ContainCFF(this OffsetTable self) => self.Version == 0x4F54544F;
+    public static bool ContainCFF(this OffsetTable self) => self.SfntVersion == 0x4F54544F;
 
     public static int MeasureString(this IOpenTypeRequiredTables font, string s) => s.ToUtf32CharArray().Select(x => MeasureChar(font, x)).Sum();
 

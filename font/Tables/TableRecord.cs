@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
 using System.Text;
 
@@ -15,7 +16,7 @@ public class TableRecord
     {
         TableTag = Encoding.ASCII.GetString(stream.ReadExactly(4)),
         CheckSum = stream.ReadUIntByBigEndian(),
-        Offset = stream.ReadUIntByBigEndian(),
+        Offset = stream.ReadOffset32(),
         Length = stream.ReadUIntByBigEndian(),
     };
 

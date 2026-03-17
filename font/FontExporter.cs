@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using OpenType.Tables;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ public static class FontExporter
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
         new OffsetTable
         {
-            Version = font.Offset.Version,
+            SfntVersion = font.Offset.SfntVersion,
             NumberOfTables = (ushort)tables.Count,
             SearchRange = (ushort)(tables_pow * 16),
             EntrySelector = (ushort)Math.Log2(tables_pow),
@@ -121,7 +122,7 @@ public static class FontExporter
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
         new OffsetTable
         {
-            Version = font.Offset.Version,
+            SfntVersion = font.Offset.SfntVersion,
             NumberOfTables = (ushort)tables.Count,
             SearchRange = (ushort)(tables_pow * 16),
             EntrySelector = (ushort)Math.Log2(tables_pow),
@@ -175,7 +176,7 @@ public static class FontExporter
     public static void WriteTableRecord(Stream stream, MutableTableRecord table)
     {
         stream.WriteUIntByBigEndian(table.Checksum);
-        stream.WriteUIntByBigEndian(table.Offset);
+        stream.WriteOffset32(table.Offset);
         stream.WriteUIntByBigEndian(table.Length);
     }
 
