@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using OpenType.Extension;
 using OpenType.Tables;
 using OpenType.Tables.CMap;
 using OpenType.Tables.PostScript;
@@ -31,9 +30,7 @@ public static class FontLoader
 
         return header.TTCTag != "ttcf"
             ? throw new InvalidDataException()
-            : [.. Lists.Repeat(stream.ReadOffset32)
-                .Take((int)header.NumberOfFonts)
-                .ToArray()
+            : [.. header.TableDirectoryOffsets
                 .Select((x, i) => Objects.Catch(() => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream.SeekTo(x), opt), out var r) is null ? r : null)
                 .OfType<FontTableRecords>()];
     }
