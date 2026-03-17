@@ -73,12 +73,12 @@ public class CMapFormat12 : ICMapFormat
         stream.WriteUIntByBigEndian(Length);
         stream.WriteUIntByBigEndian(Language);
         stream.WriteUIntByBigEndian(NumberOfGroups);
-        Groups.Each(x =>
+        foreach (var x in Groups)
         {
             stream.WriteUIntByBigEndian(x.StartCharCode);
             stream.WriteUIntByBigEndian(x.EndCharCode);
             stream.WriteUIntByBigEndian(x.StartGlyphID);
-        });
+        }
     }
 
     public static readonly ComparerBinder<(uint StartCharCode, uint EndCharCode, uint StartGlyphID)> RangeComparer = new() { Compare = (a, b) => a.StartCharCode < b.StartCharCode ? -1 : a.EndCharCode > b.EndCharCode ? 1 : 0 };

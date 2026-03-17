@@ -127,7 +127,7 @@ public class CompositeGlyph : IGlyph
         stream.WriteShortByBigEndian(XMax);
         stream.WriteShortByBigEndian(YMax);
 
-        CompositeGlyphRecords.Each(glyph =>
+        foreach (var glyph in CompositeGlyphRecords)
         {
             stream.WriteUShortByBigEndian(glyph.Flags);
             stream.WriteUShortByBigEndian(glyph.GlyphIndex);
@@ -159,7 +159,7 @@ public class CompositeGlyph : IGlyph
                 stream.WriteUShortByBigEndian(glyph.Scale10);
                 stream.WriteUShortByBigEndian(glyph.YScale);
             }
-        });
+        }
 
         if (Instructions.Length > 0)
         {

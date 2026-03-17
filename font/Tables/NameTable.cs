@@ -67,7 +67,7 @@ public class NameTable : IExportable
 
         using var strings = new MemoryStream();
 
-        NameRecords.Each(x =>
+        foreach (var x in NameRecords)
         {
             var offset = strings.Position;
             strings.Write(x.NameRecord.GetEncoding().GetBytes(x.Name));
@@ -78,20 +78,20 @@ public class NameTable : IExportable
             stream.WriteUShortByBigEndian(x.NameRecord.NameID);
             stream.WriteUShortByBigEndian((ushort)(strings.Position - offset));
             stream.WriteOffset16((ushort)offset);
-        });
+        }
 
         if (Format == 1)
         {
             stream.WriteUShortByBigEndian((ushort)LanguageTagRecords.Length);
 
-            LanguageTagRecords.Each(x =>
+            foreach (var x in LanguageTagRecords)
             {
                 var offset = strings.Position;
                 strings.Write(Encoding.BigEndianUnicode.GetBytes(x.Name));
 
                 stream.WriteUShortByBigEndian(x.LanguageTagRecord.Length);
                 stream.WriteOffset16((ushort)offset);
-            });
+            }
         }
 
         stream.Write(strings.ToArray());

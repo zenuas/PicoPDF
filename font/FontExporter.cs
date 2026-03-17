@@ -45,13 +45,13 @@ public static class FontExporter
             RangeShift = (ushort)((tables.Count * 16) - (tables_pow * 16)),
         }.WriteTo(stream);
 
-        table_names.Each(x =>
+        foreach (var x in table_names)
         {
             var table = tables[x];
             stream.WriteTag(x);
             table.Position = stream.Position;
             WriteTableRecord(stream, table);
-        });
+        }
 
         if (font.Color is { }) ExportTable(stream, start_stream_position, tables["COLR"], font.Color);
         if (font.ColorPalette is { }) ExportTable(stream, start_stream_position, tables["CPAL"], font.ColorPalette);
@@ -129,13 +129,13 @@ public static class FontExporter
             RangeShift = (ushort)((tables.Count * 16) - (tables_pow * 16)),
         }.WriteTo(stream);
 
-        table_names.Each(x =>
+        foreach (var x in table_names)
         {
             var table = tables[x];
             stream.WriteTag(x);
             table.Position = stream.Position;
             WriteTableRecord(stream, table);
-        });
+        }
 
         ExportTable(stream, start_stream_position, tables["CFF "], font.CompactFontFormat);
         if (font.Color is { }) ExportTable(stream, start_stream_position, tables["COLR"], font.Color);
