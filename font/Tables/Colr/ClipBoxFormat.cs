@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
 
 namespace OpenType.Tables.Colr;
@@ -19,10 +20,10 @@ public class ClipBoxFormat : IExportable
         return new()
         {
             Format = format,
-            XMin = stream.ReadShortByBigEndian(),
-            YMin = stream.ReadShortByBigEndian(),
-            XMax = stream.ReadShortByBigEndian(),
-            YMax = stream.ReadShortByBigEndian(),
+            XMin = stream.ReadFWORD(),
+            YMin = stream.ReadFWORD(),
+            XMax = stream.ReadFWORD(),
+            YMax = stream.ReadFWORD(),
             VarIndexBase = format >= 2 ? stream.ReadUIntByBigEndian() : 0,
         };
     }
@@ -30,10 +31,10 @@ public class ClipBoxFormat : IExportable
     public void WriteTo(Stream stream)
     {
         stream.WriteByte(Format);
-        stream.WriteShortByBigEndian(XMin);
-        stream.WriteShortByBigEndian(YMin);
-        stream.WriteShortByBigEndian(XMax);
-        stream.WriteShortByBigEndian(YMax);
+        stream.WriteFWORD(XMin);
+        stream.WriteFWORD(YMin);
+        stream.WriteFWORD(XMax);
+        stream.WriteFWORD(YMax);
 
         if (Format >= 2)
         {

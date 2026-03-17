@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ public class LayerListRecord : IExportable
         var position = stream.Position;
 
         var numLayers = stream.ReadUIntByBigEndian();
-        var paintOffsets = Lists.Repeat(stream.ReadUIntByBigEndian).Take((int)numLayers).ToArray();
+        var paintOffsets = Lists.Repeat(stream.ReadOffset32).Take((int)numLayers).ToArray();
 
         return new()
         {
@@ -33,7 +34,7 @@ public class LayerListRecord : IExportable
         using var mem = new MemoryStream();
         foreach (var paint in Paints)
         {
-            stream.WriteUIntByBigEndian((uint)(SizeOf() + mem.Length));
+            stream.WriteOffset32((uint)(SizeOf() + mem.Length));
             paint.WriteTo(mem);
         }
         stream.Write(mem.ToArray());

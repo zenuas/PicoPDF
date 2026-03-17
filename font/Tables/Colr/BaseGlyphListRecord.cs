@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ public class BaseGlyphListRecord : IExportable
         var position = stream.Position;
 
         var numBaseGlyphPaintRecords = stream.ReadUIntByBigEndian();
-        var baseGlyphPaintRecord = Lists.Repeat(() => (GlyphID: stream.ReadUShortByBigEndian(), PaintOffset: stream.ReadUIntByBigEndian())).Take((int)numBaseGlyphPaintRecords).ToArray();
+        var baseGlyphPaintRecord = Lists.Repeat(() => (GlyphID: stream.ReadUShortByBigEndian(), PaintOffset: stream.ReadOffset32())).Take((int)numBaseGlyphPaintRecords).ToArray();
 
         return new()
         {
@@ -34,7 +35,7 @@ public class BaseGlyphListRecord : IExportable
         for (var i = 0; i < BaseGlyphPaintRecord.Length; i++)
         {
             stream.WriteUShortByBigEndian(BaseGlyphPaintRecord[i].GlyphID);
-            stream.WriteUIntByBigEndian((uint)(SizeOf() + mem.Length));
+            stream.WriteOffset32((uint)(SizeOf() + mem.Length));
             Paints[i].WriteTo(mem);
         }
         stream.Write(mem.ToArray());

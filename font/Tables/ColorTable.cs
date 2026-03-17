@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using OpenType.Tables.Colr;
 using System.Collections.Generic;
 using System.IO;
@@ -27,8 +28,8 @@ public class ColorTable : IExportable
 
         var version = stream.ReadUShortByBigEndian();
         var numBaseGlyphRecords = stream.ReadUShortByBigEndian();
-        var baseGlyphRecordsOffset = stream.ReadUIntByBigEndian();
-        var layerRecordsOffset = stream.ReadUIntByBigEndian();
+        var baseGlyphRecordsOffset = stream.ReadOffset32();
+        var layerRecordsOffset = stream.ReadOffset32();
         var numLayerRecords = stream.ReadUShortByBigEndian();
 
         uint baseGlyphListOffset = 0;
@@ -38,11 +39,11 @@ public class ColorTable : IExportable
         uint itemVariationStoreOffset = 0;
         if (version >= 1)
         {
-            baseGlyphListOffset = stream.ReadUIntByBigEndian();
-            layerListOffset = stream.ReadUIntByBigEndian();
-            clipListOffset = stream.ReadUIntByBigEndian();
-            varIndexMapOffset = stream.ReadUIntByBigEndian();
-            itemVariationStoreOffset = stream.ReadUIntByBigEndian();
+            baseGlyphListOffset = stream.ReadOffset32();
+            layerListOffset = stream.ReadOffset32();
+            clipListOffset = stream.ReadOffset32();
+            varIndexMapOffset = stream.ReadOffset32();
+            itemVariationStoreOffset = stream.ReadOffset32();
         }
 
         var baseGlyphRecords = baseGlyphRecordsOffset == 0 || numBaseGlyphRecords == 0 ? [] :
@@ -95,8 +96,8 @@ public class ColorTable : IExportable
 
         stream.WriteUShortByBigEndian(Version);
         stream.WriteUShortByBigEndian((ushort)BaseGlyphRecords.Length);
-        stream.WriteUIntByBigEndian(BaseGlyphRecords.Length == 0 ? 0 : (uint)offset);
-        stream.WriteUIntByBigEndian(LayerRecords.Length == 0 ? 0 : (uint)(offset + sizeof_BaseGlyphRecords));
+        stream.WriteOffset32(BaseGlyphRecords.Length == 0 ? 0 : (uint)offset);
+        stream.WriteOffset32(LayerRecords.Length == 0 ? 0 : (uint)(offset + sizeof_BaseGlyphRecords));
         stream.WriteUShortByBigEndian((ushort)LayerRecords.Length);
 
         offset += sizeof_BaseGlyphRecords + sizeof_LayerRecords;
@@ -106,7 +107,7 @@ public class ColorTable : IExportable
         {
             if (BaseGlyphListRecord is { })
             {
-                stream.WriteUIntByBigEndian((uint)offset);
+                stream.WriteOffset32((uint)offset);
                 BaseGlyphListRecord.WriteTo(baseGlyphList);
                 offset += (int)baseGlyphList.Length;
             }
@@ -117,7 +118,7 @@ public class ColorTable : IExportable
 
             if (LayerListRecord is { })
             {
-                stream.WriteUIntByBigEndian((uint)offset);
+                stream.WriteOffset32((uint)offset);
                 LayerListRecord.WriteTo(layerList);
                 offset += (int)layerList.Length;
 
@@ -126,9 +127,9 @@ public class ColorTable : IExportable
             {
                 stream.WriteUIntByBigEndian(0);
             }
-            stream.WriteUIntByBigEndian(ClipListRecord is { } ? (uint)offset : 0); offset += ClipListRecord?.SizeOf() ?? 0;
-            stream.WriteUIntByBigEndian(DeltaSetIndexMapRecord is { } ? (uint)offset : 0); offset += DeltaSetIndexMapRecord?.SizeOf() ?? 0;
-            stream.WriteUIntByBigEndian(ItemVariationStoreRecord is { } ? (uint)offset : 0); offset += ItemVariationStoreRecord?.SizeOf() ?? 0;
+            stream.WriteOffset32(ClipListRecord is { } ? (uint)offset : 0); offset += ClipListRecord?.SizeOf() ?? 0;
+            stream.WriteOffset32(DeltaSetIndexMapRecord is { } ? (uint)offset : 0); offset += DeltaSetIndexMapRecord?.SizeOf() ?? 0;
+            stream.WriteOffset32(ItemVariationStoreRecord is { } ? (uint)offset : 0); offset += ItemVariationStoreRecord?.SizeOf() ?? 0;
         }
 
         BaseGlyphRecords.Each(x => x.WriteTo(stream));
