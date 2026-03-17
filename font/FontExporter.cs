@@ -94,6 +94,7 @@ public static class FontExporter
         {
             font.Glyphs.Each((_, i) => stream.WriteOffset16((ushort)(glyph_index[i] / 2)));
             stream.WriteOffset16((ushort)(lastglyph / 2));
+            _ = StreamAlignment(stream);
         }
         else
         {
