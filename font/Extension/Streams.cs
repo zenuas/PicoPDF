@@ -9,7 +9,11 @@ public static class Streams
 {
     public static void Write3BytesByLittleEndian(this Stream self, int n) { Span<byte> buffer = stackalloc byte[3]; WriteInt24LittleEndian(buffer, n); self.Write(buffer); }
     public static void Write3BytesByBigEndian(this Stream self, int n) { Span<byte> buffer = stackalloc byte[3]; WriteInt24BigEndian(buffer, n); self.Write(buffer); }
+    public static void WriteUInt24(this Stream self, int n) => self.Write3BytesByBigEndian(n);
+    public static void WriteOffset8(this Stream self, byte n) => self.WriteByte(n);
+    public static void WriteOffset16(this Stream self, ushort n) => self.WriteUShortByBigEndian(n);
     public static void WriteOffset24(this Stream self, int n) => self.Write3BytesByBigEndian(n);
+    public static void WriteOffset32(this Stream self, uint n) => self.WriteUIntByBigEndian(n);
     public static void WriteFixed(this Stream self, uint n) => self.WriteUIntByBigEndian(n);
     public static void WriteFWORD(this Stream self, short n) => self.WriteShortByBigEndian(n);
     public static void WriteUFWORD(this Stream self, ushort n) => self.WriteUShortByBigEndian(n);
@@ -18,7 +22,11 @@ public static class Streams
 
     public static int Read3BytesByLittleEndian(this Stream self) { Span<byte> buffer = stackalloc byte[3]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt24LittleEndian(buffer); }
     public static int Read3BytesByBigEndian(this Stream self) { Span<byte> buffer = stackalloc byte[3]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt24BigEndian(buffer); }
+    public static int ReadUInt24(this Stream self) => self.Read3BytesByBigEndian();
+    public static byte ReadOffset8(this Stream self) => self.ReadUByte();
+    public static ushort ReadOffset16(this Stream self) => self.ReadUShortByBigEndian();
     public static int ReadOffset24(this Stream self) => self.Read3BytesByBigEndian();
+    public static uint ReadOffset32(this Stream self) => self.ReadUIntByBigEndian();
     public static uint ReadFixed(this Stream self) => self.ReadUIntByBigEndian();
     public static short ReadFWORD(this Stream self) => self.ReadShortByBigEndian();
     public static ushort ReadUFWORD(this Stream self) => self.ReadUShortByBigEndian();
