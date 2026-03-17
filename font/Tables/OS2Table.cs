@@ -1,6 +1,6 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
-using System.Text;
 
 namespace OpenType.Tables;
 
@@ -55,39 +55,39 @@ public class OS2Table : IExportable
         return new()
         {
             Version = version,
-            XAvgCharWidth = stream.ReadShortByBigEndian(),
+            XAvgCharWidth = stream.ReadFWORD(),
             UsWeightClass = stream.ReadUShortByBigEndian(),
             UsWidthClass = stream.ReadUShortByBigEndian(),
             FsType = stream.ReadUShortByBigEndian(),
-            YSubscriptXSize = stream.ReadShortByBigEndian(),
-            YSubscriptYSize = stream.ReadShortByBigEndian(),
-            YSubscriptXOffset = stream.ReadShortByBigEndian(),
-            YSubscriptYOffset = stream.ReadShortByBigEndian(),
-            YSuperscriptXSize = stream.ReadShortByBigEndian(),
-            YSuperscriptYSize = stream.ReadShortByBigEndian(),
-            YSuperscriptXOffset = stream.ReadShortByBigEndian(),
-            YSuperscriptYOffset = stream.ReadShortByBigEndian(),
-            YStrikeoutSize = stream.ReadShortByBigEndian(),
-            YStrikeoutPosition = stream.ReadShortByBigEndian(),
+            YSubscriptXSize = stream.ReadFWORD(),
+            YSubscriptYSize = stream.ReadFWORD(),
+            YSubscriptXOffset = stream.ReadFWORD(),
+            YSubscriptYOffset = stream.ReadFWORD(),
+            YSuperscriptXSize = stream.ReadFWORD(),
+            YSuperscriptYSize = stream.ReadFWORD(),
+            YSuperscriptXOffset = stream.ReadFWORD(),
+            YSuperscriptYOffset = stream.ReadFWORD(),
+            YStrikeoutSize = stream.ReadFWORD(),
+            YStrikeoutPosition = stream.ReadFWORD(),
             SFamilyClass = stream.ReadShortByBigEndian(),
             Panose = stream.ReadExactly(10),
             UlUnicodeRange1 = stream.ReadUIntByBigEndian(),
             UlUnicodeRange2 = stream.ReadUIntByBigEndian(),
             UlUnicodeRange3 = stream.ReadUIntByBigEndian(),
             UlUnicodeRange4 = stream.ReadUIntByBigEndian(),
-            AchVendID = Encoding.ASCII.GetString(stream.ReadExactly(4)),
+            AchVendID = stream.ReadTag(),
             FsSelection = stream.ReadUShortByBigEndian(),
             UsFirstCharIndex = stream.ReadUShortByBigEndian(),
             UsLastCharIndex = stream.ReadUShortByBigEndian(),
-            STypoAscender = stream.ReadShortByBigEndian(),
-            STypoDescender = stream.ReadShortByBigEndian(),
-            STypoLineGap = stream.ReadShortByBigEndian(),
-            UsWinAscent = stream.ReadUShortByBigEndian(),
-            UsWinDescent = stream.ReadUShortByBigEndian(),
+            STypoAscender = stream.ReadFWORD(),
+            STypoDescender = stream.ReadFWORD(),
+            STypoLineGap = stream.ReadFWORD(),
+            UsWinAscent = stream.ReadUFWORD(),
+            UsWinDescent = stream.ReadUFWORD(),
             UlCodePageRange1 = version >= 1 ? stream.ReadUIntByBigEndian() : 0,
             UlCodePageRange2 = version >= 1 ? stream.ReadUIntByBigEndian() : 0,
-            SxHeight = version >= 2 ? stream.ReadShortByBigEndian() : (short)0,
-            SCapHeight = version >= 2 ? stream.ReadShortByBigEndian() : (short)0,
+            SxHeight = version >= 2 ? stream.ReadFWORD() : (short)0,
+            SCapHeight = version >= 2 ? stream.ReadFWORD() : (short)0,
             UsDefaultChar = version >= 2 ? stream.ReadUShortByBigEndian() : (ushort)0,
             UsBreakChar = version >= 2 ? stream.ReadUShortByBigEndian() : (ushort)0,
             UsMaxContext = version >= 2 ? stream.ReadUShortByBigEndian() : (ushort)0,
@@ -99,35 +99,35 @@ public class OS2Table : IExportable
     public void WriteTo(Stream stream)
     {
         stream.WriteUShortByBigEndian(Version);
-        stream.WriteShortByBigEndian(XAvgCharWidth);
+        stream.WriteFWORD(XAvgCharWidth);
         stream.WriteUShortByBigEndian(UsWeightClass);
         stream.WriteUShortByBigEndian(UsWidthClass);
         stream.WriteUShortByBigEndian(FsType);
-        stream.WriteShortByBigEndian(YSubscriptXSize);
-        stream.WriteShortByBigEndian(YSubscriptYSize);
-        stream.WriteShortByBigEndian(YSubscriptXOffset);
-        stream.WriteShortByBigEndian(YSubscriptYOffset);
-        stream.WriteShortByBigEndian(YSuperscriptXSize);
-        stream.WriteShortByBigEndian(YSuperscriptYSize);
-        stream.WriteShortByBigEndian(YSuperscriptXOffset);
-        stream.WriteShortByBigEndian(YSuperscriptYOffset);
-        stream.WriteShortByBigEndian(YStrikeoutSize);
-        stream.WriteShortByBigEndian(YStrikeoutPosition);
+        stream.WriteFWORD(YSubscriptXSize);
+        stream.WriteFWORD(YSubscriptYSize);
+        stream.WriteFWORD(YSubscriptXOffset);
+        stream.WriteFWORD(YSubscriptYOffset);
+        stream.WriteFWORD(YSuperscriptXSize);
+        stream.WriteFWORD(YSuperscriptYSize);
+        stream.WriteFWORD(YSuperscriptXOffset);
+        stream.WriteFWORD(YSuperscriptYOffset);
+        stream.WriteFWORD(YStrikeoutSize);
+        stream.WriteFWORD(YStrikeoutPosition);
         stream.WriteShortByBigEndian(SFamilyClass);
         stream.Write(Panose);
         stream.WriteUIntByBigEndian(UlUnicodeRange1);
         stream.WriteUIntByBigEndian(UlUnicodeRange2);
         stream.WriteUIntByBigEndian(UlUnicodeRange3);
         stream.WriteUIntByBigEndian(UlUnicodeRange4);
-        stream.Write(AchVendID);
+        stream.WriteTag(AchVendID);
         stream.WriteUShortByBigEndian(FsSelection);
         stream.WriteUShortByBigEndian(UsFirstCharIndex);
         stream.WriteUShortByBigEndian(UsLastCharIndex);
-        stream.WriteShortByBigEndian(STypoAscender);
-        stream.WriteShortByBigEndian(STypoDescender);
-        stream.WriteShortByBigEndian(STypoLineGap);
-        stream.WriteUShortByBigEndian(UsWinAscent);
-        stream.WriteUShortByBigEndian(UsWinDescent);
+        stream.WriteFWORD(STypoAscender);
+        stream.WriteFWORD(STypoDescender);
+        stream.WriteFWORD(STypoLineGap);
+        stream.WriteUFWORD(UsWinAscent);
+        stream.WriteUFWORD(UsWinDescent);
 
         if (Version >= 1)
         {
@@ -136,8 +136,8 @@ public class OS2Table : IExportable
         }
         if (Version >= 2)
         {
-            stream.WriteShortByBigEndian(SxHeight);
-            stream.WriteShortByBigEndian(SCapHeight);
+            stream.WriteFWORD(SxHeight);
+            stream.WriteFWORD(SCapHeight);
             stream.WriteUShortByBigEndian(UsDefaultChar);
             stream.WriteUShortByBigEndian(UsBreakChar);
             stream.WriteUShortByBigEndian(UsMaxContext);
