@@ -1,45 +1,122 @@
 ﻿using OpenType.Tables.CMap;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace PicoPDF.Test;
 
 public class CMapFormat4Test
 {
-    public static (char Start, char End)[] CreateStartEnds(Dictionary<char, ushort> char_gid) => CMapFormat4.CreateStartEnds(char_gid.Keys.Order().ToArray(), char_gid);
-
     [Fact]
     public void CreateStartEndsTest()
     {
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0 }).AsSpan(), [('A', 'A'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1 }).AsSpan(), [('A', 'B'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2 }).AsSpan(), [('A', 'C'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3 }).AsSpan(), [('A', 'D'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A'], [0]).AsSpan(),
+            [
+                ('A', 'A', (ushort)0),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B'], [0, 1]).AsSpan(),
+            [
+                ('A', 'B', (ushort)0),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'C'], [0, 1, 2]).AsSpan(),
+            [
+                ('A', 'C', (ushort)0),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'C', 'D'], [0, 1, 2, 3]).AsSpan(),
+            [
+                ('A', 'D', (ushort)0),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
 
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['X'] = 1 }).AsSpan(), [('A', 'A'), ('X', 'X'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['X'] = 2 }).AsSpan(), [('A', 'B'), ('X', 'X'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['X'] = 3 }).AsSpan(), [('A', 'C'), ('X', 'X'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3, ['X'] = 4 }).AsSpan(), [('A', 'D'), ('X', 'X'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'X'], [0, 1]).AsSpan(),
+            [
+                ('A', 'A', (ushort)0),
+                ('X', 'X', (ushort)1),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'X'], [0, 1, 2]).AsSpan(),
+            [
+                ('A', 'B', (ushort)0),
+                ('X', 'X', (ushort)2),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'C', 'X'], [0, 1, 2, 3]).AsSpan(),
+            [
+                ('A', 'C', (ushort)0),
+                ('X', 'X', (ushort)3),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'C', 'D', 'X'], [0, 1, 2, 3, 4]).AsSpan(),
+            [
+                ('A', 'D', (ushort)0),
+                ('X', 'X', (ushort)4),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
 
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['X'] = 1, ['Y'] = 2 }).AsSpan(), [('A', 'A'), ('X', 'Y'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['X'] = 2, ['Y'] = 3 }).AsSpan(), [('A', 'B'), ('X', 'Y'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['X'] = 3, ['Y'] = 4 }).AsSpan(), [('A', 'C'), ('X', 'Y'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3, ['X'] = 4, ['Y'] = 5 }).AsSpan(), [('A', 'D'), ('X', 'Y'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'X', 'Y'], [0, 1, 2]).AsSpan(),
+            [
+                ('A', 'A', (ushort)0),
+                ('X', 'Y', (ushort)1),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'X', 'Y'], [0, 1, 2, 3]).AsSpan(),
+            [
+                ('A', 'B', (ushort)0),
+                ('X', 'Y', (ushort)2),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'C', 'X', 'Y'], [0, 1, 2, 3, 4]).AsSpan(),
+            [
+                ('A', 'C', (ushort)0),
+                ('X', 'Y', (ushort)3),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'C', 'D', 'X', 'Y'], [0, 1, 2, 3, 4, 5]).AsSpan(),
+            [
+                ('A', 'D', (ushort)0),
+                ('X', 'Y', (ushort)4),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
 
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['X'] = 1, ['Y'] = 2, ['Z'] = 3 }).AsSpan(), [('A', 'A'), ('X', 'Z'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['X'] = 2, ['Y'] = 3, ['Z'] = 4 }).AsSpan(), [('A', 'B'), ('X', 'Z'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['X'] = 3, ['Y'] = 4, ['Z'] = 5 }).AsSpan(), [('A', 'C'), ('X', 'Z'), ((char)0xFFFF, (char)0xFFFF)]);
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 1, ['C'] = 2, ['D'] = 3, ['X'] = 4, ['Y'] = 5, ['Z'] = 6 }).AsSpan(), [('A', 'D'), ('X', 'Z'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'X', 'Y', 'Z'], [0, 1, 2, 3]).AsSpan(),
+            [
+                ('A', 'A', (ushort)0),
+                ('X', 'Z', (ushort)1),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'X', 'Y', 'Z'], [0, 1, 2, 3, 4]).AsSpan(),
+            [
+                ('A', 'B', (ushort)0),
+                ('X', 'Z', (ushort)2),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'C', 'X', 'Y', 'Z'], [0, 1, 2, 3, 4, 5]).AsSpan(),
+            [
+                ('A', 'C', (ushort)0),
+                ('X', 'Z', (ushort)3),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B', 'C', 'D', 'X', 'Y', 'Z'], [0, 1, 2, 3, 4, 5, 6]).AsSpan(),
+            [
+                ('A', 'D', (ushort)0),
+                ('X', 'Z', (ushort)4),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
 
-        Assert.Equal(CreateStartEnds(new Dictionary<char, ushort>() { ['A'] = 0, ['B'] = 2 }).AsSpan(), [('A', 'A'), ('B', 'B'), ((char)0xFFFF, (char)0xFFFF)]);
+        Assert.Equal(CMapFormat4.CreateStartEnds(['A', 'B'], [0, 2]).AsSpan(),
+            [
+                ('A', 'A', (ushort)0),
+                ('B', 'B', (ushort)2),
+                ((char)0xFFFF, (char)0xFFFF, (ushort)0),
+            ]);
     }
 
     [Fact]
     public void CreateStartEndsErrorTest()
     {
-        (char Start, char End)[] nodata = [];
-        Assert.Equal(CreateStartEnds([]), nodata);
+        (char Start, char End, ushort GID)[] nodata = [];
+        Assert.Equal(CMapFormat4.CreateStartEnds([], []), nodata);
     }
 }

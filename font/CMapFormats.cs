@@ -1,0 +1,8 @@
+﻿namespace OpenType;
+
+public enum CMapFormats
+{
+    Format0 = 0,
+    Format4 = 4,
+    Format12 = 12,
+}

@@ -1,12 +1,10 @@
 ﻿using Mina.Binder;
 using Mina.Extension;
-using OpenType.Tables.CMap;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace OpenType.Tables;
+namespace OpenType.Tables.CMap;
 
 public class CMapFormat12 : ICMapFormat
 {
@@ -35,10 +33,9 @@ public class CMapFormat12 : ICMapFormat
         };
     }
 
-    public static CMapFormat12 CreateFormat(Dictionary<int, uint> char_gid)
+    public static CMapFormat12 CreateFormat(int[] chars, uint[] gids)
     {
-        var chars = char_gid.Keys.Order().ToArray();
-        var groups = CreateStartEnds(chars, char_gid);
+        var groups = CreateStartEnds(chars, gids);
 
         return new()
         {
@@ -51,17 +48,17 @@ public class CMapFormat12 : ICMapFormat
         };
     }
 
-    public static (uint StartCharCode, uint EndCharCode, uint StartGlyphID)[] CreateStartEnds(Span<int> chars, Dictionary<int, uint> char_gid)
+    public static (uint StartCharCode, uint EndCharCode, uint StartGlyphID)[] CreateStartEnds(Span<int> chars, Span<uint> gids)
     {
         if (chars.Length == 0) return [];
         var start = chars[0];
-        var gid = char_gid[chars[0]];
+        var gid = gids[0];
         if (chars.Length == 1) return [((uint)start, (uint)start, gid)];
 
         for (var i = 1; i < chars.Length; i++)
         {
-            if (start + i == chars[i] && gid + i == char_gid[chars[i]]) continue;
-            return [((uint)start, (uint)(start + i - 1), gid), .. CreateStartEnds(chars[i..], char_gid)];
+            if (start + i == chars[i] && gid + i == gids[i]) continue;
+            return [((uint)start, (uint)(start + i - 1), gid), .. CreateStartEnds(chars[i..], gids[i..])];
         }
         return [((uint)start, (uint)chars[^1], gid)];
     }

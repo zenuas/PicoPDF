@@ -50,10 +50,9 @@ public class CMapFormat4 : ICMapFormat
         };
     }
 
-    public static CMapFormat4 CreateFormat(Dictionary<char, ushort> char_gid)
+    public static CMapFormat4 CreateFormat(char[] chars, ushort[] gids)
     {
-        var chars = char_gid.Keys.Order().ToArray();
-        var start_ends = CreateStartEnds(chars, char_gid);
+        var start_ends = CreateStartEnds(chars, gids);
         var seg_count = start_ends.Length;
         var serach_range = Math.Pow(2, Math.Floor(Math.Log2(seg_count))) * 2;
 
@@ -66,28 +65,28 @@ public class CMapFormat4 : ICMapFormat
             SearchRange = (ushort)serach_range,
             EntrySelector = (ushort)Math.Log2(serach_range / 2),
             RangeShift = (ushort)((seg_count * 2) - serach_range),
-            EndCode = [.. start_ends.Select(x => (ushort)x.End)],
+            EndCode = [.. start_ends.Select(x => (ushort)x.EndCharCode)],
             ReservedPad = 0,
-            StartCode = [.. start_ends.Select(x => (ushort)x.Start)],
-            IdDelta = [.. start_ends.Select(x => (short)(x.Start == 0xFFFF ? 1 : char_gid[x.Start] - x.Start))],
+            StartCode = [.. start_ends.Select(x => (ushort)x.StartCharCode)],
+            IdDelta = [.. start_ends.Select(x => (short)(x.StartCharCode == 0xFFFF ? 1 : x.StartGlyphID - x.StartCharCode))],
             IdRangeOffsets = [.. Lists.Repeat((ushort)0).Take(seg_count)],
-            GlyphIdArray = [.. chars.Select(x => char_gid[x])],
+            GlyphIdArray = gids,
         };
     }
 
-    public static (char Start, char End)[] CreateStartEnds(Span<char> chars, Dictionary<char, ushort> char_gid)
+    public static (char StartCharCode, char EndCharCode, ushort StartGlyphID)[] CreateStartEnds(Span<char> chars, Span<ushort> gids)
     {
         if (chars.Length == 0) return [];
         var start = chars[0];
-        var gid = char_gid[chars[0]];
-        if (chars.Length == 1) return [(start, start), ((char)0xFFFF, (char)0xFFFF)];
+        var gid = gids[0];
+        if (chars.Length == 1) return [(start, start, gid), ((char)0xFFFF, (char)0xFFFF, 0)];
 
         for (var i = 1; i < chars.Length; i++)
         {
-            if (start + i == chars[i] && gid + i == char_gid[chars[i]]) continue;
-            return [(start, chars[i - 1]), .. CreateStartEnds(chars[i..], char_gid)];
+            if (start + i == chars[i] && gid + i == gids[i]) continue;
+            return [(start, chars[i - 1], gid), .. CreateStartEnds(chars[i..], gids[i..])];
         }
-        return [(start, chars[^1]), ((char)0xFFFF, (char)0xFFFF)];
+        return [(start, chars[^1], gid), ((char)0xFFFF, (char)0xFFFF, 0)];
     }
 
     public void WriteTo(Stream stream)
