@@ -6,4 +6,5 @@ public enum CMapFormats
     Format4 = 4,
     Format12 = 12,
     Format13 = 13,
+    Format14 = 14,
 }
