@@ -362,6 +362,9 @@ public static class FontExtract
 
             case CMapFormats.Format12:
                 return CMapFormat12.CreateFormat(char_gids);
+
+            case CMapFormats.Format13:
+                return CMapFormat13.CreateFormat(char_gids);
         }
         throw new NotSupportedException();
     }
