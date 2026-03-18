@@ -33,9 +33,9 @@ public class CMapFormat12 : ICMapFormat
         };
     }
 
-    public static CMapFormat12 CreateFormat(int[] chars, uint[] gids)
+    public static CMapFormat12 CreateFormat((int Char, uint GID)[] char_gids)
     {
-        var groups = CreateStartEnds(chars, gids);
+        var groups = CreateStartEnds(char_gids);
 
         return new()
         {
@@ -48,19 +48,18 @@ public class CMapFormat12 : ICMapFormat
         };
     }
 
-    public static (uint StartCharCode, uint EndCharCode, uint StartGlyphID)[] CreateStartEnds(Span<int> chars, Span<uint> gids)
+    public static (uint StartCharCode, uint EndCharCode, uint StartGlyphID)[] CreateStartEnds(Span<(int Char, uint GID)> char_gids)
     {
-        if (chars.Length == 0) return [];
-        var start = chars[0];
-        var gid = gids[0];
-        if (chars.Length == 1) return [((uint)start, (uint)start, gid)];
+        if (char_gids.Length == 0) return [];
+        var (start, gid) = char_gids[0];
+        if (char_gids.Length == 1) return [((uint)start, (uint)start, gid)];
 
-        for (var i = 1; i < chars.Length; i++)
+        for (var i = 1; i < char_gids.Length; i++)
         {
-            if (start + i == chars[i] && gid + i == gids[i]) continue;
-            return [((uint)start, (uint)(start + i - 1), gid), .. CreateStartEnds(chars[i..], gids[i..])];
+            if (start + i == char_gids[i].Char && gid + i == char_gids[i].GID) continue;
+            return [((uint)start, (uint)(start + i - 1), gid), .. CreateStartEnds(char_gids[i..])];
         }
-        return [((uint)start, (uint)chars[^1], gid)];
+        return [((uint)start, (uint)char_gids[^1].Char, gid)];
     }
 
     public void WriteTo(Stream stream)

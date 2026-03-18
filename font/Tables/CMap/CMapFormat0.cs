@@ -34,10 +34,10 @@ public class CMapFormat0 : ICMapFormat
         stream.Write(GlyphIdArray);
     }
 
-    public static CMapFormat0 CreateFormat(char[] chars, byte[] gids)
+    public static CMapFormat0 CreateFormat((char Char, byte GID)[] char_gids)
     {
-        var gidarray = new byte[chars.Max() + 1];
-        chars.Zip(gids).Each(x => gidarray[x.First] = x.Second);
+        var gidarray = new byte[char_gids.Select(x => x.Char).Max() + 1];
+        char_gids.Each(x => gidarray[x.Char] = x.GID);
 
         return new()
         {

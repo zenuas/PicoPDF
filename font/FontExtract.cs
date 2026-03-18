@@ -27,13 +27,13 @@ public static class FontExtract
                 ));
         var gid_glyph = char_glyph.Values.ToDictionary(x => x.NewGID, x => (x.Glyph, x.HorizontalMetrics));
         var num_of_glyph = (int)gid_glyph.Keys.Max();
-        var new_gids = gids[0..chars.Length].Select(x => char_glyph[x].NewGID).ToArray();
+        var char_gids = gids[0..chars.Length].Select(x => (char_glyph[x].Char, char_glyph[x].NewGID)).ToArray();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(chars, new_gids);
-        var cmap = CreateCMapTable(opt, chars, new_gids);
+        var cmapN = CMapFormat12.CreateFormat(char_gids);
+        var cmap = CreateCMapTable(opt, char_gids);
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
 
         var hmtx = new HorizontalMetricsTable()
@@ -105,13 +105,13 @@ public static class FontExtract
             fdselect_index[font.CompactFontFormat.TopDict.FontDictSelect[0]] = 0;
         }
         var num_of_glyph = (int)gid_glyph.Keys.Max();
-        var new_gids = gids[0..chars.Length].Select(x => char_glyph[x].NewGID).ToArray();
+        var char_gids = gids[0..chars.Length].Select(x => (char_glyph[x].Char, char_glyph[x].NewGID)).ToArray();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(chars, new_gids);
-        var cmap = CreateCMapTable(opt, chars, new_gids);
+        var cmapN = CMapFormat12.CreateFormat(char_gids);
+        var cmap = CreateCMapTable(opt, char_gids);
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
 
         var hmtx = new HorizontalMetricsTable()
@@ -227,13 +227,13 @@ public static class FontExtract
                 ));
         var gid_hmtx = char_glyph.Values.ToDictionary(x => x.NewGID, x => x.HorizontalMetrics);
         var num_of_glyph = (int)gid_hmtx.Keys.Max();
-        var new_gids = gids[0..chars.Length].Select(x => char_glyph[x].NewGID).ToArray();
+        var char_gids = gids[0..chars.Length].Select(x => (char_glyph[x].Char, char_glyph[x].NewGID)).ToArray();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(chars, new_gids);
-        var cmap = CreateCMapTable(opt, chars, new_gids);
+        var cmapN = CMapFormat12.CreateFormat(char_gids);
+        var cmap = CreateCMapTable(opt, char_gids);
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
 
         var hmtx = new HorizontalMetricsTable()
@@ -322,23 +322,31 @@ public static class FontExtract
         NumberOfHMetrics = num_of_glyph_with_notdef,
     };
 
-    public static CMapTable CreateCMapTable(FontExtractOption opt, int[] chars, uint[] gids) => new()
+    public static CMapTable CreateCMapTable(FontExtractOption opt, (int Char, uint GID)[] char_gids) => new()
     {
         Version = 0,
         NumberOfTables = (ushort)opt.OutputCMap.Length,
         EncodingRecords = opt.OutputCMap.ToDictionary(
                 x => new EncodingRecord { PlatformID = (ushort)x.PlatformID, EncodingID = (ushort)x.EncodingID, Offset = 0 },
-                x => CreateCMapFormat(x.CMapFormat, chars, gids)
+                x => CreateCMapFormat(x.CMapFormat, char_gids)
             ),
     };
 
-    public static ICMapFormat CreateCMapFormat(CMapFormats format, int[] chars, uint[] gids) => format switch
+    public static ICMapFormat CreateCMapFormat(CMapFormats format, (int Char, uint GID)[] char_gids)
     {
-        CMapFormats.Format0 => CMapFormat0.CreateFormat([.. chars.Select(x => char.ConvertFromUtf32(x).First())], [.. gids.Select(x => (byte)x)]),
-        CMapFormats.Format4 => CMapFormat4.CreateFormat([.. chars.Select(x => char.ConvertFromUtf32(x).First())], [.. gids.Select(x => (ushort)x)]),
-        CMapFormats.Format12 => CMapFormat12.CreateFormat(chars, gids),
-        _ => throw new NotSupportedException(),
-    };
+        switch (format)
+        {
+            case CMapFormats.Format0:
+                return CMapFormat0.CreateFormat([.. char_gids.Select(x => (char.ConvertFromUtf32(x.Char).First(), (byte)x.GID))]);
+
+            case CMapFormats.Format4:
+                return CMapFormat4.CreateFormat([.. char_gids.Select(x => (char.ConvertFromUtf32(x.Char).First(), (ushort)x.GID))]);
+
+            case CMapFormats.Format12:
+                return CMapFormat12.CreateFormat(char_gids);
+        }
+        throw new NotSupportedException();
+    }
 
     public static IEnumerable<uint> GetGIDWithColorGlyph(uint[] gids, ColorTable colr)
     {
