@@ -24,7 +24,7 @@ public class CMapFormat12 : ICMapFormat
 
         return new()
         {
-            Format = 12,
+            Format = (ushort)CMapFormats.Format12,
             Reserved = reserved,
             Length = length,
             Language = language,

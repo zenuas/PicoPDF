@@ -31,7 +31,7 @@ public class CMapFormat14 : ICMapFormat
     {
         return new()
         {
-            Format = 14,
+            Format = (ushort)CMapFormats.Format14,
             Length = 0,
             NumberOfVariationSelectorRecords = 0,
             VariationSelector = [],

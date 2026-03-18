@@ -34,7 +34,7 @@ public class CMapFormat4 : ICMapFormat
 
         return new()
         {
-            Format = 4,
+            Format = (ushort)CMapFormats.Format4,
             Length = length,
             Language = language,
             SegCountX2 = seg_count_x2,

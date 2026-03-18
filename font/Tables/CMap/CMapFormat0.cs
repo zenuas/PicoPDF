@@ -19,7 +19,7 @@ public class CMapFormat0 : ICMapFormat
 
         return new()
         {
-            Format = 0,
+            Format = (ushort)CMapFormats.Format0,
             Length = length,
             Language = stream.ReadUShortByBigEndian(),
             GlyphIdArray = [.. Lists.Repeat(stream.ReadUByte).Take(length - /* sizeof(Format) + sizeof(Length) + sizeof(Language) */6)],
