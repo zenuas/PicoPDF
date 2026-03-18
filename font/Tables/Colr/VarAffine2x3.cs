@@ -1,10 +1,9 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
-using OpenType.Tables.Colr;
 using System.Collections.Generic;
 using System.IO;
 
-namespace OpenType.Tables;
+namespace OpenType.Tables.Colr;
 
 public class VarAffine2x3 : IExportable, IAffine2x3
 {

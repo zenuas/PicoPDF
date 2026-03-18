@@ -1,8 +1,7 @@
-﻿using OpenType.Tables.CMap;
-using System;
+﻿using System;
 using System.IO;
 
-namespace OpenType.Tables;
+namespace OpenType.Tables.CMap;
 
 public class CMapFormatN : ICMapFormat
 {

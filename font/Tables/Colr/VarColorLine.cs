@@ -1,10 +1,9 @@
 ﻿using Mina.Extension;
-using OpenType.Tables.Colr;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace OpenType.Tables;
+namespace OpenType.Tables.Colr;
 
 public class VarColorLine : IExportable, IColorLine
 {

@@ -2,7 +2,7 @@
 using OpenType.Extension;
 using System.IO;
 
-namespace OpenType.Tables;
+namespace OpenType.Tables.Colr;
 
 public class VarColorStop : IExportable
 {
