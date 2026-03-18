@@ -12,7 +12,6 @@ public class FontExtractOption
         new(null, null, null, NameIDs.PostScriptName),
     ];
     public (Platforms PlatformID, Encodings EncodingID, CMapFormats CMapFormat)[] OutputCMap { get; init; } = [
-        new(Platforms.Unicode, Encodings.Unicode2_0_BMPOnly, CMapFormats.Format4),
         new(Platforms.Unicode, Encodings.Unicode2_0_FullRepertoire, CMapFormats.Format12),
         new(Platforms.Windows, Encodings.Windows_UnicodeBMP, CMapFormats.Format4),
         new(Platforms.Windows, Encodings.Windows_UnicodeFullRepertoire, CMapFormats.Format12),
