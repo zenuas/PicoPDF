@@ -322,25 +322,43 @@ public static class FontExtract
         NumberOfHMetrics = num_of_glyph_with_notdef,
     };
 
-    public static CMapTable CreateCMapTable(FontExtractOption opt, (int Char, uint GID)[] char_gids) => new()
+    public static CMapTable CreateCMapTable(FontExtractOption opt, (int Char, uint GID)[] char_gids)
     {
-        Version = 0,
-        NumberOfTables = (ushort)opt.OutputCMap.Length,
-        EncodingRecords = opt.OutputCMap.ToDictionary(
-                x => new EncodingRecord { PlatformID = (ushort)x.PlatformID, EncodingID = (ushort)x.EncodingID, Offset = 0 },
-                x => CreateCMapFormat(x.CMapFormat, char_gids)
-            ),
-    };
+        var records = opt.OutputCMap
+            .Select(x => (x.PlatformID, x.EncodingID, CMapFormat: CreateCMapFormat(x.CMapFormat, char_gids)))
+            .Where(x => x.CMapFormat is not null)
+            .ToArray();
 
-    public static ICMapFormat CreateCMapFormat(CMapFormats format, (int Char, uint GID)[] char_gids)
+        return new()
+        {
+            Version = 0,
+            NumberOfTables = (ushort)records.Length,
+            EncodingRecords = records.ToDictionary(
+                x => new EncodingRecord { PlatformID = (ushort)x.PlatformID, EncodingID = (ushort)x.EncodingID, Offset = 0 },
+                x => x.CMapFormat!
+            ),
+        };
+    }
+
+    public static ICMapFormat? CreateCMapFormat(CMapFormats format, (int Char, uint GID)[] char_gids)
     {
         switch (format)
         {
             case CMapFormats.Format0:
-                return CMapFormat0.CreateFormat([.. char_gids.Select(x => (char.ConvertFromUtf32(x.Char).First(), (byte)x.GID))]);
+                {
+                    var available_char_gids = char_gids.Where(x => x.Char <= 0xFF).ToArray();
+                    return available_char_gids.Length == 0
+                        ? null
+                        : (ICMapFormat)CMapFormat0.CreateFormat([.. available_char_gids.Select(x => (char.ConvertFromUtf32(x.Char).First(), (byte)x.GID))]);
+                }
 
             case CMapFormats.Format4:
-                return CMapFormat4.CreateFormat([.. char_gids.Select(x => (char.ConvertFromUtf32(x.Char).First(), (ushort)x.GID))]);
+                {
+                    var available_char_gids = char_gids.Where(x => x.Char <= 0xFFFF).ToArray();
+                    return available_char_gids.Length == 0
+                        ? null
+                        : (ICMapFormat)CMapFormat4.CreateFormat([.. available_char_gids.Select(x => (char.ConvertFromUtf32(x.Char).First(), (ushort)x.GID))]);
+                }
 
             case CMapFormats.Format12:
                 return CMapFormat12.CreateFormat(char_gids);
