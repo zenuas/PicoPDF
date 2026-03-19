@@ -12,6 +12,14 @@ namespace OpenType;
 
 public static class FontExtract
 {
+    public static IOpenTypeFont Extract(IOpenTypeFont font, FontExtractOption opt) => font switch
+    {
+        TrueTypeFont ttf => Extract(ttf, opt),
+        PostScriptFont psf => Extract(psf, opt),
+        NoOutlineFont noo => Extract(noo, opt),
+        _ => throw new()
+    };
+
     public static TrueTypeFont Extract(TrueTypeFont font, FontExtractOption opt)
     {
         var chars = opt.ExtractChars.Order().ToArray();

@@ -98,10 +98,10 @@ public static class FontLoader
         };
     }
 
-    public static IOpenTypeRequiredTables LoadComplete(IOpenTypeRequiredTables font) => font is FontRequiredTables x ? LoadComplete(x) : font;
-
-    public static IOpenTypeRequiredTables LoadComplete(FontRequiredTables font)
+    public static IOpenTypeFont LoadComplete(IOpenTypeRequiredTables font)
     {
+        if (font is IOpenTypeFont opentype) return opentype;
+
         using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
         return
@@ -110,7 +110,7 @@ public static class FontLoader
             LoadNoOutlineFont(stream, font);
     }
 
-    public static TrueTypeFont LoadTrueTypeFont(Stream stream, FontRequiredTables font)
+    public static TrueTypeFont LoadTrueTypeFont(Stream stream, IOpenTypeRequiredTables font)
     {
         var loca = ReadTableRecord(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, font.FontHeader.IndexToLocFormat, font.MaximumProfile.NumberOfGlyphs)).Try();
         var glyf = ReadTableRecord(font, "glyf", stream, x =>
@@ -162,7 +162,7 @@ public static class FontLoader
         };
     }
 
-    public static PostScriptFont LoadPostScriptFont(Stream stream, FontRequiredTables font)
+    public static PostScriptFont LoadPostScriptFont(Stream stream, IOpenTypeRequiredTables font)
     {
         var cff = ReadTableRecord(font, "CFF ", stream, CompactFontFormat.ReadFrom).Try();
 
@@ -199,7 +199,7 @@ public static class FontLoader
         };
     }
 
-    public static NoOutlineFont LoadNoOutlineFont(Stream stream, FontRequiredTables font)
+    public static NoOutlineFont LoadNoOutlineFont(Stream stream, IOpenTypeRequiredTables font)
     {
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
         var cblc = ReadTableRecord(font, "CBLC", stream, ColorBitmapLocationTable.ReadFrom);

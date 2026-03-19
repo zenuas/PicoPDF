@@ -11,6 +11,25 @@ namespace OpenType;
 
 public static class FontExporter
 {
+    public static byte[] Export(IOpenTypeFont font) => font switch
+    {
+        TrueTypeFont ttf => Export(ttf),
+        PostScriptFont psf => Export(psf),
+        NoOutlineFont noo => Export(noo),
+        _ => throw new()
+    };
+
+    public static void Export(IOpenTypeFont font, Stream stream, long start_stream_position = 0)
+    {
+        switch (font)
+        {
+            case TrueTypeFont ttf: Export(ttf, stream, start_stream_position); return;
+            case PostScriptFont psf: Export(psf, stream, start_stream_position); return;
+            case NoOutlineFont noo: Export(noo, stream, start_stream_position); return;
+            default: throw new();
+        }
+    }
+
     public static byte[] Export(TrueTypeFont font)
     {
         using var stream = new MemoryStream();

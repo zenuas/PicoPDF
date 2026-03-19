@@ -1,4 +1,5 @@
 ﻿using OpenType;
+using OpenType.Tables;
 using System.Threading;
 
 namespace PicoPDF.Pdf.Font;
@@ -32,7 +33,7 @@ public class FontRegisterLock : IFontRegister
         }
     }
 
-    public IOpenTypeRequiredTables LoadComplete(IOpenTypeRequiredTables font)
+    public IOpenTypeFont LoadComplete(IOpenTypeRequiredTables font)
     {
         lock (LockObject)
         {

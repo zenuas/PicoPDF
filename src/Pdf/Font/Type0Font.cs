@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType;
+using OpenType.Tables;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Elements;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
 {
     public required string Name { get; init; }
     public required IOpenTypeRequiredTables Font { get; init; }
-    public IOpenTypeRequiredTables? EmbeddedFont { get; set; }
+    public IOpenTypeFont? EmbeddedFont { get; set; }
     public required IFontRegister FontRegister { get; init; }
     public required string Encoding { get; init; }
     public required CIDFontDictionary FontDictionary { get; init; }

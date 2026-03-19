@@ -1,6 +1,7 @@
 ﻿using Mina.Data;
 using Mina.Extension;
 using OpenType;
+using OpenType.Tables;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -72,12 +73,12 @@ public class FontRegister : IFontRegister
         LoadRequiredTables(GetFontFilePath(name)) :
         LoadRequiredTablesOrNull(name).Try();
 
-    public IOpenTypeRequiredTables LoadComplete(IOpenTypeRequiredTables font) => font is FontRequiredTables req ?
-        (LoadedFonts.TryGetValue(req, out var x) ?
+    public IOpenTypeFont LoadComplete(IOpenTypeRequiredTables font) => (font is FontRequiredTables req ?
+        (LoadedFonts.TryGetValue(req, out var x) && x.Value is IOpenTypeFont ?
             x.Value :
             (LoadedFonts[req] = new() { Value = FontLoader.LoadComplete(req) }).Value
         ) :
-        font;
+        font).Cast<IOpenTypeFont>();
 
     public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
 
