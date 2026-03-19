@@ -27,12 +27,16 @@ public class NameRecord
     public Encoding GetEncoding() => (PlatformID, EncodingID, LanguageID) switch
     {
         ((ushort)Platforms.Unicode, _, _) => Encoding.BigEndianUnicode,
-        ((ushort)Platforms.Windows, 0 or 1 or 10, _) => Encoding.BigEndianUnicode,
-        ((ushort)Platforms.Windows, 2, _) => Encoding.GetEncodingOrUtf8("shift_jis"),
-        ((ushort)Platforms.Windows, 4, _) => Encoding.GetEncodingOrUtf8("big5"),
-        ((ushort)Platforms.Windows, 5, _) => Encoding.GetEncodingOrUtf8("x-cp20949"),
-        ((ushort)Platforms.Windows, 6, _) => Encoding.GetEncodingOrUtf8("Johab"),
-        ((ushort)Platforms.Macintosh, 1, _) => Encoding.GetEncodingOrUtf8("shift_jis"),
+        ((ushort)Platforms.Macintosh, _, _) => Encoding.UTF8,
+
+        // If a font has records for encoding IDs 3, 4 or 5, the corresponding string data should be encoded using code pages 936, 950 and 949, respectively.
+        // Otherwise, all string data for platform 3 must be encoded in UTF-16BE.
+        //  https://learn.microsoft.com/en-us/typography/opentype/spec/name#windows-encoding-ids
+        ((ushort)Platforms.Windows, 3, _) => Encoding.GetEncodingOrUtf8(936),
+        ((ushort)Platforms.Windows, 4, _) => Encoding.GetEncodingOrUtf8(950),
+        ((ushort)Platforms.Windows, 5, _) => Encoding.GetEncodingOrUtf8(949),
+        ((ushort)Platforms.Windows, _, _) => Encoding.BigEndianUnicode,
+
         _ => Encoding.UTF8,
     };
 
