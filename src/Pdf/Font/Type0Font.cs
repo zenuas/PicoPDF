@@ -1,6 +1,5 @@
 ﻿using Mina.Extension;
 using OpenType;
-using OpenType.Tables;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Elements;
 using System.Collections.Generic;

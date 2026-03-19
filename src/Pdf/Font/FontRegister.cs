@@ -1,7 +1,6 @@
 ﻿using Mina.Data;
 using Mina.Extension;
 using OpenType;
-using OpenType.Tables;
 using System;
 using System.Collections.Generic;
 using System.IO;

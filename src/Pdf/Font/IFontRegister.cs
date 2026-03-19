@@ -1,5 +1,4 @@
 ﻿using OpenType;
-using OpenType.Tables;
 
 namespace PicoPDF.Pdf.Font;
 

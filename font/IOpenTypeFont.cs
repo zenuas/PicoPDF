@@ -1,4 +1,6 @@
-﻿namespace OpenType.Tables;
+﻿using OpenType.Tables;
+
+namespace OpenType;
 
 public interface IOpenTypeFont : IOpenTypeRequiredTables
 {
