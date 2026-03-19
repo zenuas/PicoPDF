@@ -17,7 +17,7 @@ public static class FontExtract
         TrueTypeFont ttf => Extract(ttf, opt),
         PostScriptFont psf => Extract(psf, opt),
         NoOutlineFont noo => Extract(noo, opt),
-        _ => throw new()
+        _ => throw new(),
     };
 
     public static TrueTypeFont Extract(TrueTypeFont font, FontExtractOption opt)
@@ -40,7 +40,6 @@ public static class FontExtract
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(char_gids);
         var cmap = CreateCMapTable(opt, char_gids);
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
 
@@ -72,7 +71,7 @@ public static class FontExtract
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = cmapN.CreateCharToGID(),
+            CharToGID = CreateCharToGID(char_gids),
             IndexToLocation = null!,
             Glyphs = glyf,
             ColorBitmapData = null,
@@ -118,7 +117,6 @@ public static class FontExtract
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(char_gids);
         var cmap = CreateCMapTable(opt, char_gids);
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
 
@@ -210,7 +208,7 @@ public static class FontExtract
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = cmapN.CreateCharToGID(),
+            CharToGID = CreateCharToGID(char_gids),
             CompactFontFormat = cff,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
@@ -240,7 +238,6 @@ public static class FontExtract
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmapN = CMapFormat12.CreateFormat(char_gids);
         var cmap = CreateCMapTable(opt, char_gids);
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
 
@@ -267,7 +264,7 @@ public static class FontExtract
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = cmapN.CreateCharToGID(),
+            CharToGID = CreateCharToGID(char_gids),
             ColorBitmapData = null,
             ColorBitmapLocation = null,
             Color = colr,
@@ -329,6 +326,12 @@ public static class FontExtract
         MetricDataFormat = hhea.MetricDataFormat,
         NumberOfHMetrics = num_of_glyph_with_notdef,
     };
+
+    public static Func<int, uint> CreateCharToGID((int Char, uint GID)[] char_gids)
+    {
+        var dict = char_gids.ToDictionary(x => x.Char, x => x.GID);
+        return c => dict.TryGetValue(c, out var gid) ? gid : 0;
+    }
 
     public static CMapTable CreateCMapTable(FontExtractOption opt, (int Char, uint GID)[] char_gids)
     {

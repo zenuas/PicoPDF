@@ -16,7 +16,7 @@ public static class FontExporter
         TrueTypeFont ttf => Export(ttf),
         PostScriptFont psf => Export(psf),
         NoOutlineFont noo => Export(noo),
-        _ => throw new()
+        _ => throw new(),
     };
 
     public static void Export(IOpenTypeFont font, Stream stream, long start_stream_position = 0)
