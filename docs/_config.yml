@@ -1,0 +1,11 @@
+title: PicoPDF
+description: PicoPDFについて
+keywords: PicoPDF,OpenType
+author: zenuas
+theme: jekyll-theme-dinky
+google_analytics: G-WT8JB2RWTE
+markdown: kramdown
+kramdown:
+  hard_wrap: true
+plugins:
+  - jekyll-sitemap
