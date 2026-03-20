@@ -10,8 +10,6 @@ public class EncodingRecord
     public required ushort EncodingID { get; init; }
     public required uint Offset { get; init; }
 
-    public PlatformEncodings PlatformEncoding { get => (PlatformEncodings)(((uint)PlatformID << 16) | EncodingID); }
-
     public static EncodingRecord ReadFrom(Stream stream) => new()
     {
         PlatformID = stream.ReadUShortByBigEndian(),

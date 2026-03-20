@@ -91,7 +91,7 @@ public class Document
     public Type0Font AddFont(string name, IOpenTypeRequiredTables font)
     {
         var flag =
-            (font.CMap.EncodingRecords.Contains(x => x.Key.PlatformEncoding == PlatformEncodings.Windows_Symbol) ?
+            (font.CMap.EncodingRecords.Contains(x => x.Key.PlatformID == (ushort)Platforms.Windows && x.Key.EncodingID == (ushort)Encodings.Windows_Symbol) ?
                 FontDescriptorFlags.Symbolic :
                 FontDescriptorFlags.Nonsymbolic) |
             (font.PostScript.IsFixedPitch != 0 ? FontDescriptorFlags.FixedPitch : 0) |
