@@ -83,10 +83,10 @@ public static class FontExporter
     public static void Export(TrueTypeFont font, Dictionary<string, MutableTableRecord> tables, Stream stream, long start_stream_position = 0)
     {
         // glyf table export
-        _ = StreamAlignment(stream);
         var glyf_start = stream.Position;
         var glyph_index = new Dictionary<int, long>();
         tables["glyf"].Offset = (uint)(glyf_start - start_stream_position);
+        var index_to_locformat = font.FontHeader.IndexToLocFormat;
         var lastglyph = font.Glyphs
             .Select((x, i) => (Glyph: x, Index: i))
             .Aggregate(0L, (acc, x) =>
@@ -94,19 +94,18 @@ public static class FontExporter
                 glyph_index[x.Index] = acc;
                 var position = stream.Position;
                 x.Glyph.WriteTo(stream);
-                return acc + (stream.Position - position) + StreamAlignment(stream);
+                return acc + (stream.Position - position) + (index_to_locformat == 0 ? StreamAlignment(stream, 2) : 0);
             });
         tables["glyf"].Length = (uint)(stream.Position - glyf_start);
+        _ = StreamAlignment(stream);
 
         // loca table export
-        _ = StreamAlignment(stream);
         var loca_start = stream.Position;
         tables["loca"].Offset = (uint)(loca_start - start_stream_position);
-        if (font.FontHeader.IndexToLocFormat == 0)
+        if (index_to_locformat == 0)
         {
             font.Glyphs.Each((_, i) => stream.WriteOffset16((ushort)(glyph_index[i] / 2)));
             stream.WriteOffset16((ushort)(lastglyph / 2));
-            _ = StreamAlignment(stream);
         }
         else
         {
@@ -114,6 +113,7 @@ public static class FontExporter
             stream.WriteOffset32((uint)lastglyph);
         }
         tables["loca"].Length = (uint)(stream.Position - loca_start);
+        _ = StreamAlignment(stream);
     }
 
     public static void Export(PostScriptFont font, Dictionary<string, MutableTableRecord> tables, Stream stream, long start_stream_position = 0)
