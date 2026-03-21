@@ -351,39 +351,15 @@ public static class FontExtract
         };
     }
 
-    public static ICMapFormat? CreateCMapFormat(CMapFormats format, (int Char, uint GID)[] char_gids)
+    public static ICMapFormat? CreateCMapFormat(CMapFormats format, (int Char, uint GID)[] char_gids) => format switch
     {
-        switch (format)
-        {
-            case CMapFormats.Format0:
-                {
-                    var available_char_gids = char_gids.Where(x => x.Char <= 0xFF).ToArray();
-                    return available_char_gids.Length == 0
-                        ? null
-                        : (ICMapFormat)CMapFormat0.CreateFormat([.. available_char_gids.Select(x => (char.ConvertFromUtf32(x.Char).First(), (byte)x.GID))]);
-                }
-
-            case CMapFormats.Format4:
-                {
-                    var available_char_gids = char_gids.Where(x => x.Char <= 0xFFFF).ToArray();
-                    return available_char_gids.Length == 0
-                        ? null
-                        : (ICMapFormat)CMapFormat4.CreateFormat([.. available_char_gids.Select(x => (char.ConvertFromUtf32(x.Char).First(), (ushort)x.GID))]);
-                }
-
-            case CMapFormats.Format12:
-                return CMapFormat12.CreateFormat(char_gids);
-
-            case CMapFormats.Format13:
-                return CMapFormat13.CreateFormat(char_gids);
-
-            case CMapFormats.Format14:
-                return CMapFormat14.CreateFormat(char_gids);
-
-            default:
-                return null;
-        }
-    }
+        CMapFormats.Format0 => char_gids.Where(x => x.Char <= 0xFF).To(x => x.IsEmpty() ? null : (ICMapFormat)CMapFormat0.CreateFormat([.. x.Select(x => (char.ConvertFromUtf32(x.Char).First(), (byte)x.GID))])),
+        CMapFormats.Format4 => char_gids.Where(x => x.Char <= 0xFFFF).To(x => x.IsEmpty() ? null : (ICMapFormat)CMapFormat4.CreateFormat([.. x.Select(x => (char.ConvertFromUtf32(x.Char).First(), (ushort)x.GID))])),
+        CMapFormats.Format12 => CMapFormat12.CreateFormat(char_gids),
+        CMapFormats.Format13 => CMapFormat13.CreateFormat(char_gids),
+        CMapFormats.Format14 => CMapFormat14.CreateFormat(char_gids),
+        _ => null,
+    };
 
     public static IEnumerable<uint> GetGIDWithColorGlyph(uint[] gids, ColorTable colr)
     {
