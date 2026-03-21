@@ -818,7 +818,7 @@ public static class FontExtract
         var layerRecords = new List<LayerRecord>();
 
         var baseGlyphRecords = colr.BaseGlyphRecords
-            .Where(kv => mapper.ContainsKey(kv.GlyphID))
+            .Where(x => mapper.ContainsKey(x.GlyphID))
             .Select(record =>
             {
                 layerRecords.AddRange(colr.LayerRecords[record.FirstLayerIndex..(record.FirstLayerIndex + record.NumberOfLayers)]
