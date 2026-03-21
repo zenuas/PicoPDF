@@ -379,8 +379,10 @@ public static class FontExtract
 
             case CMapFormats.Format14:
                 return CMapFormat14.CreateFormat(char_gids);
+
+            default:
+                return null;
         }
-        throw new NotSupportedException();
     }
 
     public static IEnumerable<uint> GetGIDWithColorGlyph(uint[] gids, ColorTable colr)
