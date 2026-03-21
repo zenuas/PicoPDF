@@ -11,52 +11,21 @@ namespace OpenType;
 
 public static class FontExporter
 {
-    public static byte[] Export(IOpenTypeFont font) => font switch
+    public static byte[] Export(IOpenTypeFont font)
     {
-        TrueTypeFont ttf => Export(ttf),
-        PostScriptFont psf => Export(psf),
-        NoOutlineFont noo => Export(noo),
-        _ => throw new(),
-    };
+        using var stream = new MemoryStream();
+        Export(font, stream);
+        return stream.ToArray();
+    }
 
     public static void Export(IOpenTypeFont font, Stream stream, long start_stream_position = 0)
     {
-        switch (font)
-        {
-            case TrueTypeFont ttf: Export(ttf, stream, start_stream_position); return;
-            case PostScriptFont psf: Export(psf, stream, start_stream_position); return;
-            case NoOutlineFont noo: Export(noo, stream, start_stream_position); return;
-            default: throw new();
-        }
-    }
-
-    public static byte[] Export(TrueTypeFont font)
-    {
-        using var stream = new MemoryStream();
-        Export(font, stream);
-        return stream.ToArray();
-    }
-
-    public static byte[] Export(PostScriptFont font)
-    {
-        using var stream = new MemoryStream();
-        Export(font, stream);
-        return stream.ToArray();
-    }
-
-    public static byte[] Export(NoOutlineFont font)
-    {
-        using var stream = new MemoryStream();
-        Export(font, stream);
-        return stream.ToArray();
-    }
-
-    public static void Export(TrueTypeFont font, Stream stream, long start_stream_position = 0)
-    {
-        var table_names = new string[] { "cmap", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "name", "post" }
+        var table_names = new string[] { "cmap", "head", "hhea", "hmtx", "maxp", "name", "post" }
+            .If(_ => font is PostScriptFont, xs => xs.Concat("CFF "), xs => xs)
             .If(_ => font.Color is { }, xs => xs.Concat("COLR"), xs => xs)
             .If(_ => font.ColorPalette is { }, xs => xs.Concat("CPAL"), xs => xs)
             .If(_ => font.OS2 is { }, xs => xs.Concat("OS/2"), xs => xs)
+            .If(_ => font is TrueTypeFont, xs => xs.Concat(["glyf", "loca"]), xs => xs)
             .Order(StringComparer.Ordinal)
             .ToArray();
         var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
@@ -96,6 +65,23 @@ public static class FontExporter
         Debug.Assert(tables["maxp"].Length is 6 or 32);
         Debug.Assert(tables["post"].Length == 32);
 
+        switch (font)
+        {
+            case TrueTypeFont ttf: Export(ttf, tables, stream, start_stream_position); break;
+            case PostScriptFont psf: Export(psf, tables, stream, start_stream_position); break;
+            case NoOutlineFont noo: Export(noo, tables, stream, start_stream_position); break;
+            default: throw new();
+        }
+
+        var lastposition = stream.Position;
+        tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
+        var checksum = CalcChecksum(stream.SeekTo(start_stream_position), (uint)(lastposition - start_stream_position));
+        ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0xB1B0AFBA - checksum));
+        stream.Position = lastposition;
+    }
+
+    public static void Export(TrueTypeFont font, Dictionary<string, MutableTableRecord> tables, Stream stream, long start_stream_position = 0)
+    {
         // glyf table export
         _ = StreamAlignment(stream);
         var glyf_start = stream.Position;
@@ -128,128 +114,27 @@ public static class FontExporter
             stream.WriteOffset32((uint)lastglyph);
         }
         tables["loca"].Length = (uint)(stream.Position - loca_start);
-
-        var lastposition = stream.Position;
-        tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
-        var checksum = CalcChecksum(stream.SeekTo(start_stream_position), (uint)(lastposition - start_stream_position));
-        ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0xB1B0AFBA - checksum));
-        stream.Position = lastposition;
     }
 
-    public static void Export(PostScriptFont font, Stream stream, long start_stream_position = 0)
+    public static void Export(PostScriptFont font, Dictionary<string, MutableTableRecord> tables, Stream stream, long start_stream_position = 0)
     {
-        var table_names = new string[] { "CFF ", "cmap", "head", "hhea", "hmtx", "maxp", "name", "post" }
-            .If(_ => font.Color is { }, xs => xs.Concat("COLR"), xs => xs)
-            .If(_ => font.ColorPalette is { }, xs => xs.Concat("CPAL"), xs => xs)
-            .If(_ => font.OS2 is { }, xs => xs.Concat("OS/2"), xs => xs)
-            .Order(StringComparer.Ordinal)
-            .ToArray();
-        var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
-
-        var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
-        new OffsetTable
-        {
-            SfntVersion = font.Offset.SfntVersion,
-            NumberOfTables = (ushort)tables.Count,
-            SearchRange = (ushort)(tables_pow * 16),
-            EntrySelector = (ushort)Math.Log2(tables_pow),
-            RangeShift = (ushort)((tables.Count * 16) - (tables_pow * 16)),
-        }.WriteTo(stream);
-
-        foreach (var x in table_names)
-        {
-            var table = tables[x];
-            stream.WriteTag(x);
-            table.Position = stream.Position;
-            WriteTableRecord(stream, table);
-        }
-
         ExportTable(stream, start_stream_position, tables["CFF "], font.CompactFontFormat);
-        if (font.Color is { }) ExportTable(stream, start_stream_position, tables["COLR"], font.Color);
-        if (font.ColorPalette is { }) ExportTable(stream, start_stream_position, tables["CPAL"], font.ColorPalette);
-        if (font.OS2 is { }) ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
-        ExportTable(stream, start_stream_position, tables["cmap"], font.CMap);
-        ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0));
-        ExportTable(stream, start_stream_position, tables["hhea"], font.HorizontalHeader);
-        ExportTable(stream, start_stream_position, tables["hmtx"], font.HorizontalMetrics);
-        ExportTable(stream, start_stream_position, tables["maxp"], font.MaximumProfile);
-        ExportTable(stream, start_stream_position, tables["name"], font.Name);
-        ExportTable(stream, start_stream_position, tables["post"], font.PostScript);
-
-        if (font.OS2 is { }) Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
-        Debug.Assert(tables["head"].Length == 54);
-        Debug.Assert(tables["hhea"].Length == 36);
-        Debug.Assert(tables["maxp"].Length is 6 or 32);
-        Debug.Assert(tables["post"].Length == 32);
-
-        var lastposition = stream.Position;
-        tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
-        var checksum = CalcChecksum(stream.SeekTo(start_stream_position), (uint)(lastposition - start_stream_position));
-        ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0xB1B0AFBA - checksum));
-        stream.Position = lastposition;
     }
 
-    public static void Export(NoOutlineFont font, Stream stream, long start_stream_position = 0)
+    public static void Export(NoOutlineFont font, Dictionary<string, MutableTableRecord> tables, Stream stream, long start_stream_position = 0)
     {
-        var table_names = new string[] { "cmap", "head", "hhea", "hmtx", "maxp", "name", "post" }
-            .If(_ => font.Color is { }, xs => xs.Concat("COLR"), xs => xs)
-            .If(_ => font.ColorPalette is { }, xs => xs.Concat("CPAL"), xs => xs)
-            .If(_ => font.OS2 is { }, xs => xs.Concat("OS/2"), xs => xs)
-            .Order(StringComparer.Ordinal)
-            .ToArray();
-        var tables = table_names.ToDictionary(x => x, _ => new MutableTableRecord { Position = 0, Checksum = 0, Offset = 0, Length = 0 });
-
-        var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
-        new OffsetTable
-        {
-            SfntVersion = font.Offset.SfntVersion,
-            NumberOfTables = (ushort)tables.Count,
-            SearchRange = (ushort)(tables_pow * 16),
-            EntrySelector = (ushort)Math.Log2(tables_pow),
-            RangeShift = (ushort)((tables.Count * 16) - (tables_pow * 16)),
-        }.WriteTo(stream);
-
-        foreach (var x in table_names)
-        {
-            var table = tables[x];
-            stream.WriteTag(x);
-            table.Position = stream.Position;
-            WriteTableRecord(stream, table);
-        }
-
-        if (font.Color is { }) ExportTable(stream, start_stream_position, tables["COLR"], font.Color);
-        if (font.ColorPalette is { }) ExportTable(stream, start_stream_position, tables["CPAL"], font.ColorPalette);
-        if (font.OS2 is { }) ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
-        ExportTable(stream, start_stream_position, tables["cmap"], font.CMap);
-        ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0));
-        ExportTable(stream, start_stream_position, tables["hhea"], font.HorizontalHeader);
-        ExportTable(stream, start_stream_position, tables["hmtx"], font.HorizontalMetrics);
-        ExportTable(stream, start_stream_position, tables["maxp"], font.MaximumProfile);
-        ExportTable(stream, start_stream_position, tables["name"], font.Name);
-        ExportTable(stream, start_stream_position, tables["post"], font.PostScript);
-
-        if (font.OS2 is { }) Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
-        Debug.Assert(tables["head"].Length == 54);
-        Debug.Assert(tables["hhea"].Length == 36);
-        Debug.Assert(tables["maxp"].Length is 6 or 32);
-        Debug.Assert(tables["post"].Length == 32);
-
-        var lastposition = stream.Position;
-        tables.Values.Each(x => MovePositonAndWriteTableRecord(stream, x));
-        var checksum = CalcChecksum(stream.SeekTo(start_stream_position), (uint)(lastposition - start_stream_position));
-        ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0xB1B0AFBA - checksum));
-        stream.Position = lastposition;
     }
 
     public static void ExportTable(Stream stream, long start_stream_position, MutableTableRecord rec, IExportable table) => ExportTable(stream, start_stream_position, rec, table.WriteTo);
 
     public static void ExportTable(Stream stream, long start_stream_position, MutableTableRecord rec, Action<Stream> f)
     {
-        _ = StreamAlignment(stream);
         rec.Offset = (uint)(stream.Position - start_stream_position);
+        Debug.Assert((rec.Offset % 4) == 0);
         var position = stream.Position;
         f(stream);
         rec.Length = (uint)(stream.Position - position);
+        _ = StreamAlignment(stream);
     }
 
     public static void WriteTableRecord(Stream stream, MutableTableRecord table)
