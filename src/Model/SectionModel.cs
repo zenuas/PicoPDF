@@ -31,7 +31,7 @@ public class SectionModel : ISectionModel<SectionModel>
         Left = page.Padding.Left,
         Height = section.Height,
         IsFooter = section is IFooterSection footer && footer.IsFooter,
-        Elements = BindElements(section.Elements, data, bind, page.Cast<PageSection>(), break_count, depth)
+        Elements = BindElements(section.Elements, data, bind, page.Cast<PageSection>(), break_count, depth),
     };
 
     public static IModelElement[] BindElements<T>(IElement[] elements, T data, BindSummaryMapper<T, SectionModel> bind, PageSection page, int break_count, int? depth) => [.. elements.Select(x => BindElement(x, data, bind, page, break_count, depth))];
