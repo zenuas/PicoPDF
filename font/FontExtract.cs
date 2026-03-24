@@ -22,20 +22,9 @@ public static class FontExtract
 
     public static TrueTypeFont Extract(TrueTypeFont font, FontExtractOption opt)
     {
-        var chars = opt.ExtractChars.Order().ToArray();
-        var gids = chars.Select(font.CharToGID).To(xs => font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs).ToArray();
-        var char_glyph = gids
-            .Select((c, i) => (Index: i, GID: c))
-            .ToDictionary(x => x.GID, x => (
-                    Char: x.Index < chars.Length ? chars[x.Index] : 0,
-                    NewGID: (uint)(x.Index + 1),
-                    OldGID: x.GID,
-                    Glyph: font.Glyphs[x.GID],
-                    HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
-                ));
-        var gid_glyph = char_glyph.Values.ToDictionary(x => x.NewGID, x => (x.Glyph, x.HorizontalMetrics));
+        var (char_gids, char_glyph) = CreateCharToGlyph(font, opt);
+        var gid_glyph = char_glyph.Values.ToDictionary(x => x.NewGID, x => (Glyph: font.Glyphs[x.OldGID], x.HorizontalMetrics));
         var num_of_glyph = (int)gid_glyph.Keys.Max();
-        var char_gids = gids[0..chars.Length].Select(x => (char_glyph[x].Char, char_glyph[x].NewGID)).ToArray();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
@@ -85,23 +74,16 @@ public static class FontExtract
 
     public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
     {
-        var chars = opt.ExtractChars.Order().ToArray();
-        var gids = chars.Select(font.CharToGID).To(xs => font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs).ToArray();
+        var (char_gids, char_glyph) = CreateCharToGlyph(font, opt);
         var charsets = font.CompactFontFormat.TopDict.Charsets.Try();
-        var char_glyph = gids
-            .Select((c, i) => (Index: i, GID: c))
-            .ToDictionary(x => x.GID, x => (
-                    Char: x.Index < chars.Length ? chars[x.Index] : 0,
-                    NewGID: (uint)(x.Index + 1),
-                    OldGID: x.GID,
-                    Glyph: font.CompactFontFormat.TopDict.CharStrings[x.GID],
-                    Charset: x.GID == 0 ? (ushort)0 : charsets.Glyph[x.GID - 1],
-                    HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)],
-                    FontDictSelect: x.GID >= font.CompactFontFormat.TopDict.FontDictSelect.Length ? (byte)0 : font.CompactFontFormat.TopDict.FontDictSelect[x.GID]
-                ));
-        var gid_glyph = char_glyph.Values.ToDictionary(x => x.NewGID, x => (x.Glyph, x.Charset, x.HorizontalMetrics, x.FontDictSelect));
+        var gid_glyph = char_glyph.Values.ToDictionary(x => x.NewGID, x => (
+                Glyph: font.CompactFontFormat.TopDict.CharStrings[x.OldGID],
+                Charset: x.OldGID == 0 ? (ushort)0 : charsets.Glyph[x.OldGID - 1],
+                x.HorizontalMetrics,
+                FontDictSelect: x.OldGID >= font.CompactFontFormat.TopDict.FontDictSelect.Length ? (byte)0 : font.CompactFontFormat.TopDict.FontDictSelect[x.OldGID])
+            );
         var fdselect_index = char_glyph.Values
-            .Select(x => x.FontDictSelect)
+            .Select(x => gid_glyph[x.NewGID].FontDictSelect)
             .Distinct()
             .Order()
             .Select((x, i) => (FontDictSelect: x, Index: i + 1))
@@ -112,7 +94,6 @@ public static class FontExtract
             fdselect_index[font.CompactFontFormat.TopDict.FontDictSelect[0]] = 0;
         }
         var num_of_glyph = (int)gid_glyph.Keys.Max();
-        var char_gids = gids[0..chars.Length].Select(x => (char_glyph[x].Char, char_glyph[x].NewGID)).ToArray();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
@@ -221,19 +202,9 @@ public static class FontExtract
 
     public static NoOutlineFont Extract(NoOutlineFont font, FontExtractOption opt)
     {
-        var chars = opt.ExtractChars.Order().ToArray();
-        var gids = chars.Select(font.CharToGID).To(xs => font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs).ToArray();
-        var char_glyph = gids
-            .Select((c, i) => (Index: i, GID: c))
-            .ToDictionary(x => x.GID, x => (
-                    Char: x.Index < chars.Length ? chars[x.Index] : 0,
-                    NewGID: (uint)(x.Index + 1),
-                    OldGID: x.GID,
-                    HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
-                ));
+        var (char_gids, char_glyph) = CreateCharToGlyph(font, opt);
         var gid_hmtx = char_glyph.Values.ToDictionary(x => x.NewGID, x => x.HorizontalMetrics);
         var num_of_glyph = (int)gid_hmtx.Keys.Max();
-        var char_gids = gids[0..chars.Length].Select(x => (char_glyph[x].Char, char_glyph[x].NewGID)).ToArray();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
@@ -272,6 +243,21 @@ public static class FontExtract
             StandardBitmapGraphics = null,
             ScalableVectorGraphics = null,
         };
+    }
+
+    public static ((int Char, uint NewGID)[] CharNewGIDs, Dictionary<uint, (int Char, uint NewGID, uint OldGID, HorizontalMetrics HorizontalMetrics)> GIDToGlyph) CreateCharToGlyph(IOpenTypeFont font, FontExtractOption opt)
+    {
+        var chars = opt.ExtractChars.Order().ToArray();
+        var gids = chars.Select(font.CharToGID).To(xs => font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs).ToArray();
+        var char_gid = gids
+            .Select((c, i) => (Index: i, GID: c))
+            .ToDictionary(x => x.GID, x => (
+                    Char: x.Index < chars.Length ? chars[x.Index] : 0,
+                    NewGID: (uint)(x.Index + 1),
+                    OldGID: x.GID,
+                    HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
+                ));
+        return ([.. gids[0..chars.Length].Select(x => (char_gid[x].Char, char_gid[x].NewGID))], char_gid);
     }
 
     public static NameTable ExtractNameTable(NameTable name, FontExtractOption opt)
