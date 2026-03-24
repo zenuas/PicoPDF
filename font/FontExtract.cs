@@ -258,8 +258,8 @@ public static class FontExtract
                 Char: i < chars.Length ? chars[i] : 0,
                 NewGID: (uint)(i + 1),
                 OldGID: x,
-                HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x, font.HorizontalHeader.NumberOfHMetrics - 1)])
-            )];
+                HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x, font.HorizontalHeader.NumberOfHMetrics - 1)]
+            ))];
     }
 
     public static NameTable ExtractNameTable(NameTable name, FontExtractOption opt)
