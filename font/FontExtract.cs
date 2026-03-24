@@ -22,15 +22,16 @@ public static class FontExtract
 
     public static TrueTypeFont Extract(TrueTypeFont font, FontExtractOption opt)
     {
-        var (char_gids, char_glyph) = CreateCharToGlyph(font, opt);
-        var gid_glyph = char_glyph.Values.ToDictionary(x => x.NewGID, x => (Glyph: font.Glyphs[x.OldGID], x.HorizontalMetrics));
+        var glyphs = CreateCharToGlyph(font, opt);
+        var char_gids = glyphs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
+        var gid_glyph = glyphs.ToDictionary(x => x.NewGID, x => (Glyph: font.Glyphs[x.OldGID], x.HorizontalMetrics));
         var num_of_glyph = (int)gid_glyph.Keys.Max();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
         var cmap = CreateCMapTable(opt, char_gids);
-        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
+        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, glyphs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
         var hmtx = new HorizontalMetricsTable()
         {
@@ -74,15 +75,16 @@ public static class FontExtract
 
     public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
     {
-        var (char_gids, char_glyph) = CreateCharToGlyph(font, opt);
+        var glyphs = CreateCharToGlyph(font, opt);
+        var char_gids = glyphs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var charsets = font.CompactFontFormat.TopDict.Charsets.Try();
-        var gid_glyph = char_glyph.Values.ToDictionary(x => x.NewGID, x => (
+        var gid_glyph = glyphs.ToDictionary(x => x.NewGID, x => (
                 Glyph: font.CompactFontFormat.TopDict.CharStrings[x.OldGID],
                 Charset: x.OldGID == 0 ? (ushort)0 : charsets.Glyph[x.OldGID - 1],
                 x.HorizontalMetrics,
                 FontDictSelect: x.OldGID >= font.CompactFontFormat.TopDict.FontDictSelect.Length ? (byte)0 : font.CompactFontFormat.TopDict.FontDictSelect[x.OldGID])
             );
-        var fdselect_index = char_glyph.Values
+        var fdselect_index = glyphs
             .Select(x => gid_glyph[x.NewGID].FontDictSelect)
             .Distinct()
             .Order()
@@ -99,7 +101,7 @@ public static class FontExtract
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
         var cmap = CreateCMapTable(opt, char_gids);
-        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
+        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, glyphs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
         var hmtx = new HorizontalMetricsTable()
         {
@@ -202,15 +204,16 @@ public static class FontExtract
 
     public static NoOutlineFont Extract(NoOutlineFont font, FontExtractOption opt)
     {
-        var (char_gids, char_glyph) = CreateCharToGlyph(font, opt);
-        var gid_hmtx = char_glyph.Values.ToDictionary(x => x.NewGID, x => x.HorizontalMetrics);
+        var glyphs = CreateCharToGlyph(font, opt);
+        var char_gids = glyphs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
+        var gid_hmtx = glyphs.ToDictionary(x => x.NewGID, x => x.HorizontalMetrics);
         var num_of_glyph = (int)gid_hmtx.Keys.Max();
 
         var name = ExtractNameTable(font.Name, opt);
         var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
         var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
         var cmap = CreateCMapTable(opt, char_gids);
-        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, char_glyph.ToDictionary(kv => kv.Key, kv => kv.Value.NewGID));
+        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, glyphs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
         var hmtx = new HorizontalMetricsTable()
         {
@@ -245,19 +248,11 @@ public static class FontExtract
         };
     }
 
-    public static ((int Char, uint NewGID)[] CharNewGIDs, Dictionary<uint, (int Char, uint NewGID, uint OldGID, HorizontalMetrics HorizontalMetrics)> GIDToGlyph) CreateCharToGlyph(IOpenTypeFont font, FontExtractOption opt)
+    public static (int Char, uint NewGID, uint OldGID, HorizontalMetrics HorizontalMetrics)[] CreateCharToGlyph(IOpenTypeFont font, FontExtractOption opt)
     {
         var chars = opt.ExtractChars.Order().ToArray();
         var gids = chars.Select(font.CharToGID).To(xs => font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs).ToArray();
-        var char_gid = gids
-            .Select((c, i) => (Index: i, GID: c))
-            .ToDictionary(x => x.GID, x => (
-                    Char: x.Index < chars.Length ? chars[x.Index] : 0,
-                    NewGID: (uint)(x.Index + 1),
-                    OldGID: x.GID,
-                    HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x.GID, font.HorizontalHeader.NumberOfHMetrics - 1)]
-                ));
-        return ([.. gids[0..chars.Length].Select(x => (char_gid[x].Char, char_gid[x].NewGID))], char_gid);
+        return [.. gids.Select((x, i) => (i < chars.Length ? chars[i] : 0, (uint)(i + 1), x, font.HorizontalMetrics.Metrics[Math.Min(x, font.HorizontalHeader.NumberOfHMetrics - 1)]))];
     }
 
     public static NameTable ExtractNameTable(NameTable name, FontExtractOption opt)
