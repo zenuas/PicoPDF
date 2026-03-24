@@ -251,8 +251,15 @@ public static class FontExtract
     public static (int Char, uint NewGID, uint OldGID, HorizontalMetrics HorizontalMetrics)[] CreateCharToGlyph(IOpenTypeFont font, FontExtractOption opt)
     {
         var chars = opt.ExtractChars.Order().ToArray();
-        var gids = chars.Select(font.CharToGID).To(xs => font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs).ToArray();
-        return [.. gids.Select((x, i) => (i < chars.Length ? chars[i] : 0, (uint)(i + 1), x, font.HorizontalMetrics.Metrics[Math.Min(x, font.HorizontalHeader.NumberOfHMetrics - 1)]))];
+        return [.. chars
+            .Select(font.CharToGID)
+            .To(xs => font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs)
+            .Select((x, i) => (
+                Char: i < chars.Length ? chars[i] : 0,
+                NewGID: (uint)(i + 1),
+                OldGID: x,
+                HorizontalMetrics: font.HorizontalMetrics.Metrics[Math.Min(x, font.HorizontalHeader.NumberOfHMetrics - 1)])
+            )];
     }
 
     public static NameTable ExtractNameTable(NameTable name, FontExtractOption opt)
