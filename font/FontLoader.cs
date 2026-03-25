@@ -84,12 +84,6 @@ public static class FontLoader
         var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
-        var current_cmap =
-            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat12>().FirstOrDefault() ??
-            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat4>().FirstOrDefault() ??
-            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault() ??
-            cmap.EncodingRecords.Values.OfType<CMapFormat13>().First();
-
         var loca = ReadTableRecord(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, head.IndexToLocFormat, maxp.NumberOfGlyphs)).Try();
         var glyf = ReadTableRecord(font, "glyf", stream, x =>
             {
@@ -128,7 +122,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = current_cmap.CreateCharToGID(),
+            CharToGID = GetCurrentCMapFormat(cmap).CreateCharToGID(),
             IndexToLocation = loca,
             Glyphs = glyf,
             ColorBitmapData = cbdt,
@@ -149,12 +143,6 @@ public static class FontLoader
         var maxp = ReadTableRecord(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
         var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
-
-        var current_cmap =
-            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat12>().FirstOrDefault() ??
-            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat4>().FirstOrDefault() ??
-            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault() ??
-            cmap.EncodingRecords.Values.OfType<CMapFormat13>().First();
 
         var cff = ReadTableRecord(font, "CFF ", stream, CompactFontFormat.ReadFrom).Try();
 
@@ -180,7 +168,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = current_cmap.CreateCharToGID(),
+            CharToGID = GetCurrentCMapFormat(cmap).CreateCharToGID(),
             CompactFontFormat = cff,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
@@ -200,12 +188,6 @@ public static class FontLoader
         var maxp = ReadTableRecord(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
         var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
-
-        var current_cmap =
-            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat12>().FirstOrDefault() ??
-            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat4>().FirstOrDefault() ??
-            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault() ??
-            cmap.EncodingRecords.Values.OfType<CMapFormat13>().First();
 
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
         var cblc = ReadTableRecord(font, "CBLC", stream, ColorBitmapLocationTable.ReadFrom);
@@ -229,7 +211,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = current_cmap.CreateCharToGID(),
+            CharToGID = GetCurrentCMapFormat(cmap).CreateCharToGID(),
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,
@@ -238,6 +220,12 @@ public static class FontLoader
             ScalableVectorGraphics = svg,
         };
     }
+
+    public static ICMapFormat GetCurrentCMapFormat(CMapTable cmap) =>
+        (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat12>().FirstOrDefault() ??
+        (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat4>().FirstOrDefault() ??
+        (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault() ??
+        cmap.EncodingRecords.Values.OfType<CMapFormat13>().First();
 
     public static T? ReadTableRecord<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f) => ReadTableRecord(font.TableRecords, name, stream, f);
 
