@@ -26,15 +26,7 @@ public static class FontExtract
         var char_gids = glyphs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var gid_glyph = glyphs.ToDictionary(x => x.NewGID, x => (Glyph: font.Glyphs[x.OldGID], x.HorizontalMetrics));
         var num_of_glyph = (int)gid_glyph.Keys.Max();
-
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, glyphs.ToDictionary(x => x.OldGID, x => x.NewGID));
-        var hmtx = new HorizontalMetricsTable()
-        {
-            Metrics = [.. Lists.RangeTo(1, num_of_glyph)
-                .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
-                .Prepend(font.HorizontalMetrics.Metrics[0])],
-            LeftSideBearing = [],
-        };
 
         var glyf = Lists.RangeTo(1, num_of_glyph)
             .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.Glyph : new NotdefGlyph())
@@ -54,7 +46,7 @@ public static class FontExtract
             PostScript = font.PostScript,
             OS2 = font.OS2,
             HorizontalHeader = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1)),
-            HorizontalMetrics = hmtx,
+            HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             IndexToLocation = null!,
@@ -91,15 +83,7 @@ public static class FontExtract
             fdselect_index[font.CompactFontFormat.TopDict.FontDictSelect[0]] = 0;
         }
         var num_of_glyph = (int)gid_glyph.Keys.Max();
-
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, glyphs.ToDictionary(x => x.OldGID, x => x.NewGID));
-        var hmtx = new HorizontalMetricsTable()
-        {
-            Metrics = [.. Lists.RangeTo(1, num_of_glyph)
-                .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
-                .Prepend(font.HorizontalMetrics.Metrics[0])],
-            LeftSideBearing = [],
-        };
 
         var char_strings = Lists.RangeTo(1, num_of_glyph)
             .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.Glyph : font.CompactFontFormat.TopDict.CharStrings[0])
@@ -179,7 +163,7 @@ public static class FontExtract
             PostScript = font.PostScript,
             OS2 = font.OS2,
             HorizontalHeader = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1)),
-            HorizontalMetrics = hmtx,
+            HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             CompactFontFormat = cff,
@@ -198,15 +182,7 @@ public static class FontExtract
         var char_gids = glyphs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var gid_hmtx = glyphs.ToDictionary(x => x.NewGID, x => x.HorizontalMetrics);
         var num_of_glyph = (int)gid_hmtx.Keys.Max();
-
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, glyphs.ToDictionary(x => x.OldGID, x => x.NewGID));
-        var hmtx = new HorizontalMetricsTable()
-        {
-            Metrics = [.. Lists.RangeTo(1, num_of_glyph)
-                .Select(x => gid_hmtx.TryGetValue((uint)x, out var hm) ? hm : font.HorizontalMetrics.Metrics[0])
-                .Prepend(font.HorizontalMetrics.Metrics[0])],
-            LeftSideBearing = [],
-        };
 
         return new()
         {
@@ -221,7 +197,7 @@ public static class FontExtract
             PostScript = font.PostScript,
             OS2 = font.OS2,
             HorizontalHeader = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1)),
-            HorizontalMetrics = hmtx,
+            HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_hmtx.GetOrDefault(x)),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             ColorBitmapData = null,
@@ -294,6 +270,12 @@ public static class FontExtract
         Reserved4 = hhea.Reserved4,
         MetricDataFormat = hhea.MetricDataFormat,
         NumberOfHMetrics = num_of_glyph_with_notdef,
+    };
+
+    public static HorizontalMetricsTable CreateHorizontalMetricsTable(int num_of_glyph, HorizontalMetrics notdef, Func<uint, HorizontalMetrics?> f) => new()
+    {
+        Metrics = [notdef, .. Lists.RangeTo(1, num_of_glyph).Select(x => f((uint)x) ?? notdef)],
+        LeftSideBearing = [],
     };
 
     public static Func<int, uint> CreateCharToGID((int Char, uint GID)[] char_gids)
