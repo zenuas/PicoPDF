@@ -121,22 +121,19 @@ public class CMapFormat4 : ICMapFormat
     public Func<int, uint> CreateCharToGID()
     {
         var range = CreateRange();
-        var cache = new Dictionary<char, uint>();
 
         return (c) =>
         {
-            if (cache.TryGetValue((char)c, out var gid)) return gid;
-
             var seg = range.BinarySearch((c, c), RangeComparer);
-            if (seg < 0) return cache[(char)c] = 0;
+            if (seg < 0) return 0;
             var start = StartCode[seg];
-            if (c < start) return cache[(char)c] = 0;
+            if (c < start) return 0;
 
             var idrange = IdRangeOffsets[seg];
-            if (idrange == 0) return cache[(char)c] = (uint)((c + IdDelta[seg]) & 0xFFFF);
+            if (idrange == 0) return (uint)((c + IdDelta[seg]) & 0xFFFF);
 
             var gindex = (idrange / 2) + c - start - (SegCountX2 / 2) + seg;
-            return cache[(char)c] = (uint)((GlyphIdArray[gindex] + IdDelta[seg]) & 0xFFFF);
+            return (uint)((GlyphIdArray[gindex] + IdDelta[seg]) & 0xFFFF);
         };
     }
 }
