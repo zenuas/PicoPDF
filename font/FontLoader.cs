@@ -77,7 +77,8 @@ public static class FontLoader
         var current_cmap =
             (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat12>().FirstOrDefault() ??
             (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat4>().FirstOrDefault() ??
-            cmap.EncodingRecords.Values.OfType<CMapFormat0>().First();
+            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault() ??
+            cmap.EncodingRecords.Values.OfType<CMapFormat13>().First();
 
         return new()
         {
