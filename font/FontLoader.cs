@@ -62,10 +62,20 @@ public static class FontLoader
         };
     }
 
-    public static FontRequiredTables LoadRequiredTables(FontTableRecords font)
+    public static IOpenTypeFont LoadComplete(IOpenTypeHeader font)
     {
+        if (font is IOpenTypeFont opentype) return opentype;
+
         using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
+        return
+            font.Offset.ContainCFF() ? LoadPostScriptFont(stream, font) :
+            font.TableRecords.ContainsKey("loca") && font.TableRecords.ContainsKey("glyf") ? LoadTrueTypeFont(stream, font) :
+            LoadNoOutlineFont(stream, font);
+    }
+
+    public static TrueTypeFont LoadTrueTypeFont(Stream stream, IOpenTypeHeader font)
+    {
         var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
         var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
         var head = ReadTableRecord(font, "head", stream, FontHeaderTable.ReadFrom).Try();
@@ -80,44 +90,11 @@ public static class FontLoader
             (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault() ??
             cmap.EncodingRecords.Values.OfType<CMapFormat13>().First();
 
-        return new()
-        {
-            PostScriptName = font.PostScriptName,
-            Path = font.Path,
-            Position = font.Position,
-            TableRecords = font.TableRecords,
-            Offset = font.Offset,
-            Name = font.Name,
-            FontHeader = head,
-            MaximumProfile = maxp,
-            PostScript = post,
-            OS2 = os2,
-            HorizontalHeader = hhea,
-            HorizontalMetrics = hmtx,
-            CMap = cmap,
-            CharToGID = current_cmap.CreateCharToGID(),
-        };
-    }
-
-    public static IOpenTypeFont LoadComplete(IOpenTypeRequiredTables font)
-    {
-        if (font is IOpenTypeFont opentype) return opentype;
-
-        using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
-        return
-            font.Offset.ContainCFF() ? LoadPostScriptFont(stream, font) :
-            font.TableRecords.ContainsKey("loca") && font.TableRecords.ContainsKey("glyf") ? LoadTrueTypeFont(stream, font) :
-            LoadNoOutlineFont(stream, font);
-    }
-
-    public static TrueTypeFont LoadTrueTypeFont(Stream stream, IOpenTypeRequiredTables font)
-    {
-        var loca = ReadTableRecord(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, font.FontHeader.IndexToLocFormat, font.MaximumProfile.NumberOfGlyphs)).Try();
+        var loca = ReadTableRecord(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, head.IndexToLocFormat, maxp.NumberOfGlyphs)).Try();
         var glyf = ReadTableRecord(font, "glyf", stream, x =>
             {
                 var position = x.Position;
-                return Enumerable.Range(0, font.MaximumProfile.NumberOfGlyphs)
+                return Enumerable.Range(0, maxp.NumberOfGlyphs)
                     .Select(i =>
                     {
                         if (loca.Offsets[i] == loca.Offsets[i + 1]) return new NotdefGlyph();
@@ -144,14 +121,14 @@ public static class FontLoader
             TableRecords = font.TableRecords,
             Offset = font.Offset,
             Name = font.Name,
-            FontHeader = font.FontHeader,
-            MaximumProfile = font.MaximumProfile,
-            PostScript = font.PostScript,
-            OS2 = font.OS2,
-            HorizontalHeader = font.HorizontalHeader,
-            HorizontalMetrics = font.HorizontalMetrics,
-            CMap = font.CMap,
-            CharToGID = font.CharToGID,
+            FontHeader = head,
+            MaximumProfile = maxp,
+            PostScript = post,
+            OS2 = os2,
+            HorizontalHeader = hhea,
+            HorizontalMetrics = hmtx,
+            CMap = cmap,
+            CharToGID = current_cmap.CreateCharToGID(),
             IndexToLocation = loca,
             Glyphs = glyf,
             ColorBitmapData = cbdt,
@@ -163,8 +140,22 @@ public static class FontLoader
         };
     }
 
-    public static PostScriptFont LoadPostScriptFont(Stream stream, IOpenTypeRequiredTables font)
+    public static PostScriptFont LoadPostScriptFont(Stream stream, IOpenTypeHeader font)
     {
+        var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
+        var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
+        var head = ReadTableRecord(font, "head", stream, FontHeaderTable.ReadFrom).Try();
+        var hhea = ReadTableRecord(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
+        var maxp = ReadTableRecord(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
+        var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
+        var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
+
+        var current_cmap =
+            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat12>().FirstOrDefault() ??
+            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat4>().FirstOrDefault() ??
+            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault() ??
+            cmap.EncodingRecords.Values.OfType<CMapFormat13>().First();
+
         var cff = ReadTableRecord(font, "CFF ", stream, CompactFontFormat.ReadFrom).Try();
 
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
@@ -182,14 +173,14 @@ public static class FontLoader
             TableRecords = font.TableRecords,
             Offset = font.Offset,
             Name = font.Name,
-            FontHeader = font.FontHeader,
-            MaximumProfile = font.MaximumProfile,
-            PostScript = font.PostScript,
-            OS2 = font.OS2,
-            HorizontalHeader = font.HorizontalHeader,
-            HorizontalMetrics = font.HorizontalMetrics,
-            CMap = font.CMap,
-            CharToGID = font.CharToGID,
+            FontHeader = head,
+            MaximumProfile = maxp,
+            PostScript = post,
+            OS2 = os2,
+            HorizontalHeader = hhea,
+            HorizontalMetrics = hmtx,
+            CMap = cmap,
+            CharToGID = current_cmap.CreateCharToGID(),
             CompactFontFormat = cff,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
@@ -200,8 +191,22 @@ public static class FontLoader
         };
     }
 
-    public static NoOutlineFont LoadNoOutlineFont(Stream stream, IOpenTypeRequiredTables font)
+    public static NoOutlineFont LoadNoOutlineFont(Stream stream, IOpenTypeHeader font)
     {
+        var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
+        var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
+        var head = ReadTableRecord(font, "head", stream, FontHeaderTable.ReadFrom).Try();
+        var hhea = ReadTableRecord(font, "hhea", stream, HorizontalHeaderTable.ReadFrom).Try();
+        var maxp = ReadTableRecord(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
+        var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
+        var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
+
+        var current_cmap =
+            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat12>().FirstOrDefault() ??
+            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat4>().FirstOrDefault() ??
+            (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault() ??
+            cmap.EncodingRecords.Values.OfType<CMapFormat13>().First();
+
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
         var cblc = ReadTableRecord(font, "CBLC", stream, ColorBitmapLocationTable.ReadFrom);
         var colr = ReadTableRecord(font, "COLR", stream, ColorTable.ReadFrom);
@@ -217,14 +222,14 @@ public static class FontLoader
             TableRecords = font.TableRecords,
             Offset = font.Offset,
             Name = font.Name,
-            FontHeader = font.FontHeader,
-            MaximumProfile = font.MaximumProfile,
-            PostScript = font.PostScript,
-            OS2 = font.OS2,
-            HorizontalHeader = font.HorizontalHeader,
-            HorizontalMetrics = font.HorizontalMetrics,
-            CMap = font.CMap,
-            CharToGID = font.CharToGID,
+            FontHeader = head,
+            MaximumProfile = maxp,
+            PostScript = post,
+            OS2 = os2,
+            HorizontalHeader = hhea,
+            HorizontalMetrics = hmtx,
+            CMap = cmap,
+            CharToGID = current_cmap.CreateCharToGID(),
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,

@@ -88,7 +88,7 @@ public class Document
         return font;
     }
 
-    public Type0Font AddFont(string name, IOpenTypeRequiredTables font)
+    public Type0Font AddFont(string name, IOpenTypeFont font)
     {
         var flag =
             (font.CMap.EncodingRecords.Contains(x => x.Key.PlatformID == (ushort)Platforms.Windows && x.Key.EncodingID == (ushort)Encodings.Windows_Symbol) ?
@@ -101,7 +101,7 @@ public class Document
         return AddFont(name, font, flag);
     }
 
-    public Type0Font AddFont(string name, IOpenTypeRequiredTables font, FontDescriptorFlags flags)
+    public Type0Font AddFont(string name, IOpenTypeFont font, FontDescriptorFlags flags)
     {
         var cmap = CMap.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;

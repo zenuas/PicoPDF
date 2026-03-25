@@ -10,7 +10,7 @@ namespace PicoPDF.Pdf.Font;
 public class Type0Font : PdfObject, IFont, IFontChars
 {
     public required string Name { get; init; }
-    public required IOpenTypeRequiredTables Font { get; init; }
+    public required IOpenTypeFont Font { get; init; }
     public IOpenTypeFont? EmbeddedFont { get; set; }
     public required IFontRegister FontRegister { get; init; }
     public required string Encoding { get; init; }
@@ -19,10 +19,9 @@ public class Type0Font : PdfObject, IFont, IFontChars
 
     public void CreateEmbeddedFont()
     {
-        var fontdata = FontRegister.LoadComplete(Font);
         EmbeddedFont = Font.Offset.ContainTrueType()
-            ? FontExtract.Extract(fontdata.Cast<TrueTypeFont>(), new() { ExtractChars = [.. Chars] })
-            : FontExtract.Extract(fontdata.Cast<PostScriptFont>(), new() { ExtractChars = [.. Chars] });
+            ? FontExtract.Extract(Font.Cast<TrueTypeFont>(), new() { ExtractChars = [.. Chars] })
+            : FontExtract.Extract(Font.Cast<PostScriptFont>(), new() { ExtractChars = [.. Chars] });
     }
 
     public override void DoExport(PdfExportOption option)

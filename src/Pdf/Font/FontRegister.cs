@@ -12,7 +12,6 @@ namespace PicoPDF.Pdf.Font;
 public class FontRegister : IFontRegister
 {
     public Dictionary<string, PropertyGetSet<IOpenTypeHeader>> Fonts { get; init; } = [];
-    public Dictionary<FontRequiredTables, PropertyGetSet<IOpenTypeRequiredTables>> LoadedFonts { get; init; } = [];
 
     public void RegisterDirectory(LoadOption? opt = null, params string[] paths) => paths
         .Where(Directory.Exists)
@@ -41,47 +40,32 @@ public class FontRegister : IFontRegister
 
     public void RegisterDirectory(params string[] paths) => RegisterDirectory(null, paths);
 
-    public IOpenTypeRequiredTables? LoadRequiredTablesOrNull(string name)
+    public IOpenTypeFont LoadComplete(string name)
     {
-        var font = Fonts.GetValueOrDefault(name);
-        if (font is null) return null;
-        if (font.Value is IOpenTypeRequiredTables otr) return otr;
+        if (Fonts.TryGetValue(name, out var fontdata) && fontdata.Value is IOpenTypeFont x) return x;
 
-        var fontinfo = FontLoader.LoadRequiredTables(font.Value.Cast<FontTableRecords>());
-        Fonts[name].Value = fontinfo;
-        return fontinfo;
-    }
-
-    public IOpenTypeRequiredTables LoadRequiredTables(IFontPath path)
-    {
-        var name = GetFontFilePath(path);
-        if (LoadRequiredTablesOrNull(name) is { } font) return font;
-
-        if (path is FontCollectionPath)
+        if (fontdata is null)
         {
-            AddFontCollection(path.Path);
+            var path = GetFontFilePathValue(name);
+            if (path is FontCollectionPath ttc)
+            {
+                AddFontCollection(ttc.Path);
+            }
+            else
+            {
+                AddFont(name);
+            }
+            name = GetFontFilePath(path);
         }
-        else
-        {
-            AddFont(path.Path);
-        }
-        return LoadRequiredTablesOrNull(name).Try();
+        var r = Fonts[name];
+        var font = FontLoader.LoadComplete(r.Value);
+        r.Value = font;
+        return font;
     }
-
-    public IOpenTypeRequiredTables LoadRequiredTables(string name) => Path.GetExtension(name) != "" ?
-        LoadRequiredTables(GetFontFilePath(name)) :
-        LoadRequiredTablesOrNull(name).Try();
-
-    public IOpenTypeFont LoadComplete(IOpenTypeRequiredTables font) => (font is FontRequiredTables req ?
-        (LoadedFonts.TryGetValue(req, out var x) && x.Value is IOpenTypeFont ?
-            x.Value :
-            (LoadedFonts[req] = new() { Value = FontLoader.LoadComplete(req) }).Value
-        ) :
-        font).Cast<IOpenTypeFont>();
 
     public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
 
-    public static IFontPath GetFontFilePath(string name)
+    public static IFontPath GetFontFilePathValue(string name)
     {
         var ext = Path.GetExtension(name).ToUpper();
         return ext.StartsWith(".TTC,") && int.TryParse(ext[5..], out var index)

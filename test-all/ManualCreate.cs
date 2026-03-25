@@ -24,13 +24,13 @@ public static class ManualCreate
         var type1 = doc.AddFont("TYPE1", "Helvetica", Type1Encoding.WinAnsiEncoding);
         page.Contents.DrawTextOnBaseline("Type1 Font!", 140, 100, 12, type1);
 
-        var post = doc.AddFont("POST1", fontreg.LoadRequiredTables("test-case/NotoSansCJK-Regular.ttc,0"));
+        var post = doc.AddFont("POST1", fontreg.LoadComplete("test-case/NotoSansCJK-Regular.ttc,0"));
         _ = page.Contents.DrawText("PostScript Font! あア亜 𠮷野家", 160, 100, 12, [post]);
 
-        var ttf = doc.AddFont("true1", fontreg.LoadRequiredTables("Meiryo Bold"));
+        var ttf = doc.AddFont("true1", fontreg.LoadComplete("Meiryo Bold"));
         _ = page.Contents.DrawText("TrueType Font! あア亜 𠮷野家", 180, 100, 12, [ttf]);
 
-        var emoji = doc.AddFont("emoji1", fontreg.LoadRequiredTables("Segoe UI Emoji"));
+        var emoji = doc.AddFont("emoji1", fontreg.LoadComplete("Segoe UI Emoji"));
         _ = page.Contents.DrawText("aijpqあいうえお🍣", 200, 100, 12, [ttf, emoji]);
 
         _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 220, 100, 12, [ttf, emoji], style: TextStyle.Border);
@@ -38,6 +38,6 @@ public static class ManualCreate
         _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 220, 300, 12, [ttf, emoji], 65, 60, style: TextStyle.Border | TextStyle.Clipping);
 
         doc.Save("test-case/manual-create.pdf", opt);
-        FontFileExport.Export(fontreg.LoadComplete(emoji.Font), new() { FontExportChars = " 🍣", OutputFontFile = "test-case/manual-create.ttf" });
+        FontFileExport.Export(emoji.Font, new() { FontExportChars = " 🍣", OutputFontFile = "test-case/manual-create.ttf" });
     }
 }

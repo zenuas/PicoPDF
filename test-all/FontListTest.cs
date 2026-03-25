@@ -12,7 +12,7 @@ public static class FontListTest
         {
             try
             {
-                var font = fontreg.LoadRequiredTables(kv.Value.Value.Path);
+                var font = fontreg.LoadComplete(FontRegister.GetFontFilePath(kv.Value.Value.Path));
                 Console.WriteLine($"{kv.Key},\"{FontRegister.GetFontFilePath(font.Path)}\",Offset.SfntVersion=0x{font.Offset.SfntVersion:x8},OS2.FsType=0x{font.OS2?.FsType:x4}");
             }
             catch

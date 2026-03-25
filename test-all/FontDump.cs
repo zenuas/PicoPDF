@@ -5,7 +5,7 @@ namespace PicoPDF.TestAll;
 
 public static class FontDump
 {
-    public static void Dump(IOpenTypeRequiredTables font, Option opt)
+    public static void Dump(IOpenTypeFont font, Option opt)
     {
         var head = font.FontHeader;
         Console.WriteLine($"head,MajorVersion,{head.MajorVersion}");

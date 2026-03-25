@@ -10,7 +10,7 @@ public static class CMapListTest
     {
         foreach (var kv in fontreg.Fonts.Where(x => opt.AllFontPreview || x.Key != FontRegister.GetFontFilePath(x.Value.Value.Path)))
         {
-            var font = fontreg.LoadRequiredTables(kv.Value.Value.Path);
+            var font = fontreg.LoadComplete(FontRegister.GetFontFilePath(kv.Value.Value.Path));
             foreach (var encoding in font.CMap.EncodingRecords)
             {
                 Console.WriteLine($"{kv.Key},PlatformID={encoding.Key.PlatformID},EncodingID={encoding.Key.EncodingID},Format={encoding.Value.Format}");
