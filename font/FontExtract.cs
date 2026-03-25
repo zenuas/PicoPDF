@@ -27,12 +27,7 @@ public static class FontExtract
         var gid_glyph = glyphs.ToDictionary(x => x.NewGID, x => (Glyph: font.Glyphs[x.OldGID], x.HorizontalMetrics));
         var num_of_glyph = (int)gid_glyph.Keys.Max();
 
-        var name = ExtractNameTable(font.Name, opt);
-        var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
-        var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmap = CreateCMapTable(opt, char_gids);
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, glyphs.ToDictionary(x => x.OldGID, x => x.NewGID));
-
         var hmtx = new HorizontalMetricsTable()
         {
             Metrics = [.. Lists.RangeTo(1, num_of_glyph)
@@ -53,14 +48,14 @@ public static class FontExtract
             Position = font.Position,
             TableRecords = font.TableRecords,
             Offset = font.Offset,
-            Name = name,
+            Name = ExtractNameTable(font.Name, opt),
             FontHeader = font.FontHeader,
-            MaximumProfile = maxp,
+            MaximumProfile = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1)),
             PostScript = font.PostScript,
             OS2 = font.OS2,
-            HorizontalHeader = hhea,
+            HorizontalHeader = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1)),
             HorizontalMetrics = hmtx,
-            CMap = cmap,
+            CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             IndexToLocation = null!,
             Glyphs = glyf,
@@ -97,12 +92,7 @@ public static class FontExtract
         }
         var num_of_glyph = (int)gid_glyph.Keys.Max();
 
-        var name = ExtractNameTable(font.Name, opt);
-        var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
-        var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmap = CreateCMapTable(opt, char_gids);
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, glyphs.ToDictionary(x => x.OldGID, x => x.NewGID));
-
         var hmtx = new HorizontalMetricsTable()
         {
             Metrics = [.. Lists.RangeTo(1, num_of_glyph)
@@ -183,14 +173,14 @@ public static class FontExtract
             Position = font.Position,
             TableRecords = font.TableRecords,
             Offset = font.Offset,
-            Name = name,
+            Name = ExtractNameTable(font.Name, opt),
             FontHeader = font.FontHeader,
-            MaximumProfile = maxp,
+            MaximumProfile = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1)),
             PostScript = font.PostScript,
             OS2 = font.OS2,
-            HorizontalHeader = hhea,
+            HorizontalHeader = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1)),
             HorizontalMetrics = hmtx,
-            CMap = cmap,
+            CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             CompactFontFormat = cff,
             ColorBitmapData = null,
@@ -209,12 +199,7 @@ public static class FontExtract
         var gid_hmtx = glyphs.ToDictionary(x => x.NewGID, x => x.HorizontalMetrics);
         var num_of_glyph = (int)gid_hmtx.Keys.Max();
 
-        var name = ExtractNameTable(font.Name, opt);
-        var maxp = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1));
-        var hhea = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1));
-        var cmap = CreateCMapTable(opt, char_gids);
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, glyphs.ToDictionary(x => x.OldGID, x => x.NewGID));
-
         var hmtx = new HorizontalMetricsTable()
         {
             Metrics = [.. Lists.RangeTo(1, num_of_glyph)
@@ -230,14 +215,14 @@ public static class FontExtract
             Position = font.Position,
             TableRecords = font.TableRecords,
             Offset = font.Offset,
-            Name = name,
+            Name = ExtractNameTable(font.Name, opt),
             FontHeader = font.FontHeader,
-            MaximumProfile = maxp,
+            MaximumProfile = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1)),
             PostScript = font.PostScript,
             OS2 = font.OS2,
-            HorizontalHeader = hhea,
+            HorizontalHeader = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1)),
             HorizontalMetrics = hmtx,
-            CMap = cmap,
+            CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             ColorBitmapData = null,
             ColorBitmapLocation = null,
