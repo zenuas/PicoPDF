@@ -18,6 +18,8 @@ public class SimpleGlyph : IGlyph
     public required short[] XCoordinates { get; init; }
     public required short[] YCoordinates { get; init; }
 
+    public IOutline[] ToOutline() => [];
+
     public static SimpleGlyph ReadFrom(Stream stream, short number_of_contours)
     {
         var xmin = stream.ReadShortByBigEndian();

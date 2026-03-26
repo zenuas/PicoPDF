@@ -20,6 +20,7 @@ public class NoOutlineFont : IOpenTypeFont
     public required HorizontalMetricsTable HorizontalMetrics { get; init; }
     public required CMapTable CMap { get; init; }
     public required Func<int, uint> CharToGID { get; init; }
+    public required Func<uint, IOutline[]> GIDToOutline { get; init; }
 
     public required ColorBitmapDataTable? ColorBitmapData { get; init; }
     public required ColorBitmapLocationTable? ColorBitmapLocation { get; init; }

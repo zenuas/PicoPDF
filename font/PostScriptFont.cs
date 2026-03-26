@@ -21,6 +21,7 @@ public class PostScriptFont : IOpenTypeFont
     public required HorizontalMetricsTable HorizontalMetrics { get; init; }
     public required CMapTable CMap { get; init; }
     public required Func<int, uint> CharToGID { get; init; }
+    public required Func<uint, IOutline[]> GIDToOutline { get; init; }
     public required CompactFontFormat CompactFontFormat { get; init; }
 
     public required ColorBitmapDataTable? ColorBitmapData { get; init; }

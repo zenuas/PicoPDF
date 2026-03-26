@@ -16,6 +16,8 @@ public class CompositeGlyph : IGlyph
     public required ushort InstructionLength { get; init; }
     public required byte[] Instructions { get; init; }
 
+    public IOutline[] ToOutline() => [];
+
     public static CompositeGlyph ReadFrom(Stream stream, short number_of_contours)
     {
         var xmin = stream.ReadShortByBigEndian();
