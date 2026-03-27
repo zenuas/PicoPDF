@@ -1,5 +1,8 @@
-﻿namespace OpenType.Tables.TrueType;
+﻿using System;
 
+namespace OpenType.Tables.TrueType;
+
+[Flags]
 public enum SimpleGlyphFlags
 {
     ON_CURVE_POINT = 1 << 0,

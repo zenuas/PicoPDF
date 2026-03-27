@@ -1,4 +1,5 @@
-﻿using OpenType.Tables;
+﻿using OpenType.Outline;
+using OpenType.Tables;
 using OpenType.Tables.TrueType;
 using System;
 using System.Collections.Generic;

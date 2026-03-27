@@ -1,4 +1,6 @@
-﻿namespace OpenType.Tables.TrueType;
+﻿using OpenType.Outline;
+
+namespace OpenType.Tables.TrueType;
 
 public interface IGlyph : IExportable
 {

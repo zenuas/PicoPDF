@@ -1,4 +1,7 @@
 ﻿using Mina.Extension;
+using OpenType.Outline;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -14,11 +17,65 @@ public class SimpleGlyph : IGlyph
     public required ushort[] EndPointsOfContours { get; init; }
     public required ushort InstructionLength { get; init; }
     public required byte[] Instructions { get; init; }
-    public required byte[] Flags { get; init; }
+    public required SimpleGlyphFlags[] Flags { get; init; }
     public required short[] XCoordinates { get; init; }
     public required short[] YCoordinates { get; init; }
 
-    public IOutline[] ToOutline() => [];
+    public IOutline[] ToOutline()
+    {
+        var outlines = new IOutline[NumberOfContours];
+        var xcoordinates = AbsoluteCoordinates(XCoordinates);
+        var ycoordinates = AbsoluteCoordinates(YCoordinates);
+        for (var (i, start) = (0, 0); i < NumberOfContours; start = EndPointsOfContours[i++] + 1)
+        {
+            outlines[i] = CreateSurface(start, EndPointsOfContours[i], Flags, xcoordinates, ycoordinates);
+        }
+        return outlines;
+    }
+
+    public static Surface CreateSurface(int start, int end, SimpleGlyphFlags[] flags, int[] xcoordinates, int[] ycoordinates)
+    {
+        var edges = new List<IEdge>();
+        for (var i = start; i < end; i++)
+        {
+            if (flags[i + 1].HasFlag(SimpleGlyphFlags.ON_CURVE_POINT))
+            {
+                edges.Add(new Line { Start = new(xcoordinates[i], ycoordinates[i]), End = new(xcoordinates[i + 1], ycoordinates[i + 1]) });
+            }
+            else
+            {
+                var control_points = new List<Point>();
+                var j = 1;
+                for (; i + j <= end && !flags[i + j].HasFlag(SimpleGlyphFlags.ON_CURVE_POINT); j++)
+                {
+                    control_points.Add(new() { X = xcoordinates[i + j], Y = ycoordinates[i + j] });
+                }
+                if (i + j > end)
+                {
+                    edges.Add(new BezierCurves { Start = new(xcoordinates[i], ycoordinates[i]), End = new(xcoordinates[start], ycoordinates[start]), ControlPoint = [.. control_points] });
+                    return new() { Edges = [.. edges] };
+                }
+                else
+                {
+                    edges.Add(new BezierCurves { Start = new(xcoordinates[i], ycoordinates[i]), End = new(xcoordinates[i + j], ycoordinates[i + j]), ControlPoint = [.. control_points] });
+                    i += j - 1;
+                }
+            }
+        }
+        if (edges.First().Start != edges.Last().End) edges.Add(new Line { Start = edges.Last().End, End = edges.First().Start });
+        return new() { Edges = [.. edges] };
+    }
+
+    public static int[] AbsoluteCoordinates(short[] relative_coordinates)
+    {
+        var absolute_coordinates = new int[relative_coordinates.Length];
+        absolute_coordinates[0] = relative_coordinates[0];
+        for (var i = 1; i < relative_coordinates.Length; i++)
+        {
+            absolute_coordinates[i] = absolute_coordinates[i - 1] + relative_coordinates[i];
+        }
+        return absolute_coordinates;
+    }
 
     public static SimpleGlyph ReadFrom(Stream stream, short number_of_contours)
     {
@@ -32,11 +89,11 @@ public class SimpleGlyph : IGlyph
         var instructions = Lists.Repeat(stream.ReadUByte).Take(instruction_length).ToArray();
 
         var lastpoint = endpoints.Last() + 1;
-        var flags = new byte[lastpoint];
+        var flags = new SimpleGlyphFlags[lastpoint];
         for (var i = 0; i < lastpoint; i++)
         {
-            var flag = flags[i] = stream.ReadUByte();
-            if ((flag & (byte)SimpleGlyphFlags.REPEAT_FLAG) != 0)
+            var flag = flags[i] = (SimpleGlyphFlags)stream.ReadUByte();
+            if (flag.HasFlag(SimpleGlyphFlags.REPEAT_FLAG))
             {
                 var repeat = stream.ReadUByte();
                 for (var j = 0; j < repeat; j++) flags[++i] = flag;
@@ -47,8 +104,8 @@ public class SimpleGlyph : IGlyph
         for (var i = 0; i < lastpoint; i++)
         {
             var flag = flags[i];
-            var issame_or_positive = (flag & (byte)SimpleGlyphFlags.X_IS_SAME_OR_POSITIVE_X_SHORT_VECTOR) != 0;
-            if ((flag & (byte)SimpleGlyphFlags.X_SHORT_VECTOR) != 0)
+            var issame_or_positive = flag.HasFlag(SimpleGlyphFlags.X_IS_SAME_OR_POSITIVE_X_SHORT_VECTOR);
+            if (flag.HasFlag(SimpleGlyphFlags.X_SHORT_VECTOR))
             {
                 xcoordinates[i] = stream.ReadUByte();
                 if (!issame_or_positive) xcoordinates[i] = (short)-xcoordinates[i];
@@ -63,8 +120,8 @@ public class SimpleGlyph : IGlyph
         for (var i = 0; i < lastpoint; i++)
         {
             var flag = flags[i];
-            var issame_or_positive = (flag & (byte)SimpleGlyphFlags.Y_IS_SAME_OR_POSITIVE_Y_SHORT_VECTOR) != 0;
-            if ((flag & (byte)SimpleGlyphFlags.Y_SHORT_VECTOR) != 0)
+            var issame_or_positive = flag.HasFlag(SimpleGlyphFlags.Y_IS_SAME_OR_POSITIVE_Y_SHORT_VECTOR);
+            if (flag.HasFlag(SimpleGlyphFlags.Y_SHORT_VECTOR))
             {
                 ycoordinates[i] = stream.ReadUByte();
                 if (!issame_or_positive) ycoordinates[i] = (short)-ycoordinates[i];
@@ -102,7 +159,7 @@ public class SimpleGlyph : IGlyph
         stream.WriteUShortByBigEndian((ushort)Instructions.Length);
         stream.Write(Instructions);
 
-        Flags.Select(x => (byte)(x
+        Flags.Select(x => (byte)((byte)x
                 & ~(byte)SimpleGlyphFlags.REPEAT_FLAG
                 & ~(byte)SimpleGlyphFlags.X_SHORT_VECTOR
                 & ~(byte)SimpleGlyphFlags.X_IS_SAME_OR_POSITIVE_X_SHORT_VECTOR

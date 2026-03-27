@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using OpenType.Outline;
+using System.IO;
 
 namespace OpenType.Tables.TrueType;
 

@@ -1,4 +1,4 @@
-﻿namespace OpenType;
+﻿namespace OpenType.Outline;
 
 public interface IOutline
 {

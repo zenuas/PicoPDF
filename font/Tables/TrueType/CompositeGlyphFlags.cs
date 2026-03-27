@@ -1,5 +1,8 @@
-﻿namespace OpenType.Tables.TrueType;
+﻿using System;
 
+namespace OpenType.Tables.TrueType;
+
+[Flags]
 public enum CompositeGlyphFlags
 {
     ARG_1_AND_2_ARE_WORDS = 1 << 0,
