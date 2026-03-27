@@ -31,13 +31,13 @@ public class CompositeGlyph : IGlyph
         byte[]? instructions = null;
         while (true)
         {
-            var flags = stream.ReadUShortByBigEndian();
+            var flags = (CompositeGlyphFlags)stream.ReadUShortByBigEndian();
             var glyph_index = stream.ReadUShortByBigEndian();
             int arg1;
             int arg2;
 
-            var isargs_are_xy_values = (flags & (ushort)CompositeGlyphFlags.ARGS_ARE_XY_VALUES) != 0;
-            if ((flags & (ushort)CompositeGlyphFlags.ARG_1_AND_2_ARE_WORDS) != 0)
+            var isargs_are_xy_values = flags.HasFlag(CompositeGlyphFlags.ARGS_ARE_XY_VALUES);
+            if (flags.HasFlag(CompositeGlyphFlags.ARG_1_AND_2_ARE_WORDS))
             {
                 if (isargs_are_xy_values)
                 {
@@ -69,16 +69,16 @@ public class CompositeGlyph : IGlyph
             ushort yscale = 0;
             ushort scale01 = 0;
             ushort scale10 = 0;
-            if ((flags & (ushort)CompositeGlyphFlags.WE_HAVE_A_SCALE) != 0)
+            if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
             {
                 scale = stream.ReadUShortByBigEndian();
             }
-            else if ((flags & (ushort)CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE) != 0)
+            else if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
             {
                 xscale = stream.ReadUShortByBigEndian();
                 yscale = stream.ReadUShortByBigEndian();
             }
-            else if ((flags & (ushort)CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO) != 0)
+            else if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO))
             {
                 xscale = stream.ReadUShortByBigEndian();
                 scale01 = stream.ReadUShortByBigEndian();
@@ -98,9 +98,9 @@ public class CompositeGlyph : IGlyph
                 Scale10 = scale10,
             });
 
-            if ((flags & (ushort)CompositeGlyphFlags.MORE_COMPONENTS) == 0)
+            if (!flags.HasFlag(CompositeGlyphFlags.MORE_COMPONENTS))
             {
-                if ((flags & (ushort)CompositeGlyphFlags.WE_HAVE_INSTRUCTIONS) != 0)
+                if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_INSTRUCTIONS))
                 {
                     instruction_length = stream.ReadUShortByBigEndian();
                     instructions = [.. Lists.Repeat(stream.ReadUByte).Take(instruction_length)];
@@ -132,10 +132,10 @@ public class CompositeGlyph : IGlyph
 
         foreach (var glyph in CompositeGlyphRecords)
         {
-            stream.WriteUShortByBigEndian(glyph.Flags);
+            stream.WriteUShortByBigEndian((ushort)glyph.Flags);
             stream.WriteUShortByBigEndian(glyph.GlyphIndex);
 
-            if ((glyph.Flags & (ushort)CompositeGlyphFlags.ARG_1_AND_2_ARE_WORDS) != 0)
+            if (glyph.Flags.HasFlag(CompositeGlyphFlags.ARG_1_AND_2_ARE_WORDS))
             {
                 stream.WriteUShortByBigEndian((ushort)glyph.Argument1);
                 stream.WriteUShortByBigEndian((ushort)glyph.Argument2);
@@ -146,16 +146,16 @@ public class CompositeGlyph : IGlyph
                 stream.WriteByte((byte)glyph.Argument2);
             }
 
-            if ((glyph.Flags & (ushort)CompositeGlyphFlags.WE_HAVE_A_SCALE) != 0)
+            if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
             {
                 stream.WriteUShortByBigEndian(glyph.Scale);
             }
-            else if ((glyph.Flags & (ushort)CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE) != 0)
+            else if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
             {
                 stream.WriteUShortByBigEndian(glyph.XScale);
                 stream.WriteUShortByBigEndian(glyph.YScale);
             }
-            else if ((glyph.Flags & (ushort)CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO) != 0)
+            else if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO))
             {
                 stream.WriteUShortByBigEndian(glyph.XScale);
                 stream.WriteUShortByBigEndian(glyph.Scale01);

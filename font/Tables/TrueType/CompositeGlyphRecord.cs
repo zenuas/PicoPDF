@@ -2,7 +2,7 @@
 
 public class CompositeGlyphRecord
 {
-    public required ushort Flags { get; init; }
+    public required CompositeGlyphFlags Flags { get; init; }
     public required ushort GlyphIndex { get; init; }
     public required int Argument1 { get; init; }
     public required int Argument2 { get; init; }
