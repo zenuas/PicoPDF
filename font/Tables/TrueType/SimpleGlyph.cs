@@ -28,12 +28,12 @@ public class SimpleGlyph : IGlyph
         var ycoordinates = AbsoluteCoordinates(YCoordinates);
         for (var (i, start) = (0, 0); i < NumberOfContours; start = EndPointsOfContours[i++] + 1)
         {
-            outlines[i] = CreateSurface(start, EndPointsOfContours[i], Flags, xcoordinates, ycoordinates);
+            outlines[i] = CreateSurface(start, EndPointsOfContours[i], Flags, xcoordinates, ycoordinates, XMin, YMin, XMax, YMax);
         }
         return outlines;
     }
 
-    public static Surface CreateSurface(int start, int end, SimpleGlyphFlags[] flags, int[] xcoordinates, int[] ycoordinates)
+    public static Surface CreateSurface(int start, int end, SimpleGlyphFlags[] flags, int[] xcoordinates, int[] ycoordinates, float xmin, float ymin, float xmax, float ymax)
     {
         var edges = new List<IEdge>();
         var prev = new Vector2(xcoordinates[start], ycoordinates[start]);
@@ -64,11 +64,11 @@ public class SimpleGlyph : IGlyph
             else
             {
                 edges.Add(new BezierCurves { Start = prev, End = edges.First().Start, ControlPoint = [next] });
-                return new() { Edges = [.. edges] };
+                return new() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = [.. edges] };
             }
         }
         if (edges.First().Start != edges.Last().End) edges.Add(new Line { Start = prev, End = edges.First().Start });
-        return new() { Edges = [.. edges] };
+        return new() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = [.. edges] };
     }
 
     public static int[] AbsoluteCoordinates(short[] relative_coordinates)
