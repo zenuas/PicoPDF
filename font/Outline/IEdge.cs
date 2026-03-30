@@ -1,9 +1,9 @@
-﻿using System.Drawing;
+﻿using System.Numerics;
 
 namespace OpenType.Outline;
 
 public interface IEdge
 {
-    public Point Start { get; init; }
-    public Point End { get; init; }
+    public Vector2 Start { get; init; }
+    public Vector2 End { get; init; }
 }

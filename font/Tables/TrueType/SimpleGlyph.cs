@@ -1,9 +1,9 @@
 ﻿using Mina.Extension;
 using OpenType.Outline;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace OpenType.Tables.TrueType;
 
@@ -36,33 +36,38 @@ public class SimpleGlyph : IGlyph
     public static Surface CreateSurface(int start, int end, SimpleGlyphFlags[] flags, int[] xcoordinates, int[] ycoordinates)
     {
         var edges = new List<IEdge>();
-        for (var i = start; i < end; i++)
+        var prev = new Vector2(xcoordinates[start], ycoordinates[start]);
+        for (var i = start + 1; i <= end; i++)
         {
-            if (flags[i + 1].HasFlag(SimpleGlyphFlags.ON_CURVE_POINT))
+            var next = new Vector2(xcoordinates[i], ycoordinates[i]);
+            if (flags[i].HasFlag(SimpleGlyphFlags.ON_CURVE_POINT))
             {
-                edges.Add(new Line { Start = new(xcoordinates[i], ycoordinates[i]), End = new(xcoordinates[i + 1], ycoordinates[i + 1]) });
+                edges.Add(new Line { Start = prev, End = next });
+                prev = next;
             }
-            else
+            else if (i + 1 <= end)
             {
-                var control_points = new List<Point>();
-                var j = 1;
-                for (; i + j <= end && !flags[i + j].HasFlag(SimpleGlyphFlags.ON_CURVE_POINT); j++)
+                var next2 = new Vector2(xcoordinates[i + 1], ycoordinates[i + 1]);
+                if (flags[i + 1].HasFlag(SimpleGlyphFlags.ON_CURVE_POINT))
                 {
-                    control_points.Add(new() { X = xcoordinates[i + j], Y = ycoordinates[i + j] });
-                }
-                if (i + j > end)
-                {
-                    edges.Add(new BezierCurves { Start = new(xcoordinates[i], ycoordinates[i]), End = new(xcoordinates[start], ycoordinates[start]), ControlPoint = [.. control_points] });
-                    return new() { Edges = [.. edges] };
+                    edges.Add(new BezierCurves { Start = prev, End = next2, ControlPoint = [next] });
+                    prev = next2;
+                    i++;
                 }
                 else
                 {
-                    edges.Add(new BezierCurves { Start = new(xcoordinates[i], ycoordinates[i]), End = new(xcoordinates[i + j], ycoordinates[i + j]), ControlPoint = [.. control_points] });
-                    i += j - 1;
+                    var complement_point = (next2 + next) / 2;
+                    edges.Add(new BezierCurves { Start = prev, End = complement_point, ControlPoint = [next] });
+                    prev = complement_point;
                 }
             }
+            else
+            {
+                edges.Add(new BezierCurves { Start = prev, End = edges.First().Start, ControlPoint = [next] });
+                return new() { Edges = [.. edges] };
+            }
         }
-        if (edges.First().Start != edges.Last().End) edges.Add(new Line { Start = edges.Last().End, End = edges.First().Start });
+        if (edges.First().Start != edges.Last().End) edges.Add(new Line { Start = prev, End = edges.First().Start });
         return new() { Edges = [.. edges] };
     }
 
