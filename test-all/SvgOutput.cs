@@ -25,8 +25,8 @@ public static class SvgOutput
             var c = char.ConvertFromUtf32(cid);
             var gid = font.CharToGID(cid);
             var outlines = font.GIDToOutline(gid);
-            var width = 0.0f;
 
+            Console.WriteLine($"""    <!-- {c} -->""");
             foreach (var outline in outlines)
             {
                 switch (outline)
@@ -58,12 +58,11 @@ public static class SvgOutput
                                 }
                             }
                             Console.WriteLine($"""    <path d="{d}" stroke="black" fill="transparent" />""");
-                            width = (surface.XMax - surface.XMin) * r;
                             break;
                         }
                 }
             }
-            left += width;
+            left += GetCanvasSize(font, gid).Width * r;
         }
         Console.WriteLine($"""</svg>""");
     }
