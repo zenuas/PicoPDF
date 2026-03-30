@@ -22,12 +22,9 @@ public static class SvgOutput
         Console.WriteLine($"""<svg width="{canvas.Width * r}" height="{(canvas.Ascent - canvas.Descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
         foreach (var cid in cids)
         {
-            var c = char.ConvertFromUtf32(cid);
             var gid = font.CharToGID(cid);
-            var outlines = font.GIDToOutline(gid);
-
-            Console.WriteLine($"""    <!-- {c} -->""");
-            foreach (var outline in outlines)
+            Console.WriteLine($"    <!-- {char.ConvertFromUtf32(cid)} -->");
+            foreach (var outline in font.GIDToOutline(gid))
             {
                 switch (outline)
                 {
@@ -64,7 +61,7 @@ public static class SvgOutput
             }
             left += GetCanvasSize(font, gid).Width * r;
         }
-        Console.WriteLine($"""</svg>""");
+        Console.WriteLine("</svg>");
     }
 
     public static (float Width, float Ascent, float Descent) GetCanvasSize(IOpenTypeFont font, uint gid)
