@@ -4,6 +4,7 @@ using OpenType.Outline;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace OpenType.Tables.TrueType;
 
@@ -18,7 +19,64 @@ public class CompositeGlyph : IGlyph
     public required ushort InstructionLength { get; init; }
     public required byte[] Instructions { get; init; }
 
-    public IOutline[] ToOutline(IGlyph[] glyphs) => [];
+    public IOutline[] ToOutline(IGlyph[] glyphs)
+    {
+        var outlines = new List<IOutline>();
+        foreach (var composite in CompositeGlyphRecords)
+        {
+            glyphs[composite.GlyphIndex].ToOutline(glyphs)
+                .OfType<Surface>()
+                .Select(x => Composite(composite, x, XMin, YMin, XMax, YMax))
+                .Each(outlines.Add);
+        }
+        return [.. outlines];
+    }
+
+    public static Surface Composite(CompositeGlyphRecord composite, Surface surface, float xmin, float ymin, float xmax, float ymax)
+    {
+        var transform = Matrix3x2.Identity;
+        transform.Translation = new Vector2(composite.Argument1, composite.Argument2);
+
+        if (composite.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
+        {
+            transform.M11 = transform.M22 = composite.Scale;
+        }
+        else if (composite.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
+        {
+            transform.M11 = composite.XScale;
+            transform.M22 = composite.YScale;
+        }
+        else if (composite.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO))
+        {
+            transform.M11 = composite.XScale;
+            transform.M12 = composite.Scale01;
+            transform.M21 = composite.Scale10;
+            transform.M22 = composite.YScale;
+        }
+
+        return new()
+        {
+            XMin = xmin,
+            YMin = ymin,
+            XMax = xmax,
+            YMax = ymax,
+            Edges = [.. surface.Edges.Select(edge => edge switch
+                {
+                    Line line => (IEdge)new Line()
+                        {
+                            Start = Vector2.Transform(line.Start, transform),
+                            End = Vector2.Transform(line.End, transform),
+                        },
+                    BezierCurves bezier => new BezierCurves()
+                        {
+                            Start = Vector2.Transform(bezier.Start, transform),
+                            End = Vector2.Transform(bezier.End, transform),
+                            ControlPoint = [.. bezier.ControlPoint.Select(x => Vector2.Transform(x, transform))],
+                        },
+                    _ => throw new(),
+                })],
+        };
+    }
 
     public static CompositeGlyph ReadFrom(Stream stream, short number_of_contours)
     {
