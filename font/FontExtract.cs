@@ -22,7 +22,7 @@ public static class FontExtract
 
     public static TrueTypeFont Extract(TrueTypeFont font, FontExtractOption opt)
     {
-        var outputs = CreateCharToGlyph(font, [.. opt.ExtractChars.Order()]);
+        var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()]);
         var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (Glyph: font.Glyphs[x.OldGID], x.HorizontalMetrics));
         var num_of_glyph = (int)gid_glyph.Keys.Max();
@@ -63,7 +63,7 @@ public static class FontExtract
 
     public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
     {
-        var outputs = CreateCharToGlyph(font, [.. opt.ExtractChars.Order()]);
+        var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()]);
         var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var charsets = font.CompactFontFormat.TopDict.Charsets.Try();
         var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (
@@ -180,7 +180,7 @@ public static class FontExtract
 
     public static NoOutlineFont Extract(NoOutlineFont font, FontExtractOption opt)
     {
-        var outputs = CreateCharToGlyph(font, [.. opt.ExtractChars.Order()]);
+        var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()]);
         var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var gid_hmtx = outputs.ToDictionary(x => x.NewGID, x => x.HorizontalMetrics);
         var num_of_glyph = (int)gid_hmtx.Keys.Max();
@@ -212,7 +212,7 @@ public static class FontExtract
         };
     }
 
-    public static (int Char, uint NewGID, uint OldGID, HorizontalMetrics HorizontalMetrics)[] CreateCharToGlyph(IOpenTypeFont font, int[] chars) => [.. chars
+    public static (int Char, uint NewGID, uint OldGID, HorizontalMetrics HorizontalMetrics)[] CreateCharToGIDMetrics(IOpenTypeFont font, int[] chars) => [.. chars
         .Select(font.CharToGID)
         .To(xs => font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs)
         .Select((x, i) => (
