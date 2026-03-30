@@ -11,7 +11,7 @@ public class NotdefGlyph : IGlyph
     public short XMax { get; init; }
     public short YMax { get; init; }
 
-    public IOutline[] ToOutline() => [];
+    public IOutline[] ToOutline(IGlyph[] _) => [];
 
     public void WriteTo(Stream stream)
     {

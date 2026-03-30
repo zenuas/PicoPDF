@@ -123,7 +123,7 @@ public static class FontLoader
             HorizontalMetrics = hmtx,
             CMap = cmap,
             CharToGID = GetCurrentCMapFormat(cmap).CreateCharToGID(),
-            GIDToOutline = gid => glyf[gid].ToOutline(),
+            GIDToOutline = gid => glyf[gid].ToOutline(glyf),
             IndexToLocation = loca,
             Glyphs = glyf,
             ColorBitmapData = cbdt,
