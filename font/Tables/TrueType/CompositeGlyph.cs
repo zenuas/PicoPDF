@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using OpenType.Outline;
 using System.Collections.Generic;
 using System.IO;
@@ -71,19 +72,19 @@ public class CompositeGlyph : IGlyph
             ushort scale10 = 0;
             if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
             {
-                scale = stream.ReadUShortByBigEndian();
+                scale = stream.ReadF2DOT14();
             }
             else if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
             {
-                xscale = stream.ReadUShortByBigEndian();
-                yscale = stream.ReadUShortByBigEndian();
+                xscale = stream.ReadF2DOT14();
+                yscale = stream.ReadF2DOT14();
             }
             else if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO))
             {
-                xscale = stream.ReadUShortByBigEndian();
-                scale01 = stream.ReadUShortByBigEndian();
-                scale10 = stream.ReadUShortByBigEndian();
-                yscale = stream.ReadUShortByBigEndian();
+                xscale = stream.ReadF2DOT14();
+                scale01 = stream.ReadF2DOT14();
+                scale10 = stream.ReadF2DOT14();
+                yscale = stream.ReadF2DOT14();
             }
             records.Add(new()
             {
@@ -148,19 +149,19 @@ public class CompositeGlyph : IGlyph
 
             if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
             {
-                stream.WriteUShortByBigEndian(glyph.Scale);
+                stream.WriteF2DOT14(glyph.Scale);
             }
             else if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
             {
-                stream.WriteUShortByBigEndian(glyph.XScale);
-                stream.WriteUShortByBigEndian(glyph.YScale);
+                stream.WriteF2DOT14(glyph.XScale);
+                stream.WriteF2DOT14(glyph.YScale);
             }
             else if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO))
             {
-                stream.WriteUShortByBigEndian(glyph.XScale);
-                stream.WriteUShortByBigEndian(glyph.Scale01);
-                stream.WriteUShortByBigEndian(glyph.Scale10);
-                stream.WriteUShortByBigEndian(glyph.YScale);
+                stream.WriteF2DOT14(glyph.XScale);
+                stream.WriteF2DOT14(glyph.Scale01);
+                stream.WriteF2DOT14(glyph.Scale10);
+                stream.WriteF2DOT14(glyph.YScale);
             }
         }
 
