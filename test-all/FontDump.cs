@@ -1,11 +1,29 @@
-﻿using OpenType;
+﻿using Mina.Command;
+using Mina.Extension;
+using OpenType;
+using PicoPDF.Pdf.Font;
 using System;
+using System.Linq;
 
 namespace PicoPDF.TestAll;
 
-public static class FontDump
+public class FontDump : FontRegisterCommand
 {
-    public static void Dump(IOpenTypeFont font, Option opt)
+    [CommandOption("all-font-preview")]
+    public bool AllFontPreview { get; init; } = false;
+
+    public override void Run(string[] args)
+    {
+        var fontreg = CreateFontRegister().Cast<FontRegister>();
+
+        foreach (var kv in fontreg.Fonts.Where(x => AllFontPreview || x.Key == FontRegister.GetFontFilePath(x.Value.Value.Path)))
+        {
+            var font = fontreg.LoadComplete(FontRegister.GetFontFilePath(kv.Value.Value.Path));
+            Dump(font);
+        }
+    }
+
+    public void Dump(IOpenTypeFont font)
     {
         var head = font.FontHeader;
         Console.WriteLine($"head,MajorVersion,{head.MajorVersion}");

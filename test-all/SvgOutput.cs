@@ -7,8 +7,15 @@ using System.Text;
 
 namespace PicoPDF.TestAll;
 
-public static class SvgOutput
+public class SvgOutput : FontRegisterCommand
 {
+    public override void Run(string[] args)
+    {
+        var fontreg = CreateFontRegister();
+        var font = fontreg.LoadComplete(args[0]);
+        Output(font, args[1]);
+    }
+
     public static void Output(IOpenTypeFont font, string str)
     {
         var cids = str.ToUtf32CharArray();

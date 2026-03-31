@@ -1,17 +1,25 @@
-﻿using PicoPDF.Pdf.Font;
+﻿using Mina.Command;
+using Mina.Extension;
+using PicoPDF.Pdf.Font;
 using System;
 using System.Linq;
 
 namespace PicoPDF.TestAll;
 
-public static class NameRecordListTest
+public class NameRecordList : FontRegisterCommand
 {
-    public static void Preview(FontRegister fontreg, Option opt)
+    [CommandOption("all-font-preview")]
+    public bool AllFontPreview { get; init; } = false;
+
+    public override void Run(string[] args)
     {
-        foreach (var kv in fontreg.Fonts.Where(x => opt.AllFontPreview || x.Key != FontRegister.GetFontFilePath(x.Value.Value.Path)))
+        var fontreg = CreateFontRegister().Cast<FontRegister>();
+
+        foreach (var kv in fontreg.Fonts.Where(x => AllFontPreview || x.Key == FontRegister.GetFontFilePath(x.Value.Value.Path)))
         {
             var font = kv.Value.Value;
-            var path = $"\"{Escape(kv.Value.Value.Path.Path)}\"";
+
+            var path = $"\"{Escape(font.Path.Path)}\"";
             Console.WriteLine($"{path},PostScriptName,\"{Escape(font.PostScriptName)}\"");
             for (var i = 0; i < font.Name.NameRecords.Length; i++)
             {

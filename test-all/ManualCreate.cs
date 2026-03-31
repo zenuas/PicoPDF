@@ -6,10 +6,12 @@ using System.Text;
 
 namespace PicoPDF.TestAll;
 
-public static class ManualCreate
+public class ManualCreate : FontRegisterCommand
 {
-    public static void Run(IFontRegister fontreg, PdfExportOption opt)
+    public override void Run(string[] args)
     {
+        var fontreg = CreateFontRegister();
+
         var doc = new Document() { FontRegister = fontreg };
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientation.Horizontal);
         var page = doc.NewPage(width, height);
@@ -37,8 +39,6 @@ public static class ManualCreate
 
         _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 220, 300, 12, [ttf, emoji], 65, 60, style: TextStyle.Border | TextStyle.Clipping);
 
-        SvgOutput.Output(ttf.Font, "ajo¼あ");
-        doc.Save("test-case/manual-create.pdf", opt);
-        FontFileExport.Export(emoji.Font, new() { FontExportChars = " 🍣", OutputFontFile = "test-case/manual-create.ttf" });
+        doc.Save("test-case/manual-create.pdf");
     }
 }

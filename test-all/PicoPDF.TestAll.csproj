@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Zenu.Mina" Version="2026.3.31" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\font\OpenType.csproj" />
     <ProjectReference Include="..\src\PicoPDF.csproj" />
   </ItemGroup>
