@@ -11,8 +11,8 @@ public class PaintSweepGradient : IPaintFormat
     public required int ColorLineOffset { get; init; }
     public required short CenterX { get; init; }
     public required short CenterY { get; init; }
-    public required ushort StartAngle { get; init; }
-    public required ushort EndAngle { get; init; }
+    public required F2DOT14 StartAngle { get; init; }
+    public required F2DOT14 EndAngle { get; init; }
     public required ColorLine ColorLine { get; init; }
 
     public static PaintSweepGradient ReadFrom(Stream stream, Dictionary<long, IColorLine> colorLineCache)

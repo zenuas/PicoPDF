@@ -9,7 +9,7 @@ public class PaintRotate : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
     public required int PaintOffset { get; init; }
-    public required ushort Angle { get; init; }
+    public required F2DOT14 Angle { get; init; }
     public required IPaintFormat Paint { get; init; }
 
     public static PaintRotate ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)

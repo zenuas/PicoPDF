@@ -9,7 +9,7 @@ public class PaintVarScaleUniform : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
     public required int PaintOffset { get; init; }
-    public required ushort Scale { get; init; }
+    public required F2DOT14 Scale { get; init; }
     public required uint VarIndexBase { get; init; }
     public required IPaintFormat Paint { get; init; }
 

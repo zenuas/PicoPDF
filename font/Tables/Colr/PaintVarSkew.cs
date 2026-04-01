@@ -9,8 +9,8 @@ public class PaintVarSkew : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
     public required int PaintOffset { get; init; }
-    public required ushort XSkewAngle { get; init; }
-    public required ushort YSkewAngle { get; init; }
+    public required F2DOT14 XSkewAngle { get; init; }
+    public required F2DOT14 YSkewAngle { get; init; }
     public required uint VarIndexBase { get; init; }
     public required IPaintFormat Paint { get; init; }
 

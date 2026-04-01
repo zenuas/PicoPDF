@@ -123,11 +123,11 @@ public class CompositeGlyph : IGlyph
                 }
             }
 
-            ushort scale = 0;
-            ushort xscale = 0;
-            ushort yscale = 0;
-            ushort scale01 = 0;
-            ushort scale10 = 0;
+            F2DOT14 scale = 0;
+            F2DOT14 xscale = 0;
+            F2DOT14 yscale = 0;
+            F2DOT14 scale01 = 0;
+            F2DOT14 scale10 = 0;
             if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
             {
                 scale = stream.ReadF2DOT14();

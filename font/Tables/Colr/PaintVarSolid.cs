@@ -8,7 +8,7 @@ public class PaintVarSolid : IPaintFormat
 {
     public required byte Format { get; init; }
     public required ushort PaletteIndex { get; init; }
-    public required ushort Alpha { get; init; }
+    public required F2DOT14 Alpha { get; init; }
     public required uint VarIndexBase { get; init; }
 
     public static PaintVarSolid ReadFrom(Stream stream) => new()

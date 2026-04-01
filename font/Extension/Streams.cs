@@ -18,7 +18,7 @@ public static class Streams
     public static void WriteFixed(this Stream self, uint n) => self.WriteUIntByBigEndian(n);
     public static void WriteFWORD(this Stream self, short n) => self.WriteShortByBigEndian(n);
     public static void WriteUFWORD(this Stream self, ushort n) => self.WriteUShortByBigEndian(n);
-    public static void WriteF2DOT14(this Stream self, ushort n) => self.WriteUShortByBigEndian(n);
+    public static void WriteF2DOT14(this Stream self, F2DOT14 n) => self.WriteUShortByBigEndian(n.Value);
     public static void WriteLONGDATETIME(this Stream self, long n) => self.WriteLongByBigEndian(n);
     public static void WriteTag(this Stream self, string s) => self.Write(s);
 
@@ -32,7 +32,7 @@ public static class Streams
     public static uint ReadFixed(this Stream self) => self.ReadUIntByBigEndian();
     public static short ReadFWORD(this Stream self) => self.ReadShortByBigEndian();
     public static ushort ReadUFWORD(this Stream self) => self.ReadUShortByBigEndian();
-    public static ushort ReadF2DOT14(this Stream self) => self.ReadUShortByBigEndian();
+    public static F2DOT14 ReadF2DOT14(this Stream self) => self.ReadUShortByBigEndian();
     public static long ReadLONGDATETIME(this Stream self) => self.ReadLongByBigEndian();
     public static string ReadTag(this Stream self) => Encoding.ASCII.GetString(self.ReadExactly(4));
 

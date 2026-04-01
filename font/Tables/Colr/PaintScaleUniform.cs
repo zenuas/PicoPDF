@@ -9,7 +9,7 @@ public class PaintScaleUniform : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
     public required int PaintOffset { get; init; }
-    public required ushort Scale { get; init; }
+    public required F2DOT14 Scale { get; init; }
     public required IPaintFormat Paint { get; init; }
 
     public static PaintScaleUniform ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)

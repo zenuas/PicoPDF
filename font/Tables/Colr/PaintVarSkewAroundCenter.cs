@@ -9,8 +9,8 @@ public class PaintVarSkewAroundCenter : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
     public required int PaintOffset { get; init; }
-    public required ushort XSkewAngle { get; init; }
-    public required ushort YSkewAngle { get; init; }
+    public required F2DOT14 XSkewAngle { get; init; }
+    public required F2DOT14 YSkewAngle { get; init; }
     public required short CenterX { get; init; }
     public required short CenterY { get; init; }
     public required uint VarIndexBase { get; init; }

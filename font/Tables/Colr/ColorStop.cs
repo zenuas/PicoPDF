@@ -6,9 +6,9 @@ namespace OpenType.Tables.Colr;
 
 public class ColorStop : IExportable
 {
-    public required ushort StopOffset { get; init; }
+    public required F2DOT14 StopOffset { get; init; }
     public required ushort PaletteIndex { get; init; }
-    public required ushort Alpha { get; init; }
+    public required F2DOT14 Alpha { get; init; }
 
     public static ColorStop ReadFrom(Stream stream) => new()
     {
