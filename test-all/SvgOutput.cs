@@ -52,17 +52,13 @@ public class SvgOutput : FontRegisterCommand
         var left = 0f;
         var baseline = canvas.Ascent * r;
         Output.WriteLine($"""<svg width="{canvas.Width * r}" height="{(canvas.Ascent - canvas.Descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
-        if (Debug)
-        {
-            Output.WriteLine($"    <!-- baseline -->");
-            Output.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{canvas.Width * r}" y2="{baseline}" stroke="red" />""");
-        }
         foreach (var cid in cids)
         {
             var gid = font.CharToGID(cid);
             left -= Math.Min(0, GetCanvasSize(font, gid).Left) * r;
             Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cid)} -->");
             var d = new StringBuilder();
+            var c = new StringBuilder();
             foreach (var outline in font.GIDToOutline(gid))
             {
                 switch (outline)
@@ -70,7 +66,7 @@ public class SvgOutput : FontRegisterCommand
                     case Surface surface:
                         {
                             var start = surface.Edges.First().Start;
-                            if (JointPoint > 0) Output.WriteLine($"""    <circle cx="{left + (start.X * r)}" cy="{baseline - (start.Y * r)}" r="{JointPoint}" fill="blue" />""");
+                            if (JointPoint > 0) c.AppendLine($"""    <circle cx="{left + (start.X * r)}" cy="{baseline - (start.Y * r)}" r="{JointPoint}" fill="blue" />""");
                             d.AppendLine();
                             d.AppendLine($"          M {left + (start.X * r)} {baseline - (start.Y * r)}");
                             foreach (var edge in surface.Edges)
@@ -78,7 +74,7 @@ public class SvgOutput : FontRegisterCommand
                                 switch (edge)
                                 {
                                     case Line line:
-                                        if (JointPoint > 0) Output.WriteLine($"""    <circle cx="{left + (line.End.X * r)}" cy="{baseline - (line.End.Y * r)}" r="{JointPoint}" fill="blue" />""");
+                                        if (JointPoint > 0) c.AppendLine($"""    <circle cx="{left + (line.End.X * r)}" cy="{baseline - (line.End.Y * r)}" r="{JointPoint}" fill="blue" />""");
                                         d.AppendLine($"          L {left + (line.End.X * r)} {baseline - (line.End.Y * r)}");
                                         break;
                                     case BezierCurves bezier when bezier.ControlPoint.Length == 1:
@@ -86,8 +82,8 @@ public class SvgOutput : FontRegisterCommand
                                             var cp = bezier.ControlPoint[0];
                                             if (JointPoint > 0)
                                             {
-                                                Output.WriteLine($"""    <circle cx="{left + (cp.X * r)}" cy="{baseline - (cp.Y * r)}" r="{JointPoint}" fill="red" />""");
-                                                Output.WriteLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{baseline - (bezier.End.Y * r)}" r="{JointPoint}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
+                                                c.AppendLine($"""    <circle cx="{left + (cp.X * r)}" cy="{baseline - (cp.Y * r)}" r="{JointPoint}" fill="red" />""");
+                                                c.AppendLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{baseline - (bezier.End.Y * r)}" r="{JointPoint}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
                                             }
                                             d.AppendLine($"          Q {left + (cp.X * r)} {baseline - (cp.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
                                             break;
@@ -98,9 +94,9 @@ public class SvgOutput : FontRegisterCommand
                                             var cp2 = bezier.ControlPoint[1];
                                             if (JointPoint > 0)
                                             {
-                                                Output.WriteLine($"""    <circle cx="{left + (cp1.X * r)}" cy="{baseline - (cp1.Y * r)}" r="{JointPoint}" fill="red" />""");
-                                                Output.WriteLine($"""    <circle cx="{left + (cp2.X * r)}" cy="{baseline - (cp2.Y * r)}" r="{JointPoint}" fill="red" />""");
-                                                Output.WriteLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{left + (bezier.End.Y * r)}" r="{JointPoint}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
+                                                c.AppendLine($"""    <circle cx="{left + (cp1.X * r)}" cy="{baseline - (cp1.Y * r)}" r="{JointPoint}" fill="red" />""");
+                                                c.AppendLine($"""    <circle cx="{left + (cp2.X * r)}" cy="{baseline - (cp2.Y * r)}" r="{JointPoint}" fill="red" />""");
+                                                c.AppendLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{left + (bezier.End.Y * r)}" r="{JointPoint}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
                                             }
                                             d.AppendLine($"          C {left + (cp1.X * r)} {baseline - (cp1.Y * r)}, {left + (cp2.X * r)} {baseline - (cp2.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
                                             break;
@@ -114,7 +110,13 @@ public class SvgOutput : FontRegisterCommand
             }
             Output.WriteLine($"""    <path stroke="{ColorToHex(Stroke)}" fill="{ColorToHex(Fill)}" fill-rule="evenodd" """);
             Output.WriteLine($"""       d="{d}" />""");
+            Output.Write(c);
             left += GetCanvasSize(font, gid).Width * r;
+        }
+        if (Debug)
+        {
+            Output.WriteLine($"    <!-- baseline -->");
+            Output.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{canvas.Width * r}" y2="{baseline}" stroke="red" />""");
         }
         Output.WriteLine("</svg>");
         Output.Flush();
