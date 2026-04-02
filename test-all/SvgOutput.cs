@@ -38,7 +38,10 @@ public class SvgOutput : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
         var font = fontreg.LoadComplete(Font);
-        OutputSvg(font, args[0]);
+        foreach (var arg in args)
+        {
+            OutputSvg(font, arg);
+        }
     }
 
     public void OutputSvg(IOpenTypeFont font, string str)
