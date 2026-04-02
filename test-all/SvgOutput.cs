@@ -59,6 +59,7 @@ public class SvgOutput : FontRegisterCommand
             var gid = font.CharToGID(cid);
             left -= Math.Min(0, GetCanvasSize(font, gid).Left) * r;
             Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cid)} -->");
+            var d = new StringBuilder();
             foreach (var outline in font.GIDToOutline(gid))
             {
                 switch (outline)
@@ -70,21 +71,22 @@ public class SvgOutput : FontRegisterCommand
                             {
                                 Output.WriteLine($"""    <circle cx="{left + (start.X * r)}" cy="{baseline - (start.Y * r)}" r="2" fill="blue" />""");
                             }
-                            var d = new StringBuilder($"M {left + (start.X * r)} {baseline - (start.Y * r)}");
+                            d.AppendLine();
+                            d.AppendLine($"          M {left + (start.X * r)} {baseline - (start.Y * r)}");
                             foreach (var edge in surface.Edges)
                             {
                                 switch (edge)
                                 {
                                     case Line line:
                                         Output.WriteLine($"""    <circle cx="{left + (line.End.X * r)}" cy="{baseline - (line.End.Y * r)}" r="2" fill="blue" />""");
-                                        d.Append($" L {left + (line.End.X * r)} {baseline - (line.End.Y * r)}");
+                                        d.AppendLine($"          L {left + (line.End.X * r)} {baseline - (line.End.Y * r)}");
                                         break;
                                     case BezierCurves bezier when bezier.ControlPoint.Length == 1:
                                         {
                                             var cp = bezier.ControlPoint[0];
                                             Output.WriteLine($"""    <circle cx="{left + (cp.X * r)}" cy="{baseline - (cp.Y * r)}" r="2" fill="red" />""");
                                             Output.WriteLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{baseline - (bezier.End.Y * r)}" r="2" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
-                                            d.Append($" Q {left + (cp.X * r)} {baseline - (cp.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
+                                            d.AppendLine($"          Q {left + (cp.X * r)} {baseline - (cp.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
                                             break;
                                         }
                                     case BezierCurves bezier when bezier.ControlPoint.Length == 2:
@@ -94,16 +96,18 @@ public class SvgOutput : FontRegisterCommand
                                             Output.WriteLine($"""    <circle cx="{left + (cp1.X * r)}" cy="{baseline - (cp1.Y * r)}" r="2" fill="red" />""");
                                             Output.WriteLine($"""    <circle cx="{left + (cp2.X * r)}" cy="{baseline - (cp2.Y * r)}" r="2" fill="red" />""");
                                             Output.WriteLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{left + (bezier.End.Y * r)}" r="2" fill="blue" />""");
-                                            d.Append($" C {left + (cp1.X * r)} {baseline - (cp1.Y * r)}, {left + (cp2.X * r)} {baseline - (cp2.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
+                                            d.AppendLine($"          C {left + (cp1.X * r)} {baseline - (cp1.Y * r)}, {left + (cp2.X * r)} {baseline - (cp2.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
                                             break;
                                         }
                                 }
                             }
-                            Output.WriteLine($"""    <path d="{d}" stroke="{ColorToHex(Stroke)}" fill="{ColorToHex(Fill)}" />""");
+                            d.Append("          Z");
                             break;
                         }
                 }
             }
+            Output.WriteLine($"""    <path stroke="{ColorToHex(Stroke)}" fill="{ColorToHex(Fill)}" fill-rule="evenodd" """);
+            Output.WriteLine($"""       d="{d}" />""");
             left += GetCanvasSize(font, gid).Width * r;
         }
         Output.WriteLine("</svg>");
