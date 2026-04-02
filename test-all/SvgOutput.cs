@@ -43,7 +43,7 @@ public class SvgOutput : FontRegisterCommand
         var cids = str.ToUtf32CharArray();
         var canvas = cids.Select(font.CharToGID)
             .Select(gid => GetCanvasSize(font, gid))
-            .Aggregate((a, b) => (a.Width + b.Width, Math.Max(a.Ascent, b.Ascent), Math.Min(a.Descent, b.Descent)));
+            .Aggregate((a, b) => (a.Width + b.Width, 0, Math.Max(a.Ascent, b.Ascent), Math.Min(a.Descent, b.Descent)));
 
         var r = 1 / (canvas.Ascent - canvas.Descent) * Point;
         var left = 0f;
@@ -57,6 +57,7 @@ public class SvgOutput : FontRegisterCommand
         foreach (var cid in cids)
         {
             var gid = font.CharToGID(cid);
+            left -= Math.Min(0, GetCanvasSize(font, gid).Left) * r;
             Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cid)} -->");
             foreach (var outline in font.GIDToOutline(gid))
             {
@@ -109,17 +110,17 @@ public class SvgOutput : FontRegisterCommand
         Output.Flush();
     }
 
-    public static (float Width, float Ascent, float Descent) GetCanvasSize(IOpenTypeFont font, uint gid)
+    public static (float Width, float Left, float Ascent, float Descent) GetCanvasSize(IOpenTypeFont font, uint gid)
     {
         foreach (var outline in font.GIDToOutline(gid))
         {
             switch (outline)
             {
                 case Surface surface:
-                    return (surface.XMax + Math.Abs(surface.XMin), surface.YMax, surface.YMin);
+                    return (surface.XMax + (surface.XMin < 0 ? -surface.XMin : 0), surface.XMin, surface.YMax, surface.YMin);
             }
         }
-        return (0, 0, 0);
+        return (0, 0, 0, 0);
     }
 
     public static string ColorToHex(Color color) => color == Color.Transparent ? "transparent" : $"#{color.R:X2}{color.G:X2}{color.B:X2}";
