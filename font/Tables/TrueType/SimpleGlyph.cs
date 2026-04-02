@@ -50,20 +50,20 @@ public class SimpleGlyph : IGlyph
                 var next2 = new Vector2(xcoordinates[i + 1], ycoordinates[i + 1]);
                 if (flags[i + 1].HasFlag(SimpleGlyphFlags.ON_CURVE_POINT))
                 {
-                    edges.Add(new BezierCurves { Start = prev, End = next2, ControlPoint = [next] });
+                    edges.Add(new BezierCurves { Start = prev, End = next2, ControlPoint = [next], ComplementPoint = false });
                     prev = next2;
                     i++;
                 }
                 else
                 {
                     var complement_point = (next2 + next) / 2;
-                    edges.Add(new BezierCurves { Start = prev, End = complement_point, ControlPoint = [next] });
+                    edges.Add(new BezierCurves { Start = prev, End = complement_point, ControlPoint = [next], ComplementPoint = true });
                     prev = complement_point;
                 }
             }
             else
             {
-                edges.Add(new BezierCurves { Start = prev, End = edges.First().Start, ControlPoint = [next] });
+                edges.Add(new BezierCurves { Start = prev, End = edges.First().Start, ControlPoint = [next], ComplementPoint = false });
                 return new() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = [.. edges] };
             }
         }

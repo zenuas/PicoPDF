@@ -72,6 +72,7 @@ public class CompositeGlyph : IGlyph
                             Start = Vector2.Transform(bezier.Start, transform),
                             End = Vector2.Transform(bezier.End, transform),
                             ControlPoint = [.. bezier.ControlPoint.Select(x => Vector2.Transform(x, transform))],
+                            ComplementPoint = bezier.ComplementPoint,
                         },
                     _ => throw new(),
                 })],
