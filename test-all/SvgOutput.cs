@@ -25,6 +25,9 @@ public class SvgOutput : FontRegisterCommand
     [CommandOption("font")]
     public string Font { get; init; } = "Meiryo Bold";
 
+    [CommandOption("point"), CommandOption('p')]
+    public float Point { get; init; } = 100.0F;
+
     [CommandOption("debug")]
     public bool Debug { get; init; } = false;
 
@@ -42,7 +45,7 @@ public class SvgOutput : FontRegisterCommand
             .Select(gid => GetCanvasSize(font, gid))
             .Aggregate((a, b) => (a.Width + b.Width, Math.Max(a.Ascent, b.Ascent), Math.Min(a.Descent, b.Descent)));
 
-        var r = 1 / (canvas.Ascent - canvas.Descent) * 100;
+        var r = 1 / (canvas.Ascent - canvas.Descent) * Point;
         var left = 0f;
         var baseline = canvas.Ascent * r;
         Output.WriteLine($"""<svg width="{canvas.Width * r}" height="{(canvas.Ascent - canvas.Descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
