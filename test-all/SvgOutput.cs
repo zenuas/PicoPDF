@@ -4,6 +4,7 @@ using OpenType;
 using OpenType.Outline;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -11,11 +12,18 @@ namespace PicoPDF.TestAll;
 
 public class SvgOutput : FontRegisterCommand
 {
+
+    [CommandOption("output"), CommandOption('o')]
+    public TextWriter Output { get; init; } = Console.Out;
+
     [CommandOption("stroke")]
     public Color Stroke { get; init; } = Color.Black;
 
     [CommandOption("fill")]
     public Color Fill { get; init; } = Color.Transparent;
+
+    [CommandOption("font")]
+    public string Font { get; init; } = "Meiryo Bold";
 
     [CommandOption("debug")]
     public bool Debug { get; init; } = false;
@@ -23,11 +31,11 @@ public class SvgOutput : FontRegisterCommand
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister();
-        var font = fontreg.LoadComplete(args[0]);
-        Output(font, args[1]);
+        var font = fontreg.LoadComplete(Font);
+        OutputSvg(font, args[0]);
     }
 
-    public void Output(IOpenTypeFont font, string str)
+    public void OutputSvg(IOpenTypeFont font, string str)
     {
         var cids = str.ToUtf32CharArray();
         var canvas = cids.Select(font.CharToGID)
@@ -37,16 +45,16 @@ public class SvgOutput : FontRegisterCommand
         var r = 1 / (canvas.Ascent - canvas.Descent) * 100;
         var left = 0f;
         var baseline = canvas.Ascent * r;
-        Console.WriteLine($"""<svg width="{canvas.Width * r}" height="{(canvas.Ascent - canvas.Descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
+        Output.WriteLine($"""<svg width="{canvas.Width * r}" height="{(canvas.Ascent - canvas.Descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
         if (Debug)
         {
-            Console.WriteLine($"    <!-- baseline -->");
-            Console.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{canvas.Width * r}" y2="{baseline}" stroke="red" />""");
+            Output.WriteLine($"    <!-- baseline -->");
+            Output.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{canvas.Width * r}" y2="{baseline}" stroke="red" />""");
         }
         foreach (var cid in cids)
         {
             var gid = font.CharToGID(cid);
-            Console.WriteLine($"    <!-- {char.ConvertFromUtf32(cid)} -->");
+            Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cid)} -->");
             foreach (var outline in font.GIDToOutline(gid))
             {
                 switch (outline)
@@ -56,7 +64,7 @@ public class SvgOutput : FontRegisterCommand
                             var start = surface.Edges.First().Start;
                             if (Debug)
                             {
-                                Console.WriteLine($"""    <circle cx="{left + (start.X * r)}" cy="{baseline - (start.Y * r)}" r="2" fill="blue" />""");
+                                Output.WriteLine($"""    <circle cx="{left + (start.X * r)}" cy="{baseline - (start.Y * r)}" r="2" fill="blue" />""");
                             }
                             var d = new StringBuilder($"M {left + (start.X * r)} {baseline - (start.Y * r)}");
                             foreach (var edge in surface.Edges)
@@ -64,14 +72,14 @@ public class SvgOutput : FontRegisterCommand
                                 switch (edge)
                                 {
                                     case Line line:
-                                        Console.WriteLine($"""    <circle cx="{left + (line.End.X * r)}" cy="{baseline - (line.End.Y * r)}" r="2" fill="blue" />""");
+                                        Output.WriteLine($"""    <circle cx="{left + (line.End.X * r)}" cy="{baseline - (line.End.Y * r)}" r="2" fill="blue" />""");
                                         d.Append($" L {left + (line.End.X * r)} {baseline - (line.End.Y * r)}");
                                         break;
                                     case BezierCurves bezier when bezier.ControlPoint.Length == 1:
                                         {
                                             var cp = bezier.ControlPoint[0];
-                                            Console.WriteLine($"""    <circle cx="{left + (cp.X * r)}" cy="{baseline - (cp.Y * r)}" r="2" fill="red" />""");
-                                            Console.WriteLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{baseline - (bezier.End.Y * r)}" r="2" fill="blue" />""");
+                                            Output.WriteLine($"""    <circle cx="{left + (cp.X * r)}" cy="{baseline - (cp.Y * r)}" r="2" fill="red" />""");
+                                            Output.WriteLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{baseline - (bezier.End.Y * r)}" r="2" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
                                             d.Append($" Q {left + (cp.X * r)} {baseline - (cp.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
                                             break;
                                         }
@@ -79,22 +87,23 @@ public class SvgOutput : FontRegisterCommand
                                         {
                                             var cp1 = bezier.ControlPoint[0];
                                             var cp2 = bezier.ControlPoint[1];
-                                            Console.WriteLine($"""    <circle cx="{left + (cp1.X * r)}" cy="{baseline - (cp1.Y * r)}" r="2" fill="red" />""");
-                                            Console.WriteLine($"""    <circle cx="{left + (cp2.X * r)}" cy="{baseline - (cp2.Y * r)}" r="2" fill="red" />""");
-                                            Console.WriteLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{left + (bezier.End.Y * r)}" r="2" fill="blue" />""");
+                                            Output.WriteLine($"""    <circle cx="{left + (cp1.X * r)}" cy="{baseline - (cp1.Y * r)}" r="2" fill="red" />""");
+                                            Output.WriteLine($"""    <circle cx="{left + (cp2.X * r)}" cy="{baseline - (cp2.Y * r)}" r="2" fill="red" />""");
+                                            Output.WriteLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{left + (bezier.End.Y * r)}" r="2" fill="blue" />""");
                                             d.Append($" C {left + (cp1.X * r)} {baseline - (cp1.Y * r)}, {left + (cp2.X * r)} {baseline - (cp2.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
                                             break;
                                         }
                                 }
                             }
-                            Console.WriteLine($"""    <path d="{d}" stroke="{ColorToHex(Stroke)}" fill="{ColorToHex(Fill)}" />""");
+                            Output.WriteLine($"""    <path d="{d}" stroke="{ColorToHex(Stroke)}" fill="{ColorToHex(Fill)}" />""");
                             break;
                         }
                 }
             }
             left += GetCanvasSize(font, gid).Width * r;
         }
-        Console.WriteLine("</svg>");
+        Output.WriteLine("</svg>");
+        Output.Flush();
     }
 
     public static (float Width, float Ascent, float Descent) GetCanvasSize(IOpenTypeFont font, uint gid)
