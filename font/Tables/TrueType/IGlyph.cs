@@ -1,4 +1,5 @@
 ﻿using OpenType.Outline;
+using System.Collections.Generic;
 
 namespace OpenType.Tables.TrueType;
 
@@ -10,5 +11,5 @@ public interface IGlyph : IExportable
     public short XMax { get; init; }
     public short YMax { get; init; }
 
-    public IOutline[] ToOutline(IGlyph[] glyphs);
+    public IOutline[] ToOutline(IReadOnlyList<IGlyph> glyphs);
 }

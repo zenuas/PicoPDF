@@ -19,7 +19,7 @@ public class CompositeGlyph : IGlyph
     public required ushort InstructionLength { get; init; }
     public required byte[] Instructions { get; init; }
 
-    public IOutline[] ToOutline(IGlyph[] glyphs)
+    public IOutline[] ToOutline(IReadOnlyList<IGlyph> glyphs)
     {
         var outlines = new List<IOutline>();
         foreach (var composite in CompositeGlyphRecords)

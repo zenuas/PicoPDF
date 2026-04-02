@@ -21,7 +21,7 @@ public class SimpleGlyph : IGlyph
     public required short[] XCoordinates { get; init; }
     public required short[] YCoordinates { get; init; }
 
-    public IOutline[] ToOutline(IGlyph[] _)
+    public IOutline[] ToOutline(IReadOnlyList<IGlyph> _)
     {
         var outlines = new IOutline[NumberOfContours];
         var xcoordinates = AbsoluteCoordinates(XCoordinates);

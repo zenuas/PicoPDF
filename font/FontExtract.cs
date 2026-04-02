@@ -24,7 +24,7 @@ public static class FontExtract
     {
         var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()]);
         var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
-        var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (Glyph: font.Glyphs[x.OldGID], x.HorizontalMetrics));
+        var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (Glyph: font.Glyphs[(int)x.OldGID], x.HorizontalMetrics));
         var num_of_glyph = (int)gid_glyph.Keys.Max();
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
@@ -50,7 +50,6 @@ public static class FontExtract
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             GIDToOutline = gid => glyphs[gid].ToOutline(glyphs),
-            IndexToLocation = null!,
             Glyphs = glyphs,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
@@ -58,6 +57,7 @@ public static class FontExtract
             ColorPalette = cpal,
             StandardBitmapGraphics = null,
             ScalableVectorGraphics = null,
+            DisposeAction = null,
         };
     }
 

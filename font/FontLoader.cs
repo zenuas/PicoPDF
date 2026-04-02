@@ -62,20 +62,15 @@ public static class FontLoader
         };
     }
 
-    public static IOpenTypeFont LoadComplete(IOpenTypeHeader font)
+    public static IOpenTypeFont LoadComplete(IOpenTypeHeader font) => font is IOpenTypeFont opentype ? opentype :
+        font.Offset.ContainCFF() ? LoadPostScriptFont(font) :
+        font.TableRecords.ContainsKey("loca") && font.TableRecords.ContainsKey("glyf") ? LoadTrueTypeFont(font) :
+        LoadNoOutlineFont(font);
+
+    public static TrueTypeFont LoadTrueTypeFont(IOpenTypeHeader font)
     {
-        if (font is IOpenTypeFont opentype) return opentype;
+        var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-        using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
-        return
-            font.Offset.ContainCFF() ? LoadPostScriptFont(stream, font) :
-            font.TableRecords.ContainsKey("loca") && font.TableRecords.ContainsKey("glyf") ? LoadTrueTypeFont(stream, font) :
-            LoadNoOutlineFont(stream, font);
-    }
-
-    public static TrueTypeFont LoadTrueTypeFont(Stream stream, IOpenTypeHeader font)
-    {
         var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
         var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
         var head = ReadTableRecord(font, "head", stream, FontHeaderTable.ReadFrom).Try();
@@ -84,28 +79,21 @@ public static class FontLoader
         var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
-        var loca = ReadTableRecord(font, "loca", stream, x => IndexToLocationTable.ReadFrom(x, head.IndexToLocFormat, maxp.NumberOfGlyphs)).Try();
-        var glyf = ReadTableRecord(font, "glyf", stream, x =>
-            {
-                var position = x.Position;
-                return Enumerable.Range(0, maxp.NumberOfGlyphs)
-                    .Select(i =>
-                    {
-                        if (loca.Offsets[i] == loca.Offsets[i + 1]) return new NotdefGlyph();
-                        var number_of_contours = x.SeekTo(position + loca.Offsets[i]).ReadShortByBigEndian();
-                        return number_of_contours >= 0
-                            ? SimpleGlyph.ReadFrom(x, number_of_contours).Cast<IGlyph>()
-                            : CompositeGlyph.ReadFrom(x, number_of_contours);
-                    })
-                    .ToArray();
-            }).Try();
-
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
         var cblc = ReadTableRecord(font, "CBLC", stream, ColorBitmapLocationTable.ReadFrom);
         var colr = ReadTableRecord(font, "COLR", stream, ColorTable.ReadFrom);
         var cpal = ReadTableRecord(font, "CPAL", stream, ColorPaletteTable.ReadFrom);
         var svg = ReadTableRecord(font, "SVG ", stream, ScalableVectorGraphicsTable.ReadFrom);
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
+
+        var glyf = new LazyGlyph()
+        {
+            Stream = stream,
+            Count = maxp.NumberOfGlyphs + 1,
+            IndexToLocationTableOffset = font.TableRecords["loca"].Offset,
+            GlyphTableOffset = font.TableRecords["glyf"].Offset,
+            IndexToLocFormat = head.IndexToLocFormat,
+        };
 
         return new()
         {
@@ -123,8 +111,7 @@ public static class FontLoader
             HorizontalMetrics = hmtx,
             CMap = cmap,
             CharToGID = GetCurrentCMapFormat(cmap).CreateCharToGID(),
-            GIDToOutline = gid => glyf[gid].ToOutline(glyf),
-            IndexToLocation = loca,
+            GIDToOutline = gid => glyf[(int)gid].ToOutline(glyf),
             Glyphs = glyf,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
@@ -132,11 +119,14 @@ public static class FontLoader
             ColorPalette = cpal,
             StandardBitmapGraphics = sbix,
             ScalableVectorGraphics = svg,
+            DisposeAction = () => glyf.Dispose(),
         };
     }
 
-    public static PostScriptFont LoadPostScriptFont(Stream stream, IOpenTypeHeader font)
+    public static PostScriptFont LoadPostScriptFont(IOpenTypeHeader font)
     {
+        using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
         var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
         var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
         var head = ReadTableRecord(font, "head", stream, FontHeaderTable.ReadFrom).Try();
@@ -181,8 +171,10 @@ public static class FontLoader
         };
     }
 
-    public static NoOutlineFont LoadNoOutlineFont(Stream stream, IOpenTypeHeader font)
+    public static NoOutlineFont LoadNoOutlineFont(IOpenTypeHeader font)
     {
+        using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
         var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
         var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
         var head = ReadTableRecord(font, "head", stream, FontHeaderTable.ReadFrom).Try();
