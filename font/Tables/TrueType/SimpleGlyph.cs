@@ -67,7 +67,7 @@ public class SimpleGlyph : IGlyph
                 return new() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = [.. edges] };
             }
         }
-        if (edges.First().Start != edges.Last().End) edges.Add(new Line { Start = prev, End = edges.First().Start });
+        if (edges.Count > 0 && edges.First().Start != edges.Last().End) edges.Add(new Line { Start = prev, End = edges.First().Start });
         return new() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = [.. edges] };
     }
 

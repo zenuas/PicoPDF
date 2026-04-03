@@ -42,6 +42,7 @@ public class SvgOutput : FontRegisterCommand
         {
             OutputSvg(font, arg);
         }
+        Output.Flush();
     }
 
     public void OutputSvg(IOpenTypeFont font, string str)
@@ -66,7 +67,7 @@ public class SvgOutput : FontRegisterCommand
             {
                 switch (outline)
                 {
-                    case Surface surface:
+                    case Surface surface when surface.Edges.Length > 0:
                         {
                             var start = surface.Edges.First().Start;
                             if (JointPoint > 0) c.AppendLine($"""    <circle cx="{left + (start.X * r)}" cy="{baseline - (start.Y * r)}" r="{JointPoint}" fill="blue" />""");
@@ -122,7 +123,6 @@ public class SvgOutput : FontRegisterCommand
             Output.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{canvas.Width * r}" y2="{baseline}" stroke="red" />""");
         }
         Output.WriteLine("</svg>");
-        Output.Flush();
     }
 
     public static (float Width, float Left, float Ascent, float Descent) GetCanvasSize(IOpenTypeFont font, uint gid)

@@ -9,6 +9,7 @@ var (command, xargs) = CommandLine.Run<ICommand>([
         ("cmap", typeof(CMapList)),
         ("name", typeof(NameRecordList)),
         ("svg", typeof(SvgOutput)),
+        ("font-html", typeof(FontHtml)),
         ("font-list", typeof(FontList)),
         ("font-dump", typeof(FontDump)),
         ("font-export", typeof(FontExport)),
