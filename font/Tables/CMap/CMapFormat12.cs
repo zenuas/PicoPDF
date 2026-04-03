@@ -90,4 +90,9 @@ public class CMapFormat12 : ICMapFormat
             return start_gid + (code - start_code);
         };
     }
+
+    public Func<uint, int?> CreateGIDToChar()
+    {
+        return (gid) => (int?)(Groups.FindFirstOrNullValue(x => x.StartGlyphID <= gid && gid <= x.StartGlyphID + x.EndCharCode - x.StartCharCode)?.StartCharCode);
+    }
 }

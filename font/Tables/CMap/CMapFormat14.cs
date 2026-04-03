@@ -49,4 +49,9 @@ public class CMapFormat14 : ICMapFormat
     {
         return _ => 0;
     }
+
+    public Func<uint, int?> CreateGIDToChar()
+    {
+        return _ => null;
+    }
 }

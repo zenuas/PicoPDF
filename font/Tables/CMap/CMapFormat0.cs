@@ -49,4 +49,13 @@ public class CMapFormat0 : ICMapFormat
     }
 
     public Func<int, uint> CreateCharToGID() => (c) => GlyphIdArray[Encoding.ASCII.GetBytes([(char)c])[0]];
+
+    public Func<uint, int?> CreateGIDToChar() => (gid) =>
+    {
+        for (var i = 0; i < GlyphIdArray.Length; i++)
+        {
+            if (GlyphIdArray[i] == gid) return i;
+        }
+        return null;
+    };
 }

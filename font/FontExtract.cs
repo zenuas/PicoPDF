@@ -49,6 +49,7 @@ public static class FontExtract
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
+            GIDToChar = CreateGIDToChar(char_gids),
             GIDToOutline = gid => glyphs[gid].ToOutline(glyphs),
             Glyphs = glyphs,
             ColorBitmapData = null,
@@ -167,6 +168,7 @@ public static class FontExtract
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
+            GIDToChar = CreateGIDToChar(char_gids),
             GIDToOutline = _ => [],
             CompactFontFormat = cff,
             ColorBitmapData = null,
@@ -202,6 +204,7 @@ public static class FontExtract
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_hmtx.GetOrDefault(x)),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
+            GIDToChar = CreateGIDToChar(char_gids),
             GIDToOutline = _ => [],
             ColorBitmapData = null,
             ColorBitmapLocation = null,
@@ -285,6 +288,12 @@ public static class FontExtract
     {
         var dict = char_gids.ToDictionary(x => x.Char, x => x.GID);
         return c => dict.TryGetValue(c, out var gid) ? gid : 0;
+    }
+
+    public static Func<uint, int?> CreateGIDToChar((int Char, uint GID)[] char_gids)
+    {
+        var dict = char_gids.ToDictionary(x => x.GID, x => x.Char);
+        return gid => dict.TryGetValue(gid, out var c) ? c : null;
     }
 
     public static CMapTable CreateCMapTable(FontExtractOption opt, (int Char, uint GID)[] char_gids)

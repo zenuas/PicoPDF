@@ -136,4 +136,17 @@ public class CMapFormat4 : ICMapFormat
             return (uint)((GlyphIdArray[gindex] + IdDelta[seg]) & 0xFFFF);
         };
     }
+
+    public Func<uint, int?> CreateGIDToChar()
+    {
+        var char_to_gid = CreateCharToGID();
+        var dict = new Dictionary<uint, int>();
+        for (var i = 1; i <= char.MaxValue; i++)
+        {
+            var gid = char_to_gid(i);
+            if (gid > 0) dict.TryAdd(gid, i);
+        }
+
+        return (gid) => dict.TryGetValue(gid, out var c) ? c : null;
+    }
 }

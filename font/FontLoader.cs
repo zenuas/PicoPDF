@@ -95,6 +95,7 @@ public static class FontLoader
             IndexToLocFormat = head.IndexToLocFormat,
         };
 
+        var current_cmap = GetCurrentCMapFormat(cmap);
         return new()
         {
             PostScriptName = font.PostScriptName,
@@ -110,7 +111,8 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = GetCurrentCMapFormat(cmap).CreateCharToGID(),
+            CharToGID = current_cmap.CreateCharToGID(),
+            GIDToChar = current_cmap.CreateGIDToChar(),
             GIDToOutline = gid => glyf[(int)gid].ToOutline(glyf),
             Glyphs = glyf,
             ColorBitmapData = cbdt,
@@ -144,6 +146,7 @@ public static class FontLoader
         var svg = ReadTableRecord(font, "SVG ", stream, ScalableVectorGraphicsTable.ReadFrom);
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
+        var current_cmap = GetCurrentCMapFormat(cmap);
         return new()
         {
             PostScriptName = font.PostScriptName,
@@ -159,7 +162,8 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = GetCurrentCMapFormat(cmap).CreateCharToGID(),
+            CharToGID = current_cmap.CreateCharToGID(),
+            GIDToChar = current_cmap.CreateGIDToChar(),
             GIDToOutline = _ => [],
             CompactFontFormat = cff,
             ColorBitmapData = cbdt,
@@ -190,6 +194,7 @@ public static class FontLoader
         var svg = ReadTableRecord(font, "SVG ", stream, ScalableVectorGraphicsTable.ReadFrom);
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
+        var current_cmap = GetCurrentCMapFormat(cmap);
         return new()
         {
             PostScriptName = font.PostScriptName,
@@ -205,7 +210,8 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = GetCurrentCMapFormat(cmap).CreateCharToGID(),
+            CharToGID = current_cmap.CreateCharToGID(),
+            GIDToChar = current_cmap.CreateGIDToChar(),
             GIDToOutline = _ => [],
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,

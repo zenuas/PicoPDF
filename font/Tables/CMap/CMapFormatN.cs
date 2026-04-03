@@ -10,4 +10,6 @@ public class CMapFormatN : ICMapFormat
     public void WriteTo(Stream stream) { }
 
     public Func<int, uint> CreateCharToGID() => _ => 0;
+
+    public Func<uint, int?> CreateGIDToChar() => _ => null;
 }

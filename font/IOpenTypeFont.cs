@@ -14,6 +14,7 @@ public interface IOpenTypeFont : IOpenTypeHeader
     public HorizontalMetricsTable HorizontalMetrics { get; init; }
     public CMapTable CMap { get; init; }
     public Func<int, uint> CharToGID { get; init; }
+    public Func<uint, int?> GIDToChar { get; init; }
     public Func<uint, IOutline[]> GIDToOutline { get; init; }
 
     public ColorBitmapDataTable? ColorBitmapData { get; init; }
