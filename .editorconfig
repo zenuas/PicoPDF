@@ -1,5 +1,10 @@
 [*.cs]
 
+# C#の不適切な警告抑止
+
+dotnet_diagnostic.IDE0008.severity = none
+dotnet_diagnostic.IDE0120.severity = none
+
 # xUnitの不適切な警告抑止
 
 dotnet_diagnostic.xUnit1013.severity = none
