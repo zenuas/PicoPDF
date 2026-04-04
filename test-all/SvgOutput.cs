@@ -48,18 +48,20 @@ public class SvgOutput : FontRegisterCommand
     public void OutputSvg(IOpenTypeFont font, string str)
     {
         var cids = str.ToUtf32CharArray();
-        var canvas = cids.Select(font.CharToGID)
-            .Select(gid => GetCanvasSize(font, gid))
-            .Aggregate((a, b) => (a.Width + b.Width, 0, Math.Max(a.Ascent, b.Ascent), Math.Min(a.Descent, b.Descent)));
+        var width = cids.Select(font.CharToGID)
+            .Select(gid => GetCanvasWidth(font, gid).Width)
+            .Sum();
+        var ascent = font.HorizontalHeader.Ascender;
+        var descent = font.HorizontalHeader.Descender;
 
-        var r = 1 / (canvas.Ascent - canvas.Descent) * Point;
+        var r = 1f / (ascent - descent) * Point;
         var left = 0f;
-        var baseline = canvas.Ascent * r;
-        Output.WriteLine($"""<svg width="{canvas.Width * r}" height="{(canvas.Ascent - canvas.Descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
+        var baseline = ascent * r;
+        Output.WriteLine($"""<svg width="{width * r}" height="{(ascent - descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
         foreach (var cid in cids)
         {
             var gid = font.CharToGID(cid);
-            left -= Math.Min(0, GetCanvasSize(font, gid).Left) * r;
+            left -= Math.Min(0, GetCanvasWidth(font, gid).Left) * r;
             Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cid)} -->");
             var d = new StringBuilder();
             var c = new StringBuilder();
@@ -115,27 +117,27 @@ public class SvgOutput : FontRegisterCommand
             Output.WriteLine($"""    <path stroke="{ColorToHex(Stroke)}" fill="{ColorToHex(Fill)}" fill-rule="evenodd" """);
             Output.WriteLine($"""       d="{d}" />""");
             Output.Write(c);
-            left += GetCanvasSize(font, gid).Width * r;
+            left += GetCanvasWidth(font, gid).Width * r;
         }
         if (Debug)
         {
             Output.WriteLine($"    <!-- baseline -->");
-            Output.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{canvas.Width * r}" y2="{baseline}" stroke="red" />""");
+            Output.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{width * r}" y2="{baseline}" stroke="red" />""");
         }
         Output.WriteLine("</svg>");
     }
 
-    public static (float Width, float Left, float Ascent, float Descent) GetCanvasSize(IOpenTypeFont font, uint gid)
+    public static (float Width, float Left) GetCanvasWidth(IOpenTypeFont font, uint gid)
     {
         foreach (var outline in font.GIDToOutline(gid))
         {
             switch (outline)
             {
                 case Surface surface:
-                    return (surface.XMax + (surface.XMin < 0 ? -surface.XMin : 0), surface.XMin, surface.YMax, surface.YMin);
+                    return (surface.XMax + (surface.XMin < 0 ? -surface.XMin : 0), surface.XMin);
             }
         }
-        return (0, 0, 0, 0);
+        return (0, 0);
     }
 
     public static string ColorToHex(Color color) => color == Color.Transparent ? "transparent" : $"#{color.R:X2}{color.G:X2}{color.B:X2}";
