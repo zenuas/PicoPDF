@@ -1,4 +1,6 @@
-﻿namespace PicoPDF.TestAll;
+﻿using Mina.Extension;
+
+namespace PicoPDF.TestAll;
 
 public class FontHtml : SvgOutput
 {
@@ -6,12 +8,19 @@ public class FontHtml : SvgOutput
     {
         var fontreg = CreateFontRegister();
         var font = fontreg.LoadComplete(Font);
+        var name = font.Name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == 1)?.Name ?? font.PostScriptName;
 
         Output.WriteLine($"""
 <!doctype html>
 <head>
     <meta charset="utf-8">
-    <title>Font Html | {font.PostScriptName}</title>
+    <title>Font Html | {name}</title>
+    <style>
+    body
+    {@$"{{
+        font-family: ""{name}"";
+    }}"}
+    </style>
 </head>
 
 <body>
