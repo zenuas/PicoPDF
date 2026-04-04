@@ -32,7 +32,6 @@ public class FontHtml : SvgOutput
             if (gid == 0) continue;
 
             var s = char.ConvertFromUtf32(i);
-            var outline = font.GIDToOutline(gid);
             Output.WriteLine($"""
     <tr>
         <td>{gid}</td>
