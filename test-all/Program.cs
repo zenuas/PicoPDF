@@ -10,6 +10,7 @@ var (command, xargs) = CommandLine.Run<ICommand>([
         ("name", typeof(NameRecordList)),
         ("svg", typeof(SvgOutput)),
         ("font-html", typeof(FontHtml)),
+        ("fonts-all-html", typeof(FontsAllHtml)),
         ("font-list", typeof(FontList)),
         ("font-dump", typeof(FontDump)),
         ("font-export", typeof(FontExport)),
