@@ -23,7 +23,7 @@ public class FontDump : FontRegisterCommand
         }
     }
 
-    public void Dump(IOpenTypeFont font)
+    public static void Dump(IOpenTypeFont font)
     {
         var head = font.FontHeader;
         Console.WriteLine($"head,MajorVersion,{head.MajorVersion}");
