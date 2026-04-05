@@ -9,18 +9,14 @@ namespace PicoPDF.TestAll;
 
 public class FontDump : FontRegisterCommand
 {
-    [CommandOption("all-font-preview")]
-    public bool AllFontPreview { get; init; } = false;
+    [CommandOption("font")]
+    public string Font { get; init; } = "Meiryo Bold";
 
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister().Cast<FontRegister>();
-
-        foreach (var kv in fontreg.Fonts.Where(x => AllFontPreview || x.Key == FontRegister.GetFontFilePath(x.Value.Value.Path)))
-        {
-            var font = fontreg.LoadComplete(FontRegister.GetFontFilePath(kv.Value.Value.Path));
-            Dump(font);
-        }
+        var font = fontreg.LoadComplete(Font);
+        Dump(font);
     }
 
     public static void Dump(IOpenTypeFont font)
