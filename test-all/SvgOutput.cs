@@ -40,14 +40,13 @@ public class SvgOutput : FontRegisterCommand
         var font = fontreg.LoadComplete(Font);
         foreach (var arg in args)
         {
-            OutputSvg(font, arg);
+            OutputSvg(font, [.. arg.ToUtf32CharArray()]);
         }
         Output.Flush();
     }
 
-    public void OutputSvg(IOpenTypeFont font, string str)
+    public void OutputSvg(IOpenTypeFont font, int[] cids)
     {
-        var cids = str.ToUtf32CharArray();
         var width = cids.Select(font.CharToGID)
             .Select(gid => GetCanvasWidth(font, gid).Width)
             .Sum();

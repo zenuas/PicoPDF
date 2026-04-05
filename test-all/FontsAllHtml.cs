@@ -64,7 +64,7 @@ public class FontsAllHtml : SvgOutput
         <td>U+{(Char <= 0xFFFF ? Char.ToString("x4") : Char.ToString("x6"))}</td>
         <td>
 """);
-            OutputSvg(font, s);
+            OutputSvg(font, [Char]);
             Output.WriteLine("""
         </td>
     </tr>
