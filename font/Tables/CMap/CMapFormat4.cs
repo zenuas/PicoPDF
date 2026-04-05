@@ -116,7 +116,7 @@ public class CMapFormat4 : ICMapFormat
         return [.. range];
     }
 
-    public static readonly ComparerBinder<(int Start, int End)> RangeComparer = new() { Compare = (a, b) => a.End < b.End ? -1 : a.Start > b.Start ? 1 : 0 };
+    public static readonly ComparerBinder<(int Start, int End)> RangeComparer = new() { Compare = (a, b) => a.End < b.Start ? -1 : a.Start > b.End ? 1 : 0 };
 
     public Func<int, uint> CreateCharToGID()
     {

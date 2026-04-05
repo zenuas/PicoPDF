@@ -77,7 +77,7 @@ public class CMapFormat12 : ICMapFormat
         }
     }
 
-    public static readonly ComparerBinder<(uint StartCharCode, uint EndCharCode, uint StartGlyphID)> RangeComparer = new() { Compare = (a, b) => a.StartCharCode < b.StartCharCode ? -1 : a.EndCharCode > b.EndCharCode ? 1 : 0 };
+    public static readonly ComparerBinder<(uint StartCharCode, uint EndCharCode, uint StartGlyphID)> RangeComparer = new() { Compare = (a, b) => a.EndCharCode < b.StartCharCode ? -1 : a.StartCharCode > b.EndCharCode ? 1 : 0 };
 
     public Func<int, uint> CreateCharToGID()
     {
