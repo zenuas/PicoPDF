@@ -39,7 +39,7 @@ public class CompositeGlyph : IGlyph
 
         if (composite.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
         {
-            transform.M11 = transform.M22 = composite.Scale;
+            transform.M11 = transform.M22 = composite.XScale;
         }
         else if (composite.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
         {
@@ -124,14 +124,13 @@ public class CompositeGlyph : IGlyph
                 }
             }
 
-            F2DOT14 scale = 0;
             F2DOT14 xscale = 0;
             F2DOT14 yscale = 0;
             F2DOT14 scale01 = 0;
             F2DOT14 scale10 = 0;
             if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
             {
-                scale = stream.ReadF2DOT14();
+                xscale = stream.ReadF2DOT14();
             }
             else if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
             {
@@ -151,7 +150,6 @@ public class CompositeGlyph : IGlyph
                 GlyphIndex = glyph_index,
                 Argument1 = arg1,
                 Argument2 = arg2,
-                Scale = scale,
                 XScale = xscale,
                 YScale = yscale,
                 Scale01 = scale01,
@@ -208,7 +206,7 @@ public class CompositeGlyph : IGlyph
 
             if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
             {
-                stream.WriteF2DOT14(glyph.Scale);
+                stream.WriteF2DOT14(glyph.XScale);
             }
             else if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
             {
