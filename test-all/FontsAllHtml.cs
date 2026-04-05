@@ -1,6 +1,7 @@
 ﻿using Mina.Command;
 using Mina.Extension;
 using PicoPDF.Pdf.Font;
+using System;
 using System.Linq;
 
 namespace PicoPDF.TestAll;
@@ -8,6 +9,19 @@ namespace PicoPDF.TestAll;
 public class FontsAllHtml : SvgOutput
 {
     [CommandOption("char"), CommandOption('c')]
+    public void SetChar(string s)
+    {
+        if (s.Length == 0) return;
+        Char = s.SubstringAsCount(0, 2) switch
+        {
+            "0x" => Convert.ToInt32(s[2..], 16),
+            "0o" => Convert.ToInt32(s[2..], 8),
+            "0b" => Convert.ToInt32(s[2..], 2),
+            "U+" => Convert.ToInt32(s[2..], 16),
+            _ => int.TryParse(s, out var n) ? n : char.ConvertToUtf32(s, 0),
+        };
+    }
+
     public int Char { get; set; } = 'A';
 
     public override void Run(string[] args)
