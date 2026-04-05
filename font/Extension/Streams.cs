@@ -19,7 +19,7 @@ public static class Streams
     public static void WriteFWORD(this Stream self, short n) => self.WriteShortByBigEndian(n);
     public static void WriteUFWORD(this Stream self, ushort n) => self.WriteUShortByBigEndian(n);
     public static void WriteF2DOT14(this Stream self, F2DOT14 n) => self.WriteUShortByBigEndian(n.Value);
-    public static void WriteLONGDATETIME(this Stream self, long n) => self.WriteLongByBigEndian(n);
+    public static void WriteLONGDATETIME(this Stream self, LONGDATETIME n) => self.WriteLongByBigEndian(n.Value);
     public static void WriteTag(this Stream self, string s) => self.Write(s);
 
     public static int Read3BytesByLittleEndian(this Stream self) { Span<byte> buffer = stackalloc byte[3]; self.ReadExactly(buffer); return BinaryPrimitives.ReadInt24LittleEndian(buffer); }
@@ -33,7 +33,7 @@ public static class Streams
     public static short ReadFWORD(this Stream self) => self.ReadShortByBigEndian();
     public static ushort ReadUFWORD(this Stream self) => self.ReadUShortByBigEndian();
     public static F2DOT14 ReadF2DOT14(this Stream self) => self.ReadUShortByBigEndian();
-    public static long ReadLONGDATETIME(this Stream self) => self.ReadLongByBigEndian();
+    public static LONGDATETIME ReadLONGDATETIME(this Stream self) => self.ReadLongByBigEndian();
     public static string ReadTag(this Stream self) => Encoding.ASCII.GetString(self.ReadExactly(4));
 
     public static void WriteInt24LittleEndian(Span<byte> source, int value)

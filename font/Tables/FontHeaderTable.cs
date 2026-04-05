@@ -13,8 +13,8 @@ public class FontHeaderTable : IExportable
     public required uint MagicNumber { get; init; }
     public required ushort Flags { get; init; }
     public required ushort UnitsPerEm { get; init; }
-    public required long Created { get; init; }
-    public required long Modified { get; init; }
+    public required LONGDATETIME Created { get; init; }
+    public required LONGDATETIME Modified { get; init; }
     public required short XMin { get; init; }
     public required short YMin { get; init; }
     public required short XMax { get; init; }

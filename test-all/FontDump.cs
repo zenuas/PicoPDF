@@ -33,8 +33,8 @@ public class FontDump : FontRegisterCommand
         Console.WriteLine($"head,MagicNumber,{head.MagicNumber}");
         Console.WriteLine($"head,Flags,{head.Flags}");
         Console.WriteLine($"head,UnitsPerEm,{head.UnitsPerEm}");
-        Console.WriteLine($"head,Created,{head.Created}");
-        Console.WriteLine($"head,Modified,{head.Modified}");
+        Console.WriteLine($"head,Created,{head.Created.ToDateTime()}");
+        Console.WriteLine($"head,Modified,{head.Modified.ToDateTime()}");
         Console.WriteLine($"head,XMin,{head.XMin}");
         Console.WriteLine($"head,YMin,{head.YMin}");
         Console.WriteLine($"head,XMax,{head.XMax}");
