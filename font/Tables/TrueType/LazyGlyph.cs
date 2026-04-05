@@ -28,8 +28,8 @@ public class LazyGlyph : IReadOnlyList<IGlyph>, IDisposable
             if (GlyphCache.TryGetValue(gid, out var cache)) return cache;
 
             Stream.Seek(IndexToLocationTableOffset + (IndexToLocFormat == 0 ? gid * 2 : gid * 4), SeekOrigin.Begin);
-            var glyph_offset = IndexToLocFormat == 0 ? Stream.ReadOffset16() : Stream.ReadOffset32();
-            var next_offset = IndexToLocFormat == 0 ? Stream.ReadOffset16() : Stream.ReadOffset32();
+            var glyph_offset = IndexToLocFormat == 0 ? (uint)(Stream.ReadOffset16() * 2) : Stream.ReadOffset32();
+            var next_offset = IndexToLocFormat == 0 ? (uint)(Stream.ReadOffset16() * 2) : Stream.ReadOffset32();
 
             if (glyph_offset == next_offset) return new NotdefGlyph();
 
