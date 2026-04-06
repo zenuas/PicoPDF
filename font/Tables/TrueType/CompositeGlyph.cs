@@ -87,57 +87,27 @@ public class CompositeGlyph : IGlyph
         var ymax = stream.ReadShortByBigEndian();
 
         var records = new List<ICompositeGlyphRecord>();
-        ushort instruction_length = 0;
-        byte[]? instructions = null;
         while (true)
         {
             var flags = (CompositeGlyphFlags)stream.ReadUShortByBigEndian();
             var glyph_index = stream.ReadUShortByBigEndian();
-            int arg1;
-            int arg2;
 
             var isargs_are_xy_values = flags.HasFlag(CompositeGlyphFlags.ARGS_ARE_XY_VALUES);
-            if (flags.HasFlag(CompositeGlyphFlags.ARG_1_AND_2_ARE_WORDS))
-            {
-                if (isargs_are_xy_values)
-                {
-                    arg1 = stream.ReadShortByBigEndian();
-                    arg2 = stream.ReadShortByBigEndian();
-                }
-                else
-                {
-                    arg1 = stream.ReadUShortByBigEndian();
-                    arg2 = stream.ReadUShortByBigEndian();
-                }
-            }
-            else
-            {
-                if (isargs_are_xy_values)
-                {
-                    arg1 = stream.ReadSByte();
-                    arg2 = stream.ReadSByte();
-                }
-                else
-                {
-                    arg1 = stream.ReadUByte();
-                    arg2 = stream.ReadUByte();
-                }
-            }
+            var (arg1, arg2) = flags.HasFlag(CompositeGlyphFlags.ARG_1_AND_2_ARE_WORDS)
+                ? (isargs_are_xy_values ? ((int)stream.ReadShortByBigEndian(), (int)stream.ReadShortByBigEndian()) : (stream.ReadUShortByBigEndian(), stream.ReadUShortByBigEndian()))
+                : (isargs_are_xy_values ? (stream.ReadSByte(), stream.ReadSByte()) : (stream.ReadUByte(), stream.ReadUByte()));
 
-            if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
+            records.Add(true switch
             {
-                records.Add(new CompositeGlyphScaleRecord()
+                _ when flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE) => new CompositeGlyphScaleRecord()
                 {
                     Flags = flags,
                     GlyphIndex = glyph_index,
                     Argument1 = arg1,
                     Argument2 = arg2,
                     Scale = stream.ReadF2DOT14(),
-                });
-            }
-            else if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
-            {
-                records.Add(new CompositeGlyphXYScaleRecord()
+                },
+                _ when flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE) => new CompositeGlyphXYScaleRecord()
                 {
                     Flags = flags,
                     GlyphIndex = glyph_index,
@@ -145,11 +115,8 @@ public class CompositeGlyph : IGlyph
                     Argument2 = arg2,
                     XScale = stream.ReadF2DOT14(),
                     YScale = stream.ReadF2DOT14(),
-                });
-            }
-            else if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO))
-            {
-                records.Add(new CompositeGlyphMatrix2x2Record()
+                },
+                _ when flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO) => new CompositeGlyphMatrix2x2Record()
                 {
                     Flags = flags,
                     GlyphIndex = glyph_index,
@@ -159,41 +126,50 @@ public class CompositeGlyph : IGlyph
                     Scale01 = stream.ReadF2DOT14(),
                     Scale10 = stream.ReadF2DOT14(),
                     YScale = stream.ReadF2DOT14(),
-                });
-            }
-            else
-            {
-                records.Add(new CompositeGlyphRecord()
+                },
+                _ => new CompositeGlyphRecord()
                 {
                     Flags = flags,
                     GlyphIndex = glyph_index,
                     Argument1 = arg1,
                     Argument2 = arg2,
-                });
-            }
+                },
+            });
 
             if (!flags.HasFlag(CompositeGlyphFlags.MORE_COMPONENTS))
             {
                 if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_INSTRUCTIONS))
                 {
-                    instruction_length = stream.ReadUShortByBigEndian();
-                    instructions = [.. Lists.Repeat(stream.ReadUByte).Take(instruction_length)];
+                    var instruction_length = stream.ReadUShortByBigEndian();
+
+                    return new()
+                    {
+                        NumberOfContours = number_of_contours,
+                        XMin = xmin,
+                        YMin = ymin,
+                        XMax = xmax,
+                        YMax = ymax,
+                        CompositeGlyphRecords = [.. records],
+                        InstructionLength = instruction_length,
+                        Instructions = [.. Lists.Repeat(stream.ReadUByte).Take(instruction_length)],
+                    };
                 }
-                break;
+                else
+                {
+                    return new()
+                    {
+                        NumberOfContours = number_of_contours,
+                        XMin = xmin,
+                        YMin = ymin,
+                        XMax = xmax,
+                        YMax = ymax,
+                        CompositeGlyphRecords = [.. records],
+                        InstructionLength = 0,
+                        Instructions = [],
+                    };
+                }
             }
         }
-
-        return new()
-        {
-            NumberOfContours = number_of_contours,
-            XMin = xmin,
-            YMin = ymin,
-            XMax = xmax,
-            YMax = ymax,
-            CompositeGlyphRecords = [.. records],
-            InstructionLength = instruction_length,
-            Instructions = instructions ?? [],
-        };
     }
 
     public void WriteTo(Stream stream)
