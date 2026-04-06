@@ -94,8 +94,12 @@ public class CompositeGlyph : IGlyph
 
             var isargs_are_xy_values = flags.HasFlag(CompositeGlyphFlags.ARGS_ARE_XY_VALUES);
             var (arg1, arg2) = flags.HasFlag(CompositeGlyphFlags.ARG_1_AND_2_ARE_WORDS)
-                ? (isargs_are_xy_values ? ((int)stream.ReadShortByBigEndian(), (int)stream.ReadShortByBigEndian()) : (stream.ReadUShortByBigEndian(), stream.ReadUShortByBigEndian()))
-                : (isargs_are_xy_values ? (stream.ReadSByte(), stream.ReadSByte()) : (stream.ReadUByte(), stream.ReadUByte()));
+                ? (isargs_are_xy_values
+                    ? ((int)stream.ReadShortByBigEndian(), (int)stream.ReadShortByBigEndian())
+                    : (stream.ReadUShortByBigEndian(), stream.ReadUShortByBigEndian()))
+                : (isargs_are_xy_values
+                    ? (stream.ReadSByte(), stream.ReadSByte())
+                    : (stream.ReadUByte(), stream.ReadUByte()));
 
             records.Add(true switch
             {
