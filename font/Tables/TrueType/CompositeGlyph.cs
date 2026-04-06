@@ -15,7 +15,7 @@ public class CompositeGlyph : IGlyph
     public required short YMin { get; init; }
     public required short XMax { get; init; }
     public required short YMax { get; init; }
-    public required CompositeGlyphRecord[] CompositeGlyphRecords { get; init; }
+    public required ICompositeGlyphRecord[] CompositeGlyphRecords { get; init; }
     public required ushort InstructionLength { get; init; }
     public required byte[] Instructions { get; init; }
 
@@ -32,26 +32,26 @@ public class CompositeGlyph : IGlyph
         return [.. outlines];
     }
 
-    public static Surface Composite(CompositeGlyphRecord composite, Surface surface, float xmin, float ymin, float xmax, float ymax)
+    public static Surface Composite(ICompositeGlyphRecord composite, Surface surface, float xmin, float ymin, float xmax, float ymax)
     {
         var transform = Matrix3x2.Identity;
         transform.Translation = new Vector2(composite.Argument1, composite.Argument2);
 
-        if (composite.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
+        if (composite is CompositeGlyphScaleRecord scale)
         {
-            transform.M11 = transform.M22 = composite.XScale;
+            transform.M11 = transform.M22 = scale.Scale;
         }
-        else if (composite.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
+        else if (composite is CompositeGlyphXYScaleRecord xyscale)
         {
-            transform.M11 = composite.XScale;
-            transform.M22 = composite.YScale;
+            transform.M11 = xyscale.XScale;
+            transform.M22 = xyscale.YScale;
         }
-        else if (composite.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO))
+        else if (composite is CompositeGlyphMatrix2x2Record matrix)
         {
-            transform.M11 = composite.XScale;
-            transform.M12 = composite.Scale01;
-            transform.M21 = composite.Scale10;
-            transform.M22 = composite.YScale;
+            transform.M11 = matrix.XScale;
+            transform.M12 = matrix.Scale01;
+            transform.M21 = matrix.Scale10;
+            transform.M22 = matrix.YScale;
         }
 
         return new()
@@ -86,7 +86,7 @@ public class CompositeGlyph : IGlyph
         var xmax = stream.ReadShortByBigEndian();
         var ymax = stream.ReadShortByBigEndian();
 
-        var records = new List<CompositeGlyphRecord>();
+        var records = new List<ICompositeGlyphRecord>();
         ushort instruction_length = 0;
         byte[]? instructions = null;
         while (true)
@@ -124,37 +124,53 @@ public class CompositeGlyph : IGlyph
                 }
             }
 
-            F2DOT14 xscale = 0;
-            F2DOT14 yscale = 0;
-            F2DOT14 scale01 = 0;
-            F2DOT14 scale10 = 0;
             if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
             {
-                xscale = stream.ReadF2DOT14();
+                records.Add(new CompositeGlyphScaleRecord()
+                {
+                    Flags = flags,
+                    GlyphIndex = glyph_index,
+                    Argument1 = arg1,
+                    Argument2 = arg2,
+                    Scale = stream.ReadF2DOT14(),
+                });
             }
             else if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
             {
-                xscale = stream.ReadF2DOT14();
-                yscale = stream.ReadF2DOT14();
+                records.Add(new CompositeGlyphXYScaleRecord()
+                {
+                    Flags = flags,
+                    GlyphIndex = glyph_index,
+                    Argument1 = arg1,
+                    Argument2 = arg2,
+                    XScale = stream.ReadF2DOT14(),
+                    YScale = stream.ReadF2DOT14(),
+                });
             }
             else if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO))
             {
-                xscale = stream.ReadF2DOT14();
-                scale01 = stream.ReadF2DOT14();
-                scale10 = stream.ReadF2DOT14();
-                yscale = stream.ReadF2DOT14();
+                records.Add(new CompositeGlyphMatrix2x2Record()
+                {
+                    Flags = flags,
+                    GlyphIndex = glyph_index,
+                    Argument1 = arg1,
+                    Argument2 = arg2,
+                    XScale = stream.ReadF2DOT14(),
+                    Scale01 = stream.ReadF2DOT14(),
+                    Scale10 = stream.ReadF2DOT14(),
+                    YScale = stream.ReadF2DOT14(),
+                });
             }
-            records.Add(new()
+            else
             {
-                Flags = flags,
-                GlyphIndex = glyph_index,
-                Argument1 = arg1,
-                Argument2 = arg2,
-                XScale = xscale,
-                YScale = yscale,
-                Scale01 = scale01,
-                Scale10 = scale10,
-            });
+                records.Add(new CompositeGlyphRecord()
+                {
+                    Flags = flags,
+                    GlyphIndex = glyph_index,
+                    Argument1 = arg1,
+                    Argument2 = arg2,
+                });
+            }
 
             if (!flags.HasFlag(CompositeGlyphFlags.MORE_COMPONENTS))
             {
@@ -204,21 +220,21 @@ public class CompositeGlyph : IGlyph
                 stream.WriteByte((byte)glyph.Argument2);
             }
 
-            if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_SCALE))
+            if (glyph is CompositeGlyphScaleRecord scale)
             {
-                stream.WriteF2DOT14(glyph.XScale);
+                stream.WriteF2DOT14(scale.Scale);
             }
-            else if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_AN_X_AND_Y_SCALE))
+            else if (glyph is CompositeGlyphXYScaleRecord xyscale)
             {
-                stream.WriteF2DOT14(glyph.XScale);
-                stream.WriteF2DOT14(glyph.YScale);
+                stream.WriteF2DOT14(xyscale.XScale);
+                stream.WriteF2DOT14(xyscale.YScale);
             }
-            else if (glyph.Flags.HasFlag(CompositeGlyphFlags.WE_HAVE_A_TWO_BY_TWO))
+            else if (glyph is CompositeGlyphMatrix2x2Record matrix)
             {
-                stream.WriteF2DOT14(glyph.XScale);
-                stream.WriteF2DOT14(glyph.Scale01);
-                stream.WriteF2DOT14(glyph.Scale10);
-                stream.WriteF2DOT14(glyph.YScale);
+                stream.WriteF2DOT14(matrix.XScale);
+                stream.WriteF2DOT14(matrix.Scale01);
+                stream.WriteF2DOT14(matrix.Scale10);
+                stream.WriteF2DOT14(matrix.YScale);
             }
         }
 
