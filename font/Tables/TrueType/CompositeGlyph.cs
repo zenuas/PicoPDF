@@ -142,36 +142,18 @@ public class CompositeGlyph : IGlyph
 
             if (!flags.HasFlag(CompositeGlyphFlags.MORE_COMPONENTS))
             {
-                if (flags.HasFlag(CompositeGlyphFlags.WE_HAVE_INSTRUCTIONS))
+                var instruction_length = flags.HasFlag(CompositeGlyphFlags.WE_HAVE_INSTRUCTIONS) ? stream.ReadUShortByBigEndian() : 0;
+                return new()
                 {
-                    var instruction_length = stream.ReadUShortByBigEndian();
-
-                    return new()
-                    {
-                        NumberOfContours = number_of_contours,
-                        XMin = xmin,
-                        YMin = ymin,
-                        XMax = xmax,
-                        YMax = ymax,
-                        CompositeGlyphRecords = [.. records],
-                        InstructionLength = instruction_length,
-                        Instructions = [.. Lists.Repeat(stream.ReadUByte).Take(instruction_length)],
-                    };
-                }
-                else
-                {
-                    return new()
-                    {
-                        NumberOfContours = number_of_contours,
-                        XMin = xmin,
-                        YMin = ymin,
-                        XMax = xmax,
-                        YMax = ymax,
-                        CompositeGlyphRecords = [.. records],
-                        InstructionLength = 0,
-                        Instructions = [],
-                    };
-                }
+                    NumberOfContours = number_of_contours,
+                    XMin = xmin,
+                    YMin = ymin,
+                    XMax = xmax,
+                    YMax = ymax,
+                    CompositeGlyphRecords = [.. records],
+                    InstructionLength = (ushort)instruction_length,
+                    Instructions = [.. Lists.Repeat(stream.ReadUByte).Take(instruction_length)],
+                };
             }
         }
     }
