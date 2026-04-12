@@ -162,7 +162,7 @@ public static class FontLoader
             HorizontalMetrics = hmtx,
             CMap = cmap,
             CharToGID = current_cmap.CreateCharToGID(),
-            GIDToOutline = _ => [],
+            GIDToOutline = cff.ToOutline,
             CompactFontFormat = cff,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,

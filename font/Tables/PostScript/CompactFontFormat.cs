@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using OpenType.Outline;
 using System;
 using System.IO;
 using System.Linq;
@@ -121,4 +122,10 @@ public class CompactFontFormat : IExportable
     }
 
     public static void WriteIndexDataBody(Stream stream, byte[][] index) => index.Each(x => stream.Write(x));
+
+    public IOutline[] ToOutline(uint gid)
+    {
+        var char_string = TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0];
+        return [];
+    }
 }

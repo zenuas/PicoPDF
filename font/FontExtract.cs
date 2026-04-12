@@ -167,7 +167,7 @@ public static class FontExtract
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
-            GIDToOutline = _ => [],
+            GIDToOutline = cff.ToOutline,
             CompactFontFormat = cff,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
