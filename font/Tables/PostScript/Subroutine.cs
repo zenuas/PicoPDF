@@ -1,10 +1,93 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace OpenType.Tables.PostScript;
 
 public static class Subroutine
 {
+    public static void EnumOperands(Span<byte> charstring, Action<CharstringCommandCodes, Stack<float>> f)
+    {
+        var stack = new Stack<float>();
+        for (var i = 0; i < charstring.Length; i++)
+        {
+            var c = charstring[i];
+            if (c < 32)
+            {
+                var ope = (CharstringCommandCodes)(c == (int)CharstringCommandCodes.Escape ? ((int)CharstringCommandCodes.Escape * 100) + charstring[++i] : c);
+                switch (ope)
+                {
+                    case CharstringCommandCodes.Hstem:
+                    case CharstringCommandCodes.Vstem:
+                    case CharstringCommandCodes.Vmoveto:
+                    case CharstringCommandCodes.Rlineto:
+                    case CharstringCommandCodes.Hlineto:
+                    case CharstringCommandCodes.Vlineto:
+                    case CharstringCommandCodes.Rrcurveto:
+                    case CharstringCommandCodes.Hstemhm:
+                    case CharstringCommandCodes.Hintmask:
+                    case CharstringCommandCodes.Cntrmask:
+                    case CharstringCommandCodes.Rmoveto:
+                    case CharstringCommandCodes.Hmoveto:
+                    case CharstringCommandCodes.Vstemhm:
+                    case CharstringCommandCodes.Rcurveline:
+                    case CharstringCommandCodes.Rlinecurve:
+                    case CharstringCommandCodes.Vvcurveto:
+                    case CharstringCommandCodes.Hhcurveto:
+                    case CharstringCommandCodes.Shortint:
+                    case CharstringCommandCodes.Vhcurveto:
+                    case CharstringCommandCodes.Hvcurveto:
+                        f(ope, stack);
+                        stack.Clear();
+                        break;
+
+                    case CharstringCommandCodes.And:
+                    case CharstringCommandCodes.Or:
+                    case CharstringCommandCodes.Not:
+                    case CharstringCommandCodes.Abs:
+                    case CharstringCommandCodes.Add:
+                    case CharstringCommandCodes.Sub:
+                    case CharstringCommandCodes.Div:
+                    case CharstringCommandCodes.Neg:
+                    case CharstringCommandCodes.Eq:
+                    case CharstringCommandCodes.Drop:
+                    case CharstringCommandCodes.Put:
+                    case CharstringCommandCodes.Get:
+                    case CharstringCommandCodes.Ifelse:
+                    case CharstringCommandCodes.Random:
+                    case CharstringCommandCodes.Mul:
+                    case CharstringCommandCodes.Sqrt:
+                    case CharstringCommandCodes.Dup:
+                    case CharstringCommandCodes.Exch:
+                    case CharstringCommandCodes.Index:
+                    case CharstringCommandCodes.Roll:
+                    case CharstringCommandCodes.Hflex:
+                    case CharstringCommandCodes.Flex:
+                    case CharstringCommandCodes.Hflex1:
+                    case CharstringCommandCodes.Flex1:
+                        f(ope, stack);
+                        break;
+
+                    case CharstringCommandCodes.Return:
+                    case CharstringCommandCodes.Endchar:
+                        return;
+
+                    case CharstringCommandCodes.Callsubr:
+                    case CharstringCommandCodes.Callgsubr:
+                        f(ope, stack);
+                        break;
+
+                    default:
+                        throw new();
+                }
+            }
+            else
+            {
+                stack.Push(CharstringNumber(charstring[i..Math.Min(charstring.Length, 1 + (i += NextNumberBytes(c)))]));
+            }
+        }
+    }
+
     public static void EnumSubroutines(Span<byte> charstring, byte[][]? local_subr, byte[][] global_subr, Func<bool, int, bool> f)
     {
         var local_bias = GetSubroutineBias(local_subr?.Length ?? 0);
