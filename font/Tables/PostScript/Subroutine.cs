@@ -6,9 +6,21 @@ namespace OpenType.Tables.PostScript;
 
 public static class Subroutine
 {
-    public static void EnumOperands(Span<byte> charstring, Action<CharstringCommandCodes, Stack<float>> f)
+    extension(List<float> self)
     {
-        var stack = new Stack<float>();
+        public void Push(float value) => self.Add(value);
+        public float Pop()
+        {
+            var value = self[^1];
+            self.RemoveAt(self.Count - 1);
+            return value;
+        }
+        public float Peek() => self[^1];
+    }
+
+    public static void EnumOperands(Span<byte> charstring, Action<CharstringCommandCodes, List<float>> f)
+    {
+        var stack = new List<float>();
         for (var i = 0; i < charstring.Length; i++)
         {
             var c = charstring[i];
@@ -85,6 +97,116 @@ public static class Subroutine
             {
                 stack.Push(CharstringNumber(charstring[i..Math.Min(charstring.Length, 1 + (i += NextNumberBytes(c)))]));
             }
+        }
+    }
+
+    public static void DefaultOperandActionWithoutCallsubr(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)
+    {
+        switch (ope)
+        {
+            case CharstringCommandCodes.Hstem:
+            case CharstringCommandCodes.Vstem:
+            case CharstringCommandCodes.Vmoveto:
+            case CharstringCommandCodes.Rlineto:
+            case CharstringCommandCodes.Hlineto:
+            case CharstringCommandCodes.Vlineto:
+            case CharstringCommandCodes.Rrcurveto:
+            case CharstringCommandCodes.Hstemhm:
+            case CharstringCommandCodes.Hintmask:
+            case CharstringCommandCodes.Cntrmask:
+            case CharstringCommandCodes.Rmoveto:
+            case CharstringCommandCodes.Hmoveto:
+            case CharstringCommandCodes.Vstemhm:
+            case CharstringCommandCodes.Rcurveline:
+            case CharstringCommandCodes.Rlinecurve:
+            case CharstringCommandCodes.Vvcurveto:
+            case CharstringCommandCodes.Hhcurveto:
+            case CharstringCommandCodes.Shortint:
+            case CharstringCommandCodes.Vhcurveto:
+            case CharstringCommandCodes.Hvcurveto:
+                break;
+
+            case CharstringCommandCodes.And: stack.Add(stack.Pop() != 0 && stack.Pop() != 0 ? 1 : 0); break;
+            case CharstringCommandCodes.Or: stack.Push(stack.Pop() != 0 || stack.Pop() != 0 ? 1 : 0); break;
+            case CharstringCommandCodes.Not: stack.Push(stack.Pop() != 0 ? 0 : 1); break;
+            case CharstringCommandCodes.Abs: stack.Push(Math.Abs(stack.Pop())); break;
+            case CharstringCommandCodes.Add: stack.Push(stack.Pop() + stack.Pop()); break;
+            case CharstringCommandCodes.Sub: stack.Push(stack.Pop() - stack.Pop()); break;
+            case CharstringCommandCodes.Div: stack.Push(stack.Pop() / stack.Pop()); break;
+            case CharstringCommandCodes.Neg: stack.Push(-stack.Pop()); break;
+            case CharstringCommandCodes.Eq: stack.Push(stack.Pop() == stack.Pop() ? 1 : 0); break;
+            case CharstringCommandCodes.Drop: stack.Pop(); break;
+
+            case CharstringCommandCodes.Put:
+                {
+                    var value = stack.Pop();
+                    var index = (int)stack.Pop();
+                    frame.TransientArray[index] = value;
+                    break;
+                }
+
+            case CharstringCommandCodes.Get:
+                {
+                    var index = (int)stack.Pop();
+                    _ = frame.TransientArray.TryGetValue(index, out var value);
+                    stack.Push(value);
+                    frame.TransientArray.Remove(index);
+                    break;
+                }
+
+            case CharstringCommandCodes.Ifelse:
+                {
+                    var then = stack.Pop();
+                    var else_ = stack.Pop();
+                    var left = stack.Pop();
+                    var right = stack.Pop();
+                    stack.Push(left <= right ? then : else_);
+                    break;
+                }
+
+            case CharstringCommandCodes.Random: stack.Push(Random.Shared.NextSingle()); break;
+            case CharstringCommandCodes.Mul: stack.Push(stack.Pop() * stack.Pop()); break;
+            case CharstringCommandCodes.Sqrt: stack.Push(MathF.Sqrt(stack.Pop())); break;
+            case CharstringCommandCodes.Dup: stack.Push(stack.Peek()); break;
+
+            case CharstringCommandCodes.Exch:
+                {
+                    var value1 = stack.Pop();
+                    var value2 = stack.Pop();
+                    stack.Push(value1);
+                    stack.Push(value2);
+                    break;
+                }
+
+            case CharstringCommandCodes.Index:
+                {
+                    var index = (int)stack.Pop();
+                    if (index < 0)
+                    {
+                        stack.Push(stack.Peek());
+                    }
+                    else
+                    {
+                        stack.Push(stack[^(index + 1)]);
+                    }
+                    break;
+                }
+
+            case CharstringCommandCodes.Roll:
+            case CharstringCommandCodes.Hflex:
+            case CharstringCommandCodes.Flex:
+            case CharstringCommandCodes.Hflex1:
+            case CharstringCommandCodes.Flex1:
+                break;
+
+            case CharstringCommandCodes.Return:
+            case CharstringCommandCodes.Endchar:
+                break;
+
+            case CharstringCommandCodes.Callsubr:
+            case CharstringCommandCodes.Callgsubr:
+            default:
+                throw new();
         }
     }
 
