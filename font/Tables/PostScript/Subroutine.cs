@@ -211,6 +211,16 @@ public static class Subroutine
                     }
                     else
                     {
+                        while (j < 0)
+                        {
+                            var value = stack[^n];
+                            for (var i = 0; i < n - 1; i++)
+                            {
+                                stack[^(n - i)] = stack[^(n - i - 1)];
+                            }
+                            stack[^1] = value;
+                            j++;
+                        }
                     }
                     break;
                 }
