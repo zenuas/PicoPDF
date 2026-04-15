@@ -193,6 +193,28 @@ public static class Subroutine
                 }
 
             case CharstringCommandCodes.Roll:
+                {
+                    var n = (int)stack.Pop();
+                    var j = (int)stack.Pop();
+                    if (j >= 0)
+                    {
+                        while (j > 0)
+                        {
+                            var value = stack[^1];
+                            for (var i = 0; i < n - 1; i++)
+                            {
+                                stack[^(i + 1)] = stack[^(i + 2)];
+                            }
+                            stack[^n] = value;
+                            j--;
+                        }
+                    }
+                    else
+                    {
+                    }
+                    break;
+                }
+
             case CharstringCommandCodes.Hflex:
             case CharstringCommandCodes.Flex:
             case CharstringCommandCodes.Hflex1:

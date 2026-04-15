@@ -141,4 +141,32 @@ public class SubroutineTest
         Assert.Equal(EnumSubroutinesTest([34, 29, 14]), 0b1100_00000000); // 2 callgsubr
         Assert.Equal(EnumSubroutinesTest([35, 29, 14]), 0b1000_00000000); // 3 callgsubr
     }
+
+    [Fact]
+    public void DefaultOperandActionWithoutCallsubr_Roll()
+    {
+        var stack = new List<float> { 0, 1, 2, 3, 4, /* j */1, /* n */3 };
+        Subroutine.DefaultOperandActionWithoutCallsubr(CharstringCommandCodes.Roll, stack, null!);
+        Assert.Equal(stack, [0, 1, 4, 2, 3]);
+
+        stack = [0, 1, 2, 3, 4, /* j */1, /* n */4];
+        Subroutine.DefaultOperandActionWithoutCallsubr(CharstringCommandCodes.Roll, stack, null!);
+        Assert.Equal(stack, [0, 4, 1, 2, 3]);
+
+        stack = [0, 1, 2, 3, 4, /* j */1, /* n */5];
+        Subroutine.DefaultOperandActionWithoutCallsubr(CharstringCommandCodes.Roll, stack, null!);
+        Assert.Equal(stack, [4, 0, 1, 2, 3]);
+
+        stack = [0, 1, 2, 3, 4, /* j */2, /* n */3];
+        Subroutine.DefaultOperandActionWithoutCallsubr(CharstringCommandCodes.Roll, stack, null!);
+        Assert.Equal(stack, [0, 1, 3, 4, 2]);
+
+        stack = [0, 1, 2, 3, 4, /* j */2, /* n */4];
+        Subroutine.DefaultOperandActionWithoutCallsubr(CharstringCommandCodes.Roll, stack, null!);
+        Assert.Equal(stack, [0, 3, 4, 1, 2]);
+
+        stack = [0, 1, 2, 3, 4, /* j */2, /* n */5];
+        Subroutine.DefaultOperandActionWithoutCallsubr(CharstringCommandCodes.Roll, stack, null!);
+        Assert.Equal(stack, [3, 4, 0, 1, 2]);
+    }
 }
