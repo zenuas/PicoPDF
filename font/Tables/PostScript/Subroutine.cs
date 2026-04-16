@@ -196,32 +196,10 @@ public static class Subroutine
                 {
                     var n = (int)stack.Pop();
                     var j = (int)stack.Pop();
-                    if (j >= 0)
-                    {
-                        while (j > 0)
-                        {
-                            var value = stack[^1];
-                            for (var i = 0; i < n - 1; i++)
-                            {
-                                stack[^(i + 1)] = stack[^(i + 2)];
-                            }
-                            stack[^n] = value;
-                            j--;
-                        }
-                    }
-                    else
-                    {
-                        while (j < 0)
-                        {
-                            var value = stack[^n];
-                            for (var i = 0; i < n - 1; i++)
-                            {
-                                stack[^(n - i)] = stack[^(n - i - 1)];
-                            }
-                            stack[^1] = value;
-                            j++;
-                        }
-                    }
+
+                    Span<float> values = stackalloc float[n];
+                    for (var i = 0; i < n; i++) values[i] = stack[stack.Count - n + i];
+                    for (var i = 0; i < n; i++) stack[stack.Count - n + i] = values[(n + i - j) % n];
                     break;
                 }
 
