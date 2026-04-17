@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenType.Outline;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -111,8 +112,31 @@ public static class Subroutine
 
             case CharstringCommandCodes.Vlineto:
             case CharstringCommandCodes.Hlineto:
+                {
+                    var vline = ope == CharstringCommandCodes.Vlineto;
+                    var prev = frame.CurrentPoint;
+                    while (stack.Count >= 2)
+                    {
+                        var value = stack.Pop();
+                        frame.CurrentPoint = new(frame.CurrentPoint.X + (!vline ? value : 0), frame.CurrentPoint.Y + (vline ? value : 0));
+                        frame.Edges.Add(new Line() { Start = prev, End = frame.CurrentPoint });
+                        prev = frame.CurrentPoint;
+                        vline = !vline;
+                    }
+                    break;
+                }
+
             case CharstringCommandCodes.Rlineto:
-                break;
+                {
+                    var prev = frame.CurrentPoint;
+                    while (stack.Count >= 2)
+                    {
+                        frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop(), frame.CurrentPoint.Y + stack.Pop());
+                        frame.Edges.Add(new Line() { Start = prev, End = frame.CurrentPoint });
+                        prev = frame.CurrentPoint;
+                    }
+                    break;
+                }
 
             case CharstringCommandCodes.Vvcurveto:
             case CharstringCommandCodes.Vhcurveto:

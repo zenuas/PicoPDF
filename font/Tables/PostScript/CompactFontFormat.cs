@@ -161,6 +161,6 @@ public class CompactFontFormat : IExportable
         }
 
         Subroutine.EnumOperands(char_string, [], OperandAction);
-        return [];
+        return [new Surface() { XMin = 0, YMin = 0, XMax = 0, YMax = 0, Edges = [.. frame.Edges] }];
     }
 }
