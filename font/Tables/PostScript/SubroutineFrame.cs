@@ -12,4 +12,5 @@ public class SubroutineFrame
     public Dictionary<int, float> TransientArray { get; init; } = [];
     public Vector2 CurrentPoint { get; set; }
     public Vector2? StartPoint { get; set; } = null;
+    public int StemPairCount { get; set; } = 0;
 }

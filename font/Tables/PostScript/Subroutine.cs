@@ -32,7 +32,7 @@ public static class Subroutine
         public float Peek() => self[^1];
     }
 
-    public static void EnumOperands(Span<byte> charstring, List<float> stack, Action<CharstringCommandCodes, List<float>> f)
+    public static void EnumOperands(Span<byte> charstring, List<float> stack, SubroutineFrame frame, Action<CharstringCommandCodes, List<float>, SubroutineFrame> f)
     {
         for (var i = 0; i < charstring.Length; i++)
         {
@@ -50,8 +50,6 @@ public static class Subroutine
                     case CharstringCommandCodes.Vlineto:
                     case CharstringCommandCodes.Rrcurveto:
                     case CharstringCommandCodes.Hstemhm:
-                    case CharstringCommandCodes.Hintmask:
-                    case CharstringCommandCodes.Cntrmask:
                     case CharstringCommandCodes.Rmoveto:
                     case CharstringCommandCodes.Hmoveto:
                     case CharstringCommandCodes.Vstemhm:
@@ -62,8 +60,15 @@ public static class Subroutine
                     case CharstringCommandCodes.Shortint:
                     case CharstringCommandCodes.Vhcurveto:
                     case CharstringCommandCodes.Hvcurveto:
-                        f(ope, stack);
+                        f(ope, stack, frame);
                         stack.Clear();
+                        break;
+
+                    case CharstringCommandCodes.Hintmask:
+                    case CharstringCommandCodes.Cntrmask:
+                        f(ope, stack, frame);
+                        stack.Clear();
+                        i += (frame.StemPairCount + 7) / 8;
                         break;
 
                     case CharstringCommandCodes.And:
@@ -90,7 +95,7 @@ public static class Subroutine
                     case CharstringCommandCodes.Flex:
                     case CharstringCommandCodes.Hflex1:
                     case CharstringCommandCodes.Flex1:
-                        f(ope, stack);
+                        f(ope, stack, frame);
                         break;
 
                     case CharstringCommandCodes.Return:
@@ -99,7 +104,7 @@ public static class Subroutine
 
                     case CharstringCommandCodes.Callsubr:
                     case CharstringCommandCodes.Callgsubr:
-                        f(ope, stack);
+                        f(ope, stack, frame);
                         break;
 
                     default:
@@ -145,6 +150,9 @@ public static class Subroutine
             case CharstringCommandCodes.Hstem:
             case CharstringCommandCodes.Vstemhm:
             case CharstringCommandCodes.Hstemhm:
+            case CharstringCommandCodes.Hintmask:
+            case CharstringCommandCodes.Cntrmask:
+                frame.StemPairCount += stack.Count / 2;
                 break;
 
             case CharstringCommandCodes.Vlineto:
@@ -320,8 +328,6 @@ public static class Subroutine
                     break;
                 }
 
-            case CharstringCommandCodes.Hintmask:
-            case CharstringCommandCodes.Cntrmask:
             case CharstringCommandCodes.Shortint:
                 break;
 

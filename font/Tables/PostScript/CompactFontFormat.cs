@@ -130,13 +130,12 @@ public class CompactFontFormat : IExportable
         var char_string = TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0];
         var fdindex = gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid];
         var local_subr = TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
-        var frame = new SubroutineFrame() { GlobalSubroutine = GlobalSubroutines, LocalSubroutine = local_subr };
         var surfaces = new List<IEdge[]>();
 
         var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
         var global_bias = Subroutine.GetSubroutineBias(GlobalSubroutines.Length);
 
-        void OperandAction(CharstringCommandCodes ope, List<float> stack)
+        void OperandAction(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)
         {
             switch (ope)
             {
@@ -145,7 +144,7 @@ public class CompactFontFormat : IExportable
                         var index = (int)stack.Pop() + global_bias;
                         Debug.Assert(index >= 0 && index < GlobalSubroutines.Length);
                         Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
-                        if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(GlobalSubroutines[index], stack, OperandAction);
+                        if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(GlobalSubroutines[index], stack, frame, OperandAction);
                         Debug.WriteLine($"return");
                         break;
                     }
@@ -155,7 +154,7 @@ public class CompactFontFormat : IExportable
                         var index = (int)stack.Pop() + local_bias;
                         Debug.Assert(index >= 0 && index < local_subr.Length);
                         Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
-                        if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(local_subr[index], stack, OperandAction);
+                        if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
                         Debug.WriteLine($"return");
                         break;
                     }
@@ -176,7 +175,8 @@ public class CompactFontFormat : IExportable
             }
         }
 
-        Subroutine.EnumOperands(char_string, [], OperandAction);
+        var frame = new SubroutineFrame() { GlobalSubroutine = GlobalSubroutines, LocalSubroutine = local_subr };
+        Subroutine.EnumOperands(char_string, [], frame, OperandAction);
         if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
         var minmax = surfaces.Flatten().Select(x =>
             (
