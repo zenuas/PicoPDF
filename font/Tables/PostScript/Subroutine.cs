@@ -103,28 +103,34 @@ public static class Subroutine
     {
         switch (ope)
         {
-            case CharstringCommandCodes.Hstem:
             case CharstringCommandCodes.Vstem:
-            case CharstringCommandCodes.Rlineto:
-            case CharstringCommandCodes.Hlineto:
-            case CharstringCommandCodes.Vlineto:
-            case CharstringCommandCodes.Rrcurveto:
-            case CharstringCommandCodes.Hstemhm:
-            case CharstringCommandCodes.Hintmask:
-            case CharstringCommandCodes.Cntrmask:
+            case CharstringCommandCodes.Hstem:
             case CharstringCommandCodes.Vstemhm:
-            case CharstringCommandCodes.Rcurveline:
-            case CharstringCommandCodes.Rlinecurve:
+            case CharstringCommandCodes.Hstemhm:
+                break;
+
+            case CharstringCommandCodes.Vlineto:
+            case CharstringCommandCodes.Hlineto:
+            case CharstringCommandCodes.Rlineto:
+                break;
+
             case CharstringCommandCodes.Vvcurveto:
-            case CharstringCommandCodes.Hhcurveto:
-            case CharstringCommandCodes.Shortint:
             case CharstringCommandCodes.Vhcurveto:
             case CharstringCommandCodes.Hvcurveto:
+            case CharstringCommandCodes.Hhcurveto:
+            case CharstringCommandCodes.Rrcurveto:
+                break;
+
+            case CharstringCommandCodes.Hintmask:
+            case CharstringCommandCodes.Cntrmask:
+            case CharstringCommandCodes.Rcurveline:
+            case CharstringCommandCodes.Rlinecurve:
+            case CharstringCommandCodes.Shortint:
                 break;
 
             case CharstringCommandCodes.Vmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X, frame.CurrentPoint.Y + stack.Pop()); break;
-            case CharstringCommandCodes.Rmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop(), frame.CurrentPoint.Y + stack.Pop()); break;
             case CharstringCommandCodes.Hmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop(), frame.CurrentPoint.Y); break;
+            case CharstringCommandCodes.Rmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop(), frame.CurrentPoint.Y + stack.Pop()); break;
 
             case CharstringCommandCodes.And: stack.Add(stack.Pop() != 0 && stack.Pop() != 0 ? 1 : 0); break;
             case CharstringCommandCodes.Or: stack.Push(stack.Pop() != 0 || stack.Pop() != 0 ? 1 : 0); break;
