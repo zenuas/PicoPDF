@@ -247,7 +247,30 @@ public static class Subroutine
                 }
 
             case CharstringCommandCodes.Rrcurveto:
-                break;
+                {
+                    while (stack.Count >= 6)
+                    {
+                        var dxa = stack.Shift();
+                        var dya = stack.Shift();
+                        var dxb = stack.Shift();
+                        var dyb = stack.Shift();
+                        var dxc = stack.Shift();
+                        var dyc = stack.Shift();
+
+                        var cp1 = new Vector2(frame.CurrentPoint.X + dxa, frame.CurrentPoint.Y + dya);
+                        var cp2 = new Vector2(cp1.X + dxb, cp1.Y + dyb);
+                        var end = new Vector2(cp2.X + dxc, cp2.Y + dyc);
+                        frame.Edges.Add(new BezierCurves()
+                        {
+                            Start = frame.CurrentPoint,
+                            ControlPoint = [cp1, cp2],
+                            End = end,
+                            ComplementPoint = false,
+                        });
+                        frame.CurrentPoint = end;
+                    }
+                    break;
+                }
 
             case CharstringCommandCodes.Hintmask:
             case CharstringCommandCodes.Cntrmask:
