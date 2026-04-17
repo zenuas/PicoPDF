@@ -105,7 +105,6 @@ public static class Subroutine
         {
             case CharstringCommandCodes.Hstem:
             case CharstringCommandCodes.Vstem:
-            case CharstringCommandCodes.Vmoveto:
             case CharstringCommandCodes.Rlineto:
             case CharstringCommandCodes.Hlineto:
             case CharstringCommandCodes.Vlineto:
@@ -113,8 +112,6 @@ public static class Subroutine
             case CharstringCommandCodes.Hstemhm:
             case CharstringCommandCodes.Hintmask:
             case CharstringCommandCodes.Cntrmask:
-            case CharstringCommandCodes.Rmoveto:
-            case CharstringCommandCodes.Hmoveto:
             case CharstringCommandCodes.Vstemhm:
             case CharstringCommandCodes.Rcurveline:
             case CharstringCommandCodes.Rlinecurve:
@@ -124,6 +121,10 @@ public static class Subroutine
             case CharstringCommandCodes.Vhcurveto:
             case CharstringCommandCodes.Hvcurveto:
                 break;
+
+            case CharstringCommandCodes.Vmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X, frame.CurrentPoint.Y + stack.Pop()); break;
+            case CharstringCommandCodes.Rmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop(), frame.CurrentPoint.Y + stack.Pop()); break;
+            case CharstringCommandCodes.Hmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop(), frame.CurrentPoint.Y); break;
 
             case CharstringCommandCodes.And: stack.Add(stack.Pop() != 0 && stack.Pop() != 0 ? 1 : 0); break;
             case CharstringCommandCodes.Or: stack.Push(stack.Pop() != 0 || stack.Pop() != 0 ? 1 : 0); break;
