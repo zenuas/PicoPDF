@@ -178,13 +178,7 @@ public class CompactFontFormat : IExportable
         var frame = new SubroutineFrame() { GlobalSubroutine = GlobalSubroutines, LocalSubroutine = local_subr };
         Subroutine.EnumOperands(char_string, [], frame, OperandAction);
         if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
-        var minmax = surfaces.Flatten().Select(x =>
-            (
-                MinX: Math.Min(x.Start.X, x.End.X),
-                MinY: Math.Min(x.Start.Y, x.End.Y),
-                MaxX: Math.Max(x.Start.X, x.End.X),
-                MaxY: Math.Max(x.Start.Y, x.End.Y)
-            )).ToArray();
+        var minmax = surfaces.Flatten().Select(x => (MinX: x.MinX(), MinY: x.MinY(), MaxX: x.MaxX(), MaxY: x.MaxY())).ToArray();
         var xmin = minmax.Select(x => x.MinX).Min();
         var ymin = minmax.Select(x => x.MinY).Min();
         var xmax = minmax.Select(x => x.MaxX).Max();
