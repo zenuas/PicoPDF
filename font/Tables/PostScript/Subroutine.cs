@@ -94,11 +94,15 @@ public static class Subroutine
                     case CharstringCommandCodes.Exch:
                     case CharstringCommandCodes.Index:
                     case CharstringCommandCodes.Roll:
+                        f(ope, stack, frame);
+                        break;
+
                     case CharstringCommandCodes.Hflex:
-                    case CharstringCommandCodes.Flex:
                     case CharstringCommandCodes.Hflex1:
+                    case CharstringCommandCodes.Flex:
                     case CharstringCommandCodes.Flex1:
                         f(ope, stack, frame);
+                        stack.Clear();
                         break;
 
                     case CharstringCommandCodes.Return:
@@ -412,10 +416,156 @@ public static class Subroutine
                 }
 
             case CharstringCommandCodes.Hflex:
-            case CharstringCommandCodes.Flex:
+                {
+                    var dx1 = stack.Shift();
+                    var dx2 = stack.Shift();
+                    var dy2 = stack.Shift();
+                    var dx3 = stack.Shift();
+                    var dx4 = stack.Shift();
+                    var dx5 = stack.Shift();
+                    var dx6 = stack.Shift();
+
+                    var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y);
+                    var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
+                    var cp3 = new Vector2(cp2.X + dx3, cp2.Y);
+                    frame.Edges.Add(new BezierCurves()
+                    {
+                        Start = frame.CurrentPoint,
+                        ControlPoint = [cp1, cp2],
+                        End = cp3,
+                        ComplementPoint = false,
+                    });
+
+                    var cp4 = new Vector2(cp3.X + dx4, cp3.Y);
+                    var cp5 = new Vector2(cp4.X + dx5, cp4.Y);
+                    var cp6 = new Vector2(cp5.X + dx6, cp5.Y);
+                    frame.Edges.Add(new BezierCurves()
+                    {
+                        Start = cp3,
+                        ControlPoint = [cp4, cp5],
+                        End = cp6,
+                        ComplementPoint = false,
+                    });
+                    frame.CurrentPoint = cp6;
+                    break;
+                }
+
             case CharstringCommandCodes.Hflex1:
+                {
+                    var dx1 = stack.Shift();
+                    var dy1 = stack.Shift();
+                    var dx2 = stack.Shift();
+                    var dy2 = stack.Shift();
+                    var dx3 = stack.Shift();
+                    var dx4 = stack.Shift();
+                    var dx5 = stack.Shift();
+                    var dy5 = stack.Shift();
+                    var dx6 = stack.Shift();
+
+                    var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y + dy1);
+                    var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
+                    var cp3 = new Vector2(cp2.X + dx3, cp2.Y);
+                    frame.Edges.Add(new BezierCurves()
+                    {
+                        Start = frame.CurrentPoint,
+                        ControlPoint = [cp1, cp2],
+                        End = cp3,
+                        ComplementPoint = false,
+                    });
+
+                    var cp4 = new Vector2(cp3.X + dx4, cp3.Y);
+                    var cp5 = new Vector2(cp4.X + dx5, cp4.Y + dy5);
+                    var cp6 = new Vector2(cp5.X + dx6, cp5.Y);
+                    frame.Edges.Add(new BezierCurves()
+                    {
+                        Start = cp3,
+                        ControlPoint = [cp4, cp5],
+                        End = cp6,
+                        ComplementPoint = false,
+                    });
+                    frame.CurrentPoint = cp6;
+                    break;
+                }
+
+            case CharstringCommandCodes.Flex:
+                {
+                    var dx1 = stack.Shift();
+                    var dy1 = stack.Shift();
+                    var dx2 = stack.Shift();
+                    var dy2 = stack.Shift();
+                    var dx3 = stack.Shift();
+                    var dy3 = stack.Shift();
+                    var dx4 = stack.Shift();
+                    var dy4 = stack.Shift();
+                    var dx5 = stack.Shift();
+                    var dy5 = stack.Shift();
+                    var dx6 = stack.Shift();
+                    var dy6 = stack.Shift();
+                    _ = stack.Shift(); // Ignore flex depth.
+
+                    var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y + dy1);
+                    var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
+                    var cp3 = new Vector2(cp2.X + dx3, cp2.Y + dy3);
+                    frame.Edges.Add(new BezierCurves()
+                    {
+                        Start = frame.CurrentPoint,
+                        ControlPoint = [cp1, cp2],
+                        End = cp3,
+                        ComplementPoint = false,
+                    });
+
+                    var cp4 = new Vector2(cp3.X + dx4, cp3.Y + dy4);
+                    var cp5 = new Vector2(cp4.X + dx5, cp4.Y + dy5);
+                    var cp6 = new Vector2(cp5.X + dx6, cp5.Y + dy6);
+                    frame.Edges.Add(new BezierCurves()
+                    {
+                        Start = cp3,
+                        ControlPoint = [cp4, cp5],
+                        End = cp6,
+                        ComplementPoint = false,
+                    });
+                    frame.CurrentPoint = cp6;
+                    break;
+                }
+
             case CharstringCommandCodes.Flex1:
-                break;
+                {
+                    var dx1 = stack.Shift();
+                    var dy1 = stack.Shift();
+                    var dx2 = stack.Shift();
+                    var dy2 = stack.Shift();
+                    var dx3 = stack.Shift();
+                    var dy3 = stack.Shift();
+                    var dx4 = stack.Shift();
+                    var dy4 = stack.Shift();
+                    var dx5 = stack.Shift();
+                    var dy5 = stack.Shift();
+                    var d6 = stack.Shift();
+
+                    var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y + dy1);
+                    var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
+                    var cp3 = new Vector2(cp2.X + dx3, cp2.Y + dy3);
+                    frame.Edges.Add(new BezierCurves()
+                    {
+                        Start = frame.CurrentPoint,
+                        ControlPoint = [cp1, cp2],
+                        End = cp3,
+                        ComplementPoint = false,
+                    });
+
+                    var cp4 = new Vector2(cp3.X + dx4, cp3.Y + dy4);
+                    var cp5 = new Vector2(cp4.X + dx5, cp4.Y + dy5);
+                    var cp6 = MathF.Abs(cp5.X - frame.CurrentPoint.X) > Math.Abs(cp5.Y - frame.CurrentPoint.Y) ? new Vector2(cp5.X + d6, cp5.Y) : new Vector2(cp5.X, cp5.Y + d6);
+                    frame.Edges.Add(new BezierCurves()
+                    {
+                        Start = cp3,
+                        ControlPoint = [cp4, cp5],
+                        End = cp6,
+                        ComplementPoint = false,
+                    });
+                    frame.CurrentPoint = cp6;
+                    break;
+                }
 
             case CharstringCommandCodes.Return:
             case CharstringCommandCodes.Endchar:
