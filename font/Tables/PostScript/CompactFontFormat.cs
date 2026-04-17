@@ -2,6 +2,8 @@
 using OpenType.Extension;
 using OpenType.Outline;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -126,6 +128,34 @@ public class CompactFontFormat : IExportable
     public IOutline[] ToOutline(uint gid)
     {
         var char_string = TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0];
+        var fdindex = gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid];
+        var local_subr = TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
+        var frame = new SubroutineFrame() { GlobalSubroutine = GlobalSubroutines, LocalSubroutine = local_subr };
+
+        var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
+        var global_bias = Subroutine.GetSubroutineBias(GlobalSubroutines.Length);
+
+        void OperandAction(CharstringCommandCodes ope, List<float> stack)
+        {
+            if (ope == CharstringCommandCodes.Callgsubr)
+            {
+                var index = (int)stack.Pop() + global_bias;
+                Debug.Assert(index >= 0 && index < GlobalSubroutines.Length);
+                if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(GlobalSubroutines[index], OperandAction);
+            }
+            else if (ope == CharstringCommandCodes.Callsubr)
+            {
+                var index = (int)stack.Pop() + local_bias;
+                Debug.Assert(index >= 0 && index < local_subr.Length);
+                if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(local_subr[index], OperandAction);
+            }
+            else
+            {
+                Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
+            }
+        }
+
+        Subroutine.EnumOperands(char_string, OperandAction);
         return [];
     }
 }
