@@ -197,6 +197,55 @@ public static class Subroutine
 
             case CharstringCommandCodes.Vhcurveto:
             case CharstringCommandCodes.Hvcurveto:
+                {
+                    var vcurve = ope == CharstringCommandCodes.Vhcurveto;
+                    while (stack.Count >= 4)
+                    {
+                        if (vcurve)
+                        {
+                            var dy1 = stack.Shift();
+                            var dx2 = stack.Shift();
+                            var dy2 = stack.Shift();
+                            var dx3 = stack.Shift();
+                            var dyf = stack.Count == 1 ? stack.Shift() : 0;
+
+                            var cp1 = new Vector2(frame.CurrentPoint.X, frame.CurrentPoint.Y + dy1);
+                            var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
+                            var end = new Vector2(cp2.X + dx3, cp2.Y + dyf);
+                            frame.Edges.Add(new BezierCurves()
+                            {
+                                Start = frame.CurrentPoint,
+                                ControlPoint = [cp1, cp2],
+                                End = end,
+                                ComplementPoint = false,
+                            });
+                            frame.CurrentPoint = end;
+                        }
+                        else
+                        {
+                            var dx1 = stack.Shift();
+                            var dx2 = stack.Shift();
+                            var dy2 = stack.Shift();
+                            var dy3 = stack.Shift();
+                            var dxf = stack.Count == 1 ? stack.Shift() : 0;
+
+                            var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y);
+                            var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
+                            var end = new Vector2(cp2.X + dxf, cp2.Y + dy3);
+                            frame.Edges.Add(new BezierCurves()
+                            {
+                                Start = frame.CurrentPoint,
+                                ControlPoint = [cp1, cp2],
+                                End = end,
+                                ComplementPoint = false,
+                            });
+                            frame.CurrentPoint = end;
+                        }
+                        vcurve = !vcurve;
+                    }
+                    break;
+                }
+
             case CharstringCommandCodes.Rrcurveto:
                 break;
 
