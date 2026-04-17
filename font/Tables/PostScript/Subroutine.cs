@@ -246,6 +246,17 @@ public static class Subroutine
                     break;
                 }
 
+
+            case CharstringCommandCodes.Rlinecurve:
+                {
+                    var prev = frame.CurrentPoint;
+                    while (stack.Count >= 8)
+                    {
+                        frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
+                        frame.Edges.Add(new Line() { Start = prev, End = frame.CurrentPoint });
+                    }
+                    goto case CharstringCommandCodes.Rrcurveto;
+                }
             case CharstringCommandCodes.Rrcurveto:
             case CharstringCommandCodes.Rcurveline:
                 {
@@ -276,11 +287,6 @@ public static class Subroutine
                         frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
                         frame.Edges.Add(new Line() { Start = prev, End = frame.CurrentPoint });
                     }
-                    break;
-                }
-
-            case CharstringCommandCodes.Rlinecurve:
-                {
                     break;
                 }
 
