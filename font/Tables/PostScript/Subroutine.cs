@@ -135,7 +135,7 @@ public static class Subroutine
             case CharstringCommandCodes.Div: stack.Push(stack.Pop() / stack.Pop()); break;
             case CharstringCommandCodes.Neg: stack.Push(-stack.Pop()); break;
             case CharstringCommandCodes.Eq: stack.Push(stack.Pop() == stack.Pop() ? 1 : 0); break;
-            case CharstringCommandCodes.Drop: stack.Pop(); break;
+            case CharstringCommandCodes.Drop: _ = stack.Pop(); break;
 
             case CharstringCommandCodes.Put:
                 {
@@ -149,7 +149,7 @@ public static class Subroutine
                 {
                     var index = (int)stack.Pop();
                     stack.Push(frame.TransientArray.TryGetValue(index, out var value) ? value : 0);
-                    frame.TransientArray.Remove(index);
+                    _ = frame.TransientArray.Remove(index);
                     break;
                 }
 
