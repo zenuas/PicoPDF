@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace OpenType.Tables.PostScript;
 
@@ -145,9 +146,57 @@ public static class Subroutine
                 }
 
             case CharstringCommandCodes.Vvcurveto:
+                {
+                    if (stack.Count % 2 != 0) frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y);
+                    while (stack.Count >= 4)
+                    {
+                        var dya = stack.Shift();
+                        var dxb = stack.Shift();
+                        var dyb = stack.Shift();
+                        var dyc = stack.Shift();
+
+                        var cp1 = new Vector2(frame.CurrentPoint.X, frame.CurrentPoint.Y + dya);
+                        var cp2 = new Vector2(cp1.X + dxb, cp1.Y + dyb);
+                        var end = new Vector2(cp2.X, cp2.Y + dyc);
+                        frame.Edges.Add(new BezierCurves()
+                        {
+                            Start = frame.CurrentPoint,
+                            ControlPoint = [cp1, cp2],
+                            End = end,
+                            ComplementPoint = false,
+                        });
+                        frame.CurrentPoint = end;
+                    }
+                    break;
+                }
+
+            case CharstringCommandCodes.Hhcurveto:
+                {
+                    if (stack.Count % 2 != 0) frame.CurrentPoint = new(frame.CurrentPoint.X, frame.CurrentPoint.Y + stack.Shift());
+                    while (stack.Count >= 4)
+                    {
+                        var dxa = stack.Shift();
+                        var dxb = stack.Shift();
+                        var dyb = stack.Shift();
+                        var dxc = stack.Shift();
+
+                        var cp1 = new Vector2(frame.CurrentPoint.X + dxa, frame.CurrentPoint.Y);
+                        var cp2 = new Vector2(cp1.X + dxb, cp1.Y + dyb);
+                        var end = new Vector2(cp2.X + dxc, cp2.Y);
+                        frame.Edges.Add(new BezierCurves()
+                        {
+                            Start = frame.CurrentPoint,
+                            ControlPoint = [cp1, cp2],
+                            End = end,
+                            ComplementPoint = false,
+                        });
+                        frame.CurrentPoint = end;
+                    }
+                    break;
+                }
+
             case CharstringCommandCodes.Vhcurveto:
             case CharstringCommandCodes.Hvcurveto:
-            case CharstringCommandCodes.Hhcurveto:
             case CharstringCommandCodes.Rrcurveto:
                 break;
 
