@@ -189,6 +189,6 @@ public class CompactFontFormat : IExportable
         var ymin = minmax.Select(x => x.MinY).Min();
         var xmax = minmax.Select(x => x.MaxX).Max();
         var ymax = minmax.Select(x => x.MaxY).Max();
-        return [.. surfaces.Select(x => new Surface() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = x })];
+        return [.. surfaces.Where(x => x.Length > 0).Select(x => new Surface() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = x })];
     }
 }
