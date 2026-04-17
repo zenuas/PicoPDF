@@ -164,19 +164,15 @@ public class CompactFontFormat : IExportable
                 case CharstringCommandCodes.Hmoveto:
                 case CharstringCommandCodes.Rmoveto:
                 case CharstringCommandCodes.Endchar:
-                    {
-                        Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
-                        if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
-                        frame.Edges.Clear();
-                        break;
-                    }
+                    Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
+                    if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
+                    frame.Edges.Clear();
+                    break;
 
                 default:
-                    {
-                        Debug.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
-                        Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
-                        break;
-                    }
+                    Debug.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
+                    Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
+                    break;
             }
         }
 
