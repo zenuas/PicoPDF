@@ -141,21 +141,26 @@ public class CompactFontFormat : IExportable
             {
                 var index = (int)stack.Pop() + global_bias;
                 Debug.Assert(index >= 0 && index < GlobalSubroutines.Length);
-                if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(GlobalSubroutines[index], OperandAction);
+                Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
+                if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(GlobalSubroutines[index], stack, OperandAction);
+                Debug.WriteLine($"return");
             }
             else if (ope == CharstringCommandCodes.Callsubr)
             {
                 var index = (int)stack.Pop() + local_bias;
                 Debug.Assert(index >= 0 && index < local_subr.Length);
-                if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(local_subr[index], OperandAction);
+                Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
+                if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(local_subr[index], stack, OperandAction);
+                Debug.WriteLine($"return");
             }
             else
             {
+                Debug.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
                 Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
             }
         }
 
-        Subroutine.EnumOperands(char_string, OperandAction);
+        Subroutine.EnumOperands(char_string, [], OperandAction);
         return [];
     }
 }

@@ -18,9 +18,8 @@ public static class Subroutine
         public float Peek() => self[^1];
     }
 
-    public static void EnumOperands(Span<byte> charstring, Action<CharstringCommandCodes, List<float>> f)
+    public static void EnumOperands(Span<byte> charstring, List<float> stack, Action<CharstringCommandCodes, List<float>> f)
     {
-        var stack = new List<float>();
         for (var i = 0; i < charstring.Length; i++)
         {
             var c = charstring[i];
