@@ -111,6 +111,30 @@ public static class Subroutine
     {
         switch (ope)
         {
+            case CharstringCommandCodes.Vlineto:
+            case CharstringCommandCodes.Hlineto:
+            case CharstringCommandCodes.Rlineto:
+            case CharstringCommandCodes.Vvcurveto:
+            case CharstringCommandCodes.Hhcurveto:
+            case CharstringCommandCodes.Vhcurveto:
+            case CharstringCommandCodes.Hvcurveto:
+            case CharstringCommandCodes.Rlinecurve:
+            case CharstringCommandCodes.Rrcurveto:
+            case CharstringCommandCodes.Rcurveline:
+                frame.StartPoint ??= frame.CurrentPoint;
+                break;
+
+            case CharstringCommandCodes.Vmoveto:
+            case CharstringCommandCodes.Hmoveto:
+            case CharstringCommandCodes.Rmoveto:
+            case CharstringCommandCodes.Endchar:
+                if (frame.StartPoint is { } s && s != frame.CurrentPoint) frame.Edges.Add(new Line() { Start = frame.CurrentPoint, End = s });
+                frame.StartPoint = null;
+                break;
+        }
+
+        switch (ope)
+        {
             case CharstringCommandCodes.Vstem:
             case CharstringCommandCodes.Hstem:
             case CharstringCommandCodes.Vstemhm:
@@ -383,7 +407,7 @@ public static class Subroutine
 
             case CharstringCommandCodes.Return:
             case CharstringCommandCodes.Endchar:
-                break;
+                return;
 
             case CharstringCommandCodes.Callsubr:
             case CharstringCommandCodes.Callgsubr:

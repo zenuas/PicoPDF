@@ -11,4 +11,5 @@ public class SubroutineFrame
     public List<IEdge> Edges { get; init; } = [];
     public Dictionary<int, float> TransientArray { get; init; } = [];
     public Vector2 CurrentPoint { get; set; }
+    public Vector2? StartPoint { get; set; } = null;
 }
