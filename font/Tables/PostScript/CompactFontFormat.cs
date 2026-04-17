@@ -182,10 +182,17 @@ public class CompactFontFormat : IExportable
 
         Subroutine.EnumOperands(char_string, [], OperandAction);
         if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
-        var xmin = surfaces.Flatten().Select(x => Math.Min(x.Start.X, x.End.X)).Min();
-        var ymin = surfaces.Flatten().Select(x => Math.Min(x.Start.Y, x.End.Y)).Min();
-        var xmax = surfaces.Flatten().Select(x => Math.Max(x.Start.X, x.End.X)).Max();
-        var ymax = surfaces.Flatten().Select(x => Math.Max(x.Start.Y, x.End.Y)).Max();
+        var minmax = surfaces.Flatten().Select(x =>
+            (
+                MinX: Math.Min(x.Start.X, x.End.X),
+                MinY: Math.Min(x.Start.Y, x.End.Y),
+                MaxX: Math.Max(x.Start.X, x.End.X),
+                MaxY: Math.Max(x.Start.Y, x.End.Y)
+            )).ToArray();
+        var xmin = minmax.Select(x => x.MinX).Min();
+        var ymin = minmax.Select(x => x.MinY).Min();
+        var xmax = minmax.Select(x => x.MaxX).Max();
+        var ymax = minmax.Select(x => x.MaxY).Max();
         return [.. surfaces.Select(x => new Surface() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = x })];
     }
 }
