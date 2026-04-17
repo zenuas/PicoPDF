@@ -42,6 +42,10 @@ public static class Subroutine
                 var ope = (CharstringCommandCodes)(c == (int)CharstringCommandCodes.Escape ? ((int)CharstringCommandCodes.Escape * 100) + charstring[++i] : c);
                 switch (ope)
                 {
+                    case CharstringCommandCodes.Shortint:
+                        stack.Push(charstring[++i] << 8 | charstring[++i]);
+                        break;
+
                     case CharstringCommandCodes.Hstem:
                     case CharstringCommandCodes.Vstem:
                     case CharstringCommandCodes.Vmoveto:
@@ -57,7 +61,6 @@ public static class Subroutine
                     case CharstringCommandCodes.Rlinecurve:
                     case CharstringCommandCodes.Vvcurveto:
                     case CharstringCommandCodes.Hhcurveto:
-                    case CharstringCommandCodes.Shortint:
                     case CharstringCommandCodes.Vhcurveto:
                     case CharstringCommandCodes.Hvcurveto:
                         f(ope, stack, frame);
@@ -328,9 +331,6 @@ public static class Subroutine
                     break;
                 }
 
-            case CharstringCommandCodes.Shortint:
-                break;
-
             case CharstringCommandCodes.Vmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X, frame.CurrentPoint.Y + stack.Pop()); break;
             case CharstringCommandCodes.Hmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop(), frame.CurrentPoint.Y); break;
             case CharstringCommandCodes.Rmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop2(), frame.CurrentPoint.Y + stack.Pop()); break;
@@ -423,6 +423,7 @@ public static class Subroutine
 
             case CharstringCommandCodes.Callsubr:
             case CharstringCommandCodes.Callgsubr:
+            case CharstringCommandCodes.Shortint:
             default:
                 throw new();
         }
