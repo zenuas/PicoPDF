@@ -122,7 +122,7 @@ public static class Subroutine
                 {
                     var vline = ope == CharstringCommandCodes.Vlineto;
                     var prev = frame.CurrentPoint;
-                    while (stack.Count >= 2)
+                    while (stack.Count > 0)
                     {
                         var value = stack.Shift();
                         frame.CurrentPoint = new(frame.CurrentPoint.X + (!vline ? value : 0), frame.CurrentPoint.Y + (vline ? value : 0));
