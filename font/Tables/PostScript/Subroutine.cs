@@ -17,6 +17,12 @@ public static class Subroutine
             self.RemoveAt(self.Count - 1);
             return value;
         }
+        public float Pop2()
+        {
+            var value = self[^2];
+            self.RemoveAt(self.Count - 2);
+            return value;
+        }
         public float Shift()
         {
             var value = self[0];
@@ -321,23 +327,23 @@ public static class Subroutine
 
             case CharstringCommandCodes.Vmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X, frame.CurrentPoint.Y + stack.Pop()); break;
             case CharstringCommandCodes.Hmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop(), frame.CurrentPoint.Y); break;
-            case CharstringCommandCodes.Rmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop(), frame.CurrentPoint.Y + stack.Pop()); break;
+            case CharstringCommandCodes.Rmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop2(), frame.CurrentPoint.Y + stack.Pop()); break;
 
             case CharstringCommandCodes.And: stack.Add(stack.Pop() != 0 && stack.Pop() != 0 ? 1 : 0); break;
             case CharstringCommandCodes.Or: stack.Push(stack.Pop() != 0 || stack.Pop() != 0 ? 1 : 0); break;
             case CharstringCommandCodes.Not: stack.Push(stack.Pop() != 0 ? 0 : 1); break;
             case CharstringCommandCodes.Abs: stack.Push(Math.Abs(stack.Pop())); break;
             case CharstringCommandCodes.Add: stack.Push(stack.Pop() + stack.Pop()); break;
-            case CharstringCommandCodes.Sub: stack.Push(stack.Pop() - stack.Pop()); break;
-            case CharstringCommandCodes.Div: stack.Push(stack.Pop() / stack.Pop()); break;
+            case CharstringCommandCodes.Sub: stack.Push(stack.Pop2() - stack.Pop()); break;
+            case CharstringCommandCodes.Div: stack.Push(stack.Pop2() / stack.Pop()); break;
             case CharstringCommandCodes.Neg: stack.Push(-stack.Pop()); break;
             case CharstringCommandCodes.Eq: stack.Push(stack.Pop() == stack.Pop() ? 1 : 0); break;
             case CharstringCommandCodes.Drop: _ = stack.Pop(); break;
 
             case CharstringCommandCodes.Put:
                 {
-                    var value = stack.Pop();
                     var index = (int)stack.Pop();
+                    var value = stack.Pop();
                     frame.TransientArray[index] = value;
                     break;
                 }
@@ -352,10 +358,10 @@ public static class Subroutine
 
             case CharstringCommandCodes.Ifelse:
                 {
-                    var then = stack.Pop();
-                    var else_ = stack.Pop();
-                    var left = stack.Pop();
                     var right = stack.Pop();
+                    var left = stack.Pop();
+                    var else_ = stack.Pop();
+                    var then = stack.Pop();
                     stack.Push(left <= right ? then : else_);
                     break;
                 }
@@ -390,8 +396,8 @@ public static class Subroutine
 
             case CharstringCommandCodes.Roll:
                 {
-                    var n = (int)stack.Pop();
                     var j = (int)stack.Pop();
+                    var n = (int)stack.Pop();
 
                     Span<float> values = stackalloc float[n];
                     for (var i = 0; i < n; i++) values[i] = stack[stack.Count - n + i];
