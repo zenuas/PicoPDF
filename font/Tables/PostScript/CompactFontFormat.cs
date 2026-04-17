@@ -131,40 +131,61 @@ public class CompactFontFormat : IExportable
         var fdindex = gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid];
         var local_subr = TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
         var frame = new SubroutineFrame() { GlobalSubroutine = GlobalSubroutines, LocalSubroutine = local_subr };
+        var surfaces = new List<IEdge[]>();
 
         var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
         var global_bias = Subroutine.GetSubroutineBias(GlobalSubroutines.Length);
 
         void OperandAction(CharstringCommandCodes ope, List<float> stack)
         {
-            if (ope == CharstringCommandCodes.Callgsubr)
+            switch (ope)
             {
-                var index = (int)stack.Pop() + global_bias;
-                Debug.Assert(index >= 0 && index < GlobalSubroutines.Length);
-                Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
-                if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(GlobalSubroutines[index], stack, OperandAction);
-                Debug.WriteLine($"return");
-            }
-            else if (ope == CharstringCommandCodes.Callsubr)
-            {
-                var index = (int)stack.Pop() + local_bias;
-                Debug.Assert(index >= 0 && index < local_subr.Length);
-                Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
-                if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(local_subr[index], stack, OperandAction);
-                Debug.WriteLine($"return");
-            }
-            else
-            {
-                Debug.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
-                Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
+                case CharstringCommandCodes.Callgsubr:
+                    {
+                        var index = (int)stack.Pop() + global_bias;
+                        Debug.Assert(index >= 0 && index < GlobalSubroutines.Length);
+                        Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
+                        if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(GlobalSubroutines[index], stack, OperandAction);
+                        Debug.WriteLine($"return");
+                        break;
+                    }
+
+                case CharstringCommandCodes.Callsubr:
+                    {
+                        var index = (int)stack.Pop() + local_bias;
+                        Debug.Assert(index >= 0 && index < local_subr.Length);
+                        Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
+                        if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(local_subr[index], stack, OperandAction);
+                        Debug.WriteLine($"return");
+                        break;
+                    }
+
+                case CharstringCommandCodes.Vmoveto:
+                case CharstringCommandCodes.Hmoveto:
+                case CharstringCommandCodes.Rmoveto:
+                case CharstringCommandCodes.Endchar:
+                    {
+                        Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
+                        if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
+                        frame.Edges.Clear();
+                        break;
+                    }
+
+                default:
+                    {
+                        Debug.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
+                        Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
+                        break;
+                    }
             }
         }
 
         Subroutine.EnumOperands(char_string, [], OperandAction);
-        var xmin = frame.Edges.Select(x => Math.Min(x.Start.X, x.End.X)).Min();
-        var ymin = frame.Edges.Select(x => Math.Min(x.Start.Y, x.End.Y)).Min();
-        var xmax = frame.Edges.Select(x => Math.Max(x.Start.X, x.End.X)).Max();
-        var ymax = frame.Edges.Select(x => Math.Max(x.Start.Y, x.End.Y)).Max();
-        return [new Surface() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = [.. frame.Edges] }];
+        if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
+        var xmin = surfaces.Flatten().Select(x => Math.Min(x.Start.X, x.End.X)).Min();
+        var ymin = surfaces.Flatten().Select(x => Math.Min(x.Start.Y, x.End.Y)).Min();
+        var xmax = surfaces.Flatten().Select(x => Math.Max(x.Start.X, x.End.X)).Max();
+        var ymax = surfaces.Flatten().Select(x => Math.Max(x.Start.Y, x.End.Y)).Max();
+        return [.. surfaces.Select(x => new Surface() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = x })];
     }
 }
