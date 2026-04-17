@@ -161,6 +161,10 @@ public class CompactFontFormat : IExportable
         }
 
         Subroutine.EnumOperands(char_string, [], OperandAction);
-        return [new Surface() { XMin = 0, YMin = 0, XMax = 0, YMax = 0, Edges = [.. frame.Edges] }];
+        var xmin = frame.Edges.Select(x => Math.Min(x.Start.X, x.End.X)).Min();
+        var ymin = frame.Edges.Select(x => Math.Min(x.Start.Y, x.End.Y)).Min();
+        var xmax = frame.Edges.Select(x => Math.Max(x.Start.X, x.End.X)).Max();
+        var ymax = frame.Edges.Select(x => Math.Max(x.Start.Y, x.End.Y)).Max();
+        return [new Surface() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = [.. frame.Edges] }];
     }
 }
