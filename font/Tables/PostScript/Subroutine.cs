@@ -247,6 +247,7 @@ public static class Subroutine
                 }
 
             case CharstringCommandCodes.Rrcurveto:
+            case CharstringCommandCodes.Rcurveline:
                 {
                     while (stack.Count >= 6)
                     {
@@ -269,13 +270,22 @@ public static class Subroutine
                         });
                         frame.CurrentPoint = end;
                     }
+                    if (ope == CharstringCommandCodes.Rcurveline)
+                    {
+                        var prev = frame.CurrentPoint;
+                        frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
+                        frame.Edges.Add(new Line() { Start = prev, End = frame.CurrentPoint });
+                    }
+                    break;
+                }
+
+            case CharstringCommandCodes.Rlinecurve:
+                {
                     break;
                 }
 
             case CharstringCommandCodes.Hintmask:
             case CharstringCommandCodes.Cntrmask:
-            case CharstringCommandCodes.Rcurveline:
-            case CharstringCommandCodes.Rlinecurve:
             case CharstringCommandCodes.Shortint:
                 break;
 
