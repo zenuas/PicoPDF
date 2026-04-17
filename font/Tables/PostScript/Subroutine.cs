@@ -148,8 +148,7 @@ public static class Subroutine
             case CharstringCommandCodes.Get:
                 {
                     var index = (int)stack.Pop();
-                    _ = frame.TransientArray.TryGetValue(index, out var value);
-                    stack.Push(value);
+                    stack.Push(frame.TransientArray.TryGetValue(index, out var value) ? value : 0);
                     frame.TransientArray.Remove(index);
                     break;
                 }
