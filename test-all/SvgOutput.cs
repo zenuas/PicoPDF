@@ -60,7 +60,8 @@ public class SvgOutput : FontRegisterCommand
         foreach (var cid in cids)
         {
             var gid = font.CharToGID(cid);
-            left -= Math.Min(0, GetCanvasWidth(font, gid).Left) * r;
+            var (gid_width, gid_left) = GetCanvasWidth(font, gid);
+            left -= gid_left * r;
             Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cid)} -->");
             var d = new StringBuilder();
             var c = new StringBuilder();
@@ -116,7 +117,7 @@ public class SvgOutput : FontRegisterCommand
             Output.WriteLine($"""    <path stroke="{ColorToHex(Stroke)}" fill="{ColorToHex(Fill)}" fill-rule="evenodd" """);
             Output.WriteLine($"""       d="{d}" />""");
             Output.Write(c);
-            left += GetCanvasWidth(font, gid).Width * r;
+            left += (gid_width + gid_left) * r;
         }
         if (Debug)
         {
@@ -133,7 +134,7 @@ public class SvgOutput : FontRegisterCommand
             switch (outline)
             {
                 case Surface surface:
-                    return (surface.XMax + (surface.XMin < 0 ? -surface.XMin : 0), surface.XMin);
+                    return (surface.XMax - surface.XMin, surface.XMin);
             }
         }
         return (0, 0);
