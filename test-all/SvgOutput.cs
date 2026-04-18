@@ -72,26 +72,26 @@ public class SvgOutput : FontRegisterCommand
                     case Surface surface when surface.Edges.Length > 0:
                         {
                             var start = surface.Edges.First().Start;
-                            if (JointPoint > 0) c.AppendLine($"""    <circle cx="{left + (start.X * r)}" cy="{baseline - (start.Y * r)}" r="{JointPoint}" fill="blue" />""");
-                            d.AppendLine();
-                            d.AppendLine($"          M {left + (start.X * r)} {baseline - (start.Y * r)}");
+                            if (JointPoint > 0) _ = c.AppendLine($"""    <circle cx="{left + (start.X * r)}" cy="{baseline - (start.Y * r)}" r="{JointPoint}" fill="blue" />""");
+                            _ = d.AppendLine();
+                            _ = d.AppendLine($"          M {left + (start.X * r)} {baseline - (start.Y * r)}");
                             foreach (var edge in surface.Edges)
                             {
                                 switch (edge)
                                 {
                                     case Line line:
-                                        if (JointPoint > 0) c.AppendLine($"""    <circle cx="{left + (line.End.X * r)}" cy="{baseline - (line.End.Y * r)}" r="{JointPoint}" fill="blue" />""");
-                                        d.AppendLine($"          L {left + (line.End.X * r)} {baseline - (line.End.Y * r)}");
+                                        if (JointPoint > 0) _ = c.AppendLine($"""    <circle cx="{left + (line.End.X * r)}" cy="{baseline - (line.End.Y * r)}" r="{JointPoint}" fill="blue" />""");
+                                        _ = d.AppendLine($"          L {left + (line.End.X * r)} {baseline - (line.End.Y * r)}");
                                         break;
                                     case BezierCurves bezier when bezier.ControlPoint.Length == 1:
                                         {
                                             var cp = bezier.ControlPoint[0];
                                             if (JointPoint > 0)
                                             {
-                                                c.AppendLine($"""    <circle cx="{left + (cp.X * r)}" cy="{baseline - (cp.Y * r)}" r="{JointPoint}" fill="red" />""");
-                                                c.AppendLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{baseline - (bezier.End.Y * r)}" r="{JointPoint}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
+                                                _ = c.AppendLine($"""    <circle cx="{left + (cp.X * r)}" cy="{baseline - (cp.Y * r)}" r="{JointPoint}" fill="red" />""");
+                                                _ = c.AppendLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{baseline - (bezier.End.Y * r)}" r="{JointPoint}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
                                             }
-                                            d.AppendLine($"          Q {left + (cp.X * r)} {baseline - (cp.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
+                                            _ = d.AppendLine($"          Q {left + (cp.X * r)} {baseline - (cp.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
                                             break;
                                         }
                                     case BezierCurves bezier when bezier.ControlPoint.Length == 2:
@@ -100,16 +100,16 @@ public class SvgOutput : FontRegisterCommand
                                             var cp2 = bezier.ControlPoint[1];
                                             if (JointPoint > 0)
                                             {
-                                                c.AppendLine($"""    <circle cx="{left + (cp1.X * r)}" cy="{baseline - (cp1.Y * r)}" r="{JointPoint}" fill="red" />""");
-                                                c.AppendLine($"""    <circle cx="{left + (cp2.X * r)}" cy="{baseline - (cp2.Y * r)}" r="{JointPoint}" fill="red" />""");
-                                                c.AppendLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{left + (bezier.End.Y * r)}" r="{JointPoint}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
+                                                _ = c.AppendLine($"""    <circle cx="{left + (cp1.X * r)}" cy="{baseline - (cp1.Y * r)}" r="{JointPoint}" fill="red" />""");
+                                                _ = c.AppendLine($"""    <circle cx="{left + (cp2.X * r)}" cy="{baseline - (cp2.Y * r)}" r="{JointPoint}" fill="red" />""");
+                                                _ = c.AppendLine($"""    <circle cx="{left + (bezier.End.X * r)}" cy="{left + (bezier.End.Y * r)}" r="{JointPoint}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
                                             }
-                                            d.AppendLine($"          C {left + (cp1.X * r)} {baseline - (cp1.Y * r)}, {left + (cp2.X * r)} {baseline - (cp2.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
+                                            _ = d.AppendLine($"          C {left + (cp1.X * r)} {baseline - (cp1.Y * r)}, {left + (cp2.X * r)} {baseline - (cp2.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
                                             break;
                                         }
                                 }
                             }
-                            d.Append("          Z");
+                            _ = d.Append("          Z");
                             break;
                         }
                 }
