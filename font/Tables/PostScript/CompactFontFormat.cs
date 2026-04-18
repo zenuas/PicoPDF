@@ -161,13 +161,13 @@ public class CompactFontFormat : IExportable
                 case CharstringCommandCodes.Endchar:
                     // Every character path and subpath must begin with one of the moveto operators.
                     // If the current path is open when a moveto operator is encountered, the path is closed before performing the moveto operation.
-                    Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
+                    Subroutine.DefaultOperandAction(ope, stack, frame);
                     if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
                     frame.Edges.Clear();
                     break;
 
                 default:
-                    Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
+                    Subroutine.DefaultOperandAction(ope, stack, frame);
                     break;
             }
         }

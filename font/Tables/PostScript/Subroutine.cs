@@ -48,6 +48,7 @@ public static class Subroutine
                 {
                     case CharstringCommandCodes.Shortint:
                         stack.Push(charstring[++i] << 8 | charstring[++i]);
+                        f(ope, stack, frame);
                         break;
 
                     case CharstringCommandCodes.Hstem:
@@ -109,6 +110,7 @@ public static class Subroutine
 
                     case CharstringCommandCodes.Return:
                     case CharstringCommandCodes.Endchar:
+                        f(ope, stack, frame);
                         return;
 
                     default:
@@ -122,7 +124,7 @@ public static class Subroutine
         }
     }
 
-    public static void DefaultOperandActionWithoutCallsubr(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)
+    public static void DefaultOperandAction(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)
     {
         switch (ope)
         {
@@ -565,11 +567,11 @@ public static class Subroutine
 
             case CharstringCommandCodes.Return:
             case CharstringCommandCodes.Endchar:
-                return;
-
             case CharstringCommandCodes.Callsubr:
             case CharstringCommandCodes.Callgsubr:
             case CharstringCommandCodes.Shortint:
+                break;
+
             default:
                 throw new();
         }
