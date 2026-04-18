@@ -154,7 +154,7 @@ public class CompactFontFormat : IExportable
                         var index = (int)stack.Pop() + local_bias;
                         Debug.Assert(index >= 0 && index < local_subr.Length);
                         Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
-                        if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
+                        if (index >= 0 && index < local_subr.Length) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
                         Debug.WriteLine($"return");
                         break;
                     }
