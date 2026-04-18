@@ -143,9 +143,7 @@ public class CompactFontFormat : IExportable
                     {
                         var index = (int)stack.Pop() + global_bias;
                         Debug.Assert(index >= 0 && index < GlobalSubroutines.Length);
-                        Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
                         if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(GlobalSubroutines[index], stack, frame, OperandAction);
-                        Debug.WriteLine($"return");
                         break;
                     }
 
@@ -153,9 +151,7 @@ public class CompactFontFormat : IExportable
                     {
                         var index = (int)stack.Pop() + local_bias;
                         Debug.Assert(index >= 0 && index < local_subr.Length);
-                        Debug.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
                         if (index >= 0 && index < local_subr.Length) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
-                        Debug.WriteLine($"return");
                         break;
                     }
 
@@ -169,7 +165,6 @@ public class CompactFontFormat : IExportable
                     break;
 
                 default:
-                    Debug.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
                     Subroutine.DefaultOperandActionWithoutCallsubr(ope, stack, frame);
                     break;
             }
