@@ -11,24 +11,28 @@ public static class Subroutine
     extension(List<float> self)
     {
         public void Push(float value) => self.Add(value);
+
         public float Pop()
         {
             var value = self[^1];
             self.RemoveAt(self.Count - 1);
             return value;
         }
+
         public float Pop2()
         {
             var value = self[^2];
             self.RemoveAt(self.Count - 2);
             return value;
         }
+
         public float Shift()
         {
             var value = self[0];
             self.RemoveAt(0);
             return value;
         }
+
         public float Peek() => self[^1];
     }
 
@@ -338,10 +342,14 @@ public static class Subroutine
             case CharstringCommandCodes.Abs: stack.Push(Math.Abs(stack.Pop())); break;
             case CharstringCommandCodes.Add: stack.Push(stack.Pop() + stack.Pop()); break;
             case CharstringCommandCodes.Sub: stack.Push(stack.Pop2() - stack.Pop()); break;
+            case CharstringCommandCodes.Mul: stack.Push(stack.Pop() * stack.Pop()); break;
             case CharstringCommandCodes.Div: stack.Push(stack.Pop2() / stack.Pop()); break;
             case CharstringCommandCodes.Neg: stack.Push(-stack.Pop()); break;
             case CharstringCommandCodes.Eq: stack.Push(stack.Pop() == stack.Pop() ? 1 : 0); break;
             case CharstringCommandCodes.Drop: _ = stack.Pop(); break;
+            case CharstringCommandCodes.Random: stack.Push(Random.Shared.NextSingle()); break;
+            case CharstringCommandCodes.Sqrt: stack.Push(MathF.Sqrt(stack.Pop())); break;
+            case CharstringCommandCodes.Dup: stack.Push(stack.Peek()); break;
 
             case CharstringCommandCodes.Put:
                 {
@@ -368,11 +376,6 @@ public static class Subroutine
                     stack.Push(left <= right ? then : else_);
                     break;
                 }
-
-            case CharstringCommandCodes.Random: stack.Push(Random.Shared.NextSingle()); break;
-            case CharstringCommandCodes.Mul: stack.Push(stack.Pop() * stack.Pop()); break;
-            case CharstringCommandCodes.Sqrt: stack.Push(MathF.Sqrt(stack.Pop())); break;
-            case CharstringCommandCodes.Dup: stack.Push(stack.Peek()); break;
 
             case CharstringCommandCodes.Exch:
                 {
