@@ -63,6 +63,10 @@ public static class Subroutine
                     case CharstringCommandCodes.Hhcurveto:
                     case CharstringCommandCodes.Vhcurveto:
                     case CharstringCommandCodes.Hvcurveto:
+                    case CharstringCommandCodes.Hflex:
+                    case CharstringCommandCodes.Hflex1:
+                    case CharstringCommandCodes.Flex:
+                    case CharstringCommandCodes.Flex1:
                         f(ope, stack, frame);
                         stack.Clear();
                         break;
@@ -74,6 +78,8 @@ public static class Subroutine
                         i += (frame.StemPairCount + 7) / 8;
                         break;
 
+                    case CharstringCommandCodes.Callsubr:
+                    case CharstringCommandCodes.Callgsubr:
                     case CharstringCommandCodes.And:
                     case CharstringCommandCodes.Or:
                     case CharstringCommandCodes.Not:
@@ -97,22 +103,9 @@ public static class Subroutine
                         f(ope, stack, frame);
                         break;
 
-                    case CharstringCommandCodes.Hflex:
-                    case CharstringCommandCodes.Hflex1:
-                    case CharstringCommandCodes.Flex:
-                    case CharstringCommandCodes.Flex1:
-                        f(ope, stack, frame);
-                        stack.Clear();
-                        break;
-
                     case CharstringCommandCodes.Return:
                     case CharstringCommandCodes.Endchar:
                         return;
-
-                    case CharstringCommandCodes.Callsubr:
-                    case CharstringCommandCodes.Callgsubr:
-                        f(ope, stack, frame);
-                        break;
 
                     default:
                         throw new();
