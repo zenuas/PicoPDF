@@ -189,7 +189,7 @@ public class Document
             string? trapped = null
         )
     {
-        if (Info is { }) PdfObjects.Remove(Info);
+        if (Info is { }) _ = PdfObjects.Remove(Info);
         PdfObjects.Add(Info = new());
         if (title is { }) Info.Elements.Add("Title", PdfUtility.ToEscapeString(title, UTF16WithBOM.UTF16_BEWithBOM));
         if (author is { }) Info.Elements.Add("Author", PdfUtility.ToEscapeString(author, UTF16WithBOM.UTF16_BEWithBOM));

@@ -17,4 +17,3 @@ var (command, xargs) = CommandLine.Run<ICommand>([
     ], args);
 
 command.Run(xargs);
-

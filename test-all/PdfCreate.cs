@@ -81,7 +81,7 @@ public class PdfCreate : FontRegisterCommand
             tasks.Add(Task.Run(() =>
             {
                 var doc = PdfUtility.CreateDocument(json, table, fontreg);
-                doc.AddInfo(
+                _ = doc.AddInfo(
                     title: fname,
                     producer: "PicoPDF for 🍣 (susi edition)",
                     creation_date: DateTime.Now,
