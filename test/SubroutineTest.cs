@@ -146,52 +146,52 @@ public class SubroutineTest
     public void DefaultOperandAction_Roll()
     {
         // right roll
-        var stack = new List<float> { 0, 1, 2, 3, 4, /* j */1, /* n */3 };
+        var stack = new List<float> { 0, 1, 2, 3, 4, /* n */3, /* j */1 };
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 1, 4, 2, 3]);
 
-        stack = [0, 1, 2, 3, 4, /* j */1, /* n */4];
+        stack = [0, 1, 2, 3, 4, /* n */4, /* j */1];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 4, 1, 2, 3]);
 
-        stack = [0, 1, 2, 3, 4, /* j */1, /* n */5];
+        stack = [0, 1, 2, 3, 4, /* n */5, /* j */1];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [4, 0, 1, 2, 3]);
 
-        stack = [0, 1, 2, 3, 4, /* j */2, /* n */3];
+        stack = [0, 1, 2, 3, 4, /* n */3, /* j */2];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 1, 3, 4, 2]);
 
-        stack = [0, 1, 2, 3, 4, /* j */2, /* n */4];
+        stack = [0, 1, 2, 3, 4, /* n */4, /* j */2];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 3, 4, 1, 2]);
 
-        stack = [0, 1, 2, 3, 4, /* j */2, /* n */5];
+        stack = [0, 1, 2, 3, 4, /* n */5, /* j */2];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [3, 4, 0, 1, 2]);
 
         // left roll
-        stack = [0, 1, 2, 3, 4, /* j */-1, /* n */3];
+        stack = [0, 1, 2, 3, 4, /* n */3, /* j */-1];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 1, 3, 4, 2]);
 
-        stack = [0, 1, 2, 3, 4, /* j */-1, /* n */4];
+        stack = [0, 1, 2, 3, 4, /* n */4, /* j */-1];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 2, 3, 4, 1]);
 
-        stack = [0, 1, 2, 3, 4, /* j */-1, /* n */5];
+        stack = [0, 1, 2, 3, 4, /* n */5, /* j */-1];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [1, 2, 3, 4, 0]);
 
-        stack = [0, 1, 2, 3, 4, /* j */-2, /* n */3];
+        stack = [0, 1, 2, 3, 4, /* n */3, /* j */-2];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 1, 4, 2, 3]);
 
-        stack = [0, 1, 2, 3, 4, /* j */-2, /* n */4];
+        stack = [0, 1, 2, 3, 4, /* n */4, /* j */-2];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 3, 4, 1, 2]);
 
-        stack = [0, 1, 2, 3, 4, /* j */-2, /* n */5];
+        stack = [0, 1, 2, 3, 4, /* n */5, /* j */-2];
         Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [2, 3, 4, 0, 1]);
     }
