@@ -47,25 +47,24 @@ public class SvgOutput : FontRegisterCommand
 
     public void OutputSvg(IOpenTypeFont font, int[] cids)
     {
-        var width = cids.Select(font.CharToGID)
-            .Select(gid => GetCanvasWidth(font, gid).Width)
-            .Sum();
+        var gids = cids.Select(font.CharToGID).ToArray();
+        var outlines = gids.Select(font.GIDToOutline).ToArray();
+        var total_width = outlines.Select(x => GetCanvasWidth(x).Width).Sum();
         var ascent = font.HorizontalHeader.Ascender;
         var descent = font.HorizontalHeader.Descender;
 
         var r = 1f / (ascent - descent) * Point;
         var left = 0f;
         var baseline = ascent * r;
-        Output.WriteLine($"""<svg width="{width * r}" height="{(ascent - descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
-        foreach (var cid in cids)
+        Output.WriteLine($"""<svg width="{total_width * r}" height="{(ascent - descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
+        for (var i = 0; i < cids.Length; i++)
         {
-            var gid = font.CharToGID(cid);
-            var (gid_width, gid_left) = GetCanvasWidth(font, gid);
+            var (gid_width, gid_left) = GetCanvasWidth(outlines[i]);
             left -= gid_left * r;
-            Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cid)} -->");
+            Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i])} -->");
             var d = new StringBuilder();
             var c = new StringBuilder();
-            foreach (var outline in font.GIDToOutline(gid))
+            foreach (var outline in font.GIDToOutline(gids[i]))
             {
                 switch (outline)
                 {
@@ -122,14 +121,14 @@ public class SvgOutput : FontRegisterCommand
         if (Debug)
         {
             Output.WriteLine($"    <!-- baseline -->");
-            Output.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{width * r}" y2="{baseline}" stroke="red" />""");
+            Output.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{total_width * r}" y2="{baseline}" stroke="red" />""");
         }
         Output.WriteLine("</svg>");
     }
 
-    public static (float Width, float Left) GetCanvasWidth(IOpenTypeFont font, uint gid)
+    public static (float Width, float Left) GetCanvasWidth(IOutline[] outlines)
     {
-        foreach (var outline in font.GIDToOutline(gid))
+        foreach (var outline in outlines)
         {
             switch (outline)
             {
