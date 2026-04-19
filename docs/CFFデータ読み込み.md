@@ -270,3 +270,63 @@ CharStringsはグリフを描画するPostScriptバイナリである。
 Top DICTのFDArrayからオフセット指定され、DICT Data形式になっている。  
 
 ## FDSelect
+
+Top DICTのFDSelectからオフセット指定されている。  
+CIDフォントではGIDがFDSelect(FDArrayのインデックス)を持っている。  
+GIDとFDSelectを紐づけるのがFDSelectである。  
+オフセットから1バイト読み込みフォーマットを決定する。  
+
+Format0:  
+
+| タイプ | 名前         | 説明                                            |
+|--------|--------------|-------------------------------------------------|
+| byte   | format       | 0固定                                           |
+| byte   | fds[nGlyphs] | FDSelectの配列、nGlyphsはGIDの数(.notdefを含む) |
+
+Format3:  
+
+| タイプ | 名前            | 説明         |
+|--------|-----------------|--------------|
+| byte   | format          | 3固定        |
+| ushort | nRanges         | Range3の個数 |
+| struct | Range3[nRanges] | Range3の配列 |
+| ushort | sentinel        | 最後のfirst  |
+
+Range3:  
+
+| タイプ | 名前  | 説明       |
+|--------|-------|------------|
+| ushort | first | GID        |
+| byte   | fd    | FDSelect値 |
+
+Format3はFDSelect値が同じものが連続して格納されることを意味する。  
+連続するGIDの `Range3[n].first ～ (Range3[n + 1].first - 1)` までがRange3[n].fdのFDSelectを持つ。  
+最後のRange3は範囲外の参照となってしまうため、Format3に余分なsentinelが用意されているのである。  
+C言語のように配列の範囲外アクセスを行うことを前提としたフォーマットであるため、配列の範囲外アクセスをチェックするような言語では最後の要素を特殊扱いする必要がある。  
+FDSelectの読み込みは次のようになる。  
+
+```cs
+var format = Read1Byte();
+var fdselect = new byte[nGlyphs];
+
+if (format == 0)
+{
+	for (var i = 0; i < nGlyphs; i++) fdselect[i] = Read1Byte();
+}
+else
+{
+	var count = 0;
+	var nRanges = (ushort)Read2Byte();
+	// 仕様ではRange3配列(firstとfd)→sentinelというレイアウトだが
+	// first→fdとsentinelの配列と読み替えてアクセスする事で最後の要素判定を回避
+	var first = (ushort)Read2Byte();
+	for (var i = 0; i < nRanges; i++)
+	{
+		var fd = Read1Byte();
+		var sentinel = (ushort)Read2Byte();
+		for (var j = first; j < sentinel; j++) fdselect[count++] = fd;
+		first = sentinel;
+	}
+}
+```
+
