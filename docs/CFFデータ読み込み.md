@@ -229,10 +229,44 @@ else
 
 ## Private DICT
 
+Top DICTのPrivateやFDArrayからオフセット指定され、DICT Data形式になっている。  
+
+| 名前              | キー   | バリュータイプ | 初期値、補足                       |
+|-------------------|--------|----------------|------------------------------------|
+| BlueValues        | 6      | delta          |                                    |
+| OtherBlues        | 7      | delta          |                                    |
+| FamilyBlues       | 8      | delta          |                                    |
+| FamilyOtherBlues  | 9      | delta          |                                    |
+| BlueScale         | 12, 9  | number         | 0.039625                           |
+| BlueShift         | 12, 10 | number         | 7                                  |
+| BlueFuzz          | 12, 11 | number         | 1                                  |
+| StdHW             | 10     | number         |                                    |
+| StdVW             | 11     | number         |                                    |
+| StemSnapH         | 12, 12 | delta          |                                    |
+| StemSnapV         | 12, 13 | delta          |                                    |
+| ForceBold         | 12, 14 | boolean        | false                              |
+| LanguageGroup     | 12, 17 | number         | 0                                  |
+| ExpansionFactor   | 12, 18 | number         | 0.06                               |
+| initialRandomSeed | 12, 19 | number         | 0                                  |
+| Subrs             | 19     | number         | Local Subr INDEXデータのオフセット |
+| defaultWidthX     | 20     | number         | 0                                  |
+| nominalWidthX     | 21     | number         | 0                                  |
+
 ## Local Subr INDEX
+
+INDEX Data形式でCharStringsのサブルーチンが格納されている。  
 
 ## CharStrings INDEX
 
+INDEX Data形式でCharStringsのデータが格納されている。  
+CharStringsはグリフを描画するPostScriptバイナリである。  
+配列はGIDでアクセスし、GID 0(.notdef)から始まる。  
+
+* [https://adobe-type-tools.github.io/font-tech-notes/pdfs/5177.Type2.pdf](https://adobe-type-tools.github.io/font-tech-notes/pdfs/5177.Type2.pdf)  
+* [CFFラスタライズ](CFFラスタライズ)  
+
 ## FDArray
+
+Top DICTのFDArrayからオフセット指定され、DICT Data形式になっている。  
 
 ## FDSelect
