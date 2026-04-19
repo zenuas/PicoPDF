@@ -18,7 +18,7 @@ public class FontRegister : IFontRegister
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
         .Flatten()
         .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
-        .Where(x => x.Extension is ".TTF" or ".TTC")
+        .Where(x => x.Extension is ".TTF" or ".TTC" or ".OTF")
         .Each(x =>
         {
             try
