@@ -39,6 +39,9 @@ public class ManualCreate : FontRegisterCommand
 
         _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 220, 300, 12, [ttf, emoji], 65, 60, style: TextStyle.Border | TextStyle.Clipping);
 
+        _ = page.Contents.DrawText("TrueTypeでフォントフォールバックできない⇒🍣", 340, 100, 12, [ttf]);
+        _ = page.Contents.DrawText("PostScriptでフォントフォールバックできない⇒🍣", 360, 100, 12, [post]);
+
         doc.Save("test-case/manual-create.pdf");
     }
 }

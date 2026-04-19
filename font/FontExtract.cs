@@ -63,8 +63,9 @@ public static class FontExtract
 
     public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
     {
-        var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()]);
-        var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
+        var validchars = opt.ExtractChars.Where(x => font.CharToGID(x) != 0).Order().ToArray();
+        var outputs = CreateCharToGIDMetrics(font, validchars);
+        var char_gids = outputs[0..validchars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var charsets = font.CompactFontFormat.TopDict.Charsets.Try();
         var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (
                 Glyph: font.CompactFontFormat.TopDict.CharStrings[x.OldGID],
