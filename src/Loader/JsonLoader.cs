@@ -32,7 +32,7 @@ public static class JsonLoader
         return new()
         {
             Size = LoadPageSize(json["Size"]),
-            Orientation = Enum.Parse<Orientation>(json["Orientation"]!.ToString()),
+            Orientation = json["Orientation"] is { } orient ? Enum.Parse<Orientation>(orient!.ToString()) : Orientation.Vertical,
             DefaultFont = fonts,
             Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
             Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
@@ -245,7 +245,7 @@ public static class JsonLoader
                 case 2: return new((int)xs[0]!, (int)xs[1]!);
             }
         }
-        throw new();
+        return new(PageSizes.A4);
     }
 
     public static AllSides LoadAllSides(JsonNode? node)
