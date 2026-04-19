@@ -31,7 +31,7 @@ public static class JsonLoader
 
         return new()
         {
-            Size = PageSize.Parse(json["Size"]!.ToString()),
+            Size = LoadPageSize(json["Size"]),
             Orientation = Enum.Parse<Orientation>(json["Orientation"]!.ToString()),
             DefaultFont = fonts,
             Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
@@ -234,6 +234,19 @@ public static class JsonLoader
         node is JsonValue v ? [(string)v!] :
         node is JsonArray xs ? [.. xs.Select(x => x?.AsValue() is { } value ? (string)value! : "")] :
         [];
+
+    public static PageSize LoadPageSize(JsonNode? node)
+    {
+        if (node is JsonValue v) return PageSize.Parse((string)v!);
+        if (node is JsonArray xs)
+        {
+            switch (xs.Count)
+            {
+                case 2: return new((int)xs[0]!, (int)xs[1]!);
+            }
+        }
+        throw new();
+    }
 
     public static AllSides LoadAllSides(JsonNode? node)
     {
