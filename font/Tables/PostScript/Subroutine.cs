@@ -79,7 +79,10 @@ public static class Subroutine
                     case CharstringCommandCodes.Hintmask:
                     case CharstringCommandCodes.Cntrmask:
                         {
-                            f(ope, stack, frame);
+                            // If hstem and vstem hints are both declared at the beginning of a charstring,
+                            // and this sequence is followed directly by the hintmask or cntrmask operators,
+                            // the vstem hint operator need not be included. 
+                            if (stack.Count > 0) f(CharstringCommandCodes.Vstem, stack, frame);
                             stack.Clear();
                             var step = (frame.StemPairCount + 7) / 8;
 #if DEBUG
@@ -162,8 +165,6 @@ public static class Subroutine
             case CharstringCommandCodes.Hstem:
             case CharstringCommandCodes.Vstemhm:
             case CharstringCommandCodes.Hstemhm:
-            case CharstringCommandCodes.Hintmask:
-            case CharstringCommandCodes.Cntrmask:
                 frame.StemPairCount += stack.Count / 2;
                 break;
 
