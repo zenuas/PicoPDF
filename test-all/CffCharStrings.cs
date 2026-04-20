@@ -28,9 +28,10 @@ public class CffCharStrings : FontRegisterCommand
             var gid = font.CharToGID(arg);
 
             var char_string = cff.TopDict.CharStrings[gid < cff.TopDict.CharStrings.Length ? gid : 0];
-            var fdindex = gid >= cff.TopDict.FontDictSelect.Length ? (byte)0 : cff.TopDict.FontDictSelect[gid];
-            var local_subr = cff.TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
-            var dict = cff.TopDict.FontDictArray[fdindex].PrivateDict;
+            var private_dict = cff.TopDict.IsCIDFont ?
+                (cff.TopDict.FontDictArray[gid >= cff.TopDict.FontDictSelect.Length ? (byte)0 : cff.TopDict.FontDictSelect[gid]].PrivateDict) :
+                cff.TopDict.PrivateDict;
+            var local_subr = private_dict?.LocalSubroutines ?? [];
 
             var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
 
@@ -66,7 +67,7 @@ public class CffCharStrings : FontRegisterCommand
 
                     case CharstringCommandCodes.Width:
                         Console.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
-                        frame.Width ??= stack.Count == 0 ? dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + dict?.NominalWidthX ?? 0;
+                        frame.Width ??= stack.Count == 0 ? private_dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + private_dict?.NominalWidthX ?? 0;
                         Console.WriteLine($"width = {frame.Width}");
                         break;
 

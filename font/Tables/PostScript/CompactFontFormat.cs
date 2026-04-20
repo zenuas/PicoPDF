@@ -128,9 +128,10 @@ public class CompactFontFormat : IExportable
     public IOutline[] ToOutline(uint gid)
     {
         var char_string = TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0];
-        var fdindex = gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid];
-        var local_subr = TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
-        var dict = TopDict.FontDictArray[fdindex].PrivateDict;
+        var private_dict = TopDict.IsCIDFont ?
+            (TopDict.FontDictArray[gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid]].PrivateDict) :
+            TopDict.PrivateDict;
+        var local_subr = private_dict?.LocalSubroutines ?? [];
         var surfaces = new List<IEdge[]>();
 
         var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
@@ -168,7 +169,7 @@ public class CompactFontFormat : IExportable
                     break;
 
                 case CharstringCommandCodes.Width:
-                    frame.Width ??= stack.Count == 0 ? dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + dict?.NominalWidthX ?? 0;
+                    frame.Width ??= stack.Count == 0 ? private_dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + private_dict?.NominalWidthX ?? 0;
                     break;
 
                 default:
