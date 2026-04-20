@@ -80,6 +80,7 @@ public class CffCharStrings : FontRegisterCommand
             Console.WriteLine($"-- {c}");
             var frame = new SubroutineFrame() { GlobalSubroutine = cff.GlobalSubroutines, LocalSubroutine = local_subr };
             Subroutine.EnumOperands(char_string, [], frame, OperandAction);
+            Console.WriteLine();
         }
     }
 }
