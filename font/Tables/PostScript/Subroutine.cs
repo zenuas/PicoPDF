@@ -705,7 +705,7 @@ public static class Subroutine
         charstring.Length == 2 && charstring[0] is >= 247 and <= 250 ? (charstring[0] - 247) * 256 + charstring[1] + 108 :
         charstring.Length == 2 && charstring[0] is >= 251 and <= 254 ? -((charstring[0] - 251) * 256) - charstring[1] - 108 :
         charstring.Length == 3 && charstring[0] == 28 ? (short)(charstring[1] << 8 | charstring[2]) :
-        charstring.Length == 5 && charstring[0] == 255 ? (charstring[1] << 8 | charstring[2]) + (charstring[3] << 8 | charstring[4]) / 65536f :
+        charstring.Length == 5 && charstring[0] == 255 ? ((short)(charstring[1] << 8 | charstring[2])) + ((short)(charstring[3] << 8 | charstring[4])) / 65536f :
         0;
 
     public static int NextNumberBytes(byte c) =>

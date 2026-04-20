@@ -75,9 +75,9 @@ public class SubroutineTest
 
         // 16-bit signed integer with 16 bits of fraction.
         Assert.Equal(Subroutine.CharstringNumber([255, 0, 0, 0, 0]), 0);
-        Assert.Equal(Subroutine.CharstringNumber([255, 1, 2, 128, 0]), 258.5);
-        Assert.Equal(Subroutine.CharstringNumber([255, 128, 0, 64, 32]), 32768.25);
-        Assert.Equal(Subroutine.CharstringNumber([255, 255, 255, 255, 255]), 65536);
+        Assert.Equal(Subroutine.CharstringNumber([255, 1, 2, 128, 0]), 257.5);
+        Assert.Equal(Subroutine.CharstringNumber([255, 128, 0, 64, 32]), -32767.75);
+        Assert.Equal(Subroutine.CharstringNumber([255, 255, 255, 255, 128]), -1.001953125);
     }
 
     [Fact]
