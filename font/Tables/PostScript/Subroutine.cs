@@ -38,7 +38,63 @@ public static class Subroutine
 
     public static void EnumOperands(Span<byte> charstring, List<float> stack, SubroutineFrame frame, Action<CharstringCommandCodes, List<float>, SubroutineFrame> f)
     {
-        for (var i = 0; i < charstring.Length; i++)
+        // w? {hs* vs* cm* hm* mt subpath}? {mt subpath}* endchar
+        // Where:
+        //   w = width
+        //   hs = hstem or hstemhm command
+        //   vs = vstem or vstemhm command
+        //   cm = cntrmask operator
+        //   hm = hintmask operator
+        //   mt = moveto (i.e. any of the moveto) operators
+        //   subpath = refers to the construction of a subpath (one complete closed contour),
+        //             which may include hintmask operators where appropriate.
+        var i = 0;
+        for (; i < charstring.Length && frame.Width is null; i++)
+        {
+            var c = charstring[i];
+            if (c < 32)
+            {
+                var ope = (CharstringCommandCodes)c;
+                switch (ope)
+                {
+                    case CharstringCommandCodes.Hstem:
+                    case CharstringCommandCodes.Vstem:
+                    case CharstringCommandCodes.Hstemhm:
+                    case CharstringCommandCodes.Vstemhm:
+                    case CharstringCommandCodes.Hintmask:
+                    case CharstringCommandCodes.Cntrmask:
+                        f(CharstringCommandCodes.Width, stack.Count % 2 == 1 ? [stack.Shift()] : [], frame);
+                        break;
+
+                    case CharstringCommandCodes.Rmoveto:
+                        f(CharstringCommandCodes.Width, stack.Count > 2 ? [stack.Shift()] : [], frame);
+                        break;
+
+                    case CharstringCommandCodes.Vmoveto:
+                    case CharstringCommandCodes.Hmoveto:
+                        f(CharstringCommandCodes.Width, stack.Count > 1 ? [stack.Shift()] : [], frame);
+                        break;
+
+                    case CharstringCommandCodes.Endchar:
+                        // A character that does not have a path (e.g. a space character) may consist of an endchar operator preceded only by a width value.
+                        // Although the width must be specified in the font, it may be specified as the defaultWidthX in the CFF data, in which case it should not be specified in the charstring.
+                        // Also, it may appear in the charstring as the difference from nominalWidthX. Thus the smallest legal charstring consists of a single endchar operator.
+                        f(CharstringCommandCodes.Width, stack.Count > 0 ? [stack.Shift()] : [], frame);
+                        break;
+
+                    default:
+                        f(CharstringCommandCodes.Width, [], frame);
+                        break;
+                }
+                break;
+            }
+            else
+            {
+                stack.Push(CharstringNumber(charstring[i..Math.Min(charstring.Length, 1 + (i += NextNumberBytes(c)))]));
+            }
+        }
+
+        for (; i < charstring.Length; i++)
         {
             var c = charstring[i];
             if (c < 32)
@@ -584,6 +640,10 @@ public static class Subroutine
             case CharstringCommandCodes.Shortint:
             case CharstringCommandCodes.Hintmask:
             case CharstringCommandCodes.Cntrmask:
+                break;
+
+            case CharstringCommandCodes.Width:
+                frame.Width ??= 0;
                 break;
 
             default:

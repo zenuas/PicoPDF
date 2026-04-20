@@ -130,6 +130,7 @@ public class CompactFontFormat : IExportable
         var char_string = TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0];
         var fdindex = gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid];
         var local_subr = TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
+        var dict = TopDict.FontDictArray[fdindex].PrivateDict;
         var surfaces = new List<IEdge[]>();
 
         var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
@@ -164,6 +165,10 @@ public class CompactFontFormat : IExportable
                     Subroutine.DefaultOperandAction(ope, stack, frame);
                     if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
                     frame.Edges.Clear();
+                    break;
+
+                case CharstringCommandCodes.Width:
+                    frame.Width ??= stack.Count == 0 ? dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + dict?.NominalWidthX ?? 0;
                     break;
 
                 default:

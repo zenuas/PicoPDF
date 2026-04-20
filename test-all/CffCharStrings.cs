@@ -30,6 +30,7 @@ public class CffCharStrings : FontRegisterCommand
             var char_string = cff.TopDict.CharStrings[gid < cff.TopDict.CharStrings.Length ? gid : 0];
             var fdindex = gid >= cff.TopDict.FontDictSelect.Length ? (byte)0 : cff.TopDict.FontDictSelect[gid];
             var local_subr = cff.TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
+            var dict = cff.TopDict.FontDictArray[fdindex].PrivateDict;
 
             var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
 
@@ -61,6 +62,12 @@ public class CffCharStrings : FontRegisterCommand
                     case CharstringCommandCodes.Cntrmask:
                         Console.WriteLine($"ope: {ope}, stack: 0b{string.Join("_", stack.Select(x => ((int)x).ToString("b8")))}");
                         Subroutine.DefaultOperandAction(ope, stack, frame);
+                        break;
+
+                    case CharstringCommandCodes.Width:
+                        Console.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
+                        frame.Width ??= stack.Count == 0 ? dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + dict?.NominalWidthX ?? 0;
+                        Console.WriteLine($"width = {frame.Width}");
                         break;
 
                     default:

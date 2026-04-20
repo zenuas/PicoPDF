@@ -54,4 +54,7 @@ public enum CharstringCommandCodes
     Flex = 12_35,
     Hflex1 = 12_36,
     Flex1 = 12_37,
+
+    // None operator
+    Width = 99_00,
 }
