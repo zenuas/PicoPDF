@@ -57,6 +57,12 @@ public class CffCharStrings : FontRegisterCommand
                             break;
                         }
 
+                    case CharstringCommandCodes.Hintmask:
+                    case CharstringCommandCodes.Cntrmask:
+                        Console.WriteLine($"ope: {ope}, stack: 0b{string.Join("_", stack.Select(x => ((int)x).ToString("b8")))}");
+                        Subroutine.DefaultOperandAction(ope, stack, frame);
+                        break;
+
                     default:
                         Console.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
                         Subroutine.DefaultOperandAction(ope, stack, frame);
