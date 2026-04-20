@@ -356,7 +356,6 @@ public static class Subroutine
                     break;
                 }
 
-
             case CharstringCommandCodes.Rlinecurve:
                 {
                     var prev = frame.CurrentPoint;
@@ -367,6 +366,7 @@ public static class Subroutine
                     }
                     goto case CharstringCommandCodes.Rrcurveto;
                 }
+
             case CharstringCommandCodes.Rrcurveto:
             case CharstringCommandCodes.Rcurveline:
                 {
