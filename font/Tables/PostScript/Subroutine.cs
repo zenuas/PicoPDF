@@ -148,6 +148,7 @@ public static class Subroutine
 
                     case CharstringCommandCodes.Callsubr:
                     case CharstringCommandCodes.Callgsubr:
+                        // The charstring itself may end with a call(g)subr; the subroutine must then end with an endchar operator.
                         f(ope, stack, frame);
                         if (frame.IsEndchar) return;
                         break;
