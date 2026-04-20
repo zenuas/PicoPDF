@@ -683,7 +683,7 @@ public static class Subroutine
             }
             else
             {
-                operand = CharstringNumber(charstring[i..Math.Min(charstring.Length, 1 + (i += NextNumberBytes(c)))]); // any number
+                operand = (int)CharstringNumber(charstring[i..Math.Min(charstring.Length, 1 + (i += NextNumberBytes(c)))]); // any number
             }
         }
     }
@@ -700,12 +700,12 @@ public static class Subroutine
         subr_count < 33900 ? 1131 :
         32768;
 
-    public static int CharstringNumber(Span<byte> charstring) =>
+    public static float CharstringNumber(Span<byte> charstring) =>
         charstring.Length == 1 && charstring[0] is >= 32 and <= 246 ? charstring[0] - 139 :
         charstring.Length == 2 && charstring[0] is >= 247 and <= 250 ? (charstring[0] - 247) * 256 + charstring[1] + 108 :
         charstring.Length == 2 && charstring[0] is >= 251 and <= 254 ? -((charstring[0] - 251) * 256) - charstring[1] - 108 :
         charstring.Length == 3 && charstring[0] == 28 ? (short)(charstring[1] << 8 | charstring[2]) :
-        charstring.Length == 5 && charstring[0] == 255 ? charstring[1] << 24 | charstring[2] << 16 | charstring[3] << 8 | charstring[4] :
+        charstring.Length == 5 && charstring[0] == 255 ? (charstring[1] << 8 | charstring[2]) + (charstring[3] << 8 | charstring[4]) / 65536f :
         0;
 
     public static int NextNumberBytes(byte c) =>
