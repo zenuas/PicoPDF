@@ -13,4 +13,5 @@ public class SubroutineFrame
     public Vector2 CurrentPoint { get; set; }
     public Vector2? StartPoint { get; set; } = null;
     public int StemPairCount { get; set; } = 0;
+    public bool IsEndchar { get; set; } = false;
 }

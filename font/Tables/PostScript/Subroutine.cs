@@ -92,6 +92,10 @@ public static class Subroutine
 
                     case CharstringCommandCodes.Callsubr:
                     case CharstringCommandCodes.Callgsubr:
+                        f(ope, stack, frame);
+                        if (frame.IsEndchar) return;
+                        break;
+
                     case CharstringCommandCodes.And:
                     case CharstringCommandCodes.Or:
                     case CharstringCommandCodes.Not:
@@ -570,8 +574,11 @@ public static class Subroutine
                     break;
                 }
 
-            case CharstringCommandCodes.Return:
             case CharstringCommandCodes.Endchar:
+                frame.IsEndchar = true;
+                break;
+
+            case CharstringCommandCodes.Return:
             case CharstringCommandCodes.Callsubr:
             case CharstringCommandCodes.Callgsubr:
             case CharstringCommandCodes.Shortint:
