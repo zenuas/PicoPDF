@@ -49,7 +49,7 @@ public static class Subroutine
         //   subpath = refers to the construction of a subpath (one complete closed contour),
         //             which may include hintmask operators where appropriate.
         var i = 0;
-        for (; i < charstring.Length && frame.Width is null; i++)
+        for (; frame.Width is null && i < charstring.Length; i++)
         {
             var c = charstring[i];
             if (c < 32)
