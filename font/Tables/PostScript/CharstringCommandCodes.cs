@@ -54,8 +54,4 @@ public enum CharstringCommandCodes
     Flex = 12_35,
     Hflex1 = 12_36,
     Flex1 = 12_37,
-
-    // Debug Operators
-    Debug_Hintmask_Mask = 99_00,
-    Debug_Cntrmask_Mask = 99_01,
 }

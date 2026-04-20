@@ -85,9 +85,7 @@ public static class Subroutine
                             if (stack.Count > 0) f(CharstringCommandCodes.Vstem, stack, frame);
                             stack.Clear();
                             var step = (frame.StemPairCount + 7) / 8;
-#if DEBUG
-                            f(ope == CharstringCommandCodes.Hintmask ? CharstringCommandCodes.Debug_Hintmask_Mask : CharstringCommandCodes.Debug_Cntrmask_Mask, [.. charstring[(i + 1)..(i + step + 1)]], frame);
-#endif
+                            f(ope, [.. charstring[(i + 1)..(i + step + 1)]], frame);
                             i += step;
                             break;
                         }
@@ -577,8 +575,8 @@ public static class Subroutine
             case CharstringCommandCodes.Callsubr:
             case CharstringCommandCodes.Callgsubr:
             case CharstringCommandCodes.Shortint:
-            case CharstringCommandCodes.Debug_Hintmask_Mask:
-            case CharstringCommandCodes.Debug_Cntrmask_Mask:
+            case CharstringCommandCodes.Hintmask:
+            case CharstringCommandCodes.Cntrmask:
                 break;
 
             default:
