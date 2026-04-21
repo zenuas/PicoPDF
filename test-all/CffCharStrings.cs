@@ -43,7 +43,7 @@ public class CffCharStrings : FontRegisterCommand
                         {
                             var index = (int)stack.Pop() + global_bias;
                             Debug.Assert(index >= 0 && index < cff.GlobalSubroutines.Length);
-                            Console.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
+                            Console.WriteLine($"{ope}({index}) : {string.Join(", ", stack)}");
                             if (index >= 0 && index < cff.GlobalSubroutines.Length) Subroutine.EnumOperands(cff.GlobalSubroutines[index], stack, frame, OperandAction);
                             Console.WriteLine($"return");
                             break;
@@ -53,7 +53,7 @@ public class CffCharStrings : FontRegisterCommand
                         {
                             var index = (int)stack.Pop() + local_bias;
                             Debug.Assert(index >= 0 && index < local_subr.Length);
-                            Console.WriteLine($"ope: {ope}({index}), stack: {string.Join(", ", stack)}");
+                            Console.WriteLine($"{ope}({index}) : {string.Join(", ", stack)}");
                             if (index >= 0 && index < local_subr.Length) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
                             Console.WriteLine($"return");
                             break;
@@ -61,18 +61,17 @@ public class CffCharStrings : FontRegisterCommand
 
                     case CharstringCommandCodes.Hintmask:
                     case CharstringCommandCodes.Cntrmask:
-                        Console.WriteLine($"ope: {ope}, stack: 0b{string.Join("_", stack.Select(x => ((int)x).ToString("b8")))}");
+                        Console.WriteLine($"{ope} : 0b_{string.Join("_", stack.Select(x => ((int)x).ToString("b8")))}");
                         Subroutine.DefaultOperandAction(ope, stack, frame);
                         break;
 
                     case CharstringCommandCodes.Width:
-                        Console.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
                         frame.Width ??= stack.Count == 0 ? private_dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + private_dict?.NominalWidthX ?? 0;
-                        Console.WriteLine($"width = {frame.Width}");
+                        Console.WriteLine($"width : {frame.Width}");
                         break;
 
                     default:
-                        Console.WriteLine($"ope: {ope}, stack: {string.Join(", ", stack)}");
+                        Console.WriteLine($"{ope} : {string.Join(", ", stack)}");
                         Subroutine.DefaultOperandAction(ope, stack, frame);
                         break;
                 }
