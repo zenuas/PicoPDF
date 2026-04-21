@@ -127,7 +127,6 @@ public class CompactFontFormat : IExportable
 
     public IOutline[] ToOutline(uint gid)
     {
-        var char_string = TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0];
         var private_dict = TopDict.IsCIDFont ?
             (TopDict.FontDictArray[gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid]].PrivateDict) :
             TopDict.PrivateDict;
@@ -185,7 +184,7 @@ public class CompactFontFormat : IExportable
             LocalSubroutine = local_subr,
             AddLine = vecs => edges.Add(vecs.Length == 2 ? new Line() { Start = vecs[0], End = vecs[1] } : new BezierCurves { Start = vecs[0], ControlPoint = [vecs[1], vecs[2]], End = vecs[3], ComplementPoint = false }),
         };
-        Subroutine.EnumOperands(char_string, [], frame, OperandAction);
+        Subroutine.EnumOperands(TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0], [], frame, OperandAction);
         if (edges.Count > 0) surfaces.Add([.. edges]);
         var minmax = surfaces.Flatten().Select(x => (MinX: x.MinX(), MinY: x.MinY(), MaxX: x.MaxX(), MaxY: x.MaxY())).ToArray();
         var xmin = minmax.Length == 0 ? 0 : minmax.Select(x => x.MinX).Min();

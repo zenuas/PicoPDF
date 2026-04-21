@@ -27,7 +27,6 @@ public class CffCharStrings : FontRegisterCommand
             var c = char.ConvertFromUtf32(arg);
             var gid = font.CharToGID(arg);
 
-            var char_string = cff.TopDict.CharStrings[gid < cff.TopDict.CharStrings.Length ? gid : 0];
             var private_dict = cff.TopDict.IsCIDFont ?
                 (cff.TopDict.FontDictArray[gid >= cff.TopDict.FontDictSelect.Length ? (byte)0 : cff.TopDict.FontDictSelect[gid]].PrivateDict) :
                 cff.TopDict.PrivateDict;
@@ -79,7 +78,7 @@ public class CffCharStrings : FontRegisterCommand
 
             Console.WriteLine($"-- {c}");
             var frame = new SubroutineFrame() { GlobalSubroutine = cff.GlobalSubroutines, LocalSubroutine = local_subr };
-            Subroutine.EnumOperands(char_string, [], frame, OperandAction);
+            Subroutine.EnumOperands(cff.TopDict.CharStrings[gid < cff.TopDict.CharStrings.Length ? gid : 0], [], frame, OperandAction);
             Console.WriteLine();
         }
     }
