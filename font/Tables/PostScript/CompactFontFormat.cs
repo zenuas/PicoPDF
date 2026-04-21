@@ -133,6 +133,7 @@ public class CompactFontFormat : IExportable
             TopDict.PrivateDict;
         var local_subr = private_dict?.LocalSubroutines ?? [];
         var surfaces = new List<IEdge[]>();
+        var edges = new List<IEdge>();
 
         var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
         var global_bias = Subroutine.GetSubroutineBias(GlobalSubroutines.Length);
@@ -164,8 +165,8 @@ public class CompactFontFormat : IExportable
                     // Every character path and subpath must begin with one of the moveto operators.
                     // If the current path is open when a moveto operator is encountered, the path is closed before performing the moveto operation.
                     Subroutine.DefaultOperandAction(ope, stack, frame);
-                    if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
-                    frame.Edges.Clear();
+                    if (edges.Count > 0) surfaces.Add([.. edges]);
+                    edges.Clear();
                     break;
 
                 case CharstringCommandCodes.Width:
@@ -178,9 +179,14 @@ public class CompactFontFormat : IExportable
             }
         }
 
-        var frame = new SubroutineFrame() { GlobalSubroutine = GlobalSubroutines, LocalSubroutine = local_subr };
+        var frame = new SubroutineFrame()
+        {
+            GlobalSubroutine = GlobalSubroutines,
+            LocalSubroutine = local_subr,
+            AddLine = vecs => edges.Add(vecs.Length == 2 ? new Line() { Start = vecs[0], End = vecs[1] } : new BezierCurves { Start = vecs[0], ControlPoint = [vecs[1], vecs[2]], End = vecs[3], ComplementPoint = false }),
+        };
         Subroutine.EnumOperands(char_string, [], frame, OperandAction);
-        if (frame.Edges.Count > 0) surfaces.Add([.. frame.Edges]);
+        if (edges.Count > 0) surfaces.Add([.. edges]);
         var minmax = surfaces.Flatten().Select(x => (MinX: x.MinX(), MinY: x.MinY(), MaxX: x.MaxX(), MaxY: x.MaxY())).ToArray();
         var xmin = minmax.Length == 0 ? 0 : minmax.Select(x => x.MinX).Min();
         var ymin = minmax.Length == 0 ? 0 : minmax.Select(x => x.MinY).Min();

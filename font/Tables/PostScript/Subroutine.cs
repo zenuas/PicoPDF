@@ -1,5 +1,4 @@
-﻿using OpenType.Outline;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
@@ -191,7 +190,7 @@ public static class Subroutine
             case CharstringCommandCodes.Hmoveto:
             case CharstringCommandCodes.Rmoveto:
             case CharstringCommandCodes.Endchar:
-                if (frame.StartPoint is { } s && s != frame.CurrentPoint) frame.Edges.Add(new Line() { Start = frame.CurrentPoint, End = s });
+                if (frame.StartPoint is { } s && s != frame.CurrentPoint) frame.AddLine([frame.CurrentPoint, s]);
                 frame.StartPoint = null;
                 break;
         }
@@ -214,7 +213,7 @@ public static class Subroutine
                     {
                         var value = stack.Shift();
                         frame.CurrentPoint = new(frame.CurrentPoint.X + (!vline ? value : 0), frame.CurrentPoint.Y + (vline ? value : 0));
-                        frame.Edges.Add(new Line() { Start = prev, End = frame.CurrentPoint });
+                        frame.AddLine([prev, frame.CurrentPoint]);
                         prev = frame.CurrentPoint;
                         vline = !vline;
                     }
@@ -227,7 +226,7 @@ public static class Subroutine
                     while (stack.Count >= 2)
                     {
                         frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
-                        frame.Edges.Add(new Line() { Start = prev, End = frame.CurrentPoint });
+                        frame.AddLine([prev, frame.CurrentPoint]);
                         prev = frame.CurrentPoint;
                     }
                     break;
@@ -246,13 +245,7 @@ public static class Subroutine
                         var cp1 = new Vector2(frame.CurrentPoint.X, frame.CurrentPoint.Y + dya);
                         var cp2 = new Vector2(cp1.X + dxb, cp1.Y + dyb);
                         var end = new Vector2(cp2.X, cp2.Y + dyc);
-                        frame.Edges.Add(new BezierCurves()
-                        {
-                            Start = frame.CurrentPoint,
-                            ControlPoint = [cp1, cp2],
-                            End = end,
-                            ComplementPoint = false,
-                        });
+                        frame.AddLine([frame.CurrentPoint, cp1, cp2, end]);
                         frame.CurrentPoint = end;
                     }
                     break;
@@ -271,13 +264,7 @@ public static class Subroutine
                         var cp1 = new Vector2(frame.CurrentPoint.X + dxa, frame.CurrentPoint.Y);
                         var cp2 = new Vector2(cp1.X + dxb, cp1.Y + dyb);
                         var end = new Vector2(cp2.X + dxc, cp2.Y);
-                        frame.Edges.Add(new BezierCurves()
-                        {
-                            Start = frame.CurrentPoint,
-                            ControlPoint = [cp1, cp2],
-                            End = end,
-                            ComplementPoint = false,
-                        });
+                        frame.AddLine([frame.CurrentPoint, cp1, cp2, end]);
                         frame.CurrentPoint = end;
                     }
                     break;
@@ -300,13 +287,7 @@ public static class Subroutine
                             var cp1 = new Vector2(frame.CurrentPoint.X, frame.CurrentPoint.Y + dy1);
                             var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
                             var end = new Vector2(cp2.X + dx3, cp2.Y + dyf);
-                            frame.Edges.Add(new BezierCurves()
-                            {
-                                Start = frame.CurrentPoint,
-                                ControlPoint = [cp1, cp2],
-                                End = end,
-                                ComplementPoint = false,
-                            });
+                            frame.AddLine([frame.CurrentPoint, cp1, cp2, end]);
                             frame.CurrentPoint = end;
                         }
                         else
@@ -320,13 +301,7 @@ public static class Subroutine
                             var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y);
                             var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
                             var end = new Vector2(cp2.X + dxf, cp2.Y + dy3);
-                            frame.Edges.Add(new BezierCurves()
-                            {
-                                Start = frame.CurrentPoint,
-                                ControlPoint = [cp1, cp2],
-                                End = end,
-                                ComplementPoint = false,
-                            });
+                            frame.AddLine([frame.CurrentPoint, cp1, cp2, end]);
                             frame.CurrentPoint = end;
                         }
                         vcurve = !vcurve;
@@ -340,7 +315,7 @@ public static class Subroutine
                     while (stack.Count >= 8)
                     {
                         frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
-                        frame.Edges.Add(new Line() { Start = prev, End = frame.CurrentPoint });
+                        frame.AddLine([prev, frame.CurrentPoint]);
                     }
                     goto case CharstringCommandCodes.Rrcurveto;
                 }
@@ -360,20 +335,14 @@ public static class Subroutine
                         var cp1 = new Vector2(frame.CurrentPoint.X + dxa, frame.CurrentPoint.Y + dya);
                         var cp2 = new Vector2(cp1.X + dxb, cp1.Y + dyb);
                         var end = new Vector2(cp2.X + dxc, cp2.Y + dyc);
-                        frame.Edges.Add(new BezierCurves()
-                        {
-                            Start = frame.CurrentPoint,
-                            ControlPoint = [cp1, cp2],
-                            End = end,
-                            ComplementPoint = false,
-                        });
+                        frame.AddLine([frame.CurrentPoint, cp1, cp2, end]);
                         frame.CurrentPoint = end;
                     }
                     if (ope == CharstringCommandCodes.Rcurveline)
                     {
                         var prev = frame.CurrentPoint;
                         frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
-                        frame.Edges.Add(new Line() { Start = prev, End = frame.CurrentPoint });
+                        frame.AddLine([prev, frame.CurrentPoint]);
                     }
                     break;
                 }
@@ -470,24 +439,12 @@ public static class Subroutine
                     var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y);
                     var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
                     var cp3 = new Vector2(cp2.X + dx3, cp2.Y);
-                    frame.Edges.Add(new BezierCurves()
-                    {
-                        Start = frame.CurrentPoint,
-                        ControlPoint = [cp1, cp2],
-                        End = cp3,
-                        ComplementPoint = false,
-                    });
+                    frame.AddLine([frame.CurrentPoint, cp1, cp2, cp3]);
 
                     var cp4 = new Vector2(cp3.X + dx4, cp3.Y);
                     var cp5 = new Vector2(cp4.X + dx5, cp4.Y);
                     var cp6 = new Vector2(cp5.X + dx6, cp5.Y);
-                    frame.Edges.Add(new BezierCurves()
-                    {
-                        Start = cp3,
-                        ControlPoint = [cp4, cp5],
-                        End = cp6,
-                        ComplementPoint = false,
-                    });
+                    frame.AddLine([cp3, cp4, cp5, cp6]);
                     frame.CurrentPoint = cp6;
                     break;
                 }
@@ -507,24 +464,12 @@ public static class Subroutine
                     var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y + dy1);
                     var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
                     var cp3 = new Vector2(cp2.X + dx3, cp2.Y);
-                    frame.Edges.Add(new BezierCurves()
-                    {
-                        Start = frame.CurrentPoint,
-                        ControlPoint = [cp1, cp2],
-                        End = cp3,
-                        ComplementPoint = false,
-                    });
+                    frame.AddLine([frame.CurrentPoint, cp1, cp2, cp3]);
 
                     var cp4 = new Vector2(cp3.X + dx4, cp3.Y);
                     var cp5 = new Vector2(cp4.X + dx5, cp4.Y + dy5);
                     var cp6 = new Vector2(cp5.X + dx6, cp5.Y);
-                    frame.Edges.Add(new BezierCurves()
-                    {
-                        Start = cp3,
-                        ControlPoint = [cp4, cp5],
-                        End = cp6,
-                        ComplementPoint = false,
-                    });
+                    frame.AddLine([cp3, cp4, cp5, cp6]);
                     frame.CurrentPoint = cp6;
                     break;
                 }
@@ -548,24 +493,12 @@ public static class Subroutine
                     var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y + dy1);
                     var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
                     var cp3 = new Vector2(cp2.X + dx3, cp2.Y + dy3);
-                    frame.Edges.Add(new BezierCurves()
-                    {
-                        Start = frame.CurrentPoint,
-                        ControlPoint = [cp1, cp2],
-                        End = cp3,
-                        ComplementPoint = false,
-                    });
+                    frame.AddLine([frame.CurrentPoint, cp1, cp2, cp3]);
 
                     var cp4 = new Vector2(cp3.X + dx4, cp3.Y + dy4);
                     var cp5 = new Vector2(cp4.X + dx5, cp4.Y + dy5);
                     var cp6 = new Vector2(cp5.X + dx6, cp5.Y + dy6);
-                    frame.Edges.Add(new BezierCurves()
-                    {
-                        Start = cp3,
-                        ControlPoint = [cp4, cp5],
-                        End = cp6,
-                        ComplementPoint = false,
-                    });
+                    frame.AddLine([cp3, cp4, cp5, cp6]);
                     frame.CurrentPoint = cp6;
                     break;
                 }
@@ -587,24 +520,12 @@ public static class Subroutine
                     var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y + dy1);
                     var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
                     var cp3 = new Vector2(cp2.X + dx3, cp2.Y + dy3);
-                    frame.Edges.Add(new BezierCurves()
-                    {
-                        Start = frame.CurrentPoint,
-                        ControlPoint = [cp1, cp2],
-                        End = cp3,
-                        ComplementPoint = false,
-                    });
+                    frame.AddLine([frame.CurrentPoint, cp1, cp2, cp3]);
 
                     var cp4 = new Vector2(cp3.X + dx4, cp3.Y + dy4);
                     var cp5 = new Vector2(cp4.X + dx5, cp4.Y + dy5);
                     var cp6 = MathF.Abs(cp5.X - frame.CurrentPoint.X) > Math.Abs(cp5.Y - frame.CurrentPoint.Y) ? new Vector2(cp5.X + d6, cp5.Y) : new Vector2(cp5.X, cp5.Y + d6);
-                    frame.Edges.Add(new BezierCurves()
-                    {
-                        Start = cp3,
-                        ControlPoint = [cp4, cp5],
-                        End = cp6,
-                        ComplementPoint = false,
-                    });
+                    frame.AddLine([cp3, cp4, cp5, cp6]);
                     frame.CurrentPoint = cp6;
                     break;
                 }
