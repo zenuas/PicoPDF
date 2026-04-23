@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace OpenType.Tables.PostScript;
@@ -136,6 +137,7 @@ public class CompactFontFormat : IExportable
 
         var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
         var global_bias = Subroutine.GetSubroutineBias(GlobalSubroutines.Length);
+        Vector2? start_point = null;
 
         void OperandAction(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)
         {
@@ -157,10 +159,26 @@ public class CompactFontFormat : IExportable
                         break;
                     }
 
+                case CharstringCommandCodes.Vlineto:
+                case CharstringCommandCodes.Hlineto:
+                case CharstringCommandCodes.Rlineto:
+                case CharstringCommandCodes.Vvcurveto:
+                case CharstringCommandCodes.Hhcurveto:
+                case CharstringCommandCodes.Vhcurveto:
+                case CharstringCommandCodes.Hvcurveto:
+                case CharstringCommandCodes.Rlinecurve:
+                case CharstringCommandCodes.Rrcurveto:
+                case CharstringCommandCodes.Rcurveline:
+                    start_point ??= frame.CurrentPoint;
+                    Subroutine.DefaultOperandAction(ope, stack, frame);
+                    break;
+
                 case CharstringCommandCodes.Vmoveto:
                 case CharstringCommandCodes.Hmoveto:
                 case CharstringCommandCodes.Rmoveto:
                 case CharstringCommandCodes.Endchar:
+                    if (start_point is { } s && s != frame.CurrentPoint) frame.AddLine([frame.CurrentPoint, s]);
+                    start_point = null;
                     // Every character path and subpath must begin with one of the moveto operators.
                     // If the current path is open when a moveto operator is encountered, the path is closed before performing the moveto operation.
                     Subroutine.DefaultOperandAction(ope, stack, frame);
@@ -180,9 +198,9 @@ public class CompactFontFormat : IExportable
 
         var frame = new SubroutineFrame()
         {
-            GlobalSubroutine = GlobalSubroutines,
-            LocalSubroutine = local_subr,
-            AddLine = vecs => edges.Add(vecs.Length == 2 ? new Line() { Start = vecs[0], End = vecs[1] } : new BezierCurves { Start = vecs[0], ControlPoint = [vecs[1], vecs[2]], End = vecs[3], ComplementPoint = false }),
+            AddLine = vecs => edges.Add(vecs.Length == 2 ?
+                new Line() { Start = vecs[0], End = vecs[1] } :
+                new BezierCurves { Start = vecs[0], ControlPoint = [vecs[1], vecs[2]], End = vecs[3], ComplementPoint = false }),
         };
         Subroutine.EnumOperands(TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0], [], frame, OperandAction);
         if (edges.Count > 0) surfaces.Add([.. edges]);
