@@ -72,7 +72,7 @@ b0が28～254(30を除く)の場合は可変長整数となる。
 |      5 | 29         | -(2 ^ 31) ～ +(2 ^ 31 - 1) | b1 << 24 &#124; b2 << 16 &#124; b3 << 8 &#124; b4 |
 
 b0が30の場合は後続のバイト列が4bitで1桁を表す実数となる。
-[パック10進数(Packed BCD)](https://en.wikipedia.org/wiki/Binary-coded_decimal)の亜種である。
+[パック10進数(Packed BCD)](https://en.wikipedia.org/wiki/Binary-coded_decimal){:target="_blank"}の亜種である。
 
 | 4bit     | 意味         |
 |----------|--------------|
@@ -160,7 +160,7 @@ SIDのうち0～390までは定義済みの文字列になる。(定義値はThe
 
 String INDEXで格納された文字列は391番以降で参照されることになる。
 
-* [https://github.com/zenuas/PicoPDF/blob/master/font/Tables/PostScript/SID.cs](https://github.com/zenuas/PicoPDF/blob/master/font/Tables/PostScript/SID.cs)
+* [https://github.com/zenuas/PicoPDF/blob/master/font/Tables/PostScript/SID.cs](https://github.com/zenuas/PicoPDF/blob/master/font/Tables/PostScript/SID.cs){:target="_blank"}
 
 ## Global Subr INDEX
 
@@ -262,7 +262,7 @@ INDEX Data形式でCharStringsのデータが格納されている。
 CharStringsはグリフを描画するPostScriptバイナリである。
 配列はGIDでアクセスし、GID 0(.notdef)から始まる。
 
-* [https://adobe-type-tools.github.io/font-tech-notes/pdfs/5177.Type2.pdf](https://adobe-type-tools.github.io/font-tech-notes/pdfs/5177.Type2.pdf)
+* [https://adobe-type-tools.github.io/font-tech-notes/pdfs/5177.Type2.pdf](https://adobe-type-tools.github.io/font-tech-notes/pdfs/5177.Type2.pdf){:target="_blank"}
 * [CFFラスタライズ](CFFラスタライズ)
 
 ## FDArray

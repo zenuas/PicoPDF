@@ -2,15 +2,15 @@
 
 PDFにフォントを埋め込むために必須ではないが、TrueTypeフォントをベクトルデータに変換しSVG形式に変換する方法を解説する。
 
-* [mdn SVG](https://developer.mozilla.org/en-US/docs/Web/SVG)
-* [Wikipedia SVG](https://en.wikipedia.org/wiki/SVG)
+* [mdn SVG](https://developer.mozilla.org/en-US/docs/Web/SVG){:target="_blank"}
+* [Wikipedia SVG](https://en.wikipedia.org/wiki/SVG){:target="_blank"}
 
 ## glyfテーブルデータ
 
-TrueTypeのglyfテーブルには[Simple glyph](https://learn.microsoft.com/ja-jp/typography/opentype/spec/glyf#simple-glyph-description)と[Composite glyph](https://learn.microsoft.com/ja-jp/typography/opentype/spec/glyf#composite-glyph-description)の2種類がある。
+TrueTypeのglyfテーブルには[Simple glyph](https://learn.microsoft.com/ja-jp/typography/opentype/spec/glyf#simple-glyph-description){:target="_blank"}と[Composite glyph](https://learn.microsoft.com/ja-jp/typography/opentype/spec/glyf#composite-glyph-description){:target="_blank"}の2種類がある。
 Simple glyphがグリフの座標データを持つもので、Composite glyphは複数のグリフを組み合わせて1つの文字を表現するものである。
 
-Simple glyphであるかどうかはヘッダーの[numberOfContoursが-1](https://learn.microsoft.com/ja-jp/typography/opentype/spec/glyf#glyph-headers)であるかどうかで判断する。
+Simple glyphであるかどうかはヘッダーの[numberOfContoursが-1](https://learn.microsoft.com/ja-jp/typography/opentype/spec/glyf#glyph-headers){:target="_blank"}であるかどうかで判断する。
 
 ## Simple glyph
 
@@ -26,7 +26,7 @@ int[] to_absolute(int[] xs) => xs[1..].Aggregate([xs[0]], (ys, a) => [.. ys, ys[
 
 endPtsOfContoursから組を取得して面を構成する。
 面を構成するパスは閉じている必要があるため、最後の点から最初の点につなぐ必要がある。
-SVGであれば[パスを閉じるコマンド](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/d#closepath)がある。
+SVGであれば[パスを閉じるコマンド](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/d#closepath){:target="_blank"}がある。
 ```cs
 var xs = to_absolute(xCoordinates);
 var ys = to_absolute(yCoordinates);
@@ -41,7 +41,7 @@ for(var i = 0; i < numberOfContours; i++)
 }
 ```
 
-グリフは直線と[2次ベジェ曲線](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)で表現される。
+グリフは直線と[2次ベジェ曲線](https://en.wikipedia.org/wiki/B%C3%A9zier_curve){:target="_blank"}で表現される。
 直線か曲線かの判断はflagsのON_CURVE_POINT(線上の点)で判断する。
 始点と終点が両方ON_CURVE_POINTであれば直線である。
 終点がON_CURVE_POINTでない場合は2次ベジェ曲線の制御点となる。
@@ -251,5 +251,5 @@ else if (flags.HasFlag(WE_HAVE_A_TWO_BY_TWO))
 var vec = Vector2.Transform(v, m); // 各種座標vをアフィン変換
 ```
 
-scale、xscale、yscale、scale01、scale10は[F2DOT14](https://learn.microsoft.com/ja-jp/typography/opentype/spec/otff#data-types)である。
+scale、xscale、yscale、scale01、scale10は[F2DOT14](https://learn.microsoft.com/ja-jp/typography/opentype/spec/otff#data-types){:target="_blank"}である。
 F2DOT14は上位2bitが整数部、下位14bitが小数部の固定小数点形式であるため、floatへ変換する場合は2 ^ 14(=16384)で割る必要がある。
