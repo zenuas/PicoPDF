@@ -12,7 +12,7 @@ window.addEventListener("load", () => {
 	document.querySelectorAll(".search-result").forEach(async (result) => {
 		const q = get_param(window.location, "q");
 		
-		Array.from(await (await fetch("https://api.github.com/repos/zenuas/Yanp/contents/docs/")).json())
+		Array.from(await (await fetch("https://api.github.com/repos/zenuas/PicoPDF/contents/docs/")).json())
 			.forEach(async (blob) => {
 				if(blob.name.slice(-3) != ".md") return;
 				
@@ -28,7 +28,7 @@ window.addEventListener("load", () => {
 				const p = document.createElement("p");
 				const a = document.createElement("a");
 				a.textContent = name.replace(/^\d+\./, "");
-				a.href = `https://zenuas.github.io/Yanp/${ name }.html#:~:text=${ q }`;
+				a.href = `https://zenuas.github.io/PicoPDF/${ name }.html#:~:text=${ q }`;
 				const blockquote = document.createElement("blockquote");
 				
 				finds.forEach(s => {
