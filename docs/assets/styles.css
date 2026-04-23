@@ -567,6 +567,11 @@ iframe[title="YouTube video player"]
 
 /* Rouge syntax highlighter */
 
+.highlighter-rouge
+{
+	display: inline-block;
+}
+
 .highlighter-rouge .k
 {
 	color: #2222EE;
@@ -581,4 +586,18 @@ iframe[title="YouTube video player"]
 .highlighter-rouge .cm
 {
 	color: #228822;
+}
+
+[data-filename]::before
+{
+	content: attr(data-filename);
+	display: inline-block;
+	background-color: #333837;
+	color: #B9B4A9;
+	font-family: monospace;
+	font-size: 0.9rem;
+	padding: 0.3em 0.8em;
+	border-radius: 4px;
+	border: 1px solid #404140;
+	white-space: pre-wrap;
 }
