@@ -167,6 +167,7 @@ public static class Subroutine
                 stack.Push(CharstringNumber(charstring[i..Math.Min(charstring.Length, 1 + (i += NextNumberBytes(c)))]));
             }
         }
+        f(CharstringCommandCodes.Return, stack, frame);
     }
 
     public static void DefaultOperandAction(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)

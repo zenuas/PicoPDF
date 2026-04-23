@@ -44,7 +44,6 @@ public class CffCharStrings : FontRegisterCommand
                             Debug.Assert(index >= 0 && index < cff.GlobalSubroutines.Length);
                             Console.WriteLine($"{ope}({index}) : {string.Join(", ", stack)}");
                             if (index >= 0 && index < cff.GlobalSubroutines.Length) Subroutine.EnumOperands(cff.GlobalSubroutines[index], stack, frame, OperandAction);
-                            Console.WriteLine($"return");
                             break;
                         }
 
@@ -54,7 +53,6 @@ public class CffCharStrings : FontRegisterCommand
                             Debug.Assert(index >= 0 && index < local_subr.Length);
                             Console.WriteLine($"{ope}({index}) : {string.Join(", ", stack)}");
                             if (index >= 0 && index < local_subr.Length) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
-                            Console.WriteLine($"return");
                             break;
                         }
 
