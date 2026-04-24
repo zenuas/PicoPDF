@@ -48,79 +48,79 @@ b0が12の場合はエスケープとし、次の1バイトと合わせて2バ�
 定義が `|-` で始まる場合、スタックの底から全て引数として消費し、スタックを空にしてから次の命令実行に移ることを意味する。
 `x`、`y` は絶対座標、`dx`、`dy` で始まるのは相対座標である。
 
-| 値         | 命令                                       | 定義                                                                              |
-|------------|--------------------------------------------|-----------------------------------------------------------------------------------|
-| 0          | 予約                                       |                                                                                   |
-| 1          | [hstem](#hstem、vstem、hstemhm、vstemhm)   | &#124;- y dy {dya dyb}* hstem &#124;-                                             |
-| 2          | 予約                                       |                                                                                   |
-| 3          | [vstem](#hstem、vstem、hstemhm、vstemhm)   | &#124;- x dx {dxa dxb}* vstem &#124;-                                             |
-| 4          | [vmoveto](#rmoveto、vmoveto、hmoveto)      | &#124;- dy1 vmoveto &#124;-                                                       |
-| 5          | [rlineto](#rlineto、vlineto、hlineto)      | &#124;- {dxa dya}+ rlineto &#124;-                                                |
-| 6          | [hlineto](#rlineto、vlineto、hlineto)      | &#124;- dx1 {dya dxb}* hlineto &#124;-<br>&#124;- {dxa dyb}+ hlineto &#124;-      |
-| 7          | [vlineto](#rlineto、vlineto、hlineto)      | &#124;- dy1 {dxa dyb}* vlineto &#124;-<br>&#124;- {dya dxb}+ vlineto &#124;-      |
-| 8          | [rrcurveto](#rrcurveto、rcurveline)        | &#124;- {dxa dya dxb dyb dxc dyc}+ rrcurveto &#124;-                              |
-| 9          | 予約                                       |                                                                                   |
-| 10         | [callsubr](#callsubr、callgsubr)           | subr callsubr                                                                     |
-| 11         | [return](#return)                          | return                                                                            |
-| 12         | [escape](#escape)                          | 次の1バイトと合わせて2バイト命令とする                                            |
-| 13         | 予約                                       |                                                                                   |
-| 14         | [endchar](#endchar)                        | endchar                                                                           |
-| 15         | 予約                                       |                                                                                   |
-| 16         | 予約                                       |                                                                                   |
-| 17         | 予約                                       |                                                                                   |
-| 18         | [hstemhm](#hstem、vstem、hstemhm、vstemhm) | &#124;- y dy {dya dyb}* hstemhm &#124;-                                           |
-| 19         | [hintmask](#hintmask、cntrmask)            | &#124;- (x dx {dxa dxb}*)? hintmask mask+ &#124;-                                 |
-| 20         | [cntrmask](#hintmask、cntrmask)            | &#124;- (x dx {dxa dxb}*)? cntrmask mask+ &#124;-                                 |
-| 21         | [rmoveto](#rmoveto、vmoveto、hmoveto)      | &#124;- dx1 dy1 rmoveto &#124;-                                                   |
-| 22         | [hmoveto](#rmoveto、vmoveto、hmoveto)      | &#124;- dx1 hmoveto &#124;-                                                       |
-| 23         | [vstemhm](#hstem、vstem、hstemhm、vstemhm) | &#124;- x dx {dxa dxb}* vstemhm &#124;-                                           |
-| 24         | [rcurveline](#rrcurveto、rcurveline)       | &#124;- {dxa dya dxb dyb dxc dyc}+ dxd dyd rcurveline &#124;-                     |
-| 25         | [rlinecurve](#rlinecurve)                  | &#124;- {dxa dya}+ dxb dyb dxc dyc dxd dyd rlinecurve &#124;-                     |
-| 26         | [vvcurveto](#vvcurveto、hhcurveto)         | &#124;- dx1? {dya dxb dyb dyc}+ vvcurveto &#124;-                                 |
-| 27         | [hhcurveto](#vvcurveto、hhcurveto)         | &#124;- dy1? {dxa dxb dyb dxc}+ hhcurveto &#124;-                                 |
-| 28         | [shortint](#shortint)                      | shortint b1 b2                                                                    |
-| 29         | [callgsubr](#callsubr、callgsubr)          | globalsubr callgsubr                                                              |
-| 30         | [vhcurveto](#vhcurveto、hvcurveto)         | &#124;- dy1 dx2 dy2 dx3 {dxa dxb dyb dyc dyd dxe dye dxf}* dyf? vhcurveto &#124;- |
-| 31         | [hvcurveto](#vhcurveto、hvcurveto)         | &#124;- dx1 dx2 dy2 dy3 {dya dxb dyb dxc dxd dxe dye dyf}* dxf? hvcurveto &#124;- |
-| 12 0       | 予約                                       |                                                                                   |
-| 12 1       | 予約                                       |                                                                                   |
-| 12 2       | 予約                                       |                                                                                   |
-| 12 3       | [and](#and、or、eq)                        | num1 num2 and                                                                     |
-| 12 4       | [or](#and、or、eq)                         | num1 num2 or                                                                      |
-| 12 5       | [not](#not、neg)                           | num1 not                                                                          |
-| 12 6       | 予約                                       |                                                                                   |
-| 12 7       | 予約                                       |                                                                                   |
-| 12 8       | 予約                                       |                                                                                   |
-| 12 9       | [abs](#abs)                                | num abs                                                                           |
-| 12 10      | [add](#add、sub、mul、div)                 | num1 num2 add                                                                     |
-| 12 11      | [sub](#add、sub、mul、div)                 | num1 num2 sub                                                                     |
-| 12 12      | [div](#add、sub、mul、div)                 | num1 num2 div                                                                     |
-| 12 13      | 予約                                       |                                                                                   |
-| 12 14      | [neg](#not、neg)                           | num neg                                                                           |
-| 12 15      | [eq](#and、or、eq)                         | num1 num2 eq                                                                      |
-| 12 16      | 予約                                       |                                                                                   |
-| 12 17      | 予約                                       |                                                                                   |
-| 12 18      | [drop](#drop)                              | num drop                                                                          |
-| 12 19      | 予約                                       |                                                                                   |
-| 12 20      | [put](#put、get)                           | val i put                                                                         |
-| 12 21      | [get](#put、get)                           | i get                                                                             |
-| 12 22      | [ifelse](#ifelse)                          | s1 s2 v1 v2 ifelse                                                                |
-| 12 23      | [random](#random)                          | random                                                                            |
-| 12 24      | [mul](#add、sub、mul、div)                 | num1 num2 mul                                                                     |
-| 12 25      | 予約                                       |                                                                                   |
-| 12 26      | [sqrt](#sqrt)                              | num sqrt                                                                          |
-| 12 27      | [dup](#dup)                                | any dup                                                                           |
-| 12 28      | [exch](#exch)                              | num1 num2 exch                                                                    |
-| 12 29      | [index](#index)                            | i index                                                                           |
-| 12 30      | [roll](#roll)                              | N J roll                                                                          |
-| 12 31      | 予約                                       |                                                                                   |
-| 12 32      | 予約                                       |                                                                                   |
-| 12 33      | 予約                                       |                                                                                   |
-| 12 34      | [hflex](#hflex)                            | &#124;- dx1 dx2 dy2 dx3 dx4 dx5 dx6 hflex &#124;-                                 |
-| 12 35      | [flex](#flex)                              | &#124;- dx1 dy1 dx2 dy2 dx3 dy3 dx4 dy4 dx5 dy5 dx6 dy6 fd flex &#124;-           |
-| 12 36      | [hflex1](#hflex1)                          | &#124;- dx1 dy1 dx2 dy2 dx3 dx4 dx5 dy5 dx6 hflex1 &#124;-                        |
-| 12 37      | [flex1](#flex1)                            | &#124;- dx1 dy1 dx2 dy2 dx3 dy3 dx4 dy4 dx5 dy5 d6 flex1 &#124;-                  |
-| 12 38～255 | 予約                                       |                                                                                   |
+| 値         | 命令                                             | 定義                                                                              |
+|------------|--------------------------------------------------|-----------------------------------------------------------------------------------|
+| 0          | 予約                                             |                                                                                   |
+| 1          | [hstem](#hstem、vstem、hstemhm、vstemhm)         | &#124;- y dy {dya dyb}* hstem &#124;-                                             |
+| 2          | 予約                                             |                                                                                   |
+| 3          | [vstem](#hstem、vstem、hstemhm、vstemhm)         | &#124;- x dx {dxa dxb}* vstem &#124;-                                             |
+| 4          | [vmoveto](#rmoveto、vmoveto、hmoveto)            | &#124;- dy1 vmoveto &#124;-                                                       |
+| 5          | [rlineto](#rlineto、vlineto、hlineto)            | &#124;- {dxa dya}+ rlineto &#124;-                                                |
+| 6          | [hlineto](#rlineto、vlineto、hlineto)            | &#124;- dx1 {dya dxb}* hlineto &#124;-<br>&#124;- {dxa dyb}+ hlineto &#124;-      |
+| 7          | [vlineto](#rlineto、vlineto、hlineto)            | &#124;- dy1 {dxa dyb}* vlineto &#124;-<br>&#124;- {dya dxb}+ vlineto &#124;-      |
+| 8          | [rrcurveto](#rrcurveto、rcurveline、rlinecurve)  | &#124;- {dxa dya dxb dyb dxc dyc}+ rrcurveto &#124;-                              |
+| 9          | 予約                                             |                                                                                   |
+| 10         | [callsubr](#callsubr、callgsubr)                 | subr callsubr                                                                     |
+| 11         | [return](#return)                                | return                                                                            |
+| 12         | [escape](#escape)                                | 次の1バイトと合わせて2バイト命令とする                                            |
+| 13         | 予約                                             |                                                                                   |
+| 14         | [endchar](#endchar)                              | endchar                                                                           |
+| 15         | 予約                                             |                                                                                   |
+| 16         | 予約                                             |                                                                                   |
+| 17         | 予約                                             |                                                                                   |
+| 18         | [hstemhm](#hstem、vstem、hstemhm、vstemhm)       | &#124;- y dy {dya dyb}* hstemhm &#124;-                                           |
+| 19         | [hintmask](#hintmask、cntrmask)                  | &#124;- (x dx {dxa dxb}*)? hintmask mask+ &#124;-                                 |
+| 20         | [cntrmask](#hintmask、cntrmask)                  | &#124;- (x dx {dxa dxb}*)? cntrmask mask+ &#124;-                                 |
+| 21         | [rmoveto](#rmoveto、vmoveto、hmoveto)            | &#124;- dx1 dy1 rmoveto &#124;-                                                   |
+| 22         | [hmoveto](#rmoveto、vmoveto、hmoveto)            | &#124;- dx1 hmoveto &#124;-                                                       |
+| 23         | [vstemhm](#hstem、vstem、hstemhm、vstemhm)       | &#124;- x dx {dxa dxb}* vstemhm &#124;-                                           |
+| 24         | [rcurveline](#rrcurveto、rcurveline、rlinecurve) | &#124;- {dxa dya dxb dyb dxc dyc}+ dxd dyd rcurveline &#124;-                     |
+| 25         | [rlinecurve](#rrcurveto、rcurveline、rlinecurve) | &#124;- {dxa dya}+ dxb dyb dxc dyc dxd dyd rlinecurve &#124;-                     |
+| 26         | [vvcurveto](#vvcurveto、hhcurveto)               | &#124;- dx1? {dya dxb dyb dyc}+ vvcurveto &#124;-                                 |
+| 27         | [hhcurveto](#vvcurveto、hhcurveto)               | &#124;- dy1? {dxa dxb dyb dxc}+ hhcurveto &#124;-                                 |
+| 28         | [shortint](#shortint)                            | shortint b1 b2                                                                    |
+| 29         | [callgsubr](#callsubr、callgsubr)                | globalsubr callgsubr                                                              |
+| 30         | [vhcurveto](#vhcurveto、hvcurveto)               | &#124;- dy1 dx2 dy2 dx3 {dxa dxb dyb dyc dyd dxe dye dxf}* dyf? vhcurveto &#124;- |
+| 31         | [hvcurveto](#vhcurveto、hvcurveto)               | &#124;- dx1 dx2 dy2 dy3 {dya dxb dyb dxc dxd dxe dye dyf}* dxf? hvcurveto &#124;- |
+| 12 0       | 予約                                             |                                                                                   |
+| 12 1       | 予約                                             |                                                                                   |
+| 12 2       | 予約                                             |                                                                                   |
+| 12 3       | [and](#and、or、eq)                              | num1 num2 and                                                                     |
+| 12 4       | [or](#and、or、eq)                               | num1 num2 or                                                                      |
+| 12 5       | [not](#not、neg)                                 | num1 not                                                                          |
+| 12 6       | 予約                                             |                                                                                   |
+| 12 7       | 予約                                             |                                                                                   |
+| 12 8       | 予約                                             |                                                                                   |
+| 12 9       | [abs](#abs)                                      | num abs                                                                           |
+| 12 10      | [add](#add、sub、mul、div)                       | num1 num2 add                                                                     |
+| 12 11      | [sub](#add、sub、mul、div)                       | num1 num2 sub                                                                     |
+| 12 12      | [div](#add、sub、mul、div)                       | num1 num2 div                                                                     |
+| 12 13      | 予約                                             |                                                                                   |
+| 12 14      | [neg](#not、neg)                                 | num neg                                                                           |
+| 12 15      | [eq](#and、or、eq)                               | num1 num2 eq                                                                      |
+| 12 16      | 予約                                             |                                                                                   |
+| 12 17      | 予約                                             |                                                                                   |
+| 12 18      | [drop](#drop)                                    | num drop                                                                          |
+| 12 19      | 予約                                             |                                                                                   |
+| 12 20      | [put](#put、get)                                 | val i put                                                                         |
+| 12 21      | [get](#put、get)                                 | i get                                                                             |
+| 12 22      | [ifelse](#ifelse)                                | s1 s2 v1 v2 ifelse                                                                |
+| 12 23      | [random](#random)                                | random                                                                            |
+| 12 24      | [mul](#add、sub、mul、div)                       | num1 num2 mul                                                                     |
+| 12 25      | 予約                                             |                                                                                   |
+| 12 26      | [sqrt](#sqrt)                                    | num sqrt                                                                          |
+| 12 27      | [dup](#dup)                                      | any dup                                                                           |
+| 12 28      | [exch](#exch)                                    | num1 num2 exch                                                                    |
+| 12 29      | [index](#index)                                  | i index                                                                           |
+| 12 30      | [roll](#roll)                                    | N J roll                                                                          |
+| 12 31      | 予約                                             |                                                                                   |
+| 12 32      | 予約                                             |                                                                                   |
+| 12 33      | 予約                                             |                                                                                   |
+| 12 34      | [hflex](#hflex)                                  | &#124;- dx1 dx2 dy2 dx3 dx4 dx5 dx6 hflex &#124;-                                 |
+| 12 35      | [flex](#flex)                                    | &#124;- dx1 dy1 dx2 dy2 dx3 dy3 dx4 dy4 dx5 dy5 dx6 dy6 fd flex &#124;-           |
+| 12 36      | [hflex1](#hflex1)                                | &#124;- dx1 dy1 dx2 dy2 dx3 dx4 dx5 dy5 dx6 hflex1 &#124;-                        |
+| 12 37      | [flex1](#flex1)                                  | &#124;- dx1 dy1 dx2 dy2 dx3 dy3 dx4 dy4 dx5 dy5 d6 flex1 &#124;-                  |
+| 12 38～255 | 予約                                             |                                                                                   |
 
 ### width
 
@@ -205,12 +205,23 @@ hlinetoはdx1の横直線を描画した後dyaの縦直線→dxbの横直線を�
 endchar                # パスを閉じるため(120, 250)-(50, 250)の直線を描画してアウトライン終了
 ```
 
-### rrcurveto、rcurveline
+### rrcurveto、rcurveline、rlinecurve
 
 rrcurvetoとrcurvelineは現在位置から相対座標で (dxa, dya) を1番目の制御点、(dxb, dyb) を2番目の制御点とし (dxc, dyc) への3次ベジェ曲線を描画する。
 その後、rcurvelineは (dxd, dyd) に直線を描画する。
 
+rlinecurveは現在位置から相対座標で (dxa, dya) に直線を引いた後、 (dxb, dyb) を1番目の制御点、(dxc, dyc) を2番目の制御点とし (dxd, dyd) への3次ベジェ曲線を描画する。
+
 ```cs
+if (ope == Rlinecurve)
+{
+	while (stack.Count >= 8)
+	{
+		var end = new Vector2(cp2.X + stack.Shift(), cp2.Y + stack.Shift());
+		// start-end の直線を描画
+		start = end;
+	}
+}
 while (stack.Count >= 6)
 {
 	var cp1 = new Vector2(start.X + stack.Shift(), start.Y + stack.Shift());
@@ -226,8 +237,6 @@ if (ope == Rcurveline)
 	start = end;
 }
 ```
-
-### rlinecurve
 
 ### vvcurveto、hhcurveto
 
