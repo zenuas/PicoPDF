@@ -217,7 +217,7 @@ if (ope == Rlinecurve)
 {
 	while (stack.Count >= 8)
 	{
-		var end = new Vector2(cp2.X + stack.Shift(), cp2.Y + stack.Shift());
+		var end = new Vector2(start.X + stack.Shift(), start.Y + stack.Shift());
 		// start-end の直線を描画
 		start = end;
 	}
@@ -232,7 +232,7 @@ while (stack.Count >= 6)
 }
 if (ope == Rcurveline)
 {
-	var end = new Vector2(cp2.X + stack.Shift(), cp2.Y + stack.Shift());
+	var end = new Vector2(start.X + stack.Shift(), start.Y + stack.Shift());
 	// start-end の直線を描画
 	start = end;
 }
