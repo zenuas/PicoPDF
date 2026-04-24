@@ -67,7 +67,7 @@ public class CompositeGlyph : IGlyph
                             Start = Vector2.Transform(line.Start, transform),
                             End = Vector2.Transform(line.End, transform),
                         },
-                    BezierCurves bezier => new BezierCurves()
+                    BezierCurve bezier => new BezierCurve()
                         {
                             Start = Vector2.Transform(bezier.Start, transform),
                             End = Vector2.Transform(bezier.End, transform),

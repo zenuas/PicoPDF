@@ -83,7 +83,7 @@ public class SvgOutput : FontRegisterCommand
                                         if (JointPoint > 0) _ = c.AppendLine($"""    <circle cx="{left + (line.End.X * r)}" cy="{baseline - (line.End.Y * r)}" r="{JointPoint}" fill="blue" />""");
                                         _ = d.AppendLine($"          L {left + (line.End.X * r)} {baseline - (line.End.Y * r)}");
                                         break;
-                                    case BezierCurves bezier when bezier.ControlPoint.Length == 1:
+                                    case BezierCurve bezier when bezier.ControlPoint.Length == 1:
                                         {
                                             var cp = bezier.ControlPoint[0];
                                             if (JointPoint > 0)
@@ -94,7 +94,7 @@ public class SvgOutput : FontRegisterCommand
                                             _ = d.AppendLine($"          Q {left + (cp.X * r)} {baseline - (cp.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
                                             break;
                                         }
-                                    case BezierCurves bezier when bezier.ControlPoint.Length == 2:
+                                    case BezierCurve bezier when bezier.ControlPoint.Length == 2:
                                         {
                                             var cp1 = bezier.ControlPoint[0];
                                             var cp2 = bezier.ControlPoint[1];

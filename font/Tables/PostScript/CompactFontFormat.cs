@@ -199,8 +199,8 @@ public class CompactFontFormat : IExportable
         var frame = new SubroutineFrame()
         {
             AddLine = vecs => edges.Add(vecs.Length == 2 ?
-                new Line() { Start = vecs[0], End = vecs[1] } :
-                new BezierCurves { Start = vecs[0], ControlPoint = [vecs[1], vecs[2]], End = vecs[3], ComplementPoint = false }),
+                new Line { Start = vecs[0], End = vecs[1] } :
+                new BezierCurve { Start = vecs[0], ControlPoint = [vecs[1], vecs[2]], End = vecs[3], ComplementPoint = false }),
         };
         Subroutine.EnumOperands(TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0], [], frame, OperandAction);
         if (edges.Count > 0) surfaces.Add([.. edges]);

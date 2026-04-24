@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace OpenType.Outline;
 
-public class BezierCurves : IEdge
+public class BezierCurve : IEdge
 {
     public required Vector2 Start { get; init; }
     public required Vector2 End { get; init; }
