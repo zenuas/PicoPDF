@@ -528,40 +528,39 @@ public static class Subroutine
         }
     }
 
-    public static void EnumSubroutines(Span<byte> charstring, byte[][]? local_subr, byte[][] global_subr, Func<bool, int, bool> f)
+    public static void EnumSubroutines(Span<byte> charstring, byte[][] local_subr, byte[][] global_subr, Func<bool, int, bool> f)
     {
-        var local_bias = GetSubroutineBias(local_subr?.Length ?? 0);
+        var local_bias = GetSubroutineBias(local_subr.Length);
         var global_bias = GetSubroutineBias(global_subr.Length);
-        var operand = 0;
-        for (var i = 0; i < charstring.Length; i++)
+
+        void OperandAction(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)
         {
-            var c = charstring[i];
-            if (c is (byte)CharstringCommandCodes.Callsubr or (byte)CharstringCommandCodes.Callgsubr)
+            switch (ope)
             {
-                if (c == (byte)CharstringCommandCodes.Callgsubr)
-                {
-                    var index = operand + global_bias;
-                    Debug.Assert(index >= 0 && index < global_subr.Length);
-                    if (index >= 0 && index < global_subr.Length && f(true, index)) EnumSubroutines(global_subr[index], null, global_subr, f);
-                }
-                else if (local_subr is { })
-                {
-                    var index = operand + local_bias;
-                    Debug.Assert(index >= 0 && index < local_subr.Length);
-                    if (index >= 0 && index < local_subr.Length && f(false, index)) EnumSubroutines(local_subr[index], local_subr, global_subr, f);
-                }
-                operand = 0;
-            }
-            else if (c != 28 && c < 32)
-            {
-                operand = 0; // any operator
-                if (c == (byte)CharstringCommandCodes.Escape) i++;
-            }
-            else
-            {
-                operand = (int)CharstringNumber(charstring[i..Math.Min(charstring.Length, 1 + (i += NextNumberBytes(c)))]); // any number
+                case CharstringCommandCodes.Callsubr:
+                    {
+                        var index = (int)stack.Pop() + local_bias;
+                        Debug.Assert(index >= 0 && index < local_subr.Length);
+                        if (index >= 0 && index < local_subr.Length && f(false, index)) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
+                        break;
+                    }
+
+                case CharstringCommandCodes.Callgsubr:
+                    {
+                        var index = (int)stack.Pop() + global_bias;
+                        Debug.Assert(index >= 0 && index < global_subr.Length);
+                        if (index >= 0 && index < global_subr.Length && f(true, index)) Subroutine.EnumOperands(global_subr[index], stack, frame, OperandAction);
+                        break;
+                    }
+
+                default:
+                    Subroutine.DefaultOperandAction(ope, stack, frame);
+                    break;
             }
         }
+
+        Subroutine.EnumOperands(charstring, [], new SubroutineFrame(), OperandAction);
+
     }
 
     public static byte[] NumberToBytes(int number) =>

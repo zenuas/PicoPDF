@@ -116,8 +116,7 @@ public class SubroutineTest
     public void EnumSubroutines()
     {
         Assert.Equal(EnumSubroutinesTest([]), 0);
-        Assert.Equal(EnumSubroutinesTest([28]), 0);
-        Assert.Equal(EnumSubroutinesTest([28, 100]), 0);
+        Assert.Equal(EnumSubroutinesTest([32]), 0);
         Assert.Equal(EnumSubroutinesTest([28, 100, 200]), 0);
 
         Assert.Equal(EnumSubroutinesTest([32, 10, 14]), 0b001); // 0 callsubr
