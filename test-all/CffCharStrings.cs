@@ -75,8 +75,7 @@ public class CffCharStrings : FontRegisterCommand
             }
 
             Console.WriteLine($"-- {c}");
-            var frame = new SubroutineFrame();
-            Subroutine.EnumOperands(cff.TopDict.CharStrings[gid < cff.TopDict.CharStrings.Length ? gid : 0], [], frame, OperandAction);
+            Subroutine.EnumOperands(cff.TopDict.CharStrings[gid < cff.TopDict.CharStrings.Length ? gid : 0], [], new SubroutineFrame(), OperandAction);
             Console.WriteLine();
         }
     }
