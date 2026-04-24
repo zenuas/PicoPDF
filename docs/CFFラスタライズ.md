@@ -195,7 +195,37 @@ SVGであれば[パスを閉じるコマンド](https://developer.mozilla.org/en
 
 ### rlineto、vlineto、hlineto
 
+rlinetoは現在位置から相対座標で (dxa, dya) に直線を描画する。
+vlinetoはdy1の縦直線を描画した後dxaの横直線→dybの縦直線を描画する。
+hlinetoはdx1の横直線を描画した後dyaの縦直線→dxbの横直線を描画する。
+
+```
+50, 250 Rmoveto        # 現在座標を(50, 250)へ移動
+250, 70, -250 hlineto  # (50, 250)-(50, 500)の横線 → (50, 500)-(120, 500)の縦線 → (120, 500)-(120, 250)の横線を描画
+endchar                # パスを閉じるため(120, 250)-(50, 250)の直線を描画してアウトライン終了
+```
+
 ### rrcurveto、rcurveline
+
+rrcurvetoとrcurvelineは現在位置から相対座標で (dxa, dya) を1番目の制御点、(dxb, dyb) を2番目の制御点とし (dxc, dyc) への3次ベジェ曲線を描画する。
+その後、rcurvelineは (dxd, dyd) に直線を描画する。
+
+```cs
+while (stack.Count >= 6)
+{
+	var cp1 = new Vector2(start.X + stack.Shift(), start.Y + stack.Shift());
+	var cp2 = new Vector2(cp1.X + stack.Shift(), cp1.Y + stack.Shift());
+	var end = new Vector2(cp2.X + stack.Shift(), cp2.Y + stack.Shift());
+	// start-cp1-cp2-end のベジェ曲線を描画
+	start = end;
+}
+if (ope == Rcurveline)
+{
+	var end = new Vector2(cp2.X + stack.Shift(), cp2.Y + stack.Shift());
+	// start-end の直線を描画
+	start = end;
+}
+```
 
 ### rlinecurve
 
