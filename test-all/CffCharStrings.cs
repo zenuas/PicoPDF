@@ -28,7 +28,7 @@ public class CffCharStrings : FontRegisterCommand
             var gid = font.CharToGID(arg);
 
             var private_dict = cff.TopDict.IsCIDFont ?
-                (cff.TopDict.FontDictArray[gid >= cff.TopDict.FontDictSelect.Length ? (byte)0 : cff.TopDict.FontDictSelect[gid]].PrivateDict) :
+                cff.TopDict.FontDictArray[gid >= cff.TopDict.FontDictSelect.Length ? (byte)0 : cff.TopDict.FontDictSelect[gid]].PrivateDict :
                 cff.TopDict.PrivateDict;
             var local_subr = private_dict?.LocalSubroutines ?? [];
 
