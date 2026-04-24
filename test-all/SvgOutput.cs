@@ -40,15 +40,16 @@ public class SvgOutput : FontRegisterCommand
         var font = fontreg.LoadComplete(Font);
         foreach (var arg in args)
         {
-            OutputSvg(font, [.. arg.ToUtf32CharArray()]);
+            OutputCharToSvg(font, [.. arg.ToUtf32CharArray()]);
         }
         Output.Flush();
     }
 
-    public void OutputSvg(IOpenTypeFont font, int[] cids)
+    public void OutputCharToSvg(IOpenTypeFont font, int[] cids) => OutputSvg(font, [.. cids.Select(x => (x, font.CharToGID(x)))]);
+
+    public void OutputSvg(IOpenTypeFont font, (int Char, uint GID)[] cids)
     {
-        var gids = cids.Select(font.CharToGID).ToArray();
-        var outlines = gids.Select(font.GIDToOutline).ToArray();
+        var outlines = cids.Select(x => font.GIDToOutline(x.GID)).ToArray();
         var total_width = outlines.Select(x => GetCanvasWidth(x).Width).Sum();
         var ascent = font.HorizontalHeader.Ascender;
         var descent = font.HorizontalHeader.Descender;
@@ -61,10 +62,10 @@ public class SvgOutput : FontRegisterCommand
         {
             var (gid_width, gid_left) = GetCanvasWidth(outlines[i]);
             left -= gid_left * r;
-            Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i])} -->");
+            Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
             var d = new StringBuilder();
             var c = new StringBuilder();
-            foreach (var outline in font.GIDToOutline(gids[i]))
+            foreach (var outline in font.GIDToOutline(cids[i].GID))
             {
                 switch (outline)
                 {
