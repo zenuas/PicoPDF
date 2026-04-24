@@ -73,6 +73,7 @@ public class SimpleGlyph : IGlyph
 
     public static int[] AbsoluteCoordinates(short[] relative_coordinates)
     {
+        if (relative_coordinates.Length == 0) return [];
         var absolute_coordinates = new int[relative_coordinates.Length];
         absolute_coordinates[0] = relative_coordinates[0];
         for (var i = 1; i < relative_coordinates.Length; i++)
@@ -93,7 +94,7 @@ public class SimpleGlyph : IGlyph
         var instruction_length = stream.ReadUShortByBigEndian();
         var instructions = Lists.Repeat(stream.ReadUByte).Take(instruction_length).ToArray();
 
-        var lastpoint = endpoints.Last() + 1;
+        var lastpoint = endpoints.Length == 0 ? 0 : endpoints.Last() + 1;
         var flags = new SimpleGlyphFlags[lastpoint];
         for (var i = 0; i < lastpoint; i++)
         {
