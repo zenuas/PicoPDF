@@ -56,7 +56,7 @@ public static class Subroutine
                 switch (ope)
                 {
                     case CharstringCommandCodes.Shortint:
-                        stack.Push(charstring[++i] << 8 | charstring[++i]);
+                        stack.Push((short)(charstring[++i] << 8 | charstring[++i]));
                         f(ope, stack, frame);
                         break;
 
