@@ -541,7 +541,7 @@ public static class Subroutine
                     {
                         var index = (int)stack.Pop() + local_bias;
                         Debug.Assert(index >= 0 && index < local_subr.Length);
-                        if (index >= 0 && index < local_subr.Length && f(false, index)) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
+                        if (index >= 0 && index < local_subr.Length && f(false, index)) EnumOperands(local_subr[index], stack, frame, OperandAction);
                         break;
                     }
 
@@ -549,18 +549,17 @@ public static class Subroutine
                     {
                         var index = (int)stack.Pop() + global_bias;
                         Debug.Assert(index >= 0 && index < global_subr.Length);
-                        if (index >= 0 && index < global_subr.Length && f(true, index)) Subroutine.EnumOperands(global_subr[index], stack, frame, OperandAction);
+                        if (index >= 0 && index < global_subr.Length && f(true, index)) EnumOperands(global_subr[index], stack, frame, OperandAction);
                         break;
                     }
 
                 default:
-                    Subroutine.DefaultOperandAction(ope, stack, frame);
+                    DefaultOperandAction(ope, stack, frame);
                     break;
             }
         }
 
-        Subroutine.EnumOperands(charstring, [], new SubroutineFrame(), OperandAction);
-
+        EnumOperands(charstring, [], new SubroutineFrame(), OperandAction);
     }
 
     public static byte[] NumberToBytes(int number) =>
