@@ -144,7 +144,7 @@ public class CMapFormat4 : ICMapFormat
         for (var i = 1; i <= char.MaxValue; i++)
         {
             var gid = char_to_gid(i);
-            if (gid > 0) dict.TryAdd(gid, i);
+            if (gid > 0) _ = dict.TryAdd(gid, i);
         }
 
         return (gid) => dict.TryGetValue(gid, out var c) ? c : null;
