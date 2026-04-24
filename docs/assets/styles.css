@@ -148,6 +148,30 @@ hr
 	margin: 0 0 1.2em;
 }
 
+.footnote
+{
+	font-size: 0.8em;
+	vertical-align: top;
+}
+
+.footnote::before
+{
+	content: "[";
+}
+
+.footnote::after
+{
+	content: "]";
+}
+
+.footnotes
+{
+	color: #958F83;
+	margin: 0;
+	padding: 0 0 0 1.0em;
+	border-left: 0.25em solid #3E3F3E;
+}
+
 .none
 {
 	display: none !important;
