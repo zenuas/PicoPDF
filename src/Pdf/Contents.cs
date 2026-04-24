@@ -18,6 +18,8 @@ public class Contents : PdfObject
 
     public void DrawTextOnBaseline(string text, double basey, double left, double size, IFont font) => Operations.Add(CreateDrawTextOnBaselineOperation(text, basey, left, size, font));
 
+    public void DrawPathOnBaseline(string text, double basey, double left, double size, IFont font) => Operations.Add(CreateDrawPathOnBaselineOperation(text, basey, left, size, font));
+
     public static DrawString CreateDrawTextOnBaselineOperation(string text, double basey, double left, double size, IFont font, IColor? color = null) => CreateDrawTextOnBaselineOperation(
             text,
             new PointValue(basey),
@@ -39,6 +41,11 @@ public class Contents : PdfObject
             Font = font,
             Color = color,
         };
+    }
+
+    public static DrawOperations CreateDrawPathOnBaselineOperation(string text, double basey, double left, double size, IFont font, IColor? color = null)
+    {
+        return new() { Operations = [] };
     }
 
     public double DrawText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
@@ -64,7 +71,7 @@ public class Contents : PdfObject
                 _ => left,
             };
 
-            opes.AddRange(CreateDrawTextOperation(textfonts, basey, text_left, text_size, color));
+            opes.AddRange(CreateDrawTextOperation(textfonts, basey, text_left, text_size, style.HasFlag(TextStyle.Stroke), color));
             if ((style & TextStyle.TextStyleMask) > 0) opes.AddRange(CreateDrawTextStyleOperations(style, linetop, text_left, basey, text_width, text_height, color));
             linetop += text_height;
             prev_linegap = allbox.LineGap * text_size;
@@ -91,13 +98,20 @@ public class Contents : PdfObject
         return linetop - top;
     }
 
-    public static IEnumerable<DrawString> CreateDrawTextOperation((string Text, Type0Font Font)[] textfonts, double basey, double left, double size, IColor? color = null)
+    public static IEnumerable<IOperation> CreateDrawTextOperation((string Text, Type0Font Font)[] textfonts, double basey, double left, double size, bool stroke, IColor? color = null)
     {
         var start = left;
         foreach (var (text, font) in textfonts)
         {
             var box = font.MeasureStringBox(text);
-            yield return CreateDrawTextOnBaselineOperation(text, basey, start, size, font, color);
+            if (stroke)
+            {
+                yield return CreateDrawPathOnBaselineOperation(text, basey, start, size, font, color);
+            }
+            else
+            {
+                yield return CreateDrawTextOnBaselineOperation(text, basey, start, size, font, color);
+            }
             start += box.Width * size;
         }
     }
