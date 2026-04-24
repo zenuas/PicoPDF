@@ -38,21 +38,21 @@ public class CffCharStrings : FontRegisterCommand
             {
                 switch (ope)
                 {
-                    case CharstringCommandCodes.Callgsubr:
-                        {
-                            var index = (int)stack.Pop() + global_bias;
-                            Debug.Assert(index >= 0 && index < cff.GlobalSubroutines.Length);
-                            Console.WriteLine($"{ope}({index}) : {string.Join(", ", stack)}");
-                            if (index >= 0 && index < cff.GlobalSubroutines.Length) Subroutine.EnumOperands(cff.GlobalSubroutines[index], stack, frame, OperandAction);
-                            break;
-                        }
-
                     case CharstringCommandCodes.Callsubr:
                         {
                             var index = (int)stack.Pop() + local_bias;
                             Debug.Assert(index >= 0 && index < local_subr.Length);
                             Console.WriteLine($"{ope}({index}) : {string.Join(", ", stack)}");
                             if (index >= 0 && index < local_subr.Length) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
+                            break;
+                        }
+
+                    case CharstringCommandCodes.Callgsubr:
+                        {
+                            var index = (int)stack.Pop() + global_bias;
+                            Debug.Assert(index >= 0 && index < cff.GlobalSubroutines.Length);
+                            Console.WriteLine($"{ope}({index}) : {string.Join(", ", stack)}");
+                            if (index >= 0 && index < cff.GlobalSubroutines.Length) Subroutine.EnumOperands(cff.GlobalSubroutines[index], stack, frame, OperandAction);
                             break;
                         }
 
