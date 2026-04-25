@@ -10,9 +10,6 @@ public class FontExport : FontRegisterCommand
     [CommandOption("font")]
     public string Font { get; init; } = "Meiryo Bold";
 
-    [CommandOption("export-chars")]
-    public string ExportChars { get; init; } = "a";
-
     [CommandOption("output"), CommandOption('o')]
     public required string Output { get; init; }
 
@@ -20,7 +17,7 @@ public class FontExport : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
         var font = fontreg.LoadComplete(Font);
-        var fontextract = FontExtract.Extract(font, CreateOption(ExportChars));
+        var fontextract = FontExtract.Extract(font, CreateOption(args.Join()));
         using var stream = new FileStream(Output, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
         FontExporter.Export(fontextract, stream);
     }
