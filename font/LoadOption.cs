@@ -2,7 +2,7 @@
 
 public class LoadOption
 {
-    public Platforms[] PlatformIDOrder { get; init; } = [Platforms.Windows, Platforms.Unicode];
+    public Platforms[] PlatformIDOrder { get; init; } = [Platforms.Unicode];
 
     public bool ForceEmbedded { get; init; } = false;
 }
