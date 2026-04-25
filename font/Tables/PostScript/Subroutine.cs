@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Numerics;
 
 namespace OpenType.Tables.PostScript;
@@ -526,40 +525,6 @@ public static class Subroutine
             default:
                 throw new();
         }
-    }
-
-    public static void EnumSubroutines(Span<byte> charstring, byte[][] local_subr, byte[][] global_subr, Func<bool, int, bool> f)
-    {
-        var local_bias = GetSubroutineBias(local_subr.Length);
-        var global_bias = GetSubroutineBias(global_subr.Length);
-
-        void OperandAction(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)
-        {
-            switch (ope)
-            {
-                case CharstringCommandCodes.Callsubr:
-                    {
-                        var index = (int)stack.Pop() + local_bias;
-                        Debug.Assert(index >= 0 && index < local_subr.Length);
-                        if (index >= 0 && index < local_subr.Length && f(false, index)) EnumOperands(local_subr[index], stack, frame, OperandAction);
-                        break;
-                    }
-
-                case CharstringCommandCodes.Callgsubr:
-                    {
-                        var index = (int)stack.Pop() + global_bias;
-                        Debug.Assert(index >= 0 && index < global_subr.Length);
-                        if (index >= 0 && index < global_subr.Length && f(true, index)) EnumOperands(global_subr[index], stack, frame, OperandAction);
-                        break;
-                    }
-
-                default:
-                    DefaultOperandAction(ope, stack, frame);
-                    break;
-            }
-        }
-
-        EnumOperands(charstring, [], new SubroutineFrame(), OperandAction);
     }
 
     public static byte[] NumberToBytes(float number)
