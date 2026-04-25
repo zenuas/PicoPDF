@@ -181,6 +181,8 @@ Charsetsのオフセットが0～2の時は定義済みのcharsetが使用され
 | 1          | Expert       |
 | 2          | ExpertSubset |
 
+* [https://github.com/zenuas/PicoPDF/blob/master/font/Tables/PostScript/Charsets.cs](https://github.com/zenuas/PicoPDF/blob/master/font/Tables/PostScript/Charsets.cs){:target="_blank"}
+
 上記でない場合はオフセットから1バイト読み込みフォーマットを決定する。
 CharsetsではGID 0(.notdef)のデータは格納されない。
 
