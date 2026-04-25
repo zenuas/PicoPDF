@@ -50,7 +50,7 @@ public class SvgOutput : FontRegisterCommand
     public void OutputSvg(IOpenTypeFont font, (int Char, uint GID)[] cids)
     {
         var outlines = cids.Select(x => font.GIDToOutline(x.GID)).ToArray();
-        var total_width = outlines.Select(x => GetCanvasWidth(x).Width).Sum();
+        var total_width = outlines.Select(x => FontExtract.GetCanvasWidth(x).Width).Sum();
         var ascent = font.HorizontalHeader.Ascender;
         var descent = font.HorizontalHeader.Descender;
 
@@ -60,7 +60,7 @@ public class SvgOutput : FontRegisterCommand
         Output.WriteLine($"""<svg width="{total_width * r}" height="{(ascent - descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
         for (var i = 0; i < cids.Length; i++)
         {
-            var (gid_width, gid_left) = GetCanvasWidth(outlines[i]);
+            var (gid_width, gid_left) = FontExtract.GetCanvasWidth(outlines[i]);
             left -= gid_left * r;
             Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
             var d = new StringBuilder();
@@ -83,6 +83,7 @@ public class SvgOutput : FontRegisterCommand
                                         if (JointPoint > 0) _ = c.AppendLine($"""    <circle cx="{left + (line.End.X * r)}" cy="{baseline - (line.End.Y * r)}" r="{JointPoint}" fill="blue" />""");
                                         _ = d.AppendLine($"          L {left + (line.End.X * r)} {baseline - (line.End.Y * r)}");
                                         break;
+
                                     case BezierCurve bezier when bezier.ControlPoint.Length == 1:
                                         {
                                             var cp = bezier.ControlPoint[0];
@@ -94,6 +95,7 @@ public class SvgOutput : FontRegisterCommand
                                             _ = d.AppendLine($"          Q {left + (cp.X * r)} {baseline - (cp.Y * r)}, {left + (bezier.End.X * r)} {baseline - (bezier.End.Y * r)}");
                                             break;
                                         }
+
                                     case BezierCurve bezier when bezier.ControlPoint.Length == 2:
                                         {
                                             var cp1 = bezier.ControlPoint[0];
@@ -125,19 +127,6 @@ public class SvgOutput : FontRegisterCommand
             Output.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{total_width * r}" y2="{baseline}" stroke="red" />""");
         }
         Output.WriteLine("</svg>");
-    }
-
-    public static (float Width, float Left) GetCanvasWidth(IOutline[] outlines)
-    {
-        foreach (var outline in outlines)
-        {
-            switch (outline)
-            {
-                case Surface surface:
-                    return (surface.XMax - surface.XMin, surface.XMin);
-            }
-        }
-        return (0, 0);
     }
 
     public static string ColorToHex(Color color) => color == Color.Transparent ? "transparent" : $"#{color.R:X2}{color.G:X2}{color.B:X2}";

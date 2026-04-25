@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using OpenType.Outline;
 using OpenType.Tables;
 using OpenType.Tables.CMap;
 using OpenType.Tables.Colr;
@@ -7,6 +8,7 @@ using OpenType.Tables.TrueType;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace OpenType;
 
@@ -64,80 +66,31 @@ public static class FontExtract
     public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
     {
         var validchars = opt.ExtractChars.Where(x => font.CharToGID(x) != 0).Order().ToArray();
-        var outputs = CreateCharToGIDMetrics(font, validchars);
+        var outputs = CreateCharToGIDMetrics(font, validchars).Append((Char: 0, NewGID: 0u, OldGID: 0u, HorizontalMetrics: font.HorizontalMetrics.Metrics[0])).ToArray();
         var char_gids = outputs[0..validchars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
-        var charsets = font.CompactFontFormat.TopDict.Charsets.Try();
         var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (
                 Glyph: font.CompactFontFormat.TopDict.CharStrings[x.OldGID],
-                Charset: x.OldGID == 0 ? (ushort)0 : charsets.Glyph[x.OldGID - 1],
                 x.HorizontalMetrics,
-                FontDictSelect: x.OldGID >= font.CompactFontFormat.TopDict.FontDictSelect.Length ? (byte)0 : font.CompactFontFormat.TopDict.FontDictSelect[x.OldGID])
+                Outline: font.GIDToOutline(x.OldGID))
             );
-        var fdselect_index = outputs
-            .Select(x => gid_glyph[x.NewGID].FontDictSelect)
-            .Distinct()
-            .Order()
-            .Select((x, i) => (FontDictSelect: x, Index: i + 1))
-            .ToDictionary(x => x.FontDictSelect, x => (byte)x.Index);
-        if (font.CompactFontFormat.TopDict.FontDictSelect.Length > 0)
-        {
-            gid_glyph[0] = (font.CompactFontFormat.TopDict.CharStrings[0], 0, font.HorizontalMetrics.Metrics[0], font.CompactFontFormat.TopDict.FontDictSelect[0]);
-            fdselect_index[font.CompactFontFormat.TopDict.FontDictSelect[0]] = 0;
-        }
         var num_of_glyph = (int)gid_glyph.Keys.Max();
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
-        var char_strings = Lists.RangeTo(1, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.Glyph : font.CompactFontFormat.TopDict.CharStrings[0])
-            .Prepend(font.CompactFontFormat.TopDict.CharStrings[0])
-            .ToArray();
-
-        var fdselect = font.CompactFontFormat.TopDict.FontDictSelect.Length == 0
-            ? []
-            : Lists.RangeTo(0, num_of_glyph)
-                .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.FontDictSelect : (byte)0)
-                .ToArray();
-
-        var global_subr = font.CompactFontFormat.GlobalSubroutines;
-        var global_subr_mark = new HashSet<int>();
-        var local_subr_mark = new Dictionary<byte, HashSet<int>>();
-        var fdselect_unique = fdselect.Order().Distinct().ToArray();
-        fdselect_unique.Each(x => local_subr_mark.Add(fdselect_index[x], []));
-        for (var i = 0; i < char_strings.Length; i++)
-        {
-            var fdindex = gid_glyph[(uint)i].FontDictSelect;
-            var local_subr = font.CompactFontFormat.TopDict.FontDictArray[fdindex].PrivateDict?.LocalSubroutines ?? [];
-            var current_subr_mark = local_subr_mark[fdselect_index[fdindex]];
-            Subroutine.EnumSubroutines(char_strings[i], local_subr, global_subr, (global, index) => (global ? global_subr_mark : current_subr_mark).Add(index));
-        }
-
-        var fdarray = fdselect_unique
-            .Select(x =>
-            {
-                var dict = font.CompactFontFormat.TopDict.FontDictArray[x];
-                var private_dict = dict.PrivateDict;
-                if (private_dict is { })
-                {
-                    var subr_mark = local_subr_mark[fdselect_index[x]];
-                    private_dict = private_dict.Clone(subr: [.. private_dict.LocalSubroutines.Select((x, i) => subr_mark.Contains(i) ? x : [11])]);
-                }
-                return dict.Clone(private_dict);
-            })
-            .ToArray();
-
+        var dict = font.CompactFontFormat.TopDict.Dict.ToDictionary();
+        _ = dict.TryAdd(1230, [/* SID.StandardStrings[388] = "Regular" */388]);
         var top_dict = new DictData
         {
-            Strings = font.CompactFontFormat.TopDict.Strings,
-            Dict = font.CompactFontFormat.TopDict.Dict.ToDictionary(),
-            CharStrings = char_strings,
+            Strings = [],
+            Dict = dict,
+            CharStrings = [.. Lists.RangeTo(0, num_of_glyph).Select(x => OutlineToCharStrings(gid_glyph[(uint)x].Outline, 0))],
             Charsets = new()
             {
                 Format = 0,
                 Glyph = [.. Lists.RangeTo(1, num_of_glyph).Select(x => (ushort)x)],
             },
             PrivateDict = font.CompactFontFormat.TopDict.PrivateDict,
-            FontDictArray = fdarray,
-            FontDictSelect = [.. fdselect.Select(x => fdselect_index[x])],
+            FontDictArray = [new DictData { Dict = [] }],
+            FontDictSelect = [.. Lists.Repeat<byte>(0).Take(num_of_glyph + 1)],
         };
 
         var cff = new CompactFontFormat
@@ -149,7 +102,7 @@ public static class FontExtract
             Names = font.CompactFontFormat.Names,
             TopDict = top_dict,
             Strings = font.CompactFontFormat.Strings,
-            GlobalSubroutines = [.. global_subr.Select((x, i) => global_subr_mark.Contains(i) ? x : [11])],
+            GlobalSubroutines = [],
         };
 
         return new()
@@ -835,5 +788,71 @@ public static class FontExtract
                 PaletteLabels = [],
                 PaletteEntryLabels = [],
             });
+    }
+
+    public static byte[] OutlineToCharStrings(IOutline[] outlines, int nominalWidthX)
+    {
+        var char_strings = new List<byte>();
+        char_strings.AddRange(Subroutine.NumberToBytes(GetCanvasWidth(outlines).Width - nominalWidthX));
+
+        var current = new Vector2(0, 0);
+        foreach (var outline in outlines)
+        {
+            switch (outline)
+            {
+                case Surface surface when surface.Edges.Length > 0:
+                    {
+                        var start = surface.Edges.First().Start;
+                        char_strings.AddRange(Subroutine.NumberToBytes(start.X - current.X));
+                        char_strings.AddRange(Subroutine.NumberToBytes(start.Y - current.Y));
+                        char_strings.Add((byte)CharstringCommandCodes.Rmoveto);
+                        current = start;
+
+                        foreach (var edge in surface.Edges)
+                        {
+                            switch (edge)
+                            {
+                                case Line line:
+                                    char_strings.AddRange(Subroutine.NumberToBytes(line.End.X - current.X));
+                                    char_strings.AddRange(Subroutine.NumberToBytes(line.End.Y - current.Y));
+                                    char_strings.Add((byte)CharstringCommandCodes.Rlineto);
+                                    current = line.End;
+                                    break;
+
+                                case BezierCurve bezier when bezier.ControlPoint.Length == 2:
+                                    {
+                                        var cp1 = bezier.ControlPoint[0];
+                                        var cp2 = bezier.ControlPoint[1];
+                                        char_strings.AddRange(Subroutine.NumberToBytes(cp1.X - current.X));
+                                        char_strings.AddRange(Subroutine.NumberToBytes(cp1.Y - current.Y));
+                                        char_strings.AddRange(Subroutine.NumberToBytes(cp2.X - cp1.X));
+                                        char_strings.AddRange(Subroutine.NumberToBytes(cp2.Y - cp1.Y));
+                                        char_strings.AddRange(Subroutine.NumberToBytes(bezier.End.X - cp2.X));
+                                        char_strings.AddRange(Subroutine.NumberToBytes(bezier.End.Y - cp2.Y));
+                                        char_strings.Add((byte)CharstringCommandCodes.Rrcurveto);
+                                        current = bezier.End;
+                                        break;
+                                    }
+                            }
+                        }
+                        break;
+                    }
+            }
+        }
+        char_strings.Add((byte)CharstringCommandCodes.Endchar);
+        return [.. char_strings];
+    }
+
+    public static (float Width, float Left) GetCanvasWidth(IOutline[] outlines)
+    {
+        foreach (var outline in outlines)
+        {
+            switch (outline)
+            {
+                case Surface surface:
+                    return (surface.XMax - surface.XMin, surface.XMin);
+            }
+        }
+        return (0, 0);
     }
 }
