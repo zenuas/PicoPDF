@@ -562,12 +562,24 @@ public static class Subroutine
         EnumOperands(charstring, [], new SubroutineFrame(), OperandAction);
     }
 
-    public static byte[] NumberToBytes(int number) =>
-        number is >= -107 and <= 107 ? [(byte)(number + 139)] :
-        number is >= 108 and <= 1131 ? [(byte)((number - 108) / 256 + 247), (byte)(number - 108)] :
-        number is <= -108 and >= -1131 ? [(byte)((-number - 108) / 256 + 251), (byte)(-number - 108)] :
-        number is >= -32768 and <= 32767 ? [28, (byte)(number >> 8), (byte)(number & 0xFF)] :
-        [255, (byte)(number >> 24), (byte)((number >> 16) & 0xFF), (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)];
+    public static byte[] NumberToBytes(float number)
+    {
+        if (number % 1 == 0)
+        {
+            var n = (int)number;
+
+            return n is >= -107 and <= 107 ? [(byte)(n + 139)] :
+                n is >= 108 and <= 1131 ? [(byte)((n - 108) / 256 + 247), (byte)(n - 108)] :
+                n is <= -108 and >= -1131 ? [(byte)((-n - 108) / 256 + 251), (byte)(-n - 108)] :
+                [(byte)CharstringCommandCodes.Shortint, (byte)(n >> 8), (byte)(n & 0xFF)];
+        }
+        else
+        {
+            var n = (int)(number * 65536);
+
+            return [255, (byte)(n >> 24), (byte)((n >> 16) & 0xFF), (byte)((n >> 8) & 0xFF), (byte)(n & 0xFF)];
+        }
+    }
 
     public static int GetSubroutineBias(int subr_count) =>
         subr_count < 1240 ? 107 :
@@ -578,7 +590,7 @@ public static class Subroutine
         charstring.Length == 1 && charstring[0] is >= 32 and <= 246 ? charstring[0] - 139 :
         charstring.Length == 2 && charstring[0] is >= 247 and <= 250 ? (charstring[0] - 247) * 256 + charstring[1] + 108 :
         charstring.Length == 2 && charstring[0] is >= 251 and <= 254 ? -((charstring[0] - 251) * 256) - charstring[1] - 108 :
-        charstring.Length == 5 && charstring[0] == 255 ? ((short)(charstring[1] << 8 | charstring[2])) + ((short)(charstring[3] << 8 | charstring[4])) / 65536f :
+        charstring.Length == 5 && charstring[0] == 255 ? ((charstring[1] << 24 | charstring[2] << 16 | charstring[3] << 8 | charstring[4]) / 65536f) :
         0;
 
     public static int NextNumberBytes(byte c) =>

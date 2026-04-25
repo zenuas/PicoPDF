@@ -32,10 +32,11 @@ public class SubroutineTest
         //Assert.Equal(Subroutine.NumberToBytes(-1), [28, 255, 255]);
 
         // 16-bit signed integer with 16 bits of fraction.
-        //Assert.Equal(Subroutine.NumberToBytes(0), [255, 0, 0, 0, 0]);
-        Assert.Equal(Subroutine.NumberToBytes(0x7FFFFFFF), [255, 127, 255, 255, 255]);
-        Assert.Equal(Subroutine.NumberToBytes(-2147483648), [255, 128, 0, 0, 0]);
-        //Assert.Equal(Subroutine.NumberToBytes(-1), [255, 255, 255, 255, 255]);
+        //Assert.Equal(Subroutine.NumberToBytes(0f), [255, 0, 0, 0, 0]);
+        Assert.Equal(Subroutine.NumberToBytes(258.5f), [255, 1, 2, 128, 0]);
+        Assert.Equal(Subroutine.NumberToBytes(32767.251953125f), [255, 127, 255, 64, 128]);
+        Assert.Equal(Subroutine.NumberToBytes(-32767.748046875f), [255, 128, 0, 64, 128]);
+        Assert.Equal(Subroutine.NumberToBytes(-0.001953125f), [255, 255, 255, 255, 128]);
     }
 
     [Fact]
@@ -67,9 +68,10 @@ public class SubroutineTest
 
         // 16-bit signed integer with 16 bits of fraction.
         Assert.Equal(Subroutine.CharstringNumber([255, 0, 0, 0, 0]), 0);
-        Assert.Equal(Subroutine.CharstringNumber([255, 1, 2, 128, 0]), 257.5);
-        Assert.Equal(Subroutine.CharstringNumber([255, 128, 0, 64, 32]), -32767.75);
-        Assert.Equal(Subroutine.CharstringNumber([255, 255, 255, 255, 128]), -1.001953125);
+        Assert.Equal(Subroutine.CharstringNumber([255, 1, 2, 128, 0]), 258.5);
+        Assert.Equal(Subroutine.CharstringNumber([255, 127, 255, 64, 128]), 32767.251953125);
+        Assert.Equal(Subroutine.CharstringNumber([255, 128, 0, 64, 128]), -32767.748046875);
+        Assert.Equal(Subroutine.CharstringNumber([255, 255, 255, 255, 128]), -0.001953125);
     }
 
     [Fact]
