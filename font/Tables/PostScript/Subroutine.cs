@@ -184,13 +184,12 @@ public static class Subroutine
             case CharstringCommandCodes.Hlineto:
                 {
                     var vline = ope == CharstringCommandCodes.Vlineto;
-                    var prev = frame.CurrentPoint;
                     while (stack.Count > 0)
                     {
                         var value = stack.Shift();
-                        frame.CurrentPoint = new(frame.CurrentPoint.X + (!vline ? value : 0), frame.CurrentPoint.Y + (vline ? value : 0));
-                        frame.AddLine([prev, frame.CurrentPoint]);
-                        prev = frame.CurrentPoint;
+                        var end = new Vector2(frame.CurrentPoint.X + (!vline ? value : 0), frame.CurrentPoint.Y + (vline ? value : 0));
+                        frame.AddLine([frame.CurrentPoint, end]);
+                        frame.CurrentPoint = end;
                         vline = !vline;
                     }
                     break;
@@ -198,12 +197,11 @@ public static class Subroutine
 
             case CharstringCommandCodes.Rlineto:
                 {
-                    var prev = frame.CurrentPoint;
                     while (stack.Count >= 2)
                     {
-                        frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
-                        frame.AddLine([prev, frame.CurrentPoint]);
-                        prev = frame.CurrentPoint;
+                        var end = new Vector2(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
+                        frame.AddLine([frame.CurrentPoint, end]);
+                        frame.CurrentPoint = end;
                     }
                     break;
                 }
@@ -289,11 +287,11 @@ public static class Subroutine
 
             case CharstringCommandCodes.Rlinecurve:
                 {
-                    var prev = frame.CurrentPoint;
                     while (stack.Count >= 8)
                     {
-                        frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
-                        frame.AddLine([prev, frame.CurrentPoint]);
+                        var end = new Vector2(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
+                        frame.AddLine([frame.CurrentPoint, end]);
+                        frame.CurrentPoint = end;
                     }
                     goto case CharstringCommandCodes.Rrcurveto;
                 }
@@ -318,9 +316,9 @@ public static class Subroutine
                     }
                     if (ope == CharstringCommandCodes.Rcurveline)
                     {
-                        var prev = frame.CurrentPoint;
-                        frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
-                        frame.AddLine([prev, frame.CurrentPoint]);
+                        var end = new Vector2(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y + stack.Shift());
+                        frame.AddLine([frame.CurrentPoint, end]);
+                        frame.CurrentPoint = end;
                     }
                     break;
                 }
