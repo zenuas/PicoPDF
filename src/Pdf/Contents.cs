@@ -1,4 +1,6 @@
 ﻿using Mina.Extension;
+using OpenType;
+using OpenType.Outline;
 using PicoPDF.Loader.Elements;
 using PicoPDF.Pdf.Color;
 using PicoPDF.Pdf.Drawing;
@@ -18,7 +20,7 @@ public class Contents : PdfObject
 
     public void DrawTextOnBaseline(string text, double basey, double left, double size, IFont font) => Operations.Add(CreateDrawTextOnBaselineOperation(text, basey, left, size, font));
 
-    public void DrawPathOnBaseline(string text, double basey, double left, double size, IFont font) => Operations.Add(CreateDrawPathOnBaselineOperation(text, basey, left, size, font));
+    public void DrawPathOnBaseline(string text, double basey, double left, double size, Type0Font font) => Operations.AddRange(CreateDrawPathOnBaselineOperation(text, basey, left, size, font));
 
     public static DrawString CreateDrawTextOnBaselineOperation(string text, double basey, double left, double size, IFont font, IColor? color = null)
     {
@@ -34,9 +36,77 @@ public class Contents : PdfObject
         };
     }
 
-    public static DrawOperations CreateDrawPathOnBaselineOperation(string text, double basey, double left, double size, IFont font, IColor? color = null)
+    public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(string text, double basey, double left, double size, Type0Font font, IColor? color = null)
     {
-        return new() { Operations = [] };
+        var opentype_font = font.EmbeddedFont ?? font.Font;
+        var ascent = opentype_font.HorizontalHeader.Ascender;
+        var descent = opentype_font.HorizontalHeader.Descender;
+
+        var r = 1f / (ascent - descent) * size;
+        var baseline = basey + descent * r;
+        foreach (var c in text.ToUtf32CharArray())
+        {
+            var gid = opentype_font.CharToGID(c);
+            var outlines = opentype_font.GIDToOutline(gid);
+            var opes = new List<IPathOperation>();
+
+            foreach (var outline in outlines)
+            {
+                switch (outline)
+                {
+                    case Surface surface when surface.Edges.Length > 0:
+                        {
+                            var start = surface.Edges.First().Start;
+                            opes.Add(new DrawMovePath { Start = (new PointValue(left + start.X * r), new PointValue(baseline - start.Y * r)) });
+                            foreach (var edge in surface.Edges)
+                            {
+                                switch (edge)
+                                {
+                                    case Line line:
+                                        opes.Add(new DrawLinePath
+                                        {
+                                            End = (new PointValue(left + line.End.X * r), new PointValue(baseline - line.End.Y * r)),
+                                        });
+                                        break;
+
+                                    case BezierCurve bezier when bezier.ControlPoint.Length == 1:
+                                        {
+                                            var cp = bezier.ControlPoint[0];
+                                            opes.Add(new DrawBezierCurvePath
+                                            {
+                                                ControlPoint1 = (new PointValue(left + (bezier.Start.X + (cp.X - bezier.Start.X) * 2 / 3) * r), new PointValue(baseline - (bezier.Start.Y + (cp.Y - bezier.Start.Y) * 2 / 3) * r)),
+                                                ControlPoint2 = (new PointValue(left + (cp.X + (bezier.End.X - cp.X) * 2 / 3) * r), new PointValue(baseline - (cp.Y + (bezier.End.Y - cp.Y) * 2 / 3) * r)),
+                                                End = (new PointValue(left + bezier.End.X * r), new PointValue(baseline - bezier.End.Y * r)),
+                                            });
+                                            break;
+                                        }
+
+                                    case BezierCurve bezier when bezier.ControlPoint.Length == 2:
+                                        {
+                                            var cp1 = bezier.ControlPoint[0];
+                                            var cp2 = bezier.ControlPoint[1];
+                                            opes.Add(new DrawBezierCurvePath
+                                            {
+                                                ControlPoint1 = (new PointValue(left + cp1.X * r), new PointValue(baseline - cp1.Y * r)),
+                                                ControlPoint2 = (new PointValue(left + cp2.X * r), new PointValue(baseline - cp2.Y * r)),
+                                                End = (new PointValue(left + bezier.End.X * r), new PointValue(baseline - bezier.End.Y * r)),
+                                            });
+                                            break;
+                                        }
+                                }
+                            }
+                            break;
+                        }
+                }
+            }
+            yield return new()
+            {
+                Operations = [.. opes],
+                Color = color,
+                LineWidth = new PointValue(size * r),
+            };
+            left += FontExtract.GetCanvasWidth(outlines).Width * r;
+        }
     }
 
     public double DrawText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
@@ -97,7 +167,7 @@ public class Contents : PdfObject
             var box = font.MeasureStringBox(text);
             if (stroke)
             {
-                yield return CreateDrawPathOnBaselineOperation(text, basey, start, size, font, color);
+                foreach (var op in CreateDrawPathOnBaselineOperation(text, basey, start, size, font, color)) yield return op;
             }
             else
             {
