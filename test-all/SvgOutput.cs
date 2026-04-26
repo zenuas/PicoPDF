@@ -49,8 +49,8 @@ public class SvgOutput : FontRegisterCommand
 
     public void OutputSvg(IOpenTypeFont font, (int Char, uint GID)[] cids)
     {
-        var outlines = cids.Select(x => font.GIDToOutline(x.GID)).ToArray();
-        var total_width = outlines.Select(x => FontExtract.GetCanvasWidth(x).Width).Sum();
+        var outliness = cids.Select(x => font.GIDToOutline(x.GID)).ToArray();
+        var total_width = outliness.Select(x => FontExtract.GetCanvasWidth(x).Width).Sum();
         var ascent = font.HorizontalHeader.Ascender;
         var descent = font.HorizontalHeader.Descender;
 
@@ -60,12 +60,12 @@ public class SvgOutput : FontRegisterCommand
         Output.WriteLine($"""<svg width="{total_width * r}" height="{(ascent - descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
         for (var i = 0; i < cids.Length; i++)
         {
-            var (gid_width, gid_left) = FontExtract.GetCanvasWidth(outlines[i]);
+            var (gid_width, gid_left) = FontExtract.GetCanvasWidth(outliness[i]);
             left -= gid_left * r;
             Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
             var d = new StringBuilder();
             var c = new StringBuilder();
-            foreach (var outline in font.GIDToOutline(cids[i].GID))
+            foreach (var outline in outliness[i])
             {
                 switch (outline)
                 {
