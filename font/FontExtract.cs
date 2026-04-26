@@ -77,9 +77,9 @@ public static class FontExtract
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
         var dict = font.CompactFontFormat.TopDict.Dict.ToDictionary();
-        _ = dict.TryAdd(/* ROS */1230, [/* SID.StandardStrings[0] = ".notdef" */0, 0, 0]);
-        dict[/* CIDCount */1234] = [outputs.Length];
-        var top_dict = new DictData
+        _ = dict.TryAdd(TopDictOperators.ROS, [/* SID.StandardStrings[0] = ".notdef" */0, 0, 0]);
+        dict[TopDictOperators.CIDCount] = [outputs.Length];
+        var top_dict = new TopDict
         {
             Strings = font.CompactFontFormat.Strings,
             Dict = dict,
@@ -90,7 +90,7 @@ public static class FontExtract
                 Glyph = [.. Lists.RangeTo(1, num_of_glyph).Select(x => (ushort)x)],
             },
             PrivateDict = font.CompactFontFormat.TopDict.PrivateDict,
-            FontDictArray = [new DictData { Dict = [] }],
+            FontDictArray = [new TopDict { Dict = [] }],
             FontDictSelect = [.. Lists.Repeat<byte>(0).Take(num_of_glyph + 1)],
         };
 

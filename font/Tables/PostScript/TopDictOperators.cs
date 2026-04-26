@@ -1,0 +1,41 @@
+﻿namespace OpenType.Tables.PostScript;
+
+public enum TopDictOperators
+{
+    Version = 0,
+    Notice = 1,
+    Copyright = 12_00,
+    FullName = 2,
+    FamilyName = 3,
+    Weight = 4,
+    IsFixedPitch = 12_01,
+    ItalicAngle = 12_02,
+    UnderlinePosition = 12_03,
+    UnderlineThickness = 12_04,
+    PaintType = 12_05,
+    CharstringType = 12_06,
+    FontMatrix = 12_07,
+    UniqueID = 13,
+    FontBBox = 5,
+    StrokeWidth = 12_08,
+    XUID = 14,
+    Charset = 15,
+    Encoding = 16,
+    CharStrings = 17,
+    Private = 18,
+    SyntheticBase = 12_20,
+    PostScript = 12_21,
+    BaseFontName = 12_22,
+    BaseFontBlend = 12_23,
+
+    // CIDFont Operator Extensions
+    ROS = 12_30,
+    CIDFontVersion = 12_31,
+    CIDFontRevision = 12_32,
+    CIDFontType = 12_33,
+    CIDCount = 12_34,
+    UIDBase = 12_35,
+    FDArray = 12_36,
+    FDSelect = 12_37,
+    FontName = 12_38,
+}

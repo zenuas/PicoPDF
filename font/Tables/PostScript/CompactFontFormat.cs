@@ -18,7 +18,7 @@ public class CompactFontFormat : IExportable
     public required byte HeaderSize { get; init; }
     public required byte OffsetSize { get; init; }
     public required string[] Names { get; init; }
-    public required DictData TopDict { get; init; }
+    public required TopDict TopDict { get; init; }
     public required string[] Strings { get; init; }
     public required byte[][] GlobalSubroutines { get; init; }
 
@@ -34,7 +34,7 @@ public class CompactFontFormat : IExportable
         var top_dict_data = ReadIndexData(stream).First();
         var strings = ReadIndexData(stream).Select(Encoding.UTF8.GetString).ToArray();
         var global_subr = ReadIndexData(stream);
-        var top_dict = DictData.ReadFrom(top_dict_data, strings, stream, position);
+        var top_dict = TopDict.ReadFrom(top_dict_data, strings, stream, position);
 
         return new()
         {
@@ -81,14 +81,14 @@ public class CompactFontFormat : IExportable
         WriteIndexData(stream, [.. Names.Select(Encoding.UTF8.GetBytes)]);
 
         var top_dict_start = stream.Position;
-        WriteIndexData(stream, [DictData.DictDataToBytes(TopDict.Dict)]);
+        WriteIndexData(stream, [TopDict.DictDataToBytes(TopDict.Dict)]);
         WriteIndexData(stream, [.. Strings.Select(Encoding.UTF8.GetBytes)]);
         WriteIndexData(stream, GlobalSubroutines);
 
         TopDict.WriteWithoutDictAndOffsetUpdate(stream, position);
 
         var lastposition = stream.Position;
-        WriteIndexData(stream.SeekTo(top_dict_start), [DictData.DictDataToBytes(TopDict.Dict)]);
+        WriteIndexData(stream.SeekTo(top_dict_start), [TopDict.DictDataToBytes(TopDict.Dict)]);
         stream.Position = lastposition;
     }
 
@@ -129,7 +129,7 @@ public class CompactFontFormat : IExportable
     public IOutline[] ToOutline(uint gid)
     {
         var private_dict = TopDict.IsCIDFont ?
-            (TopDict.FontDictArray[gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid]].PrivateDict) :
+            TopDict.FontDictArray[gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid]].PrivateDict :
             TopDict.PrivateDict;
         var local_subr = private_dict?.LocalSubroutines ?? [];
         var surfaces = new List<IEdge[]>();
