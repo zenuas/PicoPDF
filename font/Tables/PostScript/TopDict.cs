@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace OpenType.Tables.PostScript;
 
@@ -98,14 +99,14 @@ public class TopDict
             {
                 var b1 = bytes[++i];
                 var k = (b0 * 100) + b1;
-                Debug.Assert(Enum.IsDefined(typeof(T), (int)k));
-                kv.Add((T)(object)k, [.. values]);
+                Debug.Assert(Enum.IsDefined(typeof(T), k));
+                kv.Add(Unsafe.As<int, T>(ref k), [.. values]);
                 values.Clear();
             }
             else if (b0 is >= 0 and <= 21)
             {
                 Debug.Assert(Enum.IsDefined(typeof(T), (int)b0));
-                kv.Add((T)(object)(int)b0, [.. values]);
+                kv.Add(Unsafe.As<byte, T>(ref b0), [.. values]);
                 values.Clear();
             }
             else if (b0 is 28 or 29 or (>= 32 and <= 254))
