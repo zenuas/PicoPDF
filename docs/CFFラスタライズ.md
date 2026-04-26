@@ -240,17 +240,18 @@ if (ope == Rcurveline)
 
 ### vvcurveto、hhcurveto
 
-現在位置から相対座標で (dx1, dy1) に移動したのち、相対座標で (dxa, dya) を1番目の制御点、(dxb, dyb) を2番目の制御点とし (dxc, dyc) への3次ベジェ曲線を描画する。
+現在位置から相対座標で (dxa + dx1, dya + dy1) を1番目の制御点、(dxb, dyb) を2番目の制御点とし (dxc, dyc) への3次ベジェ曲線を描画する。
 
 ```cs
-if (stack.Count % 2 != 0) start = new(start.X + ope == Vvcurveto ? stack.Shift() : 0, start.Y + ope != Vvcurveto ? stack.Shift() : 0);
+var d1 = stack.Count % 2 == 0 ? 0f : stack.Shift();
 while (stack.Count >= 4)
 {
-	var cp1 = new Vector2(start.X + ope == Vvcurveto ? stack.Shift() : 0, start.Y + ope != Vvcurveto ? stack.Shift() : 0);
+	var cp1 = new Vector2(start.X + ope == Vvcurveto ? stack.Shift() : d1, start.Y + ope != Vvcurveto ? stack.Shift() : d1);
 	var cp2 = new Vector2(cp1.X + stack.Shift(), cp1.Y + stack.Shift());
 	var end = new Vector2(cp2.X + ope != Vvcurveto ? stack.Shift() : 0, cp2.Y + ope == Vvcurveto ? stack.Shift() : 0);
 	// start-cp1-cp2-end のベジェ曲線を描画
 	start = end;
+	d1 = 0f;
 }
 ```
 

@@ -210,7 +210,7 @@ public static class Subroutine
 
             case CharstringCommandCodes.Vvcurveto:
                 {
-                    if (stack.Count % 2 != 0) frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Shift(), frame.CurrentPoint.Y);
+                    var dx1 = stack.Count % 2 == 0 ? 0f : stack.Shift();
                     while (stack.Count >= 4)
                     {
                         var dya = stack.Shift();
@@ -218,18 +218,19 @@ public static class Subroutine
                         var dyb = stack.Shift();
                         var dyc = stack.Shift();
 
-                        var cp1 = new Vector2(frame.CurrentPoint.X, frame.CurrentPoint.Y + dya);
+                        var cp1 = new Vector2(frame.CurrentPoint.X + dx1, frame.CurrentPoint.Y + dya);
                         var cp2 = new Vector2(cp1.X + dxb, cp1.Y + dyb);
                         var end = new Vector2(cp2.X, cp2.Y + dyc);
                         frame.AddLine([frame.CurrentPoint, cp1, cp2, end]);
                         frame.CurrentPoint = end;
+                        dx1 = 0f;
                     }
                     break;
                 }
 
             case CharstringCommandCodes.Hhcurveto:
                 {
-                    if (stack.Count % 2 != 0) frame.CurrentPoint = new(frame.CurrentPoint.X, frame.CurrentPoint.Y + stack.Shift());
+                    var dy1 = stack.Count % 2 == 0 ? 0f : stack.Shift();
                     while (stack.Count >= 4)
                     {
                         var dxa = stack.Shift();
@@ -237,11 +238,12 @@ public static class Subroutine
                         var dyb = stack.Shift();
                         var dxc = stack.Shift();
 
-                        var cp1 = new Vector2(frame.CurrentPoint.X + dxa, frame.CurrentPoint.Y);
+                        var cp1 = new Vector2(frame.CurrentPoint.X + dxa, frame.CurrentPoint.Y + dy1);
                         var cp2 = new Vector2(cp1.X + dxb, cp1.Y + dyb);
                         var end = new Vector2(cp2.X + dxc, cp2.Y);
                         frame.AddLine([frame.CurrentPoint, cp1, cp2, end]);
                         frame.CurrentPoint = end;
+                        dy1 = 0f;
                     }
                     break;
                 }
