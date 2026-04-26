@@ -14,6 +14,8 @@ public class DrawPathOperations : IOperation
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
         writer.Write("q\n");
+        if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
+        writer.Write($"{LineWidth.ToPoint()} w\n");
         Operations.Each(x => x.OperationWrite(width, height, writer, option));
         writer.Write("f*\n");
         writer.Write("Q\n");
