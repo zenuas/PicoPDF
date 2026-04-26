@@ -20,23 +20,14 @@ public class Contents : PdfObject
 
     public void DrawPathOnBaseline(string text, double basey, double left, double size, IFont font) => Operations.Add(CreateDrawPathOnBaselineOperation(text, basey, left, size, font));
 
-    public static DrawString CreateDrawTextOnBaselineOperation(string text, double basey, double left, double size, IFont font, IColor? color = null) => CreateDrawTextOnBaselineOperation(
-            text,
-            new PointValue(basey),
-            new PointValue(left),
-            size,
-            font,
-            color
-        );
-
-    public static DrawString CreateDrawTextOnBaselineOperation(string text, IPoint basey, IPoint left, double size, IFont font, IColor? color = null)
+    public static DrawString CreateDrawTextOnBaselineOperation(string text, double basey, double left, double size, IFont font, IColor? color = null)
     {
         if (font is IFontChars fontchars) fontchars.AddCharCache(text);
         return new()
         {
             Text = text,
-            X = left,
-            Y = basey,
+            X = new PointValue(left),
+            Y = new PointValue(basey),
             FontSize = size,
             Font = font,
             Color = color,
