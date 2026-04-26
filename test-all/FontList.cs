@@ -1,8 +1,6 @@
 ﻿using Mina.Command;
-using Mina.Extension;
 using PicoPDF.Pdf.Font;
 using System;
-using System.Linq;
 
 namespace PicoPDF.TestAll;
 
@@ -13,12 +11,11 @@ public class FontList : FontRegisterCommand
 
     public override void Run(string[] args)
     {
-        var fontreg = CreateFontRegister().Cast<FontRegister>();
+        var fontreg = CreateFontRegister();
 
-        foreach (var kv in fontreg.Fonts.Where(x => AllFontPreview || x.Key != FontRegister.GetFontFilePath(x.Value.Value.Path)))
+        foreach (var (name, font) in fontreg.GetFonts(AllFontPreview))
         {
-            var font = kv.Value.Value;
-            Console.WriteLine($"{kv.Key},\"{FontRegister.GetFontFilePath(font.Path)}\",Offset.SfntVersion=0x{font.Offset.SfntVersion:x8}");
+            Console.WriteLine($"{name},\"{FontRegister.GetFontFilePath(font.Path)}\",Offset.SfntVersion=0x{font.Offset.SfntVersion:x8}");
         }
     }
 }

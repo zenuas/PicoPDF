@@ -1,9 +1,6 @@
 ﻿using Mina.Command;
-using Mina.Extension;
 using OpenType;
-using PicoPDF.Pdf.Font;
 using System;
-using System.Linq;
 
 namespace PicoPDF.TestAll;
 
@@ -14,7 +11,7 @@ public class FontDump : FontRegisterCommand
 
     public override void Run(string[] args)
     {
-        var fontreg = CreateFontRegister().Cast<FontRegister>();
+        var fontreg = CreateFontRegister();
         var font = fontreg.LoadComplete(Font);
         Dump(font);
     }

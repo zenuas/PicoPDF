@@ -1,8 +1,6 @@
 ﻿using Mina.Command;
 using Mina.Extension;
-using PicoPDF.Pdf.Font;
 using System;
-using System.Linq;
 
 namespace PicoPDF.TestAll;
 
@@ -26,7 +24,7 @@ public class FontsAllHtml : SvgOutput
 
     public override void Run(string[] args)
     {
-        var fontreg = CreateFontRegister().Cast<FontRegister>();
+        var fontreg = CreateFontRegister();
 
         Output.WriteLine($"""
 <!doctype html>
@@ -48,19 +46,19 @@ public class FontsAllHtml : SvgOutput
 </thead>
 <tbody>
 """);
-        foreach (var kv in fontreg.Fonts.Where(x => x.Key == FontRegister.GetFontFilePath(x.Value.Value.Path)))
+        foreach (var (name, _) in fontreg.GetFonts())
         {
-            var font = fontreg.LoadComplete(kv.Key);
+            var font = fontreg.LoadComplete(name);
             var gid = font.CharToGID(Char);
             if (gid == 0) continue;
 
             var s = char.ConvertFromUtf32(Char);
-            var name = font.Name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == 1)?.Name ?? font.PostScriptName;
+            var namev = font.Name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == 1)?.Name ?? font.PostScriptName;
             Output.WriteLine($"""
     <tr>
-        <td>{name}</td>
+        <td>{namev}</td>
         <td>{gid}</td>
-        <td style="font-family: '{name}';">{s}</td>
+        <td style="font-family: '{namev}';">{s}</td>
         <td>U+{(Char <= 0xFFFF ? Char.ToString("x4") : Char.ToString("x6"))}</td>
         <td>
 """);

@@ -31,4 +31,12 @@ public class FontRegisterLock : IFontRegister
             return FontRegister.LoadComplete(name);
         }
     }
+
+    public (string Name, IOpenTypeHeader Font)[] GetFonts(bool include_alternative_font = false)
+    {
+        lock (LockObject)
+        {
+            return FontRegister.GetFonts(include_alternative_font);
+        }
+    }
 }
