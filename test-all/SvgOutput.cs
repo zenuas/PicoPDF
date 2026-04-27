@@ -50,7 +50,7 @@ public class SvgOutput : FontRegisterCommand
     public void OutputSvg(IOpenTypeFont font, (int Char, uint GID)[] cids)
     {
         var outliness = cids.Select(x => font.GIDToOutline(x.GID)).ToArray();
-        var total_width = cids.Select(x => font.AdvanceWidth(x.GID)).Sum();
+        var total_width = cids.Select(x => font.GetAdvanceWidth(x.GID)).Sum();
         var ascent = font.HorizontalHeader.Ascender;
         var descent = font.HorizontalHeader.Descender;
 
@@ -117,7 +117,7 @@ public class SvgOutput : FontRegisterCommand
             Output.WriteLine($"""    <path stroke="{ColorToHex(Stroke)}" fill="{ColorToHex(Fill)}" fill-rule="evenodd" """);
             Output.WriteLine($"""       d="{d}" />""");
             Output.Write(c);
-            left += font.AdvanceWidth(cids[i].GID) * r;
+            left += font.GetAdvanceWidth(cids[i].GID) * r;
         }
         if (Debug)
         {

@@ -16,9 +16,9 @@ public static class Utility
 
     public static int MeasureGID(this IOpenTypeFont font, uint gid)
     {
-        var width = font.AdvanceWidth(gid);
+        var width = font.GetAdvanceWidth(gid);
         return font.FontHeader.UnitsPerEm == 1000 ? width : width * 1000 / font.FontHeader.UnitsPerEm;
     }
 
-    public static int AdvanceWidth(this IOpenTypeFont font, uint gid) => font.HorizontalMetrics.Metrics[gid].AdvanceWidth;
+    public static int GetAdvanceWidth(this IOpenTypeFont font, uint gid) => font.HorizontalMetrics.Metrics[gid].AdvanceWidth;
 }
