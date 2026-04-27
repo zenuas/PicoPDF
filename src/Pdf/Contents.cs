@@ -105,7 +105,7 @@ public class Contents : PdfObject
                 Color = color,
                 LineWidth = new PointValue(size * r),
             };
-            left += FontExtract.GetCanvasWidth(outlines).Width * r;
+            left += opentype_font.AdvanceWidth(gid) * r;
         }
     }
 
