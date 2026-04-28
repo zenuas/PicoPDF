@@ -838,9 +838,12 @@ public static class FontExtract
                         xcoordinates.Add((short)bezier.ControlPoint[0].X);
                         ycoordinates.Add((short)bezier.ControlPoint[0].Y);
 
-                        flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
-                        xcoordinates.Add((short)bezier.End.X);
-                        ycoordinates.Add((short)bezier.End.Y);
+                        if (!bezier.ComplementPoint)
+                        {
+                            flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
+                            xcoordinates.Add((short)bezier.End.X);
+                            ycoordinates.Add((short)bezier.End.Y);
+                        }
                         break;
                 }
             }
