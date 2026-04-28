@@ -21,16 +21,16 @@ public class SimpleGlyph : IGlyph
     public required short[] XCoordinates { get; init; }
     public required short[] YCoordinates { get; init; }
 
-    public IOutline[] ToOutline(IReadOnlyList<IGlyph> _)
+    public Surface[] ToOutline(IReadOnlyList<IGlyph> _)
     {
-        var outlines = new IOutline[NumberOfContours];
+        var surfaces = new Surface[NumberOfContours];
         var xcoordinates = AbsoluteCoordinates(XCoordinates);
         var ycoordinates = AbsoluteCoordinates(YCoordinates);
         for (var (i, start) = (0, 0); i < NumberOfContours; start = EndPointsOfContours[i++] + 1)
         {
-            outlines[i] = CreateSurface(start, EndPointsOfContours[i], Flags, xcoordinates, ycoordinates, XMin, YMin, XMax, YMax);
+            surfaces[i] = CreateSurface(start, EndPointsOfContours[i], Flags, xcoordinates, ycoordinates, XMin, YMin, XMax, YMax);
         }
-        return outlines;
+        return surfaces;
     }
 
     public static Surface CreateSurface(int start, int end, SimpleGlyphFlags[] flags, int[] xcoordinates, int[] ycoordinates, float xmin, float ymin, float xmax, float ymax)

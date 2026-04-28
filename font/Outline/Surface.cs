@@ -1,6 +1,6 @@
 ﻿namespace OpenType.Outline;
 
-public class Surface : IOutline
+public class Surface
 {
     public required float XMin { get; init; }
     public required float YMin { get; init; }

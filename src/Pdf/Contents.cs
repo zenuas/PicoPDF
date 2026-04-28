@@ -43,56 +43,49 @@ public class Contents : PdfObject
         foreach (var c in text.ToUtf32CharArray())
         {
             var gid = opentype_font.CharToGID(c);
-            var outlines = opentype_font.GIDToOutline(gid);
+            var surfaces = opentype_font.GIDToOutline(gid);
             var opes = new List<IPathOperation>();
 
-            foreach (var outline in outlines)
+            foreach (var surface in surfaces.Where(x => x.Edges.Length > 0))
             {
-                switch (outline)
+                var start = surface.Edges.First().Start;
+                opes.Add(new DrawMovePath { Start = (new PointValue(left + start.X * r), new PointValue(basey - start.Y * r)) });
+                foreach (var edge in surface.Edges)
                 {
-                    case Surface surface when surface.Edges.Length > 0:
-                        {
-                            var start = surface.Edges.First().Start;
-                            opes.Add(new DrawMovePath { Start = (new PointValue(left + start.X * r), new PointValue(basey - start.Y * r)) });
-                            foreach (var edge in surface.Edges)
+                    switch (edge)
+                    {
+                        case Line line:
+                            opes.Add(new DrawLinePath
                             {
-                                switch (edge)
-                                {
-                                    case Line line:
-                                        opes.Add(new DrawLinePath
-                                        {
-                                            End = (new PointValue(left + line.End.X * r), new PointValue(basey - line.End.Y * r)),
-                                        });
-                                        break;
-
-                                    case BezierCurve bezier when bezier.ControlPoint.Length == 1:
-                                        {
-                                            var cp = bezier.ControlPoint[0];
-                                            opes.Add(new DrawBezierCurvePath
-                                            {
-                                                ControlPoint1 = (new PointValue(left + (bezier.Start.X + (cp.X - bezier.Start.X) * 2 / 3) * r), new PointValue(basey - (bezier.Start.Y + (cp.Y - bezier.Start.Y) * 2 / 3) * r)),
-                                                ControlPoint2 = (new PointValue(left + (cp.X + (bezier.End.X - cp.X) * 2 / 3) * r), new PointValue(basey - (cp.Y + (bezier.End.Y - cp.Y) * 2 / 3) * r)),
-                                                End = (new PointValue(left + bezier.End.X * r), new PointValue(basey - bezier.End.Y * r)),
-                                            });
-                                            break;
-                                        }
-
-                                    case BezierCurve bezier when bezier.ControlPoint.Length == 2:
-                                        {
-                                            var cp1 = bezier.ControlPoint[0];
-                                            var cp2 = bezier.ControlPoint[1];
-                                            opes.Add(new DrawBezierCurvePath
-                                            {
-                                                ControlPoint1 = (new PointValue(left + cp1.X * r), new PointValue(basey - cp1.Y * r)),
-                                                ControlPoint2 = (new PointValue(left + cp2.X * r), new PointValue(basey - cp2.Y * r)),
-                                                End = (new PointValue(left + bezier.End.X * r), new PointValue(basey - bezier.End.Y * r)),
-                                            });
-                                            break;
-                                        }
-                                }
-                            }
+                                End = (new PointValue(left + line.End.X * r), new PointValue(basey - line.End.Y * r)),
+                            });
                             break;
-                        }
+
+                        case BezierCurve bezier when bezier.ControlPoint.Length == 1:
+                            {
+                                var cp = bezier.ControlPoint[0];
+                                opes.Add(new DrawBezierCurvePath
+                                {
+                                    ControlPoint1 = (new PointValue(left + (bezier.Start.X + (cp.X - bezier.Start.X) * 2 / 3) * r), new PointValue(basey - (bezier.Start.Y + (cp.Y - bezier.Start.Y) * 2 / 3) * r)),
+                                    ControlPoint2 = (new PointValue(left + (cp.X + (bezier.End.X - cp.X) * 2 / 3) * r), new PointValue(basey - (cp.Y + (bezier.End.Y - cp.Y) * 2 / 3) * r)),
+                                    End = (new PointValue(left + bezier.End.X * r), new PointValue(basey - bezier.End.Y * r)),
+                                });
+                                break;
+                            }
+
+                        case BezierCurve bezier when bezier.ControlPoint.Length == 2:
+                            {
+                                var cp1 = bezier.ControlPoint[0];
+                                var cp2 = bezier.ControlPoint[1];
+                                opes.Add(new DrawBezierCurvePath
+                                {
+                                    ControlPoint1 = (new PointValue(left + cp1.X * r), new PointValue(basey - cp1.Y * r)),
+                                    ControlPoint2 = (new PointValue(left + cp2.X * r), new PointValue(basey - cp2.Y * r)),
+                                    End = (new PointValue(left + bezier.End.X * r), new PointValue(basey - bezier.End.Y * r)),
+                                });
+                                break;
+                            }
+                    }
                 }
             }
             yield return new()

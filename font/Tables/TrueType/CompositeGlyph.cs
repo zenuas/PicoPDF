@@ -19,17 +19,17 @@ public class CompositeGlyph : IGlyph
     public required ushort InstructionLength { get; init; }
     public required byte[] Instructions { get; init; }
 
-    public IOutline[] ToOutline(IReadOnlyList<IGlyph> glyphs)
+    public Surface[] ToOutline(IReadOnlyList<IGlyph> glyphs)
     {
-        var outlines = new List<IOutline>();
+        var surfaces = new List<Surface>();
         foreach (var composite in CompositeGlyphRecords)
         {
             glyphs[composite.GlyphIndex].ToOutline(glyphs)
                 .OfType<Surface>()
                 .Select(x => Composite(composite, x, XMin, YMin, XMax, YMax))
-                .Each(outlines.Add);
+                .Each(surfaces.Add);
         }
-        return [.. outlines];
+        return [.. surfaces];
     }
 
     public static Surface Composite(ICompositeGlyphRecord composite, Surface surface, float xmin, float ymin, float xmax, float ymax)

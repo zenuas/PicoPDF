@@ -11,5 +11,5 @@ public interface IGlyph : IExportable
     public short XMax { get; init; }
     public short YMax { get; init; }
 
-    public IOutline[] ToOutline(IReadOnlyList<IGlyph> glyphs);
+    public Surface[] ToOutline(IReadOnlyList<IGlyph> glyphs);
 }

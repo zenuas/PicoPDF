@@ -793,8 +793,8 @@ public static class FontExtract
 
     public static SimpleGlyph OutlineToSimpleGlyf(IGlyph glyph, IReadOnlyList<IGlyph> glyphs)
     {
-        var outlines = glyph.ToOutline(glyphs);
-        if (outlines.Length == 0)
+        var surfaces = glyph.ToOutline(glyphs);
+        if (surfaces.Length == 0)
         {
             return new()
             {
@@ -816,45 +816,38 @@ public static class FontExtract
         var xcoordinates = new List<short>();
         var ycoordinates = new List<short>();
 
-        foreach (var outline in outlines)
+        foreach (var surface in surfaces.Where(x => x.Edges.Length > 0))
         {
-            switch (outline)
+            var start = surface.Edges.First().Start;
+            flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
+            xcoordinates.Add((short)start.X);
+            ycoordinates.Add((short)start.Y);
+
+            foreach (var edge in surface.Edges)
             {
-                case Surface surface when surface.Edges.Length > 0:
-                    {
-                        var start = surface.Edges.First().Start;
+                switch (edge)
+                {
+                    case Line line:
                         flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
-                        xcoordinates.Add((short)start.X);
-                        ycoordinates.Add((short)start.Y);
-
-                        foreach (var edge in surface.Edges)
-                        {
-                            switch (edge)
-                            {
-                                case Line line:
-                                    flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
-                                    xcoordinates.Add((short)line.End.X);
-                                    ycoordinates.Add((short)line.End.Y);
-                                    break;
-
-                                case BezierCurve bezier when bezier.ControlPoint.Length == 1:
-                                    flags.Add(0);
-                                    xcoordinates.Add((short)bezier.ControlPoint[0].X);
-                                    ycoordinates.Add((short)bezier.ControlPoint[0].Y);
-
-                                    flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
-                                    xcoordinates.Add((short)bezier.End.X);
-                                    ycoordinates.Add((short)bezier.End.Y);
-                                    break;
-                            }
-                        }
-                        end_points_of_contours.Add((ushort)(flags.Count - 1));
+                        xcoordinates.Add((short)line.End.X);
+                        ycoordinates.Add((short)line.End.Y);
                         break;
-                    }
+
+                    case BezierCurve bezier when bezier.ControlPoint.Length == 1:
+                        flags.Add(0);
+                        xcoordinates.Add((short)bezier.ControlPoint[0].X);
+                        ycoordinates.Add((short)bezier.ControlPoint[0].Y);
+
+                        flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
+                        xcoordinates.Add((short)bezier.End.X);
+                        ycoordinates.Add((short)bezier.End.Y);
+                        break;
+                }
             }
+            end_points_of_contours.Add((ushort)(flags.Count - 1));
         }
 
-        var first_surface = outlines.OfType<Surface>().First();
+        var first_surface = surfaces.First();
         return new()
         {
             NumberOfContours = (short)end_points_of_contours.Count,
@@ -883,69 +876,51 @@ public static class FontExtract
         return relative_coordinates;
     }
 
-    public static byte[] OutlineToCharStrings(IOutline[] outlines, int nominalWidthX)
+    public static byte[] OutlineToCharStrings(Surface[] surfaces, int nominalWidthX)
     {
         var char_strings = new List<byte>();
-        char_strings.AddRange(Subroutine.NumberToBytes(GetCanvasWidth(outlines).Width - nominalWidthX));
+        char_strings.AddRange(Subroutine.NumberToBytes(GetCanvasWidth(surfaces).Width - nominalWidthX));
 
         var current = new Vector2(0, 0);
-        foreach (var outline in outlines)
+        foreach (var surface in surfaces.Where(x => x.Edges.Length > 0))
         {
-            switch (outline)
+            var start = surface.Edges.First().Start;
+            char_strings.AddRange(Subroutine.NumberToBytes(start.X - current.X));
+            char_strings.AddRange(Subroutine.NumberToBytes(start.Y - current.Y));
+            char_strings.Add((byte)CharstringCommandCodes.Rmoveto);
+            current = start;
+
+            foreach (var edge in surface.Edges)
             {
-                case Surface surface when surface.Edges.Length > 0:
-                    {
-                        var start = surface.Edges.First().Start;
-                        char_strings.AddRange(Subroutine.NumberToBytes(start.X - current.X));
-                        char_strings.AddRange(Subroutine.NumberToBytes(start.Y - current.Y));
-                        char_strings.Add((byte)CharstringCommandCodes.Rmoveto);
-                        current = start;
-
-                        foreach (var edge in surface.Edges)
-                        {
-                            switch (edge)
-                            {
-                                case Line line:
-                                    char_strings.AddRange(Subroutine.NumberToBytes(line.End.X - current.X));
-                                    char_strings.AddRange(Subroutine.NumberToBytes(line.End.Y - current.Y));
-                                    char_strings.Add((byte)CharstringCommandCodes.Rlineto);
-                                    current = line.End;
-                                    break;
-
-                                case BezierCurve bezier when bezier.ControlPoint.Length == 2:
-                                    {
-                                        var cp1 = bezier.ControlPoint[0];
-                                        var cp2 = bezier.ControlPoint[1];
-                                        char_strings.AddRange(Subroutine.NumberToBytes(cp1.X - current.X));
-                                        char_strings.AddRange(Subroutine.NumberToBytes(cp1.Y - current.Y));
-                                        char_strings.AddRange(Subroutine.NumberToBytes(cp2.X - cp1.X));
-                                        char_strings.AddRange(Subroutine.NumberToBytes(cp2.Y - cp1.Y));
-                                        char_strings.AddRange(Subroutine.NumberToBytes(bezier.End.X - cp2.X));
-                                        char_strings.AddRange(Subroutine.NumberToBytes(bezier.End.Y - cp2.Y));
-                                        char_strings.Add((byte)CharstringCommandCodes.Rrcurveto);
-                                        current = bezier.End;
-                                        break;
-                                    }
-                            }
-                        }
+                switch (edge)
+                {
+                    case Line line:
+                        char_strings.AddRange(Subroutine.NumberToBytes(line.End.X - current.X));
+                        char_strings.AddRange(Subroutine.NumberToBytes(line.End.Y - current.Y));
+                        char_strings.Add((byte)CharstringCommandCodes.Rlineto);
+                        current = line.End;
                         break;
-                    }
+
+                    case BezierCurve bezier when bezier.ControlPoint.Length == 2:
+                        {
+                            var cp1 = bezier.ControlPoint[0];
+                            var cp2 = bezier.ControlPoint[1];
+                            char_strings.AddRange(Subroutine.NumberToBytes(cp1.X - current.X));
+                            char_strings.AddRange(Subroutine.NumberToBytes(cp1.Y - current.Y));
+                            char_strings.AddRange(Subroutine.NumberToBytes(cp2.X - cp1.X));
+                            char_strings.AddRange(Subroutine.NumberToBytes(cp2.Y - cp1.Y));
+                            char_strings.AddRange(Subroutine.NumberToBytes(bezier.End.X - cp2.X));
+                            char_strings.AddRange(Subroutine.NumberToBytes(bezier.End.Y - cp2.Y));
+                            char_strings.Add((byte)CharstringCommandCodes.Rrcurveto);
+                            current = bezier.End;
+                            break;
+                        }
+                }
             }
         }
         char_strings.Add((byte)CharstringCommandCodes.Endchar);
         return [.. char_strings];
     }
 
-    public static (float Width, float Left) GetCanvasWidth(IOutline[] outlines)
-    {
-        foreach (var outline in outlines)
-        {
-            switch (outline)
-            {
-                case Surface surface:
-                    return (surface.XMax - surface.XMin, surface.XMin);
-            }
-        }
-        return (0, 0);
-    }
+    public static (float Width, float Left) GetCanvasWidth(Surface[] surfaces) => surfaces.Length == 0 ? (0, 0) : (surfaces[0].XMax - surfaces[0].XMin, surfaces[0].XMin);
 }

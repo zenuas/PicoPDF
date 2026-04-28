@@ -126,7 +126,7 @@ public class CompactFontFormat : IExportable
 
     public static void WriteIndexDataBody(Stream stream, byte[][] index) => index.Each(x => stream.Write(x));
 
-    public IOutline[] ToOutline(uint gid)
+    public Surface[] ToOutline(uint gid)
     {
         var private_dict = TopDict.IsCIDFont ?
             TopDict.FontDictArray[gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid]].PrivateDict :
