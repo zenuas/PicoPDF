@@ -30,7 +30,7 @@ public class ManualCreate : FontRegisterCommand
         _ = page.Contents.DrawText("PostScript Font! あア亜 𠮷野家", 160, 100, 12, [post]);
 
         var ttf = doc.AddFont("true1", fontreg.LoadComplete("Meiryo Bold"));
-        _ = page.Contents.DrawText("TrueType Font! あア亜 𠮷野家", 180, 100, 12, [ttf]);
+        _ = page.Contents.DrawText("TrueType Font! あアģ亜 𠮷野家", 180, 100, 12, [ttf]);
 
         var emoji = doc.AddFont("emoji1", fontreg.LoadComplete("Segoe UI Emoji"));
         _ = page.Contents.DrawText("aijpqあいうえお🍣", 200, 100, 12, [ttf, emoji]);

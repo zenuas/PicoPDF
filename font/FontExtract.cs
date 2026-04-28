@@ -31,7 +31,7 @@ public static class FontExtract
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
         var glyphs = Lists.RangeTo(1, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? glyph.Glyph : new NotdefGlyph())
+            .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? (IGlyph)OutlineToSimpleGlyf(glyph.Glyph, font.Glyphs) : new NotdefGlyph())
             .Prepend(new NotdefGlyph())
             .ToArray();
 
@@ -789,6 +789,98 @@ public static class FontExtract
                 PaletteLabels = [],
                 PaletteEntryLabels = [],
             });
+    }
+
+    public static SimpleGlyph OutlineToSimpleGlyf(IGlyph glyph, IReadOnlyList<IGlyph> glyphs)
+    {
+        var outlines = glyph.ToOutline(glyphs);
+        if (outlines.Length == 0)
+        {
+            return new()
+            {
+                NumberOfContours = 0,
+                XMin = 0,
+                YMin = 0,
+                XMax = 0,
+                YMax = 0,
+                EndPointsOfContours = [],
+                InstructionLength = 0,
+                Instructions = [],
+                Flags = [],
+                XCoordinates = [],
+                YCoordinates = [],
+            };
+        }
+        var end_points_of_contours = new List<ushort>();
+        var flags = new List<SimpleGlyphFlags>();
+        var xcoordinates = new List<short>();
+        var ycoordinates = new List<short>();
+
+        foreach (var outline in outlines)
+        {
+            switch (outline)
+            {
+                case Surface surface when surface.Edges.Length > 0:
+                    {
+                        var start = surface.Edges.First().Start;
+                        flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
+                        xcoordinates.Add((short)start.X);
+                        ycoordinates.Add((short)start.Y);
+
+                        foreach (var edge in surface.Edges)
+                        {
+                            switch (edge)
+                            {
+                                case Line line:
+                                    flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
+                                    xcoordinates.Add((short)line.End.X);
+                                    ycoordinates.Add((short)line.End.Y);
+                                    break;
+
+                                case BezierCurve bezier when bezier.ControlPoint.Length == 1:
+                                    flags.Add(0);
+                                    xcoordinates.Add((short)bezier.ControlPoint[0].X);
+                                    ycoordinates.Add((short)bezier.ControlPoint[0].Y);
+
+                                    flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
+                                    xcoordinates.Add((short)bezier.End.X);
+                                    ycoordinates.Add((short)bezier.End.Y);
+                                    break;
+                            }
+                        }
+                        end_points_of_contours.Add((ushort)(flags.Count - 1));
+                        break;
+                    }
+            }
+        }
+
+        var first_surface = outlines.OfType<Surface>().First();
+        return new()
+        {
+            NumberOfContours = (short)end_points_of_contours.Count,
+            XMin = (short)first_surface.XMin,
+            YMin = (short)first_surface.YMin,
+            XMax = (short)first_surface.XMax,
+            YMax = (short)first_surface.YMax,
+            EndPointsOfContours = [.. end_points_of_contours],
+            InstructionLength = 0,
+            Instructions = [],
+            Flags = [.. flags],
+            XCoordinates = RelativeCoordinates(xcoordinates),
+            YCoordinates = RelativeCoordinates(ycoordinates),
+        };
+    }
+
+    public static short[] RelativeCoordinates(List<short> absolute_coordinates)
+    {
+        if (absolute_coordinates.Count == 0) return [];
+        var relative_coordinates = new short[absolute_coordinates.Count];
+        relative_coordinates[0] = absolute_coordinates[0];
+        for (var i = 1; i < absolute_coordinates.Count; i++)
+        {
+            relative_coordinates[i] = (short)(absolute_coordinates[i] - absolute_coordinates[i - 1]);
+        }
+        return relative_coordinates;
     }
 
     public static byte[] OutlineToCharStrings(IOutline[] outlines, int nominalWidthX)
