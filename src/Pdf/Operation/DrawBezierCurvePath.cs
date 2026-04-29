@@ -12,8 +12,6 @@ public class DrawBezierCurvePath : IPathOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"{PointToString(ControlPoint1, height)} {PointToString(ControlPoint2, height)} {PointToString(End, height)} c\n");
+        writer.Write($"{IOperation.PointToString(ControlPoint1, height, option.PointFormat)} {IOperation.PointToString(ControlPoint2, height, option.PointFormat)} {IOperation.PointToString(End, height, option.PointFormat)} c\n");
     }
-
-    public static string PointToString((IPoint X, IPoint Y) point, int height) => $"{point.X.ToPoint()} {height - point.Y.ToPoint()}";
 }

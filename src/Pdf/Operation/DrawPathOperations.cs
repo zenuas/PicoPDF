@@ -15,11 +15,9 @@ public class DrawPathOperations : IOperation
     {
         writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
-        writer.Write($"{LineWidth.ToPoint()} w\n");
+        writer.Write($"{IOperation.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
         Operations.Each(x => x.OperationWrite(width, height, writer, option));
         writer.Write("f*\n");
         writer.Write("Q\n");
     }
-
-    public static string PointToString((IPoint X, IPoint Y) point, int height) => $"{point.X.ToPoint()} {height - point.Y.ToPoint()}";
 }

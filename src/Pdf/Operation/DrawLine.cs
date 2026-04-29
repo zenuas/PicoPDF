@@ -16,10 +16,8 @@ public class DrawLine : IOperation
     {
         writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
-        writer.Write($"{LineWidth.ToPoint()} w\n");
-        writer.Write($"{PointToString(Points.First(), height)} m {Points.Skip(1).Select(x => PointToString(x, height)).Join(" l ")} l S\n");
+        writer.Write($"{IOperation.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
+        writer.Write($"{IOperation.PointToString(Points.First(), height, option.PointFormat)} m {Points.Skip(1).Select(x => IOperation.PointToString(x, height, option.PointFormat)).Join(" l ")} l S\n");
         writer.Write("Q\n");
     }
-
-    public static string PointToString((IPoint X, IPoint Y) point, int height) => $"{point.X.ToPoint()} {height - point.Y.ToPoint()}";
 }

@@ -9,4 +9,5 @@ public class PdfExportOption
     public bool ImageStreamDeflate { get; init; } = true;
     public bool CMapStreamDeflate { get; init; } = true;
     public bool FontStreamDeflate { get; init; } = true;
+    public string PointFormat { get; init; } = "F2";
 }

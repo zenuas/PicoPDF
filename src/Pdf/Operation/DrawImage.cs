@@ -19,7 +19,7 @@ public class DrawImage : IOperation
         var imageheight = Image.Height * ZoomHeight;
 
         writer.Write("q\n");
-        writer.Write($"{imagewidth} 0 0 {imageheight} {X.ToPoint()} {height - imageheight - Y.ToPoint()} cm\n");
+        writer.Write($"{IOperation.PointToString(imagewidth, option.PointFormat)} 0 0 {IOperation.PointToString(imageheight, option.PointFormat)} {IOperation.PointToString(X.ToPoint(), option.PointFormat)} {IOperation.PointToString(height - imageheight - Y.ToPoint(), option.PointFormat)} cm\n");
         writer.Write($"/{Image.Name} Do\n");
         writer.Write("Q\n");
     }

@@ -23,8 +23,8 @@ public class DrawString : IOperation
             writer.Write("  q\n");
             writer.Write($"  {c.CreateColor(false)}\n");
         }
-        writer.Write($"  /{Font.Name} {FontSize} Tf\n");
-        writer.Write($"  {X.ToPoint()} {height - Y.ToPoint()} Td\n");
+        writer.Write($"  /{Font.Name} {IOperation.PointToString(FontSize, option.PointFormat)} Tf\n");
+        writer.Write($"  {IOperation.PointToString(X.ToPoint(), option.PointFormat)} {IOperation.PointToString(height - Y.ToPoint(), option.PointFormat)} Td\n");
         writer.Write($"  {Font.CreateTextShowingOperator(Text)}");
         if (option.Debug) writer.Write($" % {Text.ReplaceLineEndings("")}");
         writer.Write("\n");

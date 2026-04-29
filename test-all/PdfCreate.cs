@@ -33,6 +33,9 @@ public class PdfCreate : FontRegisterCommand
     [CommandOption("always-update")]
     public bool AlwaysUpdate { get; init; } = true;
 
+    [CommandOption("point-format")]
+    public string PointFormat { get; init; } = "F2";
+
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister(true);
@@ -45,6 +48,7 @@ public class PdfCreate : FontRegisterCommand
             JpegStreamDeflate = JpegStreamDeflate,
             ImageStreamDeflate = ImageStreamDeflate,
             CMapStreamDeflate = CMapStreamDeflate,
+            PointFormat = PointFormat,
         };
 
         var datacache = new Dictionary<string, DataTable>();

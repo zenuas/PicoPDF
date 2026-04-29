@@ -10,8 +10,6 @@ public class DrawMovePath : IPathOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"{PointToString(Start, height)} m\n");
+        writer.Write($"{IOperation.PointToString(Start, height, option.PointFormat)} m\n");
     }
-
-    public static string PointToString((IPoint X, IPoint Y) point, int height) => $"{point.X.ToPoint()} {height - point.Y.ToPoint()}";
 }

@@ -15,7 +15,7 @@ public class DrawClipping : IOperation
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
         writer.Write("q\n");
-        writer.Write($"{X.ToPoint()} {height - Y.ToPoint()} {Width.ToPoint()} {-Height.ToPoint()} re W n\n");
+        writer.Write($"{IOperation.PointToString(X.ToPoint(), option.PointFormat)} {IOperation.PointToString(height - Y.ToPoint(), option.PointFormat)} {IOperation.PointToString(Width.ToPoint(), option.PointFormat)} {IOperation.PointToString(-Height.ToPoint(), option.PointFormat)} re W n\n");
         Operations.Each(x => x.OperationWrite(width, height, writer, option));
         writer.Write("Q\n");
     }
