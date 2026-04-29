@@ -91,6 +91,7 @@ public class Contents : PdfObject
             }
             yield return new()
             {
+                Text = char.ConvertFromUtf32(c),
                 Operations = [.. opes],
                 Color = color,
                 LineWidth = new PointValue(size * r),

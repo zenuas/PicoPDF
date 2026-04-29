@@ -45,6 +45,6 @@ public class ManualCreate : FontRegisterCommand
         _ = page.Contents.DrawText("TrueTypeでフォントフォールバックできない⇒🍣", 340, 100, 12, [ttf]);
         _ = page.Contents.DrawText("PostScriptでフォントフォールバックできない⇒🍣", 360, 100, 12, [post]);
 
-        doc.Save("test-case/manual-create.pdf", new() { ContentsStreamDeflate = false });
+        doc.Save("test-case/manual-create.pdf", new() { ContentsStreamDeflate = false, Debug = true });
     }
 }
