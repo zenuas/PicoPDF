@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Outline;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -165,16 +166,46 @@ public class SimpleGlyph : IGlyph
         stream.WriteUShortByBigEndian((ushort)Instructions.Length);
         stream.Write(Instructions);
 
-        Flags.Select(x => (byte)((byte)x
-                & ~(byte)SimpleGlyphFlags.REPEAT_FLAG
-                & ~(byte)SimpleGlyphFlags.X_SHORT_VECTOR
-                & ~(byte)SimpleGlyphFlags.X_IS_SAME_OR_POSITIVE_X_SHORT_VECTOR
-                & ~(byte)SimpleGlyphFlags.Y_SHORT_VECTOR
-                & ~(byte)SimpleGlyphFlags.Y_IS_SAME_OR_POSITIVE_Y_SHORT_VECTOR
-                & 0xFF))
-            .Each(stream.WriteByte);
+        using var xcoord = new MemoryStream();
+        using var ycoord = new MemoryStream();
+        for (var i = 0; i < Flags.Length; i++)
+        {
+            var flag = Flags[i] & SimpleGlyphFlags.ON_CURVE_POINT;
 
-        XCoordinates.Each(stream.WriteShortByBigEndian);
-        YCoordinates.Each(stream.WriteShortByBigEndian);
+            var x = XCoordinates[i];
+            if (x == 0)
+            {
+                flag |= SimpleGlyphFlags.X_IS_SAME_OR_POSITIVE_X_SHORT_VECTOR;
+            }
+            else if (x >= -byte.MaxValue && x <= byte.MaxValue)
+            {
+                flag |= SimpleGlyphFlags.X_SHORT_VECTOR;
+                if (x > 0) flag |= SimpleGlyphFlags.X_IS_SAME_OR_POSITIVE_X_SHORT_VECTOR;
+                xcoord.WriteByte((byte)Math.Abs(x));
+            }
+            else
+            {
+                xcoord.WriteShortByBigEndian(x);
+            }
+
+            var y = YCoordinates[i];
+            if (y == 0)
+            {
+                flag |= SimpleGlyphFlags.Y_IS_SAME_OR_POSITIVE_Y_SHORT_VECTOR;
+            }
+            else if (y >= -byte.MaxValue && y <= byte.MaxValue)
+            {
+                flag |= SimpleGlyphFlags.Y_SHORT_VECTOR;
+                if (y > 0) flag |= SimpleGlyphFlags.Y_IS_SAME_OR_POSITIVE_Y_SHORT_VECTOR;
+                ycoord.WriteByte((byte)Math.Abs(y));
+            }
+            else
+            {
+                ycoord.WriteShortByBigEndian(y);
+            }
+            stream.WriteByte((byte)flag);
+        }
+        stream.Write(xcoord.ToArray());
+        stream.Write(ycoord.ToArray());
     }
 }
