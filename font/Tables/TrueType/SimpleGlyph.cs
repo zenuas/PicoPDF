@@ -166,6 +166,7 @@ public class SimpleGlyph : IGlyph
         stream.WriteUShortByBigEndian((ushort)Instructions.Length);
         stream.Write(Instructions);
 
+        Span<SimpleGlyphFlags> flags = stackalloc SimpleGlyphFlags[Flags.Length];
         using var xcoord = new MemoryStream();
         using var ycoord = new MemoryStream();
         for (var i = 0; i < Flags.Length; i++)
@@ -203,7 +204,22 @@ public class SimpleGlyph : IGlyph
             {
                 ycoord.WriteShortByBigEndian(y);
             }
-            stream.WriteByte((byte)flag);
+            flags[i] = flag;
+        }
+        for (var i = 0; i < flags.Length; i++)
+        {
+            var repeat = 0;
+            while (i + repeat + 1 < flags.Length && flags[i] == flags[i + repeat + 1]) repeat++;
+            if (repeat > 0)
+            {
+                stream.WriteByte((byte)(flags[i] | SimpleGlyphFlags.REPEAT_FLAG));
+                stream.WriteByte((byte)repeat);
+                i += repeat;
+            }
+            else
+            {
+                stream.WriteByte((byte)flags[i]);
+            }
         }
         stream.Write(xcoord.ToArray());
         stream.Write(ycoord.ToArray());
