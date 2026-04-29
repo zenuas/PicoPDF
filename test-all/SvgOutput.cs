@@ -12,7 +12,6 @@ namespace PicoPDF.TestAll;
 
 public class SvgOutput : FontRegisterCommand
 {
-
     [CommandOption("output"), CommandOption('o')]
     public TextWriter Output { get; init; } = Console.Out;
 
