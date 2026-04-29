@@ -850,14 +850,14 @@ public static class FontExtract
             end_points_of_contours.Add((ushort)(flags.Count - 1));
         }
 
-        var (width, left, ascent, descent) = GetCanvasWidth(surfaces);
+        var (width, left, ymax, ymin) = GetCanvasWidth(surfaces);
         return new()
         {
             NumberOfContours = (short)end_points_of_contours.Count,
             XMin = (short)left,
-            YMin = (short)descent,
+            YMin = (short)ymin,
             XMax = (short)(left + width),
-            YMax = (short)ascent,
+            YMax = (short)ymax,
             EndPointsOfContours = [.. end_points_of_contours],
             InstructionLength = 0,
             Instructions = [],
@@ -925,7 +925,7 @@ public static class FontExtract
         return [.. char_strings];
     }
 
-    public static (float Width, float Left, float Ascent, float Descent) GetCanvasWidth(Surface[] surfaces)
+    public static (float Width, float Left, float YMax, float YMin) GetCanvasWidth(Surface[] surfaces)
     {
         if (surfaces.Length == 0) return (0, 0, 0, 0);
 
