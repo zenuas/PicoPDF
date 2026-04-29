@@ -44,7 +44,7 @@ public class FontHtml : SvgOutput
 </thead>
 <tbody>
 """);
-        for (var gid = 0u; gid <= 0xFFFF; gid++)
+        for (var gid = 0u; gid <= font.MaximumProfile.NumberOfGlyphs; gid++)
         {
             var found = gid_to_char.TryGetValue(gid, out var c);
             var s = found ? char.ConvertFromUtf32(c) : "";
