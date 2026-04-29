@@ -930,6 +930,8 @@ public static class FontExtract
         if (surfaces.Length == 0) return (0, 0, 0, 0);
 
         var points = surfaces.Select(x => GetPoints(x.Edges)).Flatten();
+        if (points.IsEmpty()) return (0, 0, 0, 0);
+
         var first = points.First();
         var xmin = first.X;
         var ymin = first.Y;
