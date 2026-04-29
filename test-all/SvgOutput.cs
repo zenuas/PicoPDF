@@ -37,16 +37,29 @@ public class SvgOutput : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
         var font = fontreg.LoadComplete(Font);
-        foreach (var arg in args)
-        {
-            OutputCharToSvg(font, [.. arg.ToUtf32CharArray()]);
-        }
+        OutputSvg(font, [.. args.Select(arg => arg.ToUtf32CharArray().Select(x => (x, font.CharToGID(x))).ToArray())]);
         Output.Flush();
     }
 
-    public void OutputCharToSvg(IOpenTypeFont font, int[] cids) => OutputSvg(font, [.. cids.Select(x => (x, font.CharToGID(x)))]);
+    public void OutputSvg(IOpenTypeFont font, (int Char, uint GID)[][] cidss)
+    {
+        var top = 0f;
+        var max_width = 0f;
+        using var mem = new MemoryStream();
+        using var writer = new StreamWriter(mem);
+        foreach (var cids in cidss)
+        {
+            var (width, height) = OutputPath(font, writer, top, cids);
+            top += height;
+            max_width = Math.Max(width, max_width);
+        }
+        writer.Flush();
+        Output.WriteLine($"""<svg width="{max_width}" height="{top}" xmlns="http://www.w3.org/2000/svg">""");
+        Output.Write(Encoding.UTF8.GetString(mem.ToArray()));
+        Output.WriteLine("</svg>");
+    }
 
-    public void OutputSvg(IOpenTypeFont font, (int Char, uint GID)[] cids)
+    public (float Width, float Height) OutputPath(IOpenTypeFont font, TextWriter writer, float top, (int Char, uint GID)[] cids)
     {
         var surfacess = cids.Select(x => font.GIDToOutline(x.GID)).ToArray();
         var total_width = cids.Select(x => font.GetAdvanceWidth(x.GID)).Sum();
@@ -55,11 +68,10 @@ public class SvgOutput : FontRegisterCommand
 
         var r = 1f / font.FontHeader.UnitsPerEm * Point;
         var left = 0f;
-        var baseline = ascent * r;
-        Output.WriteLine($"""<svg width="{total_width * r}" height="{(ascent - descent) * r}" xmlns="http://www.w3.org/2000/svg">""");
+        var baseline = top + (ascent * r);
         for (var i = 0; i < cids.Length; i++)
         {
-            Output.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
+            writer.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
             var d = new StringBuilder();
             var c = new StringBuilder();
             foreach (var surface in surfacess[i].Where(x => x.Edges.Length > 0))
@@ -106,17 +118,17 @@ public class SvgOutput : FontRegisterCommand
                 }
                 _ = d.Append("          Z");
             }
-            Output.WriteLine($"""    <path stroke="{ColorToHex(Stroke)}" fill="{ColorToHex(Fill)}" fill-rule="evenodd" """);
-            Output.WriteLine($"""       d="{d}" />""");
-            Output.Write(c);
+            writer.WriteLine($"""    <path stroke="{ColorToHex(Stroke)}" fill="{ColorToHex(Fill)}" fill-rule="evenodd" """);
+            writer.WriteLine($"""       d="{d}" />""");
+            writer.Write(c);
             left += font.GetAdvanceWidth(cids[i].GID) * r;
         }
         if (Debug)
         {
-            Output.WriteLine($"    <!-- baseline -->");
-            Output.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{total_width * r}" y2="{baseline}" stroke="red" />""");
+            writer.WriteLine($"    <!-- baseline -->");
+            writer.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{total_width * r}" y2="{baseline}" stroke="red" />""");
         }
-        Output.WriteLine("</svg>");
+        return (total_width * r, (ascent - descent) * r);
     }
 
     public static string ColorToHex(Color color) => color == Color.Transparent ? "transparent" : $"#{color.R:X2}{color.G:X2}{color.B:X2}";
