@@ -204,11 +204,6 @@ public class CompactFontFormat : IExportable
         };
         Subroutine.EnumOperands(TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0], [], frame, OperandAction);
         if (edges.Count > 0) surfaces.Add([.. edges]);
-        var minmax = surfaces.Flatten().Select(x => (MinX: x.MinX(), MinY: x.MinY(), MaxX: x.MaxX(), MaxY: x.MaxY())).ToArray();
-        var xmin = minmax.Length == 0 ? 0 : minmax.Select(x => x.MinX).Min();
-        var ymin = minmax.Length == 0 ? 0 : minmax.Select(x => x.MinY).Min();
-        var xmax = minmax.Length == 0 ? 0 : minmax.Select(x => x.MaxX).Max();
-        var ymax = minmax.Length == 0 ? 0 : minmax.Select(x => x.MaxY).Max();
-        return [.. surfaces.Where(x => x.Length > 0).Select(x => new Surface() { XMin = xmin, YMin = ymin, XMax = xmax, YMax = ymax, Edges = x })];
+        return [.. surfaces.Where(x => x.Length > 0).Select(x => new Surface() { Edges = x })];
     }
 }

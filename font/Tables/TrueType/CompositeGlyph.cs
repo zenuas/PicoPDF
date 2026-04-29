@@ -26,13 +26,13 @@ public class CompositeGlyph : IGlyph
         {
             glyphs[composite.GlyphIndex].ToOutline(glyphs)
                 .OfType<Surface>()
-                .Select(x => Composite(composite, x, XMin, YMin, XMax, YMax))
+                .Select(x => Composite(composite, x))
                 .Each(surfaces.Add);
         }
         return [.. surfaces];
     }
 
-    public static Surface Composite(ICompositeGlyphRecord composite, Surface surface, float xmin, float ymin, float xmax, float ymax)
+    public static Surface Composite(ICompositeGlyphRecord composite, Surface surface)
     {
         var transform = Matrix3x2.Identity;
         transform.Translation = new Vector2(composite.Argument1, composite.Argument2);
@@ -56,10 +56,6 @@ public class CompositeGlyph : IGlyph
 
         return new()
         {
-            XMin = xmin,
-            YMin = ymin,
-            XMax = xmax,
-            YMax = ymax,
             Edges = [.. surface.Edges.Select(edge => edge switch
                 {
                     Line line => (IEdge)new Line()

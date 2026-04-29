@@ -850,14 +850,14 @@ public static class FontExtract
             end_points_of_contours.Add((ushort)(flags.Count - 1));
         }
 
-        var first_surface = surfaces.First();
+        var (width, left, ascent, descent) = GetCanvasWidth(surfaces);
         return new()
         {
             NumberOfContours = (short)end_points_of_contours.Count,
-            XMin = (short)first_surface.XMin,
-            YMin = (short)first_surface.YMin,
-            XMax = (short)first_surface.XMax,
-            YMax = (short)first_surface.YMax,
+            XMin = (short)left,
+            YMin = (short)descent,
+            XMax = (short)(left + width),
+            YMax = (short)ascent,
             EndPointsOfContours = [.. end_points_of_contours],
             InstructionLength = 0,
             Instructions = [],
@@ -925,5 +925,23 @@ public static class FontExtract
         return [.. char_strings];
     }
 
-    public static (float Width, float Left) GetCanvasWidth(Surface[] surfaces) => surfaces.Length == 0 ? (0, 0) : (surfaces[0].XMax - surfaces[0].XMin, surfaces[0].XMin);
+    public static (float Width, float Left, float Ascent, float Descent) GetCanvasWidth(Surface[] surfaces)
+    {
+        if (surfaces.Length == 0) return (0, 0, 0, 0);
+
+        var points = surfaces.Select(x => x.GetPoints()).Flatten();
+        var first = points.First();
+        var xmin = first.X;
+        var ymin = first.Y;
+        var xmax = first.X;
+        var ymax = first.Y;
+        foreach (var point in points.Skip(1))
+        {
+            xmin = Math.Min(xmin, point.X);
+            ymin = Math.Min(ymin, point.Y);
+            xmax = Math.Max(xmax, point.X);
+            ymax = Math.Max(ymax, point.Y);
+        }
+        return (xmax - xmin, xmin, ymax, ymin);
+    }
 }
