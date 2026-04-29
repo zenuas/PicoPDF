@@ -929,7 +929,7 @@ public static class FontExtract
     {
         if (surfaces.Length == 0) return (0, 0, 0, 0);
 
-        var points = surfaces.Select(x => x.GetPoints()).Flatten();
+        var points = surfaces.Select(x => GetPoints(x.Edges)).Flatten();
         var first = points.First();
         var xmin = first.X;
         var ymin = first.Y;
@@ -943,5 +943,20 @@ public static class FontExtract
             ymax = Math.Max(ymax, point.Y);
         }
         return (xmax - xmin, xmin, ymax, ymin);
+    }
+
+    public static IEnumerable<Vector2> GetPoints(IEdge[] edges)
+    {
+        foreach (var edge in edges)
+        {
+            yield return edge.Start;
+
+            if (edge is BezierCurve bezier)
+            {
+                foreach (var cp in bezier.ControlPoint) yield return cp;
+            }
+
+            yield return edge.End;
+        }
     }
 }
