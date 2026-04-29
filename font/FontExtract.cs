@@ -850,7 +850,7 @@ public static class FontExtract
             end_points_of_contours.Add((ushort)(flags.Count - 1));
         }
 
-        var (width, left, ymax, ymin) = GetCanvasWidth(surfaces);
+        var (width, left, ymax, ymin) = GetSurfaceSize(surfaces);
         return new()
         {
             NumberOfContours = (short)end_points_of_contours.Count,
@@ -882,7 +882,7 @@ public static class FontExtract
     public static byte[] OutlineToCharStrings(Surface[] surfaces, int nominalWidthX)
     {
         var char_strings = new List<byte>();
-        char_strings.AddRange(Subroutine.NumberToBytes(GetCanvasWidth(surfaces).Width - nominalWidthX));
+        char_strings.AddRange(Subroutine.NumberToBytes(GetSurfaceSize(surfaces).Width - nominalWidthX));
 
         var current = new Vector2(0, 0);
         foreach (var surface in surfaces.Where(x => x.Edges.Length > 0))
@@ -925,7 +925,7 @@ public static class FontExtract
         return [.. char_strings];
     }
 
-    public static (float Width, float Left, float YMax, float YMin) GetCanvasWidth(Surface[] surfaces)
+    public static (float Width, float Left, float YMax, float YMin) GetSurfaceSize(Surface[] surfaces)
     {
         if (surfaces.Length == 0) return (0, 0, 0, 0);
 
