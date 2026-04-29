@@ -31,7 +31,7 @@ public static class FontExtract
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
         var glyphs = Lists.RangeTo(1, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? (IGlyph)OutlineToSimpleGlyf(glyph.Glyph, font.Glyphs) : new NotdefGlyph())
+            .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? (IGlyph)OutlineToSimpleGlyph(glyph.Glyph, font.Glyphs) : new NotdefGlyph())
             .Prepend(new NotdefGlyph())
             .ToArray();
 
@@ -791,7 +791,7 @@ public static class FontExtract
             });
     }
 
-    public static SimpleGlyph OutlineToSimpleGlyf(IGlyph glyph, IReadOnlyList<IGlyph> glyphs)
+    public static SimpleGlyph OutlineToSimpleGlyph(IGlyph glyph, IReadOnlyList<IGlyph> glyphs)
     {
         var surfaces = glyph.ToOutline(glyphs);
         if (surfaces.Length == 0)
