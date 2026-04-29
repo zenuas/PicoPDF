@@ -1,5 +1,6 @@
 ﻿using Binder.Data;
 using PicoPDF.Loader.Elements;
+using PicoPDF.Loader.Sections;
 using System.Drawing;
 
 namespace PicoPDF.Model.Elements;
@@ -11,7 +12,7 @@ public class TextModel : ITextModel
     public required int Y { get; init; }
     public required string Text { get; init; }
     public required int Size { get; init; }
-    public required string[] Font { get; init; }
+    public required FontPath[] Font { get; init; }
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
     public TextStyle Style { get; init; } = TextStyle.None;
     public int Width { get; init; }

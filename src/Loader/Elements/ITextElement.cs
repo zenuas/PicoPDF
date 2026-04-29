@@ -1,4 +1,5 @@
 ﻿using Binder.Data;
+using PicoPDF.Loader.Sections;
 using System.Drawing;
 
 namespace PicoPDF.Loader.Elements;
@@ -6,7 +7,7 @@ namespace PicoPDF.Loader.Elements;
 public interface ITextElement : IElement
 {
     public int Size { get; init; }
-    public string[] Font { get; init; }
+    public FontPath[] Font { get; init; }
     public TextAlignment Alignment { get; init; }
     public TextStyle Style { get; init; }
     public int Width { get; init; }

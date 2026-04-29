@@ -153,7 +153,7 @@ public class SectionModel : ISectionModel<SectionModel>
         throw new();
     }
 
-    public static TextModel CreateTextModel(ITextElement element, string text, string[] default_fonts) => new()
+    public static TextModel CreateTextModel(ITextElement element, string text, FontPath[] default_fonts) => new()
     {
         Element = element,
         X = element.X,
@@ -168,7 +168,7 @@ public class SectionModel : ISectionModel<SectionModel>
         Color = element.Color,
     };
 
-    public static MutableTextModel CreateMutableTextModel(ITextElement element, string text, string[] default_fonts) => new()
+    public static MutableTextModel CreateMutableTextModel(ITextElement element, string text, FontPath[] default_fonts) => new()
     {
         Element = element,
         X = element.X,

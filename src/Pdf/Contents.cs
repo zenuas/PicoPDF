@@ -2,6 +2,7 @@
 using OpenType;
 using OpenType.Outline;
 using PicoPDF.Loader.Elements;
+using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf.Color;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Font;
@@ -154,7 +155,7 @@ public class Contents : PdfObject
         foreach (var (text, font) in textfonts)
         {
             var box = font.MeasureStringBox(text);
-            if (stroke)
+            if (stroke || font.FontEmbed == FontEmbed.Stroke)
             {
                 foreach (var op in CreateDrawPathOnBaselineOperation(text, basey, start, size, font, color)) yield return op;
             }

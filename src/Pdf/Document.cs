@@ -3,6 +3,7 @@ using Image.Png;
 using Mina.Extension;
 using Mina.Text;
 using OpenType;
+using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject;
@@ -88,7 +89,7 @@ public class Document
         return font;
     }
 
-    public Type0Font AddFont(string name, IOpenTypeFont font)
+    public Type0Font AddFont(string name, IOpenTypeFont font, FontEmbed embed = FontEmbed.PossibleEmbed)
     {
         var flag =
             (font.CMap.EncodingRecords.Contains(x => x.Key.PlatformID == (ushort)Platforms.Windows && x.Key.EncodingID == (ushort)Encodings.Windows_Symbol) ?
@@ -98,10 +99,10 @@ public class Document
             ((font.FontHeader.MacStyle & 1) != 0 ? FontDescriptorFlags.ForceBold : 0) |
             ((font.FontHeader.MacStyle & 2) != 0 ? FontDescriptorFlags.Italic : 0);
 
-        return AddFont(name, font, flag);
+        return AddFont(name, font, flag, embed);
     }
 
-    public Type0Font AddFont(string name, IOpenTypeFont font, FontDescriptorFlags flags)
+    public Type0Font AddFont(string name, IOpenTypeFont font, FontDescriptorFlags flags, FontEmbed embed)
     {
         var cmap = CMap.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
@@ -125,6 +126,7 @@ public class Document
         {
             Name = name,
             Font = font,
+            FontEmbed = embed,
             FontRegister = FontRegister,
             Encoding = cidsysinfo.Name,
             FontDictionary = fontdict,

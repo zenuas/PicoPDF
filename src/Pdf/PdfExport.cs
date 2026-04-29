@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf.Font;
 using System.Collections.Generic;
 using System.IO;
@@ -16,8 +17,8 @@ public static class PdfExport
         foreach (var font in doc.PdfObjects.OfType<Type0Font>())
         {
             if (font.Chars.Count > 0 &&
-                (option.FontEmbed == FontEmbed.ForceEmbed ||
-                (option.FontEmbed == FontEmbed.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
+                (font.FontEmbed == FontEmbed.ForceEmbed ||
+                (font.FontEmbed == FontEmbed.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
         }
         var xref = new List<long>();
         GetAllReferences(doc, option).Each((x, i) =>

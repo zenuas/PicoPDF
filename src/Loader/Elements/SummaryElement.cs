@@ -1,4 +1,5 @@
 ﻿using Binder.Data;
+using PicoPDF.Loader.Sections;
 using System.Drawing;
 using System.Globalization;
 
@@ -13,7 +14,7 @@ public class SummaryElement : ITextElement, ISummaryElement
     public string SummaryCount { get; set; } = "";
     public string Format { get; init; } = "";
     public required int Size { get; init; }
-    public string[] Font { get; init; } = [];
+    public FontPath[] Font { get; init; } = [];
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
     public TextStyle Style { get; init; } = TextStyle.None;
     public int Width { get; init; }

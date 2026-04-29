@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Pdf.Font;
+﻿namespace PicoPDF.Loader.Sections;
 
 public enum FontEmbed
 {
@@ -10,4 +10,6 @@ public enum FontEmbed
     PossibleEmbed,
 
     ForceEmbed,
+
+    Stroke,
 }

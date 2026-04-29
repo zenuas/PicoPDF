@@ -1,5 +1,6 @@
 ﻿using Image;
 using Mina.Extension;
+using PicoPDF.Loader.Sections;
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
@@ -11,14 +12,15 @@ namespace PicoPDF.Model;
 
 public static class ModelMapping
 {
-    public static Func<string, Type0Font> CreateFontCache(Document doc)
+    public static Func<string, FontEmbed, Type0Font> CreateFontCache(Document doc)
     {
         var fontcache = doc.PdfObjects.OfType<Type0Font>().ToDictionary(x => x.Name, x => x);
-        return (name) =>
+        return (name, embed) =>
         {
-            if (fontcache.TryGetValue(name, out var value)) return value;
-            var x = doc.AddFont($"F{fontcache.Count}", doc.FontRegister.LoadComplete(name));
-            fontcache.Add(name, x);
+            var namekey = $"{name};{embed}";
+            if (fontcache.TryGetValue(namekey, out var value)) return value;
+            var x = doc.AddFont($"F{fontcache.Count}", doc.FontRegister.LoadComplete(name), embed);
+            fontcache.Add(namekey, x);
             return x;
         };
     }
@@ -47,14 +49,14 @@ public static class ModelMapping
         }
     }
 
-    public static void Mapping(Page page, Func<string, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, IModelElement model, int top, int left)
+    public static void Mapping(Page page, Func<string, FontEmbed, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, IModelElement model, int top, int left)
     {
         double posx = model.X + left;
         double posy = model.Y + top;
         switch (model)
         {
             case ITextModel x:
-                _ = page.Contents.DrawText(x.Text, posy, posx, x.Size, [.. x.Font.Select(fontget)], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
+                _ = page.Contents.DrawText(x.Text, posy, posx, x.Size, [.. x.Font.Select(x => fontget(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
                 return;
 
             case ILineModel x:

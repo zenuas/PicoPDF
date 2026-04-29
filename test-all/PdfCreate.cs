@@ -1,7 +1,6 @@
 ﻿using Mina.Command;
 using Mina.Extension;
 using PicoPDF.Pdf;
-using PicoPDF.Pdf.Font;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,9 +17,6 @@ public class PdfCreate : FontRegisterCommand
 
     [CommandOption("unicode")]
     public bool AppendCIDToUnicode { get; init; } = true;
-
-    [CommandOption("font-embed")]
-    public FontEmbed FontEmbed { get; init; } = FontEmbed.PossibleEmbed;
 
     [CommandOption("contents-deflate")]
     public bool ContentsStreamDeflate { get; init; } = false;
@@ -45,7 +41,6 @@ public class PdfCreate : FontRegisterCommand
         {
             Debug = Debug,
             AppendCIDToUnicode = AppendCIDToUnicode,
-            FontEmbed = FontEmbed,
             ContentsStreamDeflate = ContentsStreamDeflate,
             JpegStreamDeflate = JpegStreamDeflate,
             ImageStreamDeflate = ImageStreamDeflate,

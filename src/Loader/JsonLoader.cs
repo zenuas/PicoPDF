@@ -26,7 +26,7 @@ public static class JsonLoader
             .Select(x => LoadSubSection(x!))
             .ToDictionary(x => x.Name, x => x);
 
-        var fonts = ToStringArray(json["DefaultFont"]);
+        var fonts = ToFontPathArray(json["DefaultFont"]);
         if (fonts.Length == 0) throw new("DefaultFont is empty");
 
         return new()
@@ -80,7 +80,7 @@ public static class JsonLoader
                         X = posx,
                         Y = posy,
                         Text = json["Text"]!.ToString(),
-                        Font = ToStringArray(json["Font"]),
+                        Font = ToFontPathArray(json["Font"]),
                         Size = (int)json["Size"]!.AsValue(),
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Style = json["Style"] is { } style ? Enum.Parse<TextStyle>(style.ToString()) : TextStyle.None,
@@ -98,7 +98,7 @@ public static class JsonLoader
                         Y = posy,
                         Bind = json["Bind"]!.ToString(),
                         Format = json["Format"]?.ToString() ?? "",
-                        Font = ToStringArray(json["Font"]),
+                        Font = ToFontPathArray(json["Font"]),
                         Size = (int)json["Size"]!.AsValue(),
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Style = json["Style"] is { } style ? Enum.Parse<TextStyle>(style.ToString()) : TextStyle.None,
@@ -120,7 +120,7 @@ public static class JsonLoader
                         Y = posy,
                         Bind = json["Bind"]?.ToString() ?? "",
                         Format = json["Format"]?.ToString() ?? "",
-                        Font = ToStringArray(json["Font"]),
+                        Font = ToFontPathArray(json["Font"]),
                         Size = (int)json["Size"]!.AsValue(),
                         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
                         Style = json["Style"] is { } style ? Enum.Parse<TextStyle>(style.ToString()) : TextStyle.None,
@@ -230,10 +230,18 @@ public static class JsonLoader
         throw new();
     }
 
-    public static string[] ToStringArray(JsonNode? node) =>
-        node is JsonValue v ? [(string)v!] :
-        node is JsonArray xs ? [.. xs.Select(x => x?.AsValue() is { } value ? (string)value! : "")] :
+    public static FontPath[] ToFontPathArray(JsonNode? node) =>
+        node is JsonValue v ? [new() { Path = (string)v! }] :
+        node is JsonArray xs ? [.. xs.Select(x => ToFontPath(x!))] :
         [];
+
+    public static FontPath ToFontPath(JsonNode node) =>
+        node is JsonValue v ? new() { Path = (string)v! } :
+        new()
+        {
+            Path = node["Path"]?.ToString() ?? "",
+            Embed = node["Embed"] is { } embed ? Enum.Parse<FontEmbed>(embed.ToString()) : FontEmbed.PossibleEmbed,
+        };
 
     public static PageSize LoadPageSize(JsonNode? node)
     {
