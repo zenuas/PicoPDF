@@ -6,6 +6,7 @@ public class ImageElement : IElement
 {
     public required int X { get; init; }
     public required int Y { get; init; }
+    public string Name { get; init; } = "";
     public required string Path { get; init; }
     public required string Bind { get; init; }
     public double ZoomWidth { get; init; } = 1.0;

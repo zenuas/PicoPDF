@@ -1,5 +1,6 @@
 ﻿using Mina.Command;
 using Mina.Extension;
+using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
 using System;
 using System.Collections.Generic;
@@ -51,6 +52,29 @@ public class PdfCreate : FontRegisterCommand
             PointFormat = PointFormat,
         };
 
+        var event_opt = new PdfEventOption
+        {
+            BindElement = (section, element, model) =>
+            {
+                if (element.Name != "")
+                {
+                    if (model is TextModel text)
+                    {
+                        return new TextModel
+                        {
+                            Element = element,
+                            X = text.X,
+                            Y = text.Y,
+                            Text = $"{section.Name}_{element.Name}_{text.Text}",
+                            Size = text.Size,
+                            Font = text.Font,
+                        };
+                    }
+                }
+                return model;
+            }
+        };
+
         var datacache = new Dictionary<string, DataTable>();
         var tasks = new List<Task>();
         foreach (var json in args.Length > 0 ? args : Directory.GetFiles("test-case", "*.json"))
@@ -79,7 +103,7 @@ public class PdfCreate : FontRegisterCommand
 
             tasks.Add(Task.Run(() =>
             {
-                var doc = PdfUtility.CreateDocument(json, table, fontreg);
+                var doc = PdfUtility.CreateDocument(json, table, fontreg, event_opt);
                 _ = doc.AddInfo(
                     title: fname,
                     producer: "PicoPDF for 🍣 (susi edition)",

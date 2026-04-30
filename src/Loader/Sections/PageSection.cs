@@ -1,4 +1,6 @@
 ﻿using Binder.Data;
+using PicoPDF.Model.Elements;
+using System;
 using System.Globalization;
 
 namespace PicoPDF.Loader.Sections;
@@ -15,4 +17,5 @@ public class PageSection : IPageSection
     public CultureInfo DefaultCulture { get; init; } = CultureInfo.InvariantCulture;
     public int Width { get => field = Size.GetPageSize(Orientation).Width; init => field = value; }
     public int Height { get => field = Size.GetPageSize(Orientation).Height; init => field = value; }
+    public Func<ISection, IElement, IModelElement, IModelElement> BindElement { get; init; } = (_, _, model) => model;
 }

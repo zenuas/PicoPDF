@@ -2,6 +2,7 @@
 using Mina.Extension;
 using PicoPDF.Loader.Elements;
 using PicoPDF.Loader.Sections;
+using PicoPDF.Pdf;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,11 +16,11 @@ namespace PicoPDF.Loader;
 
 public static class JsonLoader
 {
-    public static PageSection Load(string path) => LoadJsonString(File.ReadAllText(path));
+    public static PageSection Load(string path, PdfEventOption? option = null) => LoadJsonString(File.ReadAllText(path), option);
 
-    public static PageSection LoadJsonString(string json) => LoadJson(JsonNode.Parse(json, null, new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip })!);
+    public static PageSection LoadJsonString(string json, PdfEventOption? option = null) => LoadJson(JsonNode.Parse(json, null, new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip })!, option);
 
-    public static PageSection LoadJson(JsonNode json)
+    public static PageSection LoadJson(JsonNode json, PdfEventOption? option = null)
     {
         var sections = json["Sections"]!
             .AsArray()
@@ -29,6 +30,7 @@ public static class JsonLoader
         var fonts = ToFontPathArray(json["DefaultFont"]);
         if (fonts.Length == 0) throw new("DefaultFont is empty");
 
+        var opt = option ?? new PdfEventOption();
         return new()
         {
             Size = LoadPageSize(json["Size"]),
@@ -39,6 +41,7 @@ public static class JsonLoader
             SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
             Padding = LoadAllSides(json["Padding"]),
             DefaultCulture = json["DefaultCulture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : CultureInfo.InvariantCulture,
+            BindElement = opt.BindElement,
         };
     }
 
@@ -71,6 +74,7 @@ public static class JsonLoader
     {
         var posx = (int)json["X"]!.AsValue();
         var posy = (int)json["Y"]!.AsValue();
+        var name = json["Name"]?.ToString() ?? "";
         switch (json["Type"]!.ToString())
         {
             case "TextElement":
@@ -79,6 +83,7 @@ public static class JsonLoader
                     {
                         X = posx,
                         Y = posy,
+                        Name = name,
                         Text = json["Text"]!.ToString(),
                         Font = ToFontPathArray(json["Font"]),
                         Size = (int)json["Size"]!.AsValue(),
@@ -96,6 +101,7 @@ public static class JsonLoader
                     {
                         X = posx,
                         Y = posy,
+                        Name = name,
                         Bind = json["Bind"]!.ToString(),
                         Format = json["Format"]?.ToString() ?? "",
                         Font = ToFontPathArray(json["Font"]),
@@ -118,6 +124,7 @@ public static class JsonLoader
                     {
                         X = posx,
                         Y = posy,
+                        Name = name,
                         Bind = json["Bind"]?.ToString() ?? "",
                         Format = json["Format"]?.ToString() ?? "",
                         Font = ToFontPathArray(json["Font"]),
@@ -140,6 +147,7 @@ public static class JsonLoader
                     {
                         X = posx,
                         Y = posy,
+                        Name = name,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
@@ -153,6 +161,7 @@ public static class JsonLoader
                     {
                         X = posx,
                         Y = posy,
+                        Name = name,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
@@ -166,6 +175,7 @@ public static class JsonLoader
                     {
                         X = posx,
                         Y = posy,
+                        Name = name,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
@@ -179,6 +189,7 @@ public static class JsonLoader
                     {
                         X = posx,
                         Y = posy,
+                        Name = name,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
                         Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
@@ -192,6 +203,7 @@ public static class JsonLoader
                     {
                         X = posx,
                         Y = posy,
+                        Name = name,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
                         LineColor = ColorTranslator.FromHtml(json["LineColor"]!.ToString()),
@@ -206,6 +218,7 @@ public static class JsonLoader
                     {
                         X = posx,
                         Y = posy,
+                        Name = name,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
                         LineColor = ColorTranslator.FromHtml(json["LineColor"]!.ToString()),
@@ -220,6 +233,7 @@ public static class JsonLoader
                     {
                         X = posx,
                         Y = posy,
+                        Name = name,
                         Path = json["Path"]?.ToString() ?? "",
                         Bind = json["Bind"]?.ToString() ?? "",
                         ZoomWidth = json["ZoomWidth"]?.AsValue() is { } zoomwidth ? (double)zoomwidth : 1.0,

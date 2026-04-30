@@ -1,0 +1,19 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": ["Meiryo Bold", "Segoe UI Symbol"],
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Name": "TestAction_1", "Text": "123", "Size": 30, "X": 10, "Y": 0},
+			{"Type": "TextElement", "Name": "", "Text": "456", "Size": 30, "X": 10, "Y": 30},
+			{"Type": "TextElement", "Text": "789", "Size": 30, "X": 10, "Y": 60},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+	],
+}

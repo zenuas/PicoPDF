@@ -9,6 +9,7 @@ public class SummaryElement : ITextElement, ISummaryElement
 {
     public required int X { get; init; }
     public required int Y { get; init; }
+    public string Name { get; init; } = "";
     public required string Bind { get; init; }
     public string SummaryBind { get; set; } = "";
     public string SummaryCount { get; set; } = "";
