@@ -4,7 +4,7 @@ using Xunit;
 
 namespace PicoPDF.Test;
 
-public class SubroutineTest
+public class InterpreterTest
 {
     [Fact]
     public void NumberToBytes()
@@ -21,17 +21,17 @@ public class SubroutineTest
         Assert.Equal(Interpreter.NumberToBytes(-109), [251, 1]);
         Assert.Equal(Interpreter.NumberToBytes(-1130), [254, 254]);
         Assert.Equal(Interpreter.NumberToBytes(-1131), [254, 255]);
-        //Assert.Equal(Subroutine.NumberToBytes(0), [28, 0, 0]);
-        //Assert.Equal(Subroutine.NumberToBytes(1), [28, 0, 1]);
+        //Assert.Equal(Interpreter.NumberToBytes(0), [28, 0, 0]);
+        //Assert.Equal(Interpreter.NumberToBytes(1), [28, 0, 1]);
         Assert.Equal(Interpreter.NumberToBytes(32766), [28, 127, 254]);
         Assert.Equal(Interpreter.NumberToBytes(32767), [28, 127, 255]);
         Assert.Equal(Interpreter.NumberToBytes(-32768), [28, 128, 0]);
         Assert.Equal(Interpreter.NumberToBytes(-32767), [28, 128, 1]);
-        //Assert.Equal(Subroutine.NumberToBytes(-2), [28, 255, 254]);
-        //Assert.Equal(Subroutine.NumberToBytes(-1), [28, 255, 255]);
+        //Assert.Equal(Interpreter.NumberToBytes(-2), [28, 255, 254]);
+        //Assert.Equal(Interpreter.NumberToBytes(-1), [28, 255, 255]);
 
         // 16-bit signed integer with 16 bits of fraction.
-        //Assert.Equal(Subroutine.NumberToBytes(0f), [255, 0, 0, 0, 0]);
+        //Assert.Equal(Interpreter.NumberToBytes(0f), [255, 0, 0, 0, 0]);
         Assert.Equal(Interpreter.NumberToBytes(258.5f), [255, 1, 2, 128, 0]);
         Assert.Equal(Interpreter.NumberToBytes(32767.251953125f), [255, 127, 255, 64, 128]);
         Assert.Equal(Interpreter.NumberToBytes(-32767.748046875f), [255, 128, 0, 64, 128]);
