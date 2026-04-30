@@ -16,11 +16,11 @@ namespace PicoPDF.Loader;
 
 public static class JsonLoader
 {
-    public static PageSection Load(string path, PdfEventOption? option = null) => LoadJsonString(File.ReadAllText(path), option);
+    public static PageSection CreatePageFromJsonFile(string path, PdfEventOption? option = null) => CreatePageFromJson(File.ReadAllText(path), option);
 
-    public static PageSection LoadJsonString(string json, PdfEventOption? option = null) => LoadJson(JsonNode.Parse(json, null, new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip })!, option);
+    public static PageSection CreatePageFromJson(string json, PdfEventOption? option = null) => CreatePageFromJson(JsonNode.Parse(json, null, new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip })!, option);
 
-    public static PageSection LoadJson(JsonNode json, PdfEventOption? option = null)
+    public static PageSection CreatePageFromJson(JsonNode json, PdfEventOption? option = null)
     {
         var sections = json["Sections"]!
             .AsArray()

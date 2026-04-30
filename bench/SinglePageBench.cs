@@ -16,7 +16,7 @@ namespace PicoPDF.Benchmark;
 
 public class SinglePageBench
 {
-    public static PageSection PageSection { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSection { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",

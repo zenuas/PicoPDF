@@ -15,7 +15,7 @@ namespace PicoPDF.Test;
 [Collection("SectionBinder")]
 public class SectionBinderCultureTest
 {
-    public static PageSection PageSection { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSection { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",

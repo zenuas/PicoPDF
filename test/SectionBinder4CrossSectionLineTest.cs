@@ -24,7 +24,7 @@ public class SectionBinder4CrossSectionLineTest
 
     public static string ToSectionString(SectionModel section) => $"{section.Section.Name},top={section.Top}/{section.Elements.OfType<ITextModel>().Select(x => x.Text).Join("/")}|{section.Elements.OfType<IPositionSizeModel>().Select(x => $"x1={x.X},y1={section.Top + x.Y},x2={x.X + x.Width},y2={section.Top + x.Y + x.Height}").Join("/")}";
 
-    public static PageSection PageSection { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSection { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -160,7 +160,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
 
-    public static PageSection PageSectionAf { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSectionAf { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -295,7 +295,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
 
-    public static PageSection PageSectionBf { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSectionBf { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -430,7 +430,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
 
-    public static PageSection PageSectionCf { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSectionCf { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -565,7 +565,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
 
-    public static PageSection PageSectionAl { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSectionAl { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -700,7 +700,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
 
-    public static PageSection PageSectionBl { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSectionBl { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -835,7 +835,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
 
-    public static PageSection PageSectionCl { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSectionCl { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -971,7 +971,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
 
-    public static PageSection PageSectionBlCl { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSectionBlCl { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -1105,7 +1105,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
 
-    public static PageSection PageSectionAlBlCl { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSectionAlBlCl { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -1238,7 +1238,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "PageFooter,top=817/|");
     }
 
-    public static PageSection PageSectionNoFooter { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSectionNoFooter { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -1337,7 +1337,7 @@ public class SectionBinder4CrossSectionLineTest
         Assert.Equal(ToSectionString(models[1].Models[i++]), "Detail,top=55/3|");
     }
 
-    public static PageSection PageSectionBFl { get; } = JsonLoader.LoadJsonString("""
+    public static PageSection PageSectionBFl { get; } = JsonLoader.CreatePageFromJson("""
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
