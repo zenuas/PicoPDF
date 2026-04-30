@@ -135,11 +135,11 @@ public class CompactFontFormat : IExportable
         var surfaces = new List<IEdge[]>();
         var edges = new List<IEdge>();
 
-        var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
-        var global_bias = Subroutine.GetSubroutineBias(GlobalSubroutines.Length);
+        var local_bias = Interpreter.GetSubroutineBias(local_subr.Length);
+        var global_bias = Interpreter.GetSubroutineBias(GlobalSubroutines.Length);
         Vector2? start_point = null;
 
-        void OperandAction(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)
+        void OperandAction(CharstringCommandCodes ope, List<float> stack, CharstringFrame frame)
         {
             switch (ope)
             {
@@ -147,7 +147,7 @@ public class CompactFontFormat : IExportable
                     {
                         var index = (int)stack.Pop() + local_bias;
                         Debug.Assert(index >= 0 && index < local_subr.Length);
-                        if (index >= 0 && index < local_subr.Length) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
+                        if (index >= 0 && index < local_subr.Length) Interpreter.EnumOperands(local_subr[index], stack, frame, OperandAction);
                         break;
                     }
 
@@ -155,7 +155,7 @@ public class CompactFontFormat : IExportable
                     {
                         var index = (int)stack.Pop() + global_bias;
                         Debug.Assert(index >= 0 && index < GlobalSubroutines.Length);
-                        if (index >= 0 && index < GlobalSubroutines.Length) Subroutine.EnumOperands(GlobalSubroutines[index], stack, frame, OperandAction);
+                        if (index >= 0 && index < GlobalSubroutines.Length) Interpreter.EnumOperands(GlobalSubroutines[index], stack, frame, OperandAction);
                         break;
                     }
 
@@ -170,7 +170,7 @@ public class CompactFontFormat : IExportable
                 case CharstringCommandCodes.Rrcurveto:
                 case CharstringCommandCodes.Rcurveline:
                     start_point ??= frame.CurrentPoint;
-                    Subroutine.DefaultOperandAction(ope, stack, frame);
+                    Interpreter.DefaultOperandAction(ope, stack, frame);
                     break;
 
                 case CharstringCommandCodes.Vmoveto:
@@ -181,7 +181,7 @@ public class CompactFontFormat : IExportable
                     start_point = null;
                     // Every character path and subpath must begin with one of the moveto operators.
                     // If the current path is open when a moveto operator is encountered, the path is closed before performing the moveto operation.
-                    Subroutine.DefaultOperandAction(ope, stack, frame);
+                    Interpreter.DefaultOperandAction(ope, stack, frame);
                     if (edges.Count > 0) surfaces.Add([.. edges]);
                     edges.Clear();
                     break;
@@ -191,18 +191,18 @@ public class CompactFontFormat : IExportable
                     break;
 
                 default:
-                    Subroutine.DefaultOperandAction(ope, stack, frame);
+                    Interpreter.DefaultOperandAction(ope, stack, frame);
                     break;
             }
         }
 
-        var frame = new SubroutineFrame()
+        var frame = new CharstringFrame()
         {
             AddLine = vecs => edges.Add(vecs.Length == 2 ?
                 new Line { Start = vecs[0], End = vecs[1] } :
                 new BezierCurve { Start = vecs[0], ControlPoint = [vecs[1], vecs[2]], End = vecs[3], ComplementPoint = false }),
         };
-        Subroutine.EnumOperands(TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0], [], frame, OperandAction);
+        Interpreter.EnumOperands(TopDict.CharStrings[gid < TopDict.CharStrings.Length ? gid : 0], [], frame, OperandAction);
         if (edges.Count > 0) surfaces.Add([.. edges]);
         return [.. surfaces.Where(x => x.Length > 0).Select(x => new Surface() { Edges = x })];
     }

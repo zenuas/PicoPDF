@@ -882,14 +882,14 @@ public static class FontExtract
     public static byte[] OutlineToCharStrings(Surface[] surfaces, int nominalWidthX)
     {
         var char_strings = new List<byte>();
-        char_strings.AddRange(Subroutine.NumberToBytes(GetSurfaceSize(surfaces).Width - nominalWidthX));
+        char_strings.AddRange(Interpreter.NumberToBytes(GetSurfaceSize(surfaces).Width - nominalWidthX));
 
         var current = new Vector2(0, 0);
         foreach (var surface in surfaces.Where(x => x.Edges.Length > 0))
         {
             var start = surface.Edges.First().Start;
-            char_strings.AddRange(Subroutine.NumberToBytes(start.X - current.X));
-            char_strings.AddRange(Subroutine.NumberToBytes(start.Y - current.Y));
+            char_strings.AddRange(Interpreter.NumberToBytes(start.X - current.X));
+            char_strings.AddRange(Interpreter.NumberToBytes(start.Y - current.Y));
             char_strings.Add((byte)CharstringCommandCodes.Rmoveto);
             current = start;
 
@@ -898,8 +898,8 @@ public static class FontExtract
                 switch (edge)
                 {
                     case Line line:
-                        char_strings.AddRange(Subroutine.NumberToBytes(line.End.X - current.X));
-                        char_strings.AddRange(Subroutine.NumberToBytes(line.End.Y - current.Y));
+                        char_strings.AddRange(Interpreter.NumberToBytes(line.End.X - current.X));
+                        char_strings.AddRange(Interpreter.NumberToBytes(line.End.Y - current.Y));
                         char_strings.Add((byte)CharstringCommandCodes.Rlineto);
                         current = line.End;
                         break;
@@ -908,12 +908,12 @@ public static class FontExtract
                         {
                             var cp1 = bezier.ControlPoint[0];
                             var cp2 = bezier.ControlPoint[1];
-                            char_strings.AddRange(Subroutine.NumberToBytes(cp1.X - current.X));
-                            char_strings.AddRange(Subroutine.NumberToBytes(cp1.Y - current.Y));
-                            char_strings.AddRange(Subroutine.NumberToBytes(cp2.X - cp1.X));
-                            char_strings.AddRange(Subroutine.NumberToBytes(cp2.Y - cp1.Y));
-                            char_strings.AddRange(Subroutine.NumberToBytes(bezier.End.X - cp2.X));
-                            char_strings.AddRange(Subroutine.NumberToBytes(bezier.End.Y - cp2.Y));
+                            char_strings.AddRange(Interpreter.NumberToBytes(cp1.X - current.X));
+                            char_strings.AddRange(Interpreter.NumberToBytes(cp1.Y - current.Y));
+                            char_strings.AddRange(Interpreter.NumberToBytes(cp2.X - cp1.X));
+                            char_strings.AddRange(Interpreter.NumberToBytes(cp2.Y - cp1.Y));
+                            char_strings.AddRange(Interpreter.NumberToBytes(bezier.End.X - cp2.X));
+                            char_strings.AddRange(Interpreter.NumberToBytes(bezier.End.Y - cp2.Y));
                             char_strings.Add((byte)CharstringCommandCodes.Rrcurveto);
                             current = bezier.End;
                             break;

@@ -9,84 +9,84 @@ public class SubroutineTest
     [Fact]
     public void NumberToBytes()
     {
-        Assert.Equal(Subroutine.NumberToBytes(-107), [32]);
-        Assert.Equal(Subroutine.NumberToBytes(-106), [33]);
-        Assert.Equal(Subroutine.NumberToBytes(106), [245]);
-        Assert.Equal(Subroutine.NumberToBytes(107), [246]);
-        Assert.Equal(Subroutine.NumberToBytes(108), [247, 0]);
-        Assert.Equal(Subroutine.NumberToBytes(109), [247, 1]);
-        Assert.Equal(Subroutine.NumberToBytes(1130), [250, 254]);
-        Assert.Equal(Subroutine.NumberToBytes(1131), [250, 255]);
-        Assert.Equal(Subroutine.NumberToBytes(-108), [251, 0]);
-        Assert.Equal(Subroutine.NumberToBytes(-109), [251, 1]);
-        Assert.Equal(Subroutine.NumberToBytes(-1130), [254, 254]);
-        Assert.Equal(Subroutine.NumberToBytes(-1131), [254, 255]);
+        Assert.Equal(Interpreter.NumberToBytes(-107), [32]);
+        Assert.Equal(Interpreter.NumberToBytes(-106), [33]);
+        Assert.Equal(Interpreter.NumberToBytes(106), [245]);
+        Assert.Equal(Interpreter.NumberToBytes(107), [246]);
+        Assert.Equal(Interpreter.NumberToBytes(108), [247, 0]);
+        Assert.Equal(Interpreter.NumberToBytes(109), [247, 1]);
+        Assert.Equal(Interpreter.NumberToBytes(1130), [250, 254]);
+        Assert.Equal(Interpreter.NumberToBytes(1131), [250, 255]);
+        Assert.Equal(Interpreter.NumberToBytes(-108), [251, 0]);
+        Assert.Equal(Interpreter.NumberToBytes(-109), [251, 1]);
+        Assert.Equal(Interpreter.NumberToBytes(-1130), [254, 254]);
+        Assert.Equal(Interpreter.NumberToBytes(-1131), [254, 255]);
         //Assert.Equal(Subroutine.NumberToBytes(0), [28, 0, 0]);
         //Assert.Equal(Subroutine.NumberToBytes(1), [28, 0, 1]);
-        Assert.Equal(Subroutine.NumberToBytes(32766), [28, 127, 254]);
-        Assert.Equal(Subroutine.NumberToBytes(32767), [28, 127, 255]);
-        Assert.Equal(Subroutine.NumberToBytes(-32768), [28, 128, 0]);
-        Assert.Equal(Subroutine.NumberToBytes(-32767), [28, 128, 1]);
+        Assert.Equal(Interpreter.NumberToBytes(32766), [28, 127, 254]);
+        Assert.Equal(Interpreter.NumberToBytes(32767), [28, 127, 255]);
+        Assert.Equal(Interpreter.NumberToBytes(-32768), [28, 128, 0]);
+        Assert.Equal(Interpreter.NumberToBytes(-32767), [28, 128, 1]);
         //Assert.Equal(Subroutine.NumberToBytes(-2), [28, 255, 254]);
         //Assert.Equal(Subroutine.NumberToBytes(-1), [28, 255, 255]);
 
         // 16-bit signed integer with 16 bits of fraction.
         //Assert.Equal(Subroutine.NumberToBytes(0f), [255, 0, 0, 0, 0]);
-        Assert.Equal(Subroutine.NumberToBytes(258.5f), [255, 1, 2, 128, 0]);
-        Assert.Equal(Subroutine.NumberToBytes(32767.251953125f), [255, 127, 255, 64, 128]);
-        Assert.Equal(Subroutine.NumberToBytes(-32767.748046875f), [255, 128, 0, 64, 128]);
-        Assert.Equal(Subroutine.NumberToBytes(-0.001953125f), [255, 255, 255, 255, 128]);
+        Assert.Equal(Interpreter.NumberToBytes(258.5f), [255, 1, 2, 128, 0]);
+        Assert.Equal(Interpreter.NumberToBytes(32767.251953125f), [255, 127, 255, 64, 128]);
+        Assert.Equal(Interpreter.NumberToBytes(-32767.748046875f), [255, 128, 0, 64, 128]);
+        Assert.Equal(Interpreter.NumberToBytes(-0.001953125f), [255, 255, 255, 255, 128]);
     }
 
     [Fact]
     public void GetSubroutineBias()
     {
-        Assert.Equal(Subroutine.GetSubroutineBias(0), 107);
-        Assert.Equal(Subroutine.GetSubroutineBias(1239), 107);
-        Assert.Equal(Subroutine.GetSubroutineBias(1240), 1131);
-        Assert.Equal(Subroutine.GetSubroutineBias(33899), 1131);
-        Assert.Equal(Subroutine.GetSubroutineBias(33900), 32768);
+        Assert.Equal(Interpreter.GetSubroutineBias(0), 107);
+        Assert.Equal(Interpreter.GetSubroutineBias(1239), 107);
+        Assert.Equal(Interpreter.GetSubroutineBias(1240), 1131);
+        Assert.Equal(Interpreter.GetSubroutineBias(33899), 1131);
+        Assert.Equal(Interpreter.GetSubroutineBias(33900), 32768);
     }
 
     [Fact]
     public void CharstringNumber()
     {
-        Assert.Equal(Subroutine.CharstringNumber([]), 0);
-        Assert.Equal(Subroutine.CharstringNumber([32]), -107);
-        Assert.Equal(Subroutine.CharstringNumber([33]), -106);
-        Assert.Equal(Subroutine.CharstringNumber([245]), 106);
-        Assert.Equal(Subroutine.CharstringNumber([246]), 107);
-        Assert.Equal(Subroutine.CharstringNumber([247, 0]), 108);
-        Assert.Equal(Subroutine.CharstringNumber([247, 1]), 109);
-        Assert.Equal(Subroutine.CharstringNumber([250, 254]), 1130);
-        Assert.Equal(Subroutine.CharstringNumber([250, 255]), 1131);
-        Assert.Equal(Subroutine.CharstringNumber([251, 0]), -108);
-        Assert.Equal(Subroutine.CharstringNumber([251, 1]), -109);
-        Assert.Equal(Subroutine.CharstringNumber([254, 254]), -1130);
-        Assert.Equal(Subroutine.CharstringNumber([254, 255]), -1131);
+        Assert.Equal(Interpreter.CharstringNumber([]), 0);
+        Assert.Equal(Interpreter.CharstringNumber([32]), -107);
+        Assert.Equal(Interpreter.CharstringNumber([33]), -106);
+        Assert.Equal(Interpreter.CharstringNumber([245]), 106);
+        Assert.Equal(Interpreter.CharstringNumber([246]), 107);
+        Assert.Equal(Interpreter.CharstringNumber([247, 0]), 108);
+        Assert.Equal(Interpreter.CharstringNumber([247, 1]), 109);
+        Assert.Equal(Interpreter.CharstringNumber([250, 254]), 1130);
+        Assert.Equal(Interpreter.CharstringNumber([250, 255]), 1131);
+        Assert.Equal(Interpreter.CharstringNumber([251, 0]), -108);
+        Assert.Equal(Interpreter.CharstringNumber([251, 1]), -109);
+        Assert.Equal(Interpreter.CharstringNumber([254, 254]), -1130);
+        Assert.Equal(Interpreter.CharstringNumber([254, 255]), -1131);
 
         // 16-bit signed integer with 16 bits of fraction.
-        Assert.Equal(Subroutine.CharstringNumber([255, 0, 0, 0, 0]), 0);
-        Assert.Equal(Subroutine.CharstringNumber([255, 1, 2, 128, 0]), 258.5);
-        Assert.Equal(Subroutine.CharstringNumber([255, 127, 255, 64, 128]), 32767.251953125);
-        Assert.Equal(Subroutine.CharstringNumber([255, 128, 0, 64, 128]), -32767.748046875);
-        Assert.Equal(Subroutine.CharstringNumber([255, 255, 255, 255, 128]), -0.001953125);
+        Assert.Equal(Interpreter.CharstringNumber([255, 0, 0, 0, 0]), 0);
+        Assert.Equal(Interpreter.CharstringNumber([255, 1, 2, 128, 0]), 258.5);
+        Assert.Equal(Interpreter.CharstringNumber([255, 127, 255, 64, 128]), 32767.251953125);
+        Assert.Equal(Interpreter.CharstringNumber([255, 128, 0, 64, 128]), -32767.748046875);
+        Assert.Equal(Interpreter.CharstringNumber([255, 255, 255, 255, 128]), -0.001953125);
     }
 
     [Fact]
     public void NextNumberBytes()
     {
-        Assert.Equal(Subroutine.NextNumberBytes(32), 0);
-        Assert.Equal(Subroutine.NextNumberBytes(246), 0);
-        Assert.Equal(Subroutine.NextNumberBytes(247), 1);
-        Assert.Equal(Subroutine.NextNumberBytes(248), 1);
-        Assert.Equal(Subroutine.NextNumberBytes(249), 1);
-        Assert.Equal(Subroutine.NextNumberBytes(250), 1);
-        Assert.Equal(Subroutine.NextNumberBytes(251), 1);
-        Assert.Equal(Subroutine.NextNumberBytes(252), 1);
-        Assert.Equal(Subroutine.NextNumberBytes(253), 1);
-        Assert.Equal(Subroutine.NextNumberBytes(254), 1);
-        Assert.Equal(Subroutine.NextNumberBytes(255), 4);
+        Assert.Equal(Interpreter.NextNumberBytes(32), 0);
+        Assert.Equal(Interpreter.NextNumberBytes(246), 0);
+        Assert.Equal(Interpreter.NextNumberBytes(247), 1);
+        Assert.Equal(Interpreter.NextNumberBytes(248), 1);
+        Assert.Equal(Interpreter.NextNumberBytes(249), 1);
+        Assert.Equal(Interpreter.NextNumberBytes(250), 1);
+        Assert.Equal(Interpreter.NextNumberBytes(251), 1);
+        Assert.Equal(Interpreter.NextNumberBytes(252), 1);
+        Assert.Equal(Interpreter.NextNumberBytes(253), 1);
+        Assert.Equal(Interpreter.NextNumberBytes(254), 1);
+        Assert.Equal(Interpreter.NextNumberBytes(255), 4);
     }
 
     [Fact]
@@ -94,52 +94,52 @@ public class SubroutineTest
     {
         // right roll
         var stack = new List<float> { 0, 1, 2, 3, 4, /* n */3, /* j */1 };
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 1, 4, 2, 3]);
 
         stack = [0, 1, 2, 3, 4, /* n */4, /* j */1];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 4, 1, 2, 3]);
 
         stack = [0, 1, 2, 3, 4, /* n */5, /* j */1];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [4, 0, 1, 2, 3]);
 
         stack = [0, 1, 2, 3, 4, /* n */3, /* j */2];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 1, 3, 4, 2]);
 
         stack = [0, 1, 2, 3, 4, /* n */4, /* j */2];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 3, 4, 1, 2]);
 
         stack = [0, 1, 2, 3, 4, /* n */5, /* j */2];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [3, 4, 0, 1, 2]);
 
         // left roll
         stack = [0, 1, 2, 3, 4, /* n */3, /* j */-1];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 1, 3, 4, 2]);
 
         stack = [0, 1, 2, 3, 4, /* n */4, /* j */-1];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 2, 3, 4, 1]);
 
         stack = [0, 1, 2, 3, 4, /* n */5, /* j */-1];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [1, 2, 3, 4, 0]);
 
         stack = [0, 1, 2, 3, 4, /* n */3, /* j */-2];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 1, 4, 2, 3]);
 
         stack = [0, 1, 2, 3, 4, /* n */4, /* j */-2];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [0, 3, 4, 1, 2]);
 
         stack = [0, 1, 2, 3, 4, /* n */5, /* j */-2];
-        Subroutine.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
+        Interpreter.DefaultOperandAction(CharstringCommandCodes.Roll, stack, null!);
         Assert.Equal(stack, [2, 3, 4, 0, 1]);
     }
 }

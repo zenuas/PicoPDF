@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace OpenType.Tables.PostScript;
 
-public static class Subroutine
+public static class Interpreter
 {
     extension(List<float> self)
     {
@@ -34,7 +34,7 @@ public static class Subroutine
         public float Peek() => self[^1];
     }
 
-    public static void EnumOperands(Span<byte> charstring, List<float> stack, SubroutineFrame frame, Action<CharstringCommandCodes, List<float>, SubroutineFrame> f)
+    public static void EnumOperands(Span<byte> charstring, List<float> stack, CharstringFrame frame, Action<CharstringCommandCodes, List<float>, CharstringFrame> f)
     {
         // w? {hs* vs* cm* hm* mt subpath}? {mt subpath}* endchar
         // Where:
@@ -169,7 +169,7 @@ public static class Subroutine
         f(CharstringCommandCodes.Return, stack, frame);
     }
 
-    public static void DefaultOperandAction(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)
+    public static void DefaultOperandAction(CharstringCommandCodes ope, List<float> stack, CharstringFrame frame)
     {
         switch (ope)
         {

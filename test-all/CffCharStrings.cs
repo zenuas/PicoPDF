@@ -20,7 +20,7 @@ public class CffCharStrings : FontRegisterCommand
         var font = fontreg.LoadComplete(Font).Cast<PostScriptFont>();
 
         var cff = font.CompactFontFormat;
-        var global_bias = Subroutine.GetSubroutineBias(cff.GlobalSubroutines.Length);
+        var global_bias = Interpreter.GetSubroutineBias(cff.GlobalSubroutines.Length);
 
         foreach (var arg in args.Select(x => x.ToUtf32CharArray()).Flatten())
         {
@@ -32,9 +32,9 @@ public class CffCharStrings : FontRegisterCommand
                 cff.TopDict.PrivateDict;
             var local_subr = private_dict?.LocalSubroutines ?? [];
 
-            var local_bias = Subroutine.GetSubroutineBias(local_subr.Length);
+            var local_bias = Interpreter.GetSubroutineBias(local_subr.Length);
 
-            void OperandAction(CharstringCommandCodes ope, List<float> stack, SubroutineFrame frame)
+            void OperandAction(CharstringCommandCodes ope, List<float> stack, CharstringFrame frame)
             {
                 switch (ope)
                 {
@@ -43,7 +43,7 @@ public class CffCharStrings : FontRegisterCommand
                             var index = (int)stack.Pop() + local_bias;
                             Debug.Assert(index >= 0 && index < local_subr.Length);
                             Console.WriteLine($"{ope}({index}) : {string.Join(", ", stack)}");
-                            if (index >= 0 && index < local_subr.Length) Subroutine.EnumOperands(local_subr[index], stack, frame, OperandAction);
+                            if (index >= 0 && index < local_subr.Length) Interpreter.EnumOperands(local_subr[index], stack, frame, OperandAction);
                             break;
                         }
 
@@ -52,14 +52,14 @@ public class CffCharStrings : FontRegisterCommand
                             var index = (int)stack.Pop() + global_bias;
                             Debug.Assert(index >= 0 && index < cff.GlobalSubroutines.Length);
                             Console.WriteLine($"{ope}({index}) : {string.Join(", ", stack)}");
-                            if (index >= 0 && index < cff.GlobalSubroutines.Length) Subroutine.EnumOperands(cff.GlobalSubroutines[index], stack, frame, OperandAction);
+                            if (index >= 0 && index < cff.GlobalSubroutines.Length) Interpreter.EnumOperands(cff.GlobalSubroutines[index], stack, frame, OperandAction);
                             break;
                         }
 
                     case CharstringCommandCodes.Hintmask:
                     case CharstringCommandCodes.Cntrmask:
                         Console.WriteLine($"{ope} : 0b_{string.Join("_", stack.Select(x => ((int)x).ToString("b8")))}");
-                        Subroutine.DefaultOperandAction(ope, stack, frame);
+                        Interpreter.DefaultOperandAction(ope, stack, frame);
                         break;
 
                     case CharstringCommandCodes.Width:
@@ -69,13 +69,13 @@ public class CffCharStrings : FontRegisterCommand
 
                     default:
                         Console.WriteLine($"{ope} : {string.Join(", ", stack)}");
-                        Subroutine.DefaultOperandAction(ope, stack, frame);
+                        Interpreter.DefaultOperandAction(ope, stack, frame);
                         break;
                 }
             }
 
             Console.WriteLine($"-- {c}");
-            Subroutine.EnumOperands(cff.TopDict.CharStrings[gid < cff.TopDict.CharStrings.Length ? gid : 0], [], new SubroutineFrame(), OperandAction);
+            Interpreter.EnumOperands(cff.TopDict.CharStrings[gid < cff.TopDict.CharStrings.Length ? gid : 0], [], new CharstringFrame(), OperandAction);
             Console.WriteLine();
         }
     }

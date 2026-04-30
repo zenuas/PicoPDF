@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace OpenType.Tables.PostScript;
 
-public class SubroutineFrame
+public class CharstringFrame
 {
     public Action<Vector2[]> AddLine { get; init; } = _ => { };
     public Dictionary<int, float> TransientArray { get; init; } = [];
