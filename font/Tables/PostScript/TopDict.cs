@@ -19,41 +19,41 @@ public class TopDict
     public TopDict[] FontDictArray { get; init; } = [];
     public byte[] FontDictSelect { get; init; } = [];
 
-    public string Version { get => Dict.TryGetValue(TopDictOperators.Version, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
-    public string Notice { get => Dict.TryGetValue(TopDictOperators.Notice, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
-    public string Copyright { get => Dict.TryGetValue(TopDictOperators.Copyright, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
-    public string FullName { get => Dict.TryGetValue(TopDictOperators.FullName, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
-    public string FamilyName { get => Dict.TryGetValue(TopDictOperators.FamilyName, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
-    public string Weight { get => Dict.TryGetValue(TopDictOperators.Weight, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
-    public bool IsFixedPitch { get => Dict.TryGetValue(TopDictOperators.IsFixedPitch, out var xs) && xs[0].ToInt() != 0; }
-    public IntOrDouble ItalicAngle { get => Dict.TryGetValue(TopDictOperators.ItalicAngle, out var xs) ? xs[0] : 0; }
-    public IntOrDouble UnderlinePosition { get => Dict.TryGetValue(TopDictOperators.UnderlinePosition, out var xs) ? xs[0] : -100; }
-    public IntOrDouble UnderlineThickness { get => Dict.TryGetValue(TopDictOperators.UnderlineThickness, out var xs) ? xs[0] : 50; }
-    public IntOrDouble PaintType { get => Dict.TryGetValue(TopDictOperators.PaintType, out var xs) ? xs[0] : 0; }
-    public IntOrDouble CharstringType { get => Dict.TryGetValue(TopDictOperators.CharstringType, out var xs) ? xs[0] : 2; }
-    public IntOrDouble[] FontMatrix { get => Dict.TryGetValue(TopDictOperators.FontMatrix, out var xs) ? xs : [0.001, 0.0, 0.0, 0.001, 0.0, 0.0]; }
-    public IntOrDouble? UniqueID { get => Dict.TryGetValue(TopDictOperators.UniqueID, out var xs) ? xs[0] : null; }
-    public IntOrDouble[] FontBBox { get => Dict.TryGetValue(TopDictOperators.FontBBox, out var xs) ? xs : [0, 0, 0, 0]; }
-    public IntOrDouble StrokeWidth { get => Dict.TryGetValue(TopDictOperators.StrokeWidth, out var xs) ? xs[0] : 0; }
-    public IntOrDouble[]? XUID { get => Dict.TryGetValue(TopDictOperators.XUID, out var xs) ? xs : null; }
-    public int CharsetOffset { get => Dict.TryGetValue(TopDictOperators.Charset, out var xs) ? xs[0].ToInt() : 0; }
-    public int EncodingOffset { get => Dict.TryGetValue(TopDictOperators.Encoding, out var xs) ? xs[0].ToInt() : 0; }
-    public int? CharStringsOffset { get => Dict.TryGetValue(TopDictOperators.CharStrings, out var xs) ? xs[0].ToInt() : null; }
-    public (int Size, int Offset)? PrivateOffset { get => Dict.TryGetValue(TopDictOperators.Private, out var xs) ? (xs[0].ToInt(), xs[1].ToInt()) : null; }
-    public int? SyntheticBase { get => Dict.TryGetValue(TopDictOperators.SyntheticBase, out var xs) ? xs[0].ToInt() : null; }
-    public string PostScript { get => Dict.TryGetValue(TopDictOperators.PostScript, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
-    public string BaseFontName { get => Dict.TryGetValue(TopDictOperators.BaseFontName, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
-    public string BaseFontBlend { get => Dict.TryGetValue(TopDictOperators.BaseFontBlend, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
-    public bool IsCIDFont { get => Dict.ContainsKey(TopDictOperators.ROS); }
-    public (string Registry, string Ordering, int Supplement)? ROS { get => Dict.TryGetValue(TopDictOperators.ROS, out var xs) ? (SID.SIDToString(Strings, xs[0].ToInt()), SID.SIDToString(Strings, xs[1].ToInt()), xs[2].ToInt()) : null; }
-    public IntOrDouble CIDFontVersion { get => Dict.TryGetValue(TopDictOperators.CIDFontVersion, out var xs) ? xs[0] : 0; }
-    public IntOrDouble CIDFontRevision { get => Dict.TryGetValue(TopDictOperators.CIDFontRevision, out var xs) ? xs[0] : 0; }
-    public IntOrDouble CIDFontType { get => Dict.TryGetValue(TopDictOperators.CIDFontType, out var xs) ? xs[0] : 0; }
-    public IntOrDouble CIDCount { get => Dict.TryGetValue(TopDictOperators.CIDCount, out var xs) ? xs[0] : 8720; }
-    public IntOrDouble? UIDBase { get => Dict.TryGetValue(TopDictOperators.UIDBase, out var xs) ? xs[0] : null; }
-    public int? FDArrayOffset { get => Dict.TryGetValue(TopDictOperators.FDArray, out var xs) ? xs[0].ToInt() : null; }
-    public int? FDSelectOffset { get => Dict.TryGetValue(TopDictOperators.FDSelect, out var xs) ? xs[0].ToInt() : null; }
-    public string FontName { get => Dict.TryGetValue(TopDictOperators.FontName, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : ""; }
+    public string Version => Dict.TryGetValue(TopDictOperators.Version, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : "";
+    public string Notice => Dict.TryGetValue(TopDictOperators.Notice, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : "";
+    public string Copyright => Dict.TryGetValue(TopDictOperators.Copyright, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : "";
+    public string FullName => Dict.TryGetValue(TopDictOperators.FullName, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : "";
+    public string FamilyName => Dict.TryGetValue(TopDictOperators.FamilyName, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : "";
+    public string Weight => Dict.TryGetValue(TopDictOperators.Weight, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : "";
+    public bool IsFixedPitch => Dict.TryGetValue(TopDictOperators.IsFixedPitch, out var xs) && xs[0].ToInt() != 0;
+    public IntOrDouble ItalicAngle => Dict.TryGetValue(TopDictOperators.ItalicAngle, out var xs) ? xs[0] : 0;
+    public IntOrDouble UnderlinePosition => Dict.TryGetValue(TopDictOperators.UnderlinePosition, out var xs) ? xs[0] : -100;
+    public IntOrDouble UnderlineThickness => Dict.TryGetValue(TopDictOperators.UnderlineThickness, out var xs) ? xs[0] : 50;
+    public IntOrDouble PaintType => Dict.TryGetValue(TopDictOperators.PaintType, out var xs) ? xs[0] : 0;
+    public IntOrDouble CharstringType => Dict.TryGetValue(TopDictOperators.CharstringType, out var xs) ? xs[0] : 2;
+    public IntOrDouble[] FontMatrix => Dict.TryGetValue(TopDictOperators.FontMatrix, out var xs) ? xs : [0.001, 0.0, 0.0, 0.001, 0.0, 0.0];
+    public IntOrDouble? UniqueID => Dict.TryGetValue(TopDictOperators.UniqueID, out var xs) ? xs[0] : null;
+    public IntOrDouble[] FontBBox => Dict.TryGetValue(TopDictOperators.FontBBox, out var xs) ? xs : [0, 0, 0, 0];
+    public IntOrDouble StrokeWidth => Dict.TryGetValue(TopDictOperators.StrokeWidth, out var xs) ? xs[0] : 0;
+    public IntOrDouble[]? XUID => Dict.TryGetValue(TopDictOperators.XUID, out var xs) ? xs : null;
+    public int CharsetOffset => Dict.TryGetValue(TopDictOperators.Charset, out var xs) ? xs[0].ToInt() : 0;
+    public int EncodingOffset => Dict.TryGetValue(TopDictOperators.Encoding, out var xs) ? xs[0].ToInt() : 0;
+    public int? CharStringsOffset => Dict.TryGetValue(TopDictOperators.CharStrings, out var xs) ? xs[0].ToInt() : null;
+    public (int Size, int Offset)? PrivateOffset => Dict.TryGetValue(TopDictOperators.Private, out var xs) ? (xs[0].ToInt(), xs[1].ToInt()) : null;
+    public int? SyntheticBase => Dict.TryGetValue(TopDictOperators.SyntheticBase, out var xs) ? xs[0].ToInt() : null;
+    public string PostScript => Dict.TryGetValue(TopDictOperators.PostScript, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : "";
+    public string BaseFontName => Dict.TryGetValue(TopDictOperators.BaseFontName, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : "";
+    public string BaseFontBlend => Dict.TryGetValue(TopDictOperators.BaseFontBlend, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : "";
+    public bool IsCIDFont => Dict.ContainsKey(TopDictOperators.ROS);
+    public (string Registry, string Ordering, int Supplement)? ROS => Dict.TryGetValue(TopDictOperators.ROS, out var xs) ? (SID.SIDToString(Strings, xs[0].ToInt()), SID.SIDToString(Strings, xs[1].ToInt()), xs[2].ToInt()) : null;
+    public IntOrDouble CIDFontVersion => Dict.TryGetValue(TopDictOperators.CIDFontVersion, out var xs) ? xs[0] : 0;
+    public IntOrDouble CIDFontRevision => Dict.TryGetValue(TopDictOperators.CIDFontRevision, out var xs) ? xs[0] : 0;
+    public IntOrDouble CIDFontType => Dict.TryGetValue(TopDictOperators.CIDFontType, out var xs) ? xs[0] : 0;
+    public IntOrDouble CIDCount => Dict.TryGetValue(TopDictOperators.CIDCount, out var xs) ? xs[0] : 8720;
+    public IntOrDouble? UIDBase => Dict.TryGetValue(TopDictOperators.UIDBase, out var xs) ? xs[0] : null;
+    public int? FDArrayOffset => Dict.TryGetValue(TopDictOperators.FDArray, out var xs) ? xs[0].ToInt() : null;
+    public int? FDSelectOffset => Dict.TryGetValue(TopDictOperators.FDSelect, out var xs) ? xs[0].ToInt() : null;
+    public string FontName => Dict.TryGetValue(TopDictOperators.FontName, out var xs) ? SID.SIDToString(Strings, xs[0].ToInt()) : "";
 
     public static TopDict ReadFrom(byte[] bytes, string[] strings, Stream stream, long offset)
     {
