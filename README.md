@@ -138,7 +138,7 @@ graph TD;
     cff@{ shape: doc, label: "PostScriptFont" }
     pdf@{ shape: doc, label: "*.pdf" }
     
-    JsonLoader@{ shape: subproc, label: "JsonLoader.Load" }
+    JsonLoader@{ shape: subproc, label: "JsonLoader.CreatePageFromJsonFile" }
     SectionBinder@{ shape: subproc, label: "SectionBinder.Bind" }
     ModelMapping@{ shape: subproc, label: "ModelMapping.Mapping" }
     Save@{ shape: subproc, label: "Save" }
