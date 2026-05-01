@@ -17,6 +17,16 @@ public class BindSummaryMapper<T, TSection>
     public required List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>[] SummaryGoBack { get; init; }
     public required List<ICrossSectionModel<TSection>>[] CrossSectionGoBack { get; init; }
 
+    public readonly static BindSummaryMapper<T, TSection> Empty = new()
+    {
+        Mapper = NullMapper<T>.Instance,
+        Keys = [],
+        SummaryPool = new Dictionary<string, ClearableDynamicValue>(),
+        SummaryAction = [],
+        SummaryGoBack = CreateSummaryGoBack(0),
+        CrossSectionGoBack = CreateCrossSectionGoBack(0),
+    };
+
     public static BindSummaryMapper<T, TSection> Create(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] keys, int depth)
     {
         var (pool, actions) = CreatePool(page, mapper, keys);

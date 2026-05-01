@@ -136,6 +136,14 @@ public static class SectionBinder
                     bind.DataBind(x);
                     models.Add(TSection.CreateSectionModel(page, detail, x, bind, keys.Length, null));
                 }
+                if (breakcount > 0 && detail.Fill)
+                {
+                    var fillcount = (height - (count * detail.Height) - breakfooter.Select(x => x.Section.Height).Sum()) / detail.Height;
+                    for (var i = 0; i < fillcount; i++)
+                    {
+                        models.Add(TSection.CreateSectionModel(page, detail, default!, BindSummaryMapper<T, TSection>.Empty, keys.Length, null));
+                    }
+                }
                 lastdetail = models.Last();
                 breakfooter.FooterSort().Select(x => TSection.CreateSectionModel(page, x.Section, lastdata, bind, x.BreakCount, x.Depth).Return(x => bind.BreakSection(x))).Each(models.Add);
                 if (breakfooter.Contains(x => x.Section.Cast<IFooterSection>().PageBreak))
