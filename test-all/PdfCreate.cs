@@ -54,7 +54,7 @@ public class PdfCreate : FontRegisterCommand
 
         var event_opt = new PdfEventOption
         {
-            BindElement = (section, element, model) =>
+            BindElement = (section, element, data, model) =>
             {
                 if (element.Name != "")
                 {

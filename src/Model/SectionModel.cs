@@ -34,7 +34,7 @@ public class SectionModel : ISectionModel<SectionModel>
         Elements = BindElements(section, data, bind, page.Cast<PageSection>(), break_count, depth),
     };
 
-    public static IModelElement[] BindElements<T>(ISection section, T data, BindSummaryMapper<T, SectionModel> bind, PageSection page, int break_count, int? depth) => [.. section.Elements.Select(x => page.BindElement(section, x, BindElement(x, data, bind, page, break_count, depth)))];
+    public static IModelElement[] BindElements<T>(ISection section, T data, BindSummaryMapper<T, SectionModel> bind, PageSection page, int break_count, int? depth) => [.. section.Elements.Select(x => page.EventOption.BindElement(section, x, data, BindElement(x, data, bind, page, break_count, depth)))];
 
     public static IModelElement BindElement<T>(IElement element, T data, BindSummaryMapper<T, SectionModel> bind, PageSection page, int break_count, int? depth)
     {

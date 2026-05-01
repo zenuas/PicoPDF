@@ -30,7 +30,6 @@ public static class JsonLoader
         var fonts = ToFontPathArray(json["DefaultFont"]);
         if (fonts.Length == 0) throw new("DefaultFont is empty");
 
-        var opt = option ?? new PdfEventOption();
         return new()
         {
             Size = LoadPageSize(json["Size"]),
@@ -41,7 +40,7 @@ public static class JsonLoader
             SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
             Padding = LoadAllSides(json["Padding"]),
             DefaultCulture = json["DefaultCulture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : CultureInfo.InvariantCulture,
-            BindElement = opt.BindElement,
+            EventOption = option ?? new PdfEventOption(),
         };
     }
 
