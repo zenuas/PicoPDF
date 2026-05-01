@@ -16,7 +16,7 @@ public class DrawPathOperations : IOperation
     {
         if (option.Debug) writer.Write($"% {Text.ReplaceLineEndings("")}\n");
         writer.Write("q\n");
-        if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
+        if (Color is { } c) writer.Write($"{c.CreateColor(false)}\n");
         writer.Write($"{IOperation.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
         Operations.Each(x => x.OperationWrite(width, height, writer, option));
         writer.Write("f*\n");
