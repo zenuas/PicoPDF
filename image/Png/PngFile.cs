@@ -126,7 +126,7 @@ public class PngFile : IImageCanvas
 
     public static void ApplyFilterType(Span<byte> datas, int height, int byte_per_pixel, int row_byte)
     {
-        var prev_scanline = new byte[row_byte - 1].AsSpan();
+        ReadOnlySpan<byte> prev_scanline = stackalloc byte[row_byte - 1];
         for (var y = 0; y < height; y++)
         {
             var line = datas[(y * row_byte)..((y * row_byte) + row_byte)];
