@@ -70,8 +70,8 @@ public class BindSummaryMapper<T, TSection>
                         }
                         sr.SummaryElement.SummaryBind = key;
                         if (sr.SummaryElement.SummaryType == SummaryType.Average) goto case SummaryType.Count;
+                        break;
                     }
-                    break;
 
                 case SummaryType.Count:
                     {
@@ -84,8 +84,8 @@ public class BindSummaryMapper<T, TSection>
                             actions.Add(x => v.Value++);
                         }
                         sr.SummaryElement.SummaryCount = key;
+                        break;
                     }
-                    break;
 
                 case SummaryType.Maximum:
                     {
@@ -102,8 +102,8 @@ public class BindSummaryMapper<T, TSection>
                             });
                         }
                         sr.SummaryElement.SummaryBind = key;
+                        break;
                     }
-                    break;
 
                 case SummaryType.Minimum:
                     {
@@ -120,8 +120,8 @@ public class BindSummaryMapper<T, TSection>
                             });
                         }
                         sr.SummaryElement.SummaryBind = key;
+                        break;
                     }
-                    break;
             }
         });
         return (pool, [.. actions]);
