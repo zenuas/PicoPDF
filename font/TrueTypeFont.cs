@@ -22,7 +22,7 @@ public class TrueTypeFont : IOpenTypeFont, IDisposable
     public required HorizontalMetricsTable HorizontalMetrics { get; init; }
     public required CMapTable CMap { get; init; }
     public required Func<int, uint> CharToGID { get; init; }
-    public required Func<uint, Surface[]> GIDToOutline { get; init; }
+    public required Func<uint, IOutline[]> GIDToOutline { get; init; }
     public required IReadOnlyList<IGlyph> Glyphs { get; init; }
 
     public required ColorBitmapDataTable? ColorBitmapData { get; init; }

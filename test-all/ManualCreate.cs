@@ -33,13 +33,13 @@ public class ManualCreate : FontRegisterCommand
         _ = page.Contents.DrawText("TrueType Font! あアģ亜 𠮷野家", 180, 100, 12, [ttf]);
 
         var emoji = doc.AddFont("emoji1", fontreg.LoadComplete("Segoe UI Emoji"));
-        _ = page.Contents.DrawText("aijpqあいうえお👤←Segoe UI Emoji", 200, 100, 12, [ttf, emoji]);
+        _ = page.Contents.DrawText("aijpqあいうえお👤🐵←Segoe UI Emoji", 200, 100, 12, [ttf, emoji]);
 
         var emojistroke = doc.AddFont("emoji1", fontreg.LoadComplete("Segoe UI Emoji"), FontEmbed.Stroke);
-        _ = page.Contents.DrawText("aijpqあいうえお👤←Segoe UI Emoji(Stroke)", 220, 100, 12, [ttf, emojistroke]);
+        _ = page.Contents.DrawText("aijpqあいうえお👤🐵←Segoe UI Emoji(Stroke)", 220, 100, 12, [ttf, emojistroke]);
 
         var notocolemoji = doc.AddFont("emoji2", fontreg.LoadComplete("test-case/NotoColorEmoji-Regular.ttf"), FontEmbed.Stroke);
-        _ = page.Contents.DrawText("aijpqあいうえお👤←NotoColorEmoji-Regular(Stroke)", 240, 100, 12, [ttf, notocolemoji]);
+        _ = page.Contents.DrawText("aijpqあいうえお👤🐵←NotoColorEmoji-Regular(Stroke)", 240, 100, 12, [ttf, notocolemoji]);
 
         _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 260, 100, 12, [ttf, emoji], style: TextStyle.Border);
 

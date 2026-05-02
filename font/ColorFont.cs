@@ -9,9 +9,9 @@ namespace OpenType;
 
 public static class ColorFont
 {
-    public static Surface[]? ToOutline(IOpenTypeFont font, uint gid, ColorTable colr, ColorPaletteTable cpal)
+    public static IOutline[]? ToOutline(IOpenTypeFont font, uint gid, ColorTable colr, ColorPaletteTable cpal)
     {
-        var surfaces = new List<Surface>();
+        var surfaces = new List<IOutline>();
 
         foreach (var record in colr.BaseGlyphRecords.Where(x => x.GlyphID == gid))
         {
@@ -41,15 +41,22 @@ public static class ColorFont
         return Color.FromArgb((int)(col.Alpha * alpha), col.Red, col.Green, col.Blue);
     }
 
-    public static Surface[] ToOutline(IOpenTypeFont font, Surface[] surfaces, IPaintFormat paint, ColorTable colr, ColorPaletteTable cpal)
+    public static IOutline[] ToOutline(IOpenTypeFont font, IOutline[] surfaces, IPaintFormat paint, ColorTable colr, ColorPaletteTable cpal)
     {
         switch (paint)
         {
             case PaintColrLayers p:
-                break;
+                {
+                    var layers = new List<Layer>();
+                    foreach (var layer in colr.LayerListRecord!.Paints[(int)p.FirstLayerIndex..((int)p.FirstLayerIndex + p.NumberOfLayers)])
+                    {
+                        layers.Add(new() { Surfaces = ToOutline(font, surfaces, layer, colr, cpal) });
+                    }
+                    return [.. layers];
+                }
 
             case PaintSolid p:
-                return [.. surfaces.Select(x => new Surface { Edges = x.Edges, Color = GetColor(cpal, p.PaletteIndex, (float)p.Alpha) })];
+                return [.. surfaces.OfType<Surface>().Select(x => new Surface { Edges = x.Edges, Color = GetColor(cpal, p.PaletteIndex, (float)p.Alpha) })];
 
             case PaintVarSolid p:
                 break;

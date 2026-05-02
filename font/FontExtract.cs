@@ -73,7 +73,7 @@ public static class FontExtract
         var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (
                 Glyph: font.CompactFontFormat.TopDict.CharStrings[x.OldGID],
                 x.HorizontalMetrics,
-                Outline: font.GIDToOutline(x.OldGID))
+                Outline: font.GIDToOutline(x.OldGID).OfType<Surface>().ToArray())
             );
         var num_of_glyph = (int)gid_glyph.Keys.Max();
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
