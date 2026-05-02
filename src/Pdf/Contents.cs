@@ -44,7 +44,7 @@ public class Contents : PdfObject
         foreach (var c in text.ToUtf32CharArray())
         {
             var gid = opentype_font.CharToGID(c);
-            var outlines = opentype_font.GIDToOutline(gid);
+            var outlines = opentype_font.GIDToOutline(gid, true);
             var opes = new List<IPathOperation>();
 
             foreach (var x in CreateDrawPathOnBaselineOperation(outlines, c, r, basey, left, size, font, color))

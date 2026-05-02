@@ -61,7 +61,7 @@ public class SvgOutput : FontRegisterCommand
 
     public (float Width, float Height) OutputPath(IOpenTypeFont font, TextWriter writer, float top, (int Char, uint GID)[] cids)
     {
-        var outliness = cids.Select(x => font.GIDToOutline(x.GID)).ToArray();
+        var outliness = cids.Select(x => font.GIDToOutline(x.GID, true)).ToArray();
         var total_width = cids.Select(x => font.GetAdvanceWidth(x.GID)).Sum();
         var ascent = font.HorizontalHeader.Ascender;
         var descent = font.HorizontalHeader.Descender;

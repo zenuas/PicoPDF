@@ -80,7 +80,7 @@ public static class ColorFont
                 break;
 
             case PaintGlyph p:
-                return ToOutline(font, font.GIDToOutline(p.GlyphID), p.Paint, colr, cpal);
+                return ToOutline(font, font.GIDToOutline(p.GlyphID, true), p.Paint, colr, cpal);
 
             case PaintColrGlyph p:
                 break;

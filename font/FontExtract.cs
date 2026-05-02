@@ -52,7 +52,7 @@ public static class FontExtract
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
-            GIDToOutline = gid => (colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyphs[gid].ToOutline(glyphs),
+            GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyphs[gid].ToOutline(glyphs),
             Glyphs = glyphs,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
@@ -73,7 +73,7 @@ public static class FontExtract
         var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (
                 Glyph: font.CompactFontFormat.TopDict.CharStrings[x.OldGID],
                 x.HorizontalMetrics,
-                Outline: font.GIDToOutline(x.OldGID).OfType<Surface>().ToArray())
+                Outline: font.GIDToOutline(x.OldGID, false).OfType<Surface>().ToArray())
             );
         var num_of_glyph = (int)gid_glyph.Keys.Max();
         var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
@@ -125,7 +125,7 @@ public static class FontExtract
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
-            GIDToOutline = gid => (colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
+            GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
@@ -161,7 +161,7 @@ public static class FontExtract
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_hmtx.GetOrDefault(x)),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
-            GIDToOutline = _ => [],
+            GIDToOutline = (_, _) => [],
             ColorBitmapData = null,
             ColorBitmapLocation = null,
             Color = colr,
