@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace PicoPDF.Loader.Sections;
 
-public class PageSize : ISpanParsable<PageSize>, IComparable<PageSize>
+public class PageSize : ISpanParsable<PageSize>, IEquatable<PageSize>
 {
     public int Width { get; init; }
     public int Height { get; init; }
@@ -52,10 +52,7 @@ public class PageSize : ISpanParsable<PageSize>, IComparable<PageSize>
         return result is not null;
     }
 
-    public int CompareTo(PageSize? other) => other is null ? 1
-        : Width != other.Width ? Width - other.Width
-        : Height != other.Height ? Height - other.Height
-        : 0;
+    public bool Equals(PageSize? other) => other is { } && other.Width == Width && other.Height == Height;
 
     public (int Width, int Height) GetPageSize(Orientation orientation) => orientation == Orientation.Vertical ? (Width, Height) : (Height, Width);
 
