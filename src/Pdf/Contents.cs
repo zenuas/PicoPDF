@@ -62,7 +62,11 @@ public class Contents : PdfObject
         {
             switch (outline)
             {
-                case Surface surface when surface.Edges.Length > 0:
+                case Surface surface when surface.Edges.Length == 0:
+                    // skip empty surface (SPACE, etc)
+                    break;
+
+                case Surface surface:
                     {
                         if (surface.Color is { } col) color = PdfUtility.ToDeviceRGB(col);
                         var start = surface.Edges.First().Start;

@@ -99,7 +99,11 @@ public class SvgOutput : FontRegisterCommand
         {
             switch (outline)
             {
-                case Surface surface when surface.Edges.Length > 0:
+                case Surface surface when surface.Edges.Length == 0:
+                    // skip empty surface (SPACE, etc)
+                    break;
+
+                case Surface surface:
                     {
                         var start = surface.Edges.First().Start;
                         if (JointPoint > 0) _ = c.AppendLine($"""    <circle cx="{left + (start.X * r)}" cy="{baseline - (start.Y * r)}" r="{JointPoint}" fill="blue" />""");
