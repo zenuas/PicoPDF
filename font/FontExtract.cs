@@ -35,7 +35,8 @@ public static class FontExtract
             .Prepend(new NotdefGlyph())
             .ToArray();
 
-        return new()
+        TrueTypeFont newfont = null!;
+        newfont = new()
         {
             PostScriptName = font.PostScriptName,
             Path = font.Path,
@@ -51,7 +52,7 @@ public static class FontExtract
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
-            GIDToOutline = gid => glyphs[gid].ToOutline(glyphs),
+            GIDToOutline = gid => (colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyphs[gid].ToOutline(glyphs),
             Glyphs = glyphs,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
@@ -61,6 +62,7 @@ public static class FontExtract
             ScalableVectorGraphics = null,
             DisposeAction = null,
         };
+        return newfont;
     }
 
     public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
@@ -106,7 +108,8 @@ public static class FontExtract
             GlobalSubroutines = [],
         };
 
-        return new()
+        PostScriptFont newfont = null!;
+        newfont = new()
         {
             PostScriptName = font.PostScriptName,
             Path = font.Path,
@@ -122,7 +125,7 @@ public static class FontExtract
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
-            GIDToOutline = cff.ToOutline,
+            GIDToOutline = gid => (colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
             ColorBitmapData = null,
             ColorBitmapLocation = null,
@@ -131,6 +134,7 @@ public static class FontExtract
             StandardBitmapGraphics = null,
             ScalableVectorGraphics = null,
         };
+        return newfont;
     }
 
     public static NoOutlineFont Extract(NoOutlineFont font, FontExtractOption opt)

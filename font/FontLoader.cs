@@ -96,7 +96,8 @@ public static class FontLoader
         };
 
         var current_cmap = GetCurrentCMapFormat(cmap);
-        return new()
+        TrueTypeFont newfont = null!;
+        newfont = new()
         {
             PostScriptName = font.PostScriptName,
             Path = font.Path,
@@ -112,7 +113,7 @@ public static class FontLoader
             HorizontalMetrics = hmtx,
             CMap = cmap,
             CharToGID = current_cmap.CreateCharToGID(),
-            GIDToOutline = gid => glyf[(int)gid].ToOutline(glyf),
+            GIDToOutline = gid => (colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyf[(int)gid].ToOutline(glyf),
             Glyphs = glyf,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
@@ -122,6 +123,7 @@ public static class FontLoader
             ScalableVectorGraphics = svg,
             DisposeAction = () => glyf.Dispose(),
         };
+        return newfont;
     }
 
     public static PostScriptFont LoadPostScriptFont(IOpenTypeHeader font)
@@ -146,7 +148,8 @@ public static class FontLoader
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
         var current_cmap = GetCurrentCMapFormat(cmap);
-        return new()
+        PostScriptFont newfont = null!;
+        newfont = new()
         {
             PostScriptName = font.PostScriptName,
             Path = font.Path,
@@ -162,7 +165,7 @@ public static class FontLoader
             HorizontalMetrics = hmtx,
             CMap = cmap,
             CharToGID = current_cmap.CreateCharToGID(),
-            GIDToOutline = cff.ToOutline,
+            GIDToOutline = gid => (colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
@@ -171,6 +174,7 @@ public static class FontLoader
             StandardBitmapGraphics = sbix,
             ScalableVectorGraphics = svg,
         };
+        return newfont;
     }
 
     public static NoOutlineFont LoadNoOutlineFont(IOpenTypeHeader font)
