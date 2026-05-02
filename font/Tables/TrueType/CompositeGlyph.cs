@@ -25,7 +25,6 @@ public class CompositeGlyph : IGlyph
         foreach (var composite in CompositeGlyphRecords)
         {
             glyphs[composite.GlyphIndex].ToOutline(glyphs)
-                .OfType<Surface>()
                 .Select(x => Composite(composite, x))
                 .Each(surfaces.Add);
         }
