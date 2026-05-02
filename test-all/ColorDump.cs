@@ -89,12 +89,12 @@ public class ColorDump : FontRegisterCommand
 
             case PaintSolid p:
                 Console.WriteLine($"{sp}PaletteIndex: {p.PaletteIndex}");
-                Console.WriteLine($"{sp}Alpha: {(float)p.Alpha}");
+                Console.WriteLine($"{sp}Alpha: {p.Alpha.FloatValue}");
                 break;
 
             case PaintVarSolid p:
                 Console.WriteLine($"{sp}PaletteIndex: {p.PaletteIndex}");
-                Console.WriteLine($"{sp}Alpha: {(float)p.Alpha}");
+                Console.WriteLine($"{sp}Alpha: {p.Alpha.FloatValue}");
                 Console.WriteLine($"{sp}VarIndexBase: {p.VarIndexBase}");
                 break;
 
@@ -148,8 +148,8 @@ public class ColorDump : FontRegisterCommand
                 Console.WriteLine($"{sp}ColorLineOffset: {p.ColorLineOffset}");
                 Console.WriteLine($"{sp}CenterX: {p.CenterX}");
                 Console.WriteLine($"{sp}CenterY: {p.CenterY}");
-                Console.WriteLine($"{sp}StartAngle: {(float)p.StartAngle}");
-                Console.WriteLine($"{sp}EndAngle: {(float)p.EndAngle}");
+                Console.WriteLine($"{sp}StartAngle: {p.StartAngle.FloatValue}");
+                Console.WriteLine($"{sp}EndAngle: {p.EndAngle.FloatValue}");
                 Console.WriteLine($"{sp}ColorLine: {p.ColorLine}");
                 break;
 
@@ -157,8 +157,8 @@ public class ColorDump : FontRegisterCommand
                 Console.WriteLine($"{sp}ColorLineOffset: {p.ColorLineOffset}");
                 Console.WriteLine($"{sp}CenterX: {p.CenterX}");
                 Console.WriteLine($"{sp}CenterY: {p.CenterY}");
-                Console.WriteLine($"{sp}StartAngle: {(float)p.StartAngle}");
-                Console.WriteLine($"{sp}EndAngle: {(float)p.EndAngle}");
+                Console.WriteLine($"{sp}StartAngle: {p.StartAngle.FloatValue}");
+                Console.WriteLine($"{sp}EndAngle: {p.EndAngle.FloatValue}");
                 Console.WriteLine($"{sp}VarIndexBase: {p.VarIndexBase}");
                 Console.WriteLine($"{sp}ColorLine: {p.ColorLine}");
                 break;
@@ -204,23 +204,23 @@ public class ColorDump : FontRegisterCommand
 
             case PaintScale p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}ScaleX: {(float)p.ScaleX}");
-                Console.WriteLine($"{sp}ScaleY: {(float)p.ScaleY}");
+                Console.WriteLine($"{sp}ScaleX: {p.ScaleX.FloatValue}");
+                Console.WriteLine($"{sp}ScaleY: {p.ScaleY.FloatValue}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
                 break;
 
             case PaintVarScale p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}ScaleX: {(float)p.ScaleX}");
-                Console.WriteLine($"{sp}ScaleY: {(float)p.ScaleY}");
+                Console.WriteLine($"{sp}ScaleX: {p.ScaleX.FloatValue}");
+                Console.WriteLine($"{sp}ScaleY: {p.ScaleY.FloatValue}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
                 Console.WriteLine($"{sp}VarIndexBase: {p.VarIndexBase}");
                 break;
 
             case PaintScaleAroundCenter p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}ScaleX: {(float)p.ScaleX}");
-                Console.WriteLine($"{sp}ScaleY: {(float)p.ScaleY}");
+                Console.WriteLine($"{sp}ScaleX: {p.ScaleX.FloatValue}");
+                Console.WriteLine($"{sp}ScaleY: {p.ScaleY.FloatValue}");
                 Console.WriteLine($"{sp}CenterX: {p.CenterX}");
                 Console.WriteLine($"{sp}CenterY: {p.CenterY}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
@@ -228,8 +228,8 @@ public class ColorDump : FontRegisterCommand
 
             case PaintVarScaleAroundCenter p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}ScaleX: {(float)p.ScaleX}");
-                Console.WriteLine($"{sp}ScaleY: {(float)p.ScaleY}");
+                Console.WriteLine($"{sp}ScaleX: {p.ScaleX.FloatValue}");
+                Console.WriteLine($"{sp}ScaleY: {p.ScaleY.FloatValue}");
                 Console.WriteLine($"{sp}CenterX: {p.CenterX}");
                 Console.WriteLine($"{sp}CenterY: {p.CenterY}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
@@ -238,20 +238,20 @@ public class ColorDump : FontRegisterCommand
 
             case PaintScaleUniform p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}Scale: {(float)p.Scale}");
+                Console.WriteLine($"{sp}Scale: {p.Scale.FloatValue}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
                 break;
 
             case PaintVarScaleUniform p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}Scale: {(float)p.Scale}");
+                Console.WriteLine($"{sp}Scale: {p.Scale.FloatValue}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
                 Console.WriteLine($"{sp}VarIndexBase: {p.VarIndexBase}");
                 break;
 
             case PaintScaleUniformAroundCenter p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}Scale: {(float)p.Scale}");
+                Console.WriteLine($"{sp}Scale: {p.Scale.FloatValue}");
                 Console.WriteLine($"{sp}CenterX: {p.CenterX}");
                 Console.WriteLine($"{sp}CenterY: {p.CenterY}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
@@ -259,7 +259,7 @@ public class ColorDump : FontRegisterCommand
 
             case PaintVarScaleUniformAroundCenter p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}Scale: {(float)p.Scale}");
+                Console.WriteLine($"{sp}Scale: {p.Scale.FloatValue}");
                 Console.WriteLine($"{sp}CenterX: {p.CenterX}");
                 Console.WriteLine($"{sp}CenterY: {p.CenterY}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
@@ -268,20 +268,20 @@ public class ColorDump : FontRegisterCommand
 
             case PaintRotate p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}Angle: {(float)p.Angle}");
+                Console.WriteLine($"{sp}Angle: {p.Angle.FloatValue}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
                 break;
 
             case PaintVarRotate p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}Angle: {(float)p.Angle}");
+                Console.WriteLine($"{sp}Angle: {p.Angle.FloatValue}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
                 Console.WriteLine($"{sp}VarIndexBase: {p.VarIndexBase}");
                 break;
 
             case PaintRotateAroundCenter p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}Angle: {(float)p.Angle}");
+                Console.WriteLine($"{sp}Angle: {p.Angle.FloatValue}");
                 Console.WriteLine($"{sp}CenterX: {p.CenterX}");
                 Console.WriteLine($"{sp}CenterY: {p.CenterY}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
@@ -289,7 +289,7 @@ public class ColorDump : FontRegisterCommand
 
             case PaintVarRotateAroundCenter p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}Angle: {(float)p.Angle}");
+                Console.WriteLine($"{sp}Angle: {p.Angle.FloatValue}");
                 Console.WriteLine($"{sp}CenterX: {p.CenterX}");
                 Console.WriteLine($"{sp}CenterY: {p.CenterY}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
@@ -298,23 +298,23 @@ public class ColorDump : FontRegisterCommand
 
             case PaintSkew p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}XSkewAngle: {(float)p.XSkewAngle}");
-                Console.WriteLine($"{sp}YSkewAngle: {(float)p.YSkewAngle}");
+                Console.WriteLine($"{sp}XSkewAngle: {p.XSkewAngle.FloatValue}");
+                Console.WriteLine($"{sp}YSkewAngle: {p.YSkewAngle.FloatValue}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
                 break;
 
             case PaintVarSkew p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}XSkewAngle: {(float)p.XSkewAngle}");
-                Console.WriteLine($"{sp}YSkewAngle: {(float)p.YSkewAngle}");
+                Console.WriteLine($"{sp}XSkewAngle: {p.XSkewAngle.FloatValue}");
+                Console.WriteLine($"{sp}YSkewAngle: {p.YSkewAngle.FloatValue}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
                 Console.WriteLine($"{sp}VarIndexBase: {p.VarIndexBase}");
                 break;
 
             case PaintSkewAroundCenter p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}XSkewAngle: {(float)p.XSkewAngle}");
-                Console.WriteLine($"{sp}YSkewAngle: {(float)p.YSkewAngle}");
+                Console.WriteLine($"{sp}XSkewAngle: {p.XSkewAngle.FloatValue}");
+                Console.WriteLine($"{sp}YSkewAngle: {p.YSkewAngle.FloatValue}");
                 Console.WriteLine($"{sp}CenterX: {p.CenterX}");
                 Console.WriteLine($"{sp}CenterY: {p.CenterY}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");
@@ -322,8 +322,8 @@ public class ColorDump : FontRegisterCommand
 
             case PaintVarSkewAroundCenter p:
                 Console.WriteLine($"{sp}PaintOffset: {p.PaintOffset}");
-                Console.WriteLine($"{sp}XSkewAngle: {(float)p.XSkewAngle}");
-                Console.WriteLine($"{sp}YSkewAngle: {(float)p.YSkewAngle}");
+                Console.WriteLine($"{sp}XSkewAngle: {p.XSkewAngle.FloatValue}");
+                Console.WriteLine($"{sp}YSkewAngle: {p.YSkewAngle.FloatValue}");
                 Console.WriteLine($"{sp}CenterX: {p.CenterX}");
                 Console.WriteLine($"{sp}CenterY: {p.CenterY}");
                 Console.WriteLine($"{sp}Paint: {p.Paint}");

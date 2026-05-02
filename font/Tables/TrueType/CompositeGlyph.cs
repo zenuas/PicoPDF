@@ -39,19 +39,19 @@ public class CompositeGlyph : IGlyph
 
         if (composite is CompositeGlyphScaleRecord scale)
         {
-            transform.M11 = transform.M22 = scale.Scale;
+            transform.M11 = transform.M22 = scale.Scale.FloatValue;
         }
         else if (composite is CompositeGlyphXYScaleRecord xyscale)
         {
-            transform.M11 = xyscale.XScale;
-            transform.M22 = xyscale.YScale;
+            transform.M11 = xyscale.XScale.FloatValue;
+            transform.M22 = xyscale.YScale.FloatValue;
         }
         else if (composite is CompositeGlyphMatrix2x2Record matrix)
         {
-            transform.M11 = matrix.XScale;
-            transform.M12 = matrix.Scale01;
-            transform.M21 = matrix.Scale10;
-            transform.M22 = matrix.YScale;
+            transform.M11 = matrix.XScale.FloatValue;
+            transform.M12 = matrix.Scale01.FloatValue;
+            transform.M21 = matrix.Scale10.FloatValue;
+            transform.M22 = matrix.YScale.FloatValue;
         }
 
         return new()

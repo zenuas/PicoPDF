@@ -56,7 +56,7 @@ public static class ColorFont
                 }
 
             case PaintSolid p:
-                return [.. surfaces.OfType<Surface>().Select(x => new Surface { Edges = x.Edges, Color = GetColor(cpal, p.PaletteIndex, (float)p.Alpha) })];
+                return [.. surfaces.OfType<Surface>().Select(x => new Surface { Edges = x.Edges, Color = GetColor(cpal, p.PaletteIndex, p.Alpha.FloatValue) })];
 
             case PaintVarSolid p:
                 break;
