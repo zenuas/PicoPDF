@@ -3,6 +3,7 @@
 public class FontExtractOption
 {
     public required int[] ExtractChars { get; init; }
+    public bool IsColorSupport { get; init; } = false;
     public (Platforms? PlatformID, Encodings? EncodingID, ushort? LanguageID, NameIDs? NameID)[] OutputNames { get; init; } = [
         new(null, null, null, NameIDs.FontFamilyName),
         new(null, null, null, NameIDs.FontSubfamilyName),

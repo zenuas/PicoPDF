@@ -24,11 +24,11 @@ public static class FontExtract
 
     public static TrueTypeFont Extract(TrueTypeFont font, FontExtractOption opt)
     {
-        var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()]);
+        var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()], opt.IsColorSupport);
         var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (Glyph: font.Glyphs[(int)x.OldGID], x.HorizontalMetrics));
         var num_of_glyph = (int)gid_glyph.Keys.Max();
-        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
+        var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
         var glyphs = Lists.RangeTo(1, num_of_glyph)
             .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? (IGlyph)OutlineToSimpleGlyph(glyph.Glyph, font.Glyphs) : new NotdefGlyph())
@@ -68,7 +68,7 @@ public static class FontExtract
     public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
     {
         var validchars = opt.ExtractChars.Where(x => font.CharToGID(x) != 0).Order().ToArray();
-        var outputs = CreateCharToGIDMetrics(font, validchars).Append((Char: 0, NewGID: 0u, OldGID: 0u, HorizontalMetrics: font.HorizontalMetrics.Metrics[0])).ToArray();
+        var outputs = CreateCharToGIDMetrics(font, validchars, opt.IsColorSupport).Append((Char: 0, NewGID: 0u, OldGID: 0u, HorizontalMetrics: font.HorizontalMetrics.Metrics[0])).ToArray();
         var char_gids = outputs[0..validchars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (
                 Glyph: font.CompactFontFormat.TopDict.CharStrings[x.OldGID],
@@ -76,7 +76,7 @@ public static class FontExtract
                 Outline: font.GIDToOutline(x.OldGID, false).OfType<Surface>().ToArray())
             );
         var num_of_glyph = (int)gid_glyph.Keys.Max();
-        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
+        var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
         var dict = font.CompactFontFormat.TopDict.Dict.ToDictionary();
         _ = dict.TryAdd(TopDictOperators.ROS, [/* SID.StandardStrings[0] = ".notdef" */0, 0, 0]);
@@ -139,11 +139,11 @@ public static class FontExtract
 
     public static NoOutlineFont Extract(NoOutlineFont font, FontExtractOption opt)
     {
-        var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()]);
+        var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()], opt.IsColorSupport);
         var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var gid_hmtx = outputs.ToDictionary(x => x.NewGID, x => x.HorizontalMetrics);
         var num_of_glyph = (int)gid_hmtx.Keys.Max();
-        var (colr, cpal) = font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
+        var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
         return new()
         {
@@ -171,9 +171,9 @@ public static class FontExtract
         };
     }
 
-    public static (int Char, uint NewGID, uint OldGID, HorizontalMetrics HorizontalMetrics)[] CreateCharToGIDMetrics(IOpenTypeFont font, int[] chars) => [.. chars
+    public static (int Char, uint NewGID, uint OldGID, HorizontalMetrics HorizontalMetrics)[] CreateCharToGIDMetrics(IOpenTypeFont font, int[] chars, bool iscolor) => [.. chars
         .Select(font.CharToGID)
-        .To(xs => font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs)
+        .To(xs => iscolor && font.Color is { } ? GetGIDWithColorGlyph([.. xs], font.Color) : xs)
         .Select((x, i) => (
             Char: i < chars.Length ? chars[i] : 0,
             NewGID: (uint)(i + 1),
