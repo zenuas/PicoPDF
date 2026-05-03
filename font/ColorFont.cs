@@ -42,6 +42,8 @@ public static class ColorFont
         return Color.FromArgb((int)(col.Alpha * alpha), col.Red, col.Green, col.Blue);
     }
 
+    public static IEdge[] ToEdges(IEdge[] edges, Matrix3x2 transform) => [.. edges.Select(x => ToEdge(x, transform))];
+
     public static IEdge ToEdge(IEdge edge, Matrix3x2 transform) => edge switch
     {
         Line line => new Line
@@ -74,19 +76,23 @@ public static class ColorFont
                 }
 
             case PaintSolid p:
-                return [.. surfaces.Select(x => x is Surface surface ? new Surface { Edges = surface.Edges, Color = GetColor(cpal, p.PaletteIndex, p.Alpha.FloatValue) } : x)];
+                return [new ColorLayer { Color = GetColor(cpal, p.PaletteIndex, p.Alpha.FloatValue) }];
 
             case PaintVarSolid p:
                 break;
 
             case PaintLinearGradient p:
-                return [.. surfaces.Select(x => x is Surface surface ? new Surface { Edges = surface.Edges, Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : null } : x)];
+                {
+                    return [new ColorLayer { Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : default! }];
+                }
 
             case PaintVarLinearGradient p:
                 break;
 
             case PaintRadialGradient p:
-                return [.. surfaces.Select(x => x is Surface surface ? new Surface { Edges = surface.Edges, Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : null } : x)];
+                {
+                    return [new ColorLayer { Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : default! }];
+                }
 
             case PaintVarRadialGradient p:
                 break;
@@ -98,7 +104,14 @@ public static class ColorFont
                 break;
 
             case PaintGlyph p:
-                return ToOutline(font, font.GIDToOutline(p.GlyphID, true), p.Paint, colr, cpal, transform);
+                {
+                    var outline = font.GIDToOutline(p.GlyphID, false);
+                    var info = ToOutline(font, [], p.Paint, colr, cpal, transform);
+                    var color_layer = info.OfType<ColorLayer>().FirstOrDefault() ??
+                        info.OfType<Surface>().Where(x => x.ColorLayer is { }).FirstOrDefault()?.ColorLayer;
+
+                    return [.. outline.Select(x => x is not Surface surface ? x : new Surface { Edges = ToEdges(surface.Edges, transform), ColorLayer = color_layer })];
+                }
 
             case PaintColrGlyph p:
                 break;

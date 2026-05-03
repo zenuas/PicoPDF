@@ -68,7 +68,7 @@ public class Contents : PdfObject
 
                 case Surface surface:
                     {
-                        if (surface.Color is { } col) color = PdfUtility.ToDeviceRGB(col);
+                        if (surface.ColorLayer is { } color_layer) color = PdfUtility.ToDeviceRGB(color_layer.Color);
                         var start = surface.Edges.First().Start;
                         opes.Add(new DrawMovePath { Start = (new PointValue(left + start.X * r), new PointValue(basey - start.Y * r)) });
                         foreach (var edge in surface.Edges)
