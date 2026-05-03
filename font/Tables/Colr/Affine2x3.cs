@@ -37,7 +37,7 @@ public class Affine2x3 : IExportable, IAffine2x3
         stream.WriteFixed(DY);
     }
 
-    public Matrix3x2 ToMatrix3x2() => new(XX, YX, XY, YY, DX, DY);
+    public Matrix3x2 ToMatrix3x2() => new(XX.FloatValue, YX.FloatValue, XY.FloatValue, YY.FloatValue, DX.FloatValue, DY.FloatValue);
 
     public int SizeOf() => XX.SizeOf() + YX.SizeOf() +
         XY.SizeOf() + YY.SizeOf() +
