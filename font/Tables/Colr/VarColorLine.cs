@@ -7,7 +7,7 @@ namespace OpenType.Tables.Colr;
 
 public class VarColorLine : IExportable, IColorLine
 {
-    public required byte Extend { get; init; }
+    public required Extend Extend { get; init; }
     public required ushort NumberOfStops { get; init; }
     public required VarColorStop[] ColorStops { get; init; }
 
@@ -19,7 +19,7 @@ public class VarColorLine : IExportable, IColorLine
         var numStops = stream.ReadUShortByBigEndian();
         return new()
         {
-            Extend = extend,
+            Extend = (Extend)extend,
             NumberOfStops = numStops,
             ColorStops = [.. Lists.Repeat(() => VarColorStop.ReadFrom(stream)).Take(numStops)],
         };
@@ -27,10 +27,12 @@ public class VarColorLine : IExportable, IColorLine
 
     public void WriteTo(Stream stream)
     {
-        stream.WriteByte(Extend);
+        stream.WriteByte((byte)Extend);
         stream.WriteUShortByBigEndian(NumberOfStops);
         ColorStops.Each(x => x.WriteTo(stream));
     }
 
     public int SizeOf() => Extend.SizeOf() + NumberOfStops.SizeOf() + ColorStops.Select(x => x.SizeOf()).Sum();
+
+    public override string ToString() => $"Extend={Extend}, NumberOfStops={NumberOfStops}, ColorStops=[({string.Join("), (", ColorStops)})]";
 }

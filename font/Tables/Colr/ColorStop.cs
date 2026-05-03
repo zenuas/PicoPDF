@@ -25,4 +25,6 @@ public class ColorStop : IExportable
     }
 
     public int SizeOf() => StopOffset.SizeOf() + StopOffset.SizeOf() + Alpha.SizeOf();
+
+    public override string ToString() => $"StopOffset={StopOffset.FloatValue}, PaletteIndex={PaletteIndex}, Alpha={Alpha.FloatValue}";
 }

@@ -2,6 +2,6 @@
 
 public interface IColorLine
 {
-    public byte Extend { get; init; }
+    public Extend Extend { get; init; }
     public ushort NumberOfStops { get; init; }
 }
