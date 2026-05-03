@@ -4,6 +4,7 @@ using OpenType.Tables.Colr;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 
 namespace OpenType;
 
@@ -40,6 +41,23 @@ public static class ColorFont
         var col = cpal.ColorRecords[paletteIndex];
         return Color.FromArgb((int)(col.Alpha * alpha), col.Red, col.Green, col.Blue);
     }
+
+    public static IEdge ToEdge(IEdge edge, Matrix3x2 transform) => edge switch
+    {
+        Line line => new Line
+        {
+            Start = Vector2.Transform(line.Start, transform),
+            End = Vector2.Transform(line.End, transform),
+        },
+        BezierCurve bezier => new BezierCurve
+        {
+            Start = Vector2.Transform(bezier.Start, transform),
+            ControlPoint = [.. bezier.ControlPoint.Select(x => Vector2.Transform(x, transform))],
+            End = Vector2.Transform(bezier.End, transform),
+            ComplementPoint = bezier.ComplementPoint,
+        },
+        _ => throw new(),
+    };
 
     public static IOutline[] ToOutline(IOpenTypeFont font, IOutline[] surfaces, IPaintFormat paint, ColorTable colr, ColorPaletteTable cpal)
     {
@@ -86,7 +104,10 @@ public static class ColorFont
                 break;
 
             case PaintTransform p:
-                break;
+                {
+                    var transform = p.Transform.ToMatrix3x2();
+                    return [.. ToOutline(font, surfaces, p.Paint, colr, cpal).OfType<Surface>().Select(x => new Surface { Edges = [.. x.Edges.Select(x => ToEdge(x, transform))], Color = x.Color })];
+                }
 
             case PaintVarTransform p:
                 break;
