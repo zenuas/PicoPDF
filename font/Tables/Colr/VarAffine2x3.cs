@@ -46,4 +46,6 @@ public class VarAffine2x3 : IExportable, IAffine2x3
         XY.SizeOf() + YY.SizeOf() +
         DX.SizeOf() + DY.SizeOf() +
         VarIndexBase.SizeOf();
+
+    public override string ToString() => $"XX={XX.FloatValue}, YX={YX.FloatValue}, XY={XY.FloatValue}, YY={YY.FloatValue}, DX={DX.FloatValue}, DY={DY.FloatValue}, VarIndexBase={VarIndexBase}";
 }

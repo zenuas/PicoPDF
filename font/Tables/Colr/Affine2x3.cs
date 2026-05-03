@@ -42,4 +42,6 @@ public class Affine2x3 : IExportable, IAffine2x3
     public int SizeOf() => XX.SizeOf() + YX.SizeOf() +
         XY.SizeOf() + YY.SizeOf() +
         DX.SizeOf() + DY.SizeOf();
+
+    public override string ToString() => $"XX={XX.FloatValue}, YX={YX.FloatValue}, XY={XY.FloatValue}, YY={YY.FloatValue}, DX={DX.FloatValue}, DY={DY.FloatValue}";
 }
