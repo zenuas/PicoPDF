@@ -26,7 +26,8 @@ public class ColorDump : FontRegisterCommand
             if (gid == 0) continue;
 
             Console.WriteLine($"Char: {char.ConvertFromUtf32(cid)}  (U+{(cid <= 0xFFFF ? cid.ToString("X4") : cid.ToString("X"))})");
-            Console.WriteLine($"CID: {gid}");
+            Console.WriteLine($"CID: {cid}");
+            Console.WriteLine($"GID: {gid}");
             EnumColor(font, gid);
         }
     }
