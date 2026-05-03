@@ -2,17 +2,18 @@
 using OpenType.Extension;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 
 namespace OpenType.Tables.Colr;
 
 public class Affine2x3 : IExportable, IAffine2x3
 {
-    public required uint XX { get; init; }
-    public required uint YX { get; init; }
-    public required uint XY { get; init; }
-    public required uint YY { get; init; }
-    public required uint DX { get; init; }
-    public required uint DY { get; init; }
+    public required Fixed XX { get; init; }
+    public required Fixed YX { get; init; }
+    public required Fixed XY { get; init; }
+    public required Fixed YY { get; init; }
+    public required Fixed DX { get; init; }
+    public required Fixed DY { get; init; }
 
     public static Affine2x3 ReadFrom(Stream stream, long position, Dictionary<long, IAffine2x3> colorLineCache) => (Affine2x3)(colorLineCache.TryGetValue(position, out var line) ? line : colorLineCache[position] = ReadFrom(stream.SeekTo(position)));
 
@@ -35,6 +36,8 @@ public class Affine2x3 : IExportable, IAffine2x3
         stream.WriteFixed(DX);
         stream.WriteFixed(DY);
     }
+
+    public Matrix3x2 ToMatrix3x2() => new(XX, YX, XY, YY, DX, DY);
 
     public int SizeOf() => XX.SizeOf() + YX.SizeOf() +
         XY.SizeOf() + YY.SizeOf() +

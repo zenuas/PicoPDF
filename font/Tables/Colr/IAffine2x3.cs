@@ -1,11 +1,13 @@
-﻿namespace OpenType.Tables.Colr;
+﻿using OpenType.Extension;
+
+namespace OpenType.Tables.Colr;
 
 public interface IAffine2x3
 {
-    public uint XX { get; init; }
-    public uint YX { get; init; }
-    public uint XY { get; init; }
-    public uint YY { get; init; }
-    public uint DX { get; init; }
-    public uint DY { get; init; }
+    public Fixed XX { get; init; }
+    public Fixed YX { get; init; }
+    public Fixed XY { get; init; }
+    public Fixed YY { get; init; }
+    public Fixed DX { get; init; }
+    public Fixed DY { get; init; }
 }

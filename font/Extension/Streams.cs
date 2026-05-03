@@ -15,7 +15,7 @@ public static class Streams
     public static void WriteOffset16(this Stream self, ushort n) => self.WriteUShortByBigEndian(n);
     public static void WriteOffset24(this Stream self, int n) => self.Write3BytesByBigEndian(n);
     public static void WriteOffset32(this Stream self, uint n) => self.WriteUIntByBigEndian(n);
-    public static void WriteFixed(this Stream self, uint n) => self.WriteUIntByBigEndian(n);
+    public static void WriteFixed(this Stream self, Fixed n) => self.WriteIntByBigEndian(n.Value);
     public static void WriteFWORD(this Stream self, short n) => self.WriteShortByBigEndian(n);
     public static void WriteUFWORD(this Stream self, ushort n) => self.WriteUShortByBigEndian(n);
     public static void WriteF2DOT14(this Stream self, F2DOT14 n) => self.WriteShortByBigEndian(n.Value);
@@ -29,7 +29,7 @@ public static class Streams
     public static ushort ReadOffset16(this Stream self) => self.ReadUShortByBigEndian();
     public static int ReadOffset24(this Stream self) => self.Read3BytesByBigEndian();
     public static uint ReadOffset32(this Stream self) => self.ReadUIntByBigEndian();
-    public static uint ReadFixed(this Stream self) => self.ReadUIntByBigEndian();
+    public static Fixed ReadFixed(this Stream self) => self.ReadIntByBigEndian();
     public static short ReadFWORD(this Stream self) => self.ReadShortByBigEndian();
     public static ushort ReadUFWORD(this Stream self) => self.ReadUShortByBigEndian();
     public static F2DOT14 ReadF2DOT14(this Stream self) => self.ReadShortByBigEndian();

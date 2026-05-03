@@ -7,7 +7,7 @@ namespace OpenType.Tables;
 public class PostScriptTable : IExportable
 {
     public required uint Version { get; init; }
-    public required uint ItalicAngle { get; init; }
+    public required Fixed ItalicAngle { get; init; }
     public required short UnderlinePosition { get; init; }
     public required short UnderlineThickness { get; init; }
     public required uint IsFixedPitch { get; init; }

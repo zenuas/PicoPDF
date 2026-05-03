@@ -8,7 +8,7 @@ public class FontHeaderTable : IExportable
 {
     public required ushort MajorVersion { get; init; }
     public required ushort MinorVersion { get; init; }
-    public required uint FontRevision { get; init; }
+    public required Fixed FontRevision { get; init; }
     public required uint ChecksumAdjustment { get; init; }
     public required uint MagicNumber { get; init; }
     public required ushort Flags { get; init; }
