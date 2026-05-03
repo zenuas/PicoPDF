@@ -26,7 +26,7 @@ public static class ColorFont
         {
             if (colr.BaseGlyphListRecord.BaseGlyphPaintRecord[i].GlyphID == gid)
             {
-                surfaces.AddRange(ToOutline(font, [], colr.BaseGlyphListRecord.Paints[i], colr, cpal));
+                surfaces.AddRange(ToOutline(font, [], colr.BaseGlyphListRecord.Paints[i], colr, cpal, Matrix3x2.Identity));
             }
         }
         return surfaces.Count == 0 ? null : [.. surfaces];
@@ -59,7 +59,7 @@ public static class ColorFont
         _ => throw new(),
     };
 
-    public static IOutline[] ToOutline(IOpenTypeFont font, IOutline[] surfaces, IPaintFormat paint, ColorTable colr, ColorPaletteTable cpal)
+    public static IOutline[] ToOutline(IOpenTypeFont font, IOutline[] surfaces, IPaintFormat paint, ColorTable colr, ColorPaletteTable cpal, Matrix3x2 transform)
     {
         switch (paint)
         {
@@ -68,25 +68,25 @@ public static class ColorFont
                     var layers = new List<Layer>();
                     foreach (var layer in colr.LayerListRecord!.Paints[(int)p.FirstLayerIndex..((int)p.FirstLayerIndex + p.NumberOfLayers)])
                     {
-                        layers.Add(new() { Surfaces = ToOutline(font, surfaces, layer, colr, cpal) });
+                        layers.Add(new() { Surfaces = ToOutline(font, surfaces, layer, colr, cpal, transform) });
                     }
                     return [.. layers];
                 }
 
             case PaintSolid p:
-                return [.. surfaces.OfType<Surface>().Select(x => new Surface { Edges = x.Edges, Color = GetColor(cpal, p.PaletteIndex, p.Alpha.FloatValue) })];
+                return [.. surfaces.Select(x => x is Surface surface ? new Surface { Edges = surface.Edges, Color = GetColor(cpal, p.PaletteIndex, p.Alpha.FloatValue) } : x)];
 
             case PaintVarSolid p:
                 break;
 
             case PaintLinearGradient p:
-                break;
+                return [.. surfaces.Select(x => x is Surface surface ? new Surface { Edges = surface.Edges, Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : null } : x)];
 
             case PaintVarLinearGradient p:
                 break;
 
             case PaintRadialGradient p:
-                break;
+                return [.. surfaces.Select(x => x is Surface surface ? new Surface { Edges = surface.Edges, Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : null } : x)];
 
             case PaintVarRadialGradient p:
                 break;
@@ -98,16 +98,13 @@ public static class ColorFont
                 break;
 
             case PaintGlyph p:
-                return ToOutline(font, font.GIDToOutline(p.GlyphID, true), p.Paint, colr, cpal);
+                return ToOutline(font, font.GIDToOutline(p.GlyphID, true), p.Paint, colr, cpal, transform);
 
             case PaintColrGlyph p:
                 break;
 
             case PaintTransform p:
-                {
-                    var transform = p.Transform.ToMatrix3x2();
-                    return [.. ToOutline(font, surfaces, p.Paint, colr, cpal).OfType<Surface>().Select(x => new Surface { Edges = [.. x.Edges.Select(x => ToEdge(x, transform))], Color = x.Color })];
-                }
+                return ToOutline(font, surfaces, p.Paint, colr, cpal, transform * p.Transform.ToMatrix3x2());
 
             case PaintVarTransform p:
                 break;
@@ -119,7 +116,7 @@ public static class ColorFont
                 break;
 
             case PaintScale p:
-                break;
+                return ToOutline(font, surfaces, p.Paint, colr, cpal, transform);
 
             case PaintVarScale p:
                 break;
