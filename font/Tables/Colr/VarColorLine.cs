@@ -34,5 +34,5 @@ public class VarColorLine : IExportable, IColorLine
 
     public int SizeOf() => Extend.SizeOf() + NumberOfStops.SizeOf() + ColorStops.Select(x => x.SizeOf()).Sum();
 
-    public override string ToString() => $"Extend={Extend}, NumberOfStops={NumberOfStops}, ColorStops=[({string.Join("), (", ColorStops)})]";
+    public override string ToString() => $"Extend={Extend}, ColorStops=[({string.Join("), (", ColorStops)})]";
 }
