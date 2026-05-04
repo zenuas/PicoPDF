@@ -66,9 +66,10 @@ public class SvgOutput : FontRegisterCommand
         var ascent = font.HorizontalHeader.Ascender;
         var descent = font.HorizontalHeader.Descender;
 
+        var (_, _, ymax, ymin) = Utility.GetSurfaceSize(Utility.GetSurfaces(outliness.Flatten()));
         var r = 1f / font.FontHeader.UnitsPerEm * Point;
         var left = 0f;
-        var baseline = top + (ascent * r);
+        var baseline = top + (ymax * r);
         for (var i = 0; i < cids.Length; i++)
         {
             writer.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
@@ -85,7 +86,7 @@ public class SvgOutput : FontRegisterCommand
             writer.WriteLine($"    <!-- baseline -->");
             writer.WriteLine($"""    <line x1="0" y1="{baseline}" x2="{total_width * r}" y2="{baseline}" stroke="red" />""");
         }
-        return (total_width * r, (ascent - descent) * r);
+        return (total_width * r, Math.Max(ascent - descent, ymax - ymin) * r);
     }
 
     public void OutputPath(IOutline[] outlines, StringBuilder d, StringBuilder c, float r, float left, float baseline)
