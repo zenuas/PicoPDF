@@ -1,10 +1,14 @@
-﻿using Mina.Extension;
+﻿using Mina.Command;
+using Mina.Extension;
 using System.Collections.Generic;
 
 namespace PicoPDF.TestAll;
 
 public class FontHtml : SvgOutput
 {
+    [CommandOption("font-char-em"), CommandOption('e')]
+    public float FontCharEm { get; init; } = 3.0F;
+
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister();
@@ -29,6 +33,10 @@ public class FontHtml : SvgOutput
     {@$"{{
         font-family: ""{name}"";
     }}"}
+    .char
+    {@$"{{
+        font-size: {FontCharEm}em;
+    }}"}
     </style>
 </head>
 
@@ -51,7 +59,7 @@ public class FontHtml : SvgOutput
             Output.WriteLine($"""
     <tr>
         <td>{gid}</td>
-        <td>{s}</td>
+        <td class="char">{s}</td>
         <td>{(!found ? "" : "U+" + (c <= 0xFFFF ? c.ToString("x4") : c.ToString("x6")))}</td>
         <td>
 """);
