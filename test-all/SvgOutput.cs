@@ -94,8 +94,7 @@ public class SvgOutput : FontRegisterCommand
         var layer_d = new StringBuilder();
         var color_layer = outlines.OfType<Surface>().FirstOrDefault()?.ColorLayer as SolidColorLayer;
 
-        _ = d.AppendLine($"""    <path stroke="{ColorToHex(color_layer?.Color ?? Stroke)}" fill="{ColorToHex(color_layer?.Color ?? Fill)}" fill-rule="evenodd" """);
-        _ = d.Append("       d=\"");
+        var isfirst = true;
         foreach (var outline in outlines)
         {
             switch (outline)
@@ -106,6 +105,12 @@ public class SvgOutput : FontRegisterCommand
 
                 case Surface surface:
                     {
+                        if (isfirst)
+                        {
+                            _ = d.AppendLine($"""    <path stroke="{ColorToHex(color_layer?.Color ?? Stroke)}" fill="{ColorToHex(color_layer?.Color ?? Fill)}" fill-rule="evenodd" """);
+                            _ = d.Append("       d=\"");
+                            isfirst = false;
+                        }
                         var start = surface.Edges.First().Start;
                         if (JointPoint > 0) _ = c.AppendLine($"""    <circle cx="{left + (start.X * r)}" cy="{baseline - (start.Y * r)}" r="{JointPoint}" fill="blue" />""");
                         _ = d.AppendLine();
@@ -158,7 +163,7 @@ public class SvgOutput : FontRegisterCommand
                     throw new();
             }
         }
-        _ = d.AppendLine("\" />");
+        if (!isfirst) _ = d.AppendLine("\" />");
         _ = d.Append(layer_d);
     }
 
