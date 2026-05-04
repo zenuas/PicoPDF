@@ -76,14 +76,14 @@ public static class ColorFont
                 }
 
             case PaintSolid p:
-                return [new ColorLayer { Color = GetColor(cpal, p.PaletteIndex, p.Alpha.FloatValue) }];
+                return [new SolidColorLayer { Color = GetColor(cpal, p.PaletteIndex, p.Alpha.FloatValue) }];
 
             case PaintVarSolid p:
                 break;
 
             case PaintLinearGradient p:
                 {
-                    return [new ColorLayer { Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : default! }];
+                    return [new SolidColorLayer { Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : default! }];
                 }
 
             case PaintVarLinearGradient p:
@@ -91,7 +91,7 @@ public static class ColorFont
 
             case PaintRadialGradient p:
                 {
-                    return [new ColorLayer { Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : default! }];
+                    return [new SolidColorLayer { Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : default! }];
                 }
 
             case PaintVarRadialGradient p:
@@ -107,8 +107,7 @@ public static class ColorFont
                 {
                     var outline = font.GIDToOutline(p.GlyphID, false);
                     var info = ToOutline(font, [], p.Paint, colr, cpal, transform);
-                    var color_layer = info.OfType<ColorLayer>().FirstOrDefault() ??
-                        info.OfType<Surface>().Where(x => x.ColorLayer is { }).FirstOrDefault()?.ColorLayer;
+                    var color_layer = info.OfType<IHaveColorLayer>().Where(x => x.ColorLayer is { }).FirstOrDefault()?.ColorLayer;
 
                     return [.. outline.Select(x => x is not Surface surface ? x : new Surface { Edges = ToEdges(surface.Edges, transform), ColorLayer = color_layer })];
                 }

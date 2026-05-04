@@ -91,7 +91,7 @@ public class SvgOutput : FontRegisterCommand
     public void OutputPath(IOutline[] outlines, StringBuilder d, StringBuilder c, float r, float left, float baseline)
     {
         var layer_d = new StringBuilder();
-        var color_layer = outlines.OfType<Surface>().FirstOrDefault()?.ColorLayer;
+        var color_layer = outlines.OfType<Surface>().FirstOrDefault()?.ColorLayer as SolidColorLayer;
 
         _ = d.AppendLine($"""    <path stroke="{ColorToHex(color_layer?.Color ?? Stroke)}" fill="{ColorToHex(color_layer?.Color ?? Fill)}" fill-rule="evenodd" """);
         _ = d.Append("       d=\"");

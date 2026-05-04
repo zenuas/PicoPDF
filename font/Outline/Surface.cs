@@ -1,7 +1,7 @@
 ﻿namespace OpenType.Outline;
 
-public class Surface : IOutline
+public class Surface : IOutline, IHaveColorLayer
 {
     public required IEdge[] Edges { get; init; }
-    public ColorLayer? ColorLayer { get; init; } = null;
+    public IColorLayer? ColorLayer { get; init; } = null;
 }
