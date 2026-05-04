@@ -20,6 +20,11 @@ public class ColorLine : IExportable, IColorLine
         return new()
         {
             Extend = (Extend)extend,
+
+            // A color line requires at least one color stop to paint any color values.
+            // If the color line does not have any color stops, then transparent black is used for the entire color line.
+            // If only one color stop is specified, that color is used for the entire color line.
+            // At least two color stops are needed to create color gradation.
             NumberOfStops = numStops,
             ColorStops = [.. Lists.Repeat(() => ColorStop.ReadFrom(stream)).Take(numStops)],
         };
