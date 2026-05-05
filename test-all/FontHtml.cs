@@ -37,6 +37,7 @@ public class FontHtml : SvgOutput
 
         Output.WriteLine($"""
 <!doctype html>
+<html>
 <head>
     <meta charset="utf-8">
     <title>Font Html | {name}</title>
