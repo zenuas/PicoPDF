@@ -77,11 +77,11 @@ public class SvgOutput : FontRegisterCommand
         OutputDefs(writer, gradient_layers);
         for (var i = 0; i < cids.Length; i++)
         {
+            writer.WriteLine();
             writer.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
             var d = new StringBuilder();
             var c = new StringBuilder();
             OutputPath(outliness[i], d, c, r, left, baseline, gradient_layers);
-            writer.WriteLine();
             writer.Write(d);
             writer.Write(c);
             left += font.GetAdvanceWidth(cids[i].GID) * r;
