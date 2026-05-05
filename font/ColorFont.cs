@@ -148,7 +148,7 @@ public static class ColorFont
                 break;
 
             case PaintScale p:
-                return ToOutline(font, surfaces, p.Paint, colr, cpal, transform);
+                return ToOutline(font, surfaces, p.Paint, colr, cpal, transform * Matrix3x2.CreateScale(p.ScaleX, p.ScaleY));
 
             case PaintVarScale p:
                 break;
