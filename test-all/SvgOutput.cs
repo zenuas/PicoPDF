@@ -190,7 +190,7 @@ public class SvgOutput : FontRegisterCommand
                     writer.WriteLine($"""    <linearGradient id="{unique_id}_{id}" spreadMethod="{linear.SpreadMethod.ToString().ToLower()}" x1="{linear.XY1.X}" y1="{linear.XY1.Y}" x2="{linear.XY2.X}" y2="{linear.XY2.Y}">""");
                     foreach (var (offset, color) in linear.StopColors)
                     {
-                        writer.WriteLine($"""        <stop offset="{offset}%" stop-color="{ColorToHex(color)}" />""");
+                        writer.WriteLine($"""        <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{color.A / 255F}" />""");
                     }
                     writer.WriteLine("    </linearGradient>");
                     break;
@@ -199,7 +199,7 @@ public class SvgOutput : FontRegisterCommand
                     writer.WriteLine($"""    <radialGradient id="{unique_id}_{id}" spreadMethod="{radial.SpreadMethod.ToString().ToLower()}" cx="{radial.Cxy.X}" cy="{radial.Cxy.Y}" fx="{radial.Fxy.X}" fy="{radial.Fxy.Y}" fr="{radial.Fr}" r="{radial.R}">""");
                     foreach (var (offset, color) in radial.StopColors)
                     {
-                        writer.WriteLine($"""        <stop offset="{offset}%" stop-color="{ColorToHex(color)}" />""");
+                        writer.WriteLine($"""        <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{color.A / 255F}" />""");
                     }
                     writer.WriteLine("    </radialGradient>");
                     break;
