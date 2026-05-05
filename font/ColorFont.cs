@@ -118,12 +118,16 @@ public static class ColorFont
 
             case PaintRadialGradient p:
                 {
+                    var m11 = transform.M11;
+                    var m12 = transform.M12;
+                    var xscale = MathF.Sqrt((m11 * m11) + (m12 * m12));
+
                     return [new RadialGradientLayer
                     {
                         Cxy = Vector2.Transform(new Vector2(p.X0, p.Y0), transform),
                         Fxy = Vector2.Transform(new Vector2(p.X1, p.Y1), transform),
-                        Fr = p.Radius0,
-                        R = p.Radius1,
+                        Fr = p.Radius0 * xscale,
+                        R = p.Radius1 * xscale,
                         StopColors = ColorStopToStops(p.ColorLine.ColorStops, cpal),
                         SpreadMethod = ExtendToSpreadMethod(p.ColorLine.Extend),
                     }];
