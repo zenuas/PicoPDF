@@ -100,7 +100,18 @@ public static class ColorFont
 
             case PaintRadialGradient p:
                 {
-                    return [new SolidColorLayer { Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : default! }];
+                    return [new RadialGradientLayer
+                    {
+                        Cxy = new Vector2(p.X0, p.Y0),
+                        Fxy = new Vector2(p.X1, p.Y1),
+                        Fr = p.Radius0,
+                        R = p.Radius1,
+                        StopColors = [.. p.ColorLine.ColorStops.Select(x => (x.StopOffset.FloatValue * 100F, GetColor(cpal, x.PaletteIndex, x.Alpha)))],
+                        SpreadMethod =
+                            p.ColorLine.Extend == Extend.EXTEND_PAD ? SpreadMethods.Pad :
+                            p.ColorLine.Extend == Extend.EXTEND_REPEAT ? SpreadMethods.Repeat :
+                            SpreadMethods.Reflect,
+                    }];
                 }
 
             case PaintVarRadialGradient p:

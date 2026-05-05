@@ -195,6 +195,15 @@ public class SvgOutput : FontRegisterCommand
                     writer.WriteLine("    </linearGradient>");
                     break;
 
+                case RadialGradientLayer radial:
+                    writer.WriteLine($"""    <radialGradient id="c_{id}" spreadMethod="{radial.SpreadMethod.ToString().ToLower()}" cx="{radial.Cxy.X}" cy="{radial.Cxy.Y}" fx="{radial.Fxy.X}" fy="{radial.Fxy.Y}" fr="{radial.Fr}" r="{radial.R}">""");
+                    foreach (var (offset, color) in radial.StopColors)
+                    {
+                        writer.WriteLine($"""        <stop offset="{offset}%" stop-color="{ColorToHex(color)}" />""");
+                    }
+                    writer.WriteLine("    </radialGradient>");
+                    break;
+
                 default:
                     throw new();
             }
