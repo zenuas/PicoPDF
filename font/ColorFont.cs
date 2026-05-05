@@ -87,7 +87,7 @@ public static class ColorFont
                     {
                         XY1 = Vector2.Transform(new Vector2(p.X0, p.Y0), transform),
                         XY2 = Vector2.Transform(new Vector2(p.X1, p.Y1), transform),
-                        StopColors = [.. p.ColorLine.ColorStops.Select(x => (x.StopOffset.FloatValue * 100F, GetColor(cpal, x.PaletteIndex, x.Alpha)))],
+                        StopColors = ColorStopToStops(p.ColorLine.ColorStops, cpal),
                         SpreadMethod =ExtendToSpreadMethod(p.ColorLine.Extend),
                     }];
                 }
@@ -103,7 +103,7 @@ public static class ColorFont
                         Fxy = Vector2.Transform(new Vector2(p.X1, p.Y1), transform),
                         Fr = p.Radius0,
                         R = p.Radius1,
-                        StopColors = [.. p.ColorLine.ColorStops.Select(x => (x.StopOffset.FloatValue * 100F, GetColor(cpal, x.PaletteIndex, x.Alpha)))],
+                        StopColors = ColorStopToStops(p.ColorLine.ColorStops, cpal),
                         SpreadMethod =ExtendToSpreadMethod(p.ColorLine.Extend),
                     }];
                 }
@@ -194,6 +194,8 @@ public static class ColorFont
         }
         return surfaces;
     }
+
+    public static (float Offset, Color StopColor)[] ColorStopToStops(ColorStop[] colorLine, ColorPaletteTable cpal) => [.. colorLine.Select(x => (x.StopOffset.FloatValue * 100F, GetColor(cpal, x.PaletteIndex, x.Alpha)))];
 
     public static SpreadMethods ExtendToSpreadMethod(Extend extend) => extend switch
     {
