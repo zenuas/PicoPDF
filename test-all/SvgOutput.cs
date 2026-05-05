@@ -74,7 +74,7 @@ public class SvgOutput : FontRegisterCommand
         var left = 0f;
         var baseline = top + (ymax * r);
 
-        OutputDefs(writer, gradient_layers, unique_id);
+        OutputDefs(writer, r, gradient_layers, unique_id);
         for (var i = 0; i < cids.Length; i++)
         {
             writer.WriteLine();
@@ -180,34 +180,36 @@ public class SvgOutput : FontRegisterCommand
         _ = d.Append(layer_d);
     }
 
-    public static void OutputDefs(TextWriter writer, Dictionary<IColorLayer, int> gradient_layers, string unique_id)
+    public static void OutputDefs(TextWriter writer, float r, Dictionary<IColorLayer, int> gradient_layers, string unique_id)
     {
+        writer.WriteLine("    <defs>");
         foreach (var (color_layer, id) in gradient_layers)
         {
             switch (color_layer)
             {
                 case LinearGradientLayer linear:
-                    writer.WriteLine($"""    <linearGradient id="{unique_id}_{id}" spreadMethod="{linear.SpreadMethod.ToString().ToLower()}" x1="{linear.XY1.X}" y1="{linear.XY1.Y}" x2="{linear.XY2.X}" y2="{linear.XY2.Y}">""");
+                    writer.WriteLine($"""        <linearGradient id="{unique_id}_{id}" gradientUnits="userSpaceOnUse" spreadMethod="{linear.SpreadMethod.ToString().ToLower()}" x1="{linear.XY1.X * r}" y1="{linear.XY1.Y * r}" x2="{linear.XY2.X * r}" y2="{linear.XY2.Y * r}">""");
                     foreach (var (offset, color) in linear.StopColors)
                     {
-                        writer.WriteLine($"""        <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{color.A / 255F}" />""");
+                        writer.WriteLine($"""            <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{color.A / 255F}" />""");
                     }
-                    writer.WriteLine("    </linearGradient>");
+                    writer.WriteLine("        </linearGradient>");
                     break;
 
                 case RadialGradientLayer radial:
-                    writer.WriteLine($"""    <radialGradient id="{unique_id}_{id}" spreadMethod="{radial.SpreadMethod.ToString().ToLower()}" cx="{radial.Cxy.X}" cy="{radial.Cxy.Y}" fx="{radial.Fxy.X}" fy="{radial.Fxy.Y}" fr="{radial.Fr}" r="{radial.R}">""");
+                    writer.WriteLine($"""        <radialGradient id="{unique_id}_{id}" gradientUnits="userSpaceOnUse" spreadMethod="{radial.SpreadMethod.ToString().ToLower()}" cx="{radial.Cxy.X * r}" cy="{radial.Cxy.Y * r}" fx="{radial.Fxy.X * r}" fy="{radial.Fxy.Y * r}" fr="{radial.Fr * r}" r="{radial.R * r}">""");
                     foreach (var (offset, color) in radial.StopColors)
                     {
-                        writer.WriteLine($"""        <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{color.A / 255F}" />""");
+                        writer.WriteLine($"""            <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{color.A / 255F}" />""");
                     }
-                    writer.WriteLine("    </radialGradient>");
+                    writer.WriteLine("        </radialGradient>");
                     break;
 
                 default:
                     throw new();
             }
         }
+        writer.WriteLine("    </defs>");
     }
 
     public static string ColorToHex(Color color) => color == Color.Transparent ? "transparent" : $"#{color.R:X2}{color.G:X2}{color.B:X2}";
