@@ -109,7 +109,7 @@ public static class ColorFont
                         XY1 = Vector2.Transform(p0, transform),
                         XY2 = Vector2.Transform(rotated_p02, transform),
                         StopColors = ColorStopToStops(p.ColorLine.ColorStops, cpal),
-                        SpreadMethod =ExtendToSpreadMethod(p.ColorLine.Extend),
+                        SpreadMethod = ExtendToSpreadMethod(p.ColorLine.Extend),
                     }];
                 }
 
@@ -125,7 +125,7 @@ public static class ColorFont
                         Fr = p.Radius0,
                         R = p.Radius1,
                         StopColors = ColorStopToStops(p.ColorLine.ColorStops, cpal),
-                        SpreadMethod =ExtendToSpreadMethod(p.ColorLine.Extend),
+                        SpreadMethod = ExtendToSpreadMethod(p.ColorLine.Extend),
                     }];
                 }
 
