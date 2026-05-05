@@ -28,17 +28,18 @@ public class ColorDump : FontRegisterCommand
             Console.WriteLine($"Char: {char.ConvertFromUtf32(cid)}  (U+{(cid <= 0xFFFF ? cid.ToString("X4") : cid.ToString("X"))})");
             Console.WriteLine($"CID: {cid}");
             Console.WriteLine($"GID: {gid}");
-            EnumColor(font, gid);
+            var index = 0;
+            EnumColor(font, gid, ref index);
         }
     }
 
-    public static void EnumColor(IOpenTypeFont font, uint gid)
+    public static void EnumColor(IOpenTypeFont font, uint gid, ref int index)
     {
         foreach (var record in font.Color!.BaseGlyphRecords.Where(x => x.GlyphID == gid))
         {
             foreach (var layer in font.Color.LayerRecords[record.FirstLayerIndex..(record.FirstLayerIndex + record.NumberOfLayers)])
             {
-                EnumColor(font, layer.GlyphID);
+                EnumColor(font, layer.GlyphID, ref index);
             }
         }
 
@@ -46,39 +47,39 @@ public class ColorDump : FontRegisterCommand
         {
             if (font.Color.BaseGlyphListRecord.BaseGlyphPaintRecord[i].GlyphID == gid)
             {
-                EnumPaint(font.Color.BaseGlyphListRecord.Paints[i], font.Color, 0);
+                EnumPaint(font.Color.BaseGlyphListRecord.Paints[i], font.Color, 0, ref index);
             }
         }
     }
 
-    public static void EnumPaint(IPaintFormat paint, ColorTable colr, int indent)
+    public static void EnumPaint(IPaintFormat paint, ColorTable colr, int indent, ref int index)
     {
-        DumpPaint(paint, colr, indent);
+        DumpPaint(paint, colr, indent, ref index);
 
         if (paint is PaintColrLayers paintColrLayers)
         {
             foreach (var layer in colr.LayerListRecord!.Paints[(int)paintColrLayers.FirstLayerIndex..((int)paintColrLayers.FirstLayerIndex + paintColrLayers.NumberOfLayers)])
             {
-                EnumPaint(layer, colr, indent + 1);
+                EnumPaint(layer, colr, indent + 1, ref index);
             }
         }
         else if (paint is PaintComposite paintComposite)
         {
-            EnumPaint(paintComposite.SourcePaint, colr, indent + 1);
-            EnumPaint(paintComposite.BackdropPaint, colr, indent + 1);
+            EnumPaint(paintComposite.SourcePaint, colr, indent + 1, ref index);
+            EnumPaint(paintComposite.BackdropPaint, colr, indent + 1, ref index);
         }
         else
         {
             if (paint is IHavePaint subpaint)
             {
-                EnumPaint(subpaint.Paint, colr, indent + 1);
+                EnumPaint(subpaint.Paint, colr, indent + 1, ref index);
             }
         }
     }
 
-    public static void DumpPaint(IPaintFormat paint, ColorTable colr, int indent)
+    public static void DumpPaint(IPaintFormat paint, ColorTable colr, int indent, ref int index)
     {
-        Console.WriteLine($"{new string(' ', indent * 2)}Format: {paint.Format} ({paint.GetType().Name})");
+        Console.WriteLine($"{new string(' ', indent * 2)}Format: {paint.Format} ({paint.GetType().Name}) {(paint is PaintGlyph ? $"index={index++}" : "")}");
         var sp = new string(' ', (indent + 1) * 2);
 
         switch (paint)
