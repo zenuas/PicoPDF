@@ -83,7 +83,16 @@ public static class ColorFont
 
             case PaintLinearGradient p:
                 {
-                    return [new SolidColorLayer { Color = p.ColorLine.ColorStops.FirstOrDefault() is { } col ? GetColor(cpal, col.PaletteIndex, col.Alpha) : default! }];
+                    return [new LinearGradientLayer
+                    {
+                        XY1 = new Vector2(p.X0, p.Y0),
+                        XY2 = new Vector2(p.X1, p.Y1),
+                        StopColors = [.. p.ColorLine.ColorStops.Select(x => (x.StopOffset.FloatValue * 100F, GetColor(cpal, x.PaletteIndex, x.Alpha)))],
+                        SpreadMethod =
+                            p.ColorLine.Extend == Extend.EXTEND_PAD ? SpreadMethods.Pad :
+                            p.ColorLine.Extend == Extend.EXTEND_REPEAT ? SpreadMethods.Repeat :
+                            SpreadMethods.Reflect,
+                    }];
                 }
 
             case PaintVarLinearGradient p:

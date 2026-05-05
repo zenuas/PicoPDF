@@ -3,6 +3,7 @@ using Mina.Extension;
 using OpenType;
 using OpenType.Outline;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -66,16 +67,20 @@ public class SvgOutput : FontRegisterCommand
         var ascent = font.HorizontalHeader.Ascender;
         var descent = font.HorizontalHeader.Descender;
 
-        var (_, _, ymax, ymin) = Utility.GetSurfaceSize(Utility.GetSurfaces(outliness.Flatten()));
+        var surfaces = Utility.GetSurfaces(outliness.Flatten()).ToArray();
+        var gradient_layers = GetGradientLayers(surfaces);
+        var (_, _, ymax, ymin) = Utility.GetSurfaceSize(surfaces);
         var r = 1f / font.FontHeader.UnitsPerEm * Point;
         var left = 0f;
         var baseline = top + (ymax * r);
+
+        OutputDefs(writer, gradient_layers);
         for (var i = 0; i < cids.Length; i++)
         {
             writer.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
             var d = new StringBuilder();
             var c = new StringBuilder();
-            OutputPath(outliness[i], d, c, r, left, baseline);
+            OutputPath(outliness[i], d, c, r, left, baseline, gradient_layers);
             writer.WriteLine();
             writer.Write(d);
             writer.Write(c);
@@ -89,10 +94,10 @@ public class SvgOutput : FontRegisterCommand
         return (total_width * r, Math.Max(ascent - descent, ymax - ymin) * r);
     }
 
-    public void OutputPath(IOutline[] outlines, StringBuilder d, StringBuilder c, float r, float left, float baseline)
+    public void OutputPath(IOutline[] outlines, StringBuilder d, StringBuilder c, float r, float left, float baseline, Dictionary<IColorLayer, int> gradient_layers)
     {
         var layer_d = new StringBuilder();
-        var color_layer = outlines.OfType<Surface>().FirstOrDefault()?.ColorLayer as SolidColorLayer;
+        var colo = Utility.GetSurfaces(outlines).Where(x => x.ColorLayer is { }).Select(x => x.ColorLayer!);
 
         var isfirst = true;
         foreach (var outline in outlines)
@@ -107,7 +112,15 @@ public class SvgOutput : FontRegisterCommand
                     {
                         if (isfirst)
                         {
-                            _ = d.AppendLine($"""    <path stroke="{ColorToHex(color_layer?.Color ?? Stroke)}" fill="{ColorToHex(color_layer?.Color ?? Fill)}" fill-rule="evenodd" """);
+                            if (surface.ColorLayer is { } && gradient_layers.TryGetValue(surface.ColorLayer, out var id))
+                            {
+                                _ = d.AppendLine($"""    <path fill="url(#c_{id})" fill-rule="evenodd" """);
+                            }
+                            else
+                            {
+                                var color = (surface.ColorLayer as SolidColorLayer)?.Color;
+                                _ = d.AppendLine($"""    <path stroke="{ColorToHex(color ?? Stroke)}" fill="{ColorToHex(color ?? Fill)}" fill-rule="evenodd" """);
+                            }
                             _ = d.Append("       d=\"");
                             isfirst = false;
                         }
@@ -156,7 +169,7 @@ public class SvgOutput : FontRegisterCommand
                     }
 
                 case Layer layer:
-                    OutputPath(layer.Surfaces, layer_d, c, r, left, baseline);
+                    OutputPath(layer.Surfaces, layer_d, c, r, left, baseline, gradient_layers);
                     break;
 
                 default:
@@ -167,5 +180,36 @@ public class SvgOutput : FontRegisterCommand
         _ = d.Append(layer_d);
     }
 
+    public static void OutputDefs(TextWriter writer, Dictionary<IColorLayer, int> gradient_layers)
+    {
+        foreach (var (color_layer, id) in gradient_layers)
+        {
+            switch (color_layer)
+            {
+                case LinearGradientLayer linear:
+                    writer.WriteLine($"""    <linearGradient id="c_{id}" spreadMethod="{linear.SpreadMethod.ToString().ToLower()}" x1="{linear.XY1.X}" y1="{linear.XY1.Y}" x2="{linear.XY2.X}" y2="{linear.XY2.Y}">""");
+                    foreach (var (offset, color) in linear.StopColors)
+                    {
+                        writer.WriteLine($"""        <stop offset="{offset}%" stop-color="{ColorToHex(color)}" />""");
+                    }
+                    writer.WriteLine("    </linearGradient>");
+                    break;
+
+                default:
+                    throw new();
+            }
+        }
+    }
+
     public static string ColorToHex(Color color) => color == Color.Transparent ? "transparent" : $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+
+    public static Dictionary<IColorLayer, int> GetGradientLayers(Surface[] surfaces)
+    {
+        var gradient_layers = new Dictionary<IColorLayer, int>();
+        foreach (var color_layer in surfaces.Where(x => x.ColorLayer is { }).Select(x => x.ColorLayer!))
+        {
+            if (color_layer is not SolidColorLayer) _ = gradient_layers.TryAdd(color_layer, gradient_layers.Count);
+        }
+        return gradient_layers;
+    }
 }
