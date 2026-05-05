@@ -75,7 +75,7 @@ public class FontHtml : SvgOutput
         <td>{(!found ? "" : "U+" + (c <= 0xFFFF ? c.ToString("x4") : c.ToString("x6")))}</td>
         <td>
 """);
-            OutputSvg(font, [[(c, gid)]]);
+            OutputSvg(font, [[(c, gid)]], $"g{gid}");
             Output.WriteLine("""
         </td>
     </tr>

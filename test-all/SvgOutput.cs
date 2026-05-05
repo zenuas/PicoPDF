@@ -38,11 +38,11 @@ public class SvgOutput : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
         var font = fontreg.LoadComplete(Font);
-        OutputSvg(font, [.. args.Select(arg => arg.ToUtf32CharArray().Select(x => (x, font.CharToGID(x))).ToArray())]);
+        OutputSvg(font, [.. args.Select(arg => arg.ToUtf32CharArray().Select(x => (x, font.CharToGID(x))).ToArray())], "c");
         Output.Flush();
     }
 
-    public void OutputSvg(IOpenTypeFont font, (int Char, uint GID)[][] cidss)
+    public void OutputSvg(IOpenTypeFont font, (int Char, uint GID)[][] cidss, string unique_id)
     {
         var top = 0f;
         var max_width = 0f;
@@ -50,7 +50,7 @@ public class SvgOutput : FontRegisterCommand
         using var writer = new StreamWriter(mem);
         foreach (var cids in cidss)
         {
-            var (width, height) = OutputPath(font, writer, top, cids);
+            var (width, height) = OutputPath(font, writer, top, cids, unique_id);
             top += height;
             max_width = Math.Max(width, max_width);
         }
@@ -60,7 +60,7 @@ public class SvgOutput : FontRegisterCommand
         Output.WriteLine("</svg>");
     }
 
-    public (float Width, float Height) OutputPath(IOpenTypeFont font, TextWriter writer, float top, (int Char, uint GID)[] cids)
+    public (float Width, float Height) OutputPath(IOpenTypeFont font, TextWriter writer, float top, (int Char, uint GID)[] cids, string unique_id)
     {
         var outliness = cids.Select(x => font.GIDToOutline(x.GID, true)).ToArray();
         var total_width = cids.Select(x => font.GetAdvanceWidth(x.GID)).Sum();
@@ -74,14 +74,14 @@ public class SvgOutput : FontRegisterCommand
         var left = 0f;
         var baseline = top + (ymax * r);
 
-        OutputDefs(writer, gradient_layers);
+        OutputDefs(writer, gradient_layers, unique_id);
         for (var i = 0; i < cids.Length; i++)
         {
             writer.WriteLine();
             writer.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
             var d = new StringBuilder();
             var c = new StringBuilder();
-            OutputPath(outliness[i], d, c, r, left, baseline, gradient_layers);
+            OutputPath(outliness[i], d, c, r, left, baseline, gradient_layers, unique_id);
             writer.Write(d);
             writer.Write(c);
             left += font.GetAdvanceWidth(cids[i].GID) * r;
@@ -94,7 +94,7 @@ public class SvgOutput : FontRegisterCommand
         return (total_width * r, Math.Max(ascent - descent, ymax - ymin) * r);
     }
 
-    public void OutputPath(IOutline[] outlines, StringBuilder d, StringBuilder c, float r, float left, float baseline, Dictionary<IColorLayer, int> gradient_layers)
+    public void OutputPath(IOutline[] outlines, StringBuilder d, StringBuilder c, float r, float left, float baseline, Dictionary<IColorLayer, int> gradient_layers, string unique_id)
     {
         var layer_d = new StringBuilder();
         var colo = Utility.GetSurfaces(outlines).Where(x => x.ColorLayer is { }).Select(x => x.ColorLayer!);
@@ -114,7 +114,7 @@ public class SvgOutput : FontRegisterCommand
                         {
                             if (surface.ColorLayer is { } && gradient_layers.TryGetValue(surface.ColorLayer, out var id))
                             {
-                                _ = d.AppendLine($"""    <path fill="url(#c_{id})" fill-rule="evenodd" """);
+                                _ = d.AppendLine($"""    <path fill="url(#{unique_id}_{id})" fill-rule="evenodd" """);
                             }
                             else
                             {
@@ -169,7 +169,7 @@ public class SvgOutput : FontRegisterCommand
                     }
 
                 case Layer layer:
-                    OutputPath(layer.Surfaces, layer_d, c, r, left, baseline, gradient_layers);
+                    OutputPath(layer.Surfaces, layer_d, c, r, left, baseline, gradient_layers, unique_id);
                     break;
 
                 default:
@@ -180,14 +180,14 @@ public class SvgOutput : FontRegisterCommand
         _ = d.Append(layer_d);
     }
 
-    public static void OutputDefs(TextWriter writer, Dictionary<IColorLayer, int> gradient_layers)
+    public static void OutputDefs(TextWriter writer, Dictionary<IColorLayer, int> gradient_layers, string unique_id)
     {
         foreach (var (color_layer, id) in gradient_layers)
         {
             switch (color_layer)
             {
                 case LinearGradientLayer linear:
-                    writer.WriteLine($"""    <linearGradient id="c_{id}" spreadMethod="{linear.SpreadMethod.ToString().ToLower()}" x1="{linear.XY1.X}" y1="{linear.XY1.Y}" x2="{linear.XY2.X}" y2="{linear.XY2.Y}">""");
+                    writer.WriteLine($"""    <linearGradient id="{unique_id}_{id}" spreadMethod="{linear.SpreadMethod.ToString().ToLower()}" x1="{linear.XY1.X}" y1="{linear.XY1.Y}" x2="{linear.XY2.X}" y2="{linear.XY2.Y}">""");
                     foreach (var (offset, color) in linear.StopColors)
                     {
                         writer.WriteLine($"""        <stop offset="{offset}%" stop-color="{ColorToHex(color)}" />""");
@@ -196,7 +196,7 @@ public class SvgOutput : FontRegisterCommand
                     break;
 
                 case RadialGradientLayer radial:
-                    writer.WriteLine($"""    <radialGradient id="c_{id}" spreadMethod="{radial.SpreadMethod.ToString().ToLower()}" cx="{radial.Cxy.X}" cy="{radial.Cxy.Y}" fx="{radial.Fxy.X}" fy="{radial.Fxy.Y}" fr="{radial.Fr}" r="{radial.R}">""");
+                    writer.WriteLine($"""    <radialGradient id="{unique_id}_{id}" spreadMethod="{radial.SpreadMethod.ToString().ToLower()}" cx="{radial.Cxy.X}" cy="{radial.Cxy.Y}" fx="{radial.Fxy.X}" fy="{radial.Fxy.Y}" fr="{radial.Fr}" r="{radial.R}">""");
                     foreach (var (offset, color) in radial.StopColors)
                     {
                         writer.WriteLine($"""        <stop offset="{offset}%" stop-color="{ColorToHex(color)}" />""");
