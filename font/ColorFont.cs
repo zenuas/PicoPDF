@@ -1,6 +1,7 @@
 ﻿using OpenType.Outline;
 using OpenType.Tables;
 using OpenType.Tables.Colr;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -83,10 +84,30 @@ public static class ColorFont
 
             case PaintLinearGradient p:
                 {
+                    var p0 = new Vector2(p.X0, p.Y0);
+                    var p1 = new Vector2(p.X1, p.Y1);
+                    var p2 = new Vector2(p.X2, p.Y2);
+
+                    // If either point p1 or p2 is the same as point p0, the gradient is ill-formed and must not be rendered.
+                    if (p0 == p1 || p0 == p2) return [];
+
+                    // If line p0p2 is parallel to line p0p1 (or near-parallel for an implementation-determined definition), then the gradient is ill-formed and must not be rendered.
+                    var p01 = p1 - p0;
+                    var p02 = p2 - p0;
+                    var cross_product = (p01.X * p02.Y) - (p01.Y * p02.X);
+                    if (Math.Abs(cross_product) <= float.Epsilon) return [];
+
+                    // The additional point, p2, is used to rotate the gradient orientation in the space on either side of the line p0p1.
+                    // The line passing through points p0 and p2 (line p0p2) determines the direction in which colors are projected on either side of the color line.
+                    // That is, for each position on line p0p1, the line that passes through that position on line p0p1 and that is parallel to line p0p2 will have the color for that position on line p0p1.
+                    var square_of_hypotenuse_p02 = (p02.X * p02.X) + (p02.Y * p02.Y);
+                    var p01_rotation_p02 = (p01.X * p02.Y) - (p01.Y * p02.X);
+                    var scale = p01_rotation_p02 / square_of_hypotenuse_p02;
+                    var rotated_p02 = new Vector2(p0.X + (p02.Y * scale), p0.Y - (p02.X * scale));
                     return [new LinearGradientLayer
                     {
-                        XY1 = Vector2.Transform(new Vector2(p.X0, p.Y0), transform),
-                        XY2 = Vector2.Transform(new Vector2(p.X1, p.Y1), transform),
+                        XY1 = Vector2.Transform(p0, transform),
+                        XY2 = Vector2.Transform(rotated_p02, transform),
                         StopColors = ColorStopToStops(p.ColorLine.ColorStops, cpal),
                         SpreadMethod =ExtendToSpreadMethod(p.ColorLine.Extend),
                     }];
