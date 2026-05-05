@@ -1,6 +1,8 @@
 ﻿using Mina.Command;
 using Mina.Extension;
+using OpenType;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PicoPDF.TestAll;
 
@@ -13,6 +15,16 @@ public class FontHtml : SvgOutput
     {
         var fontreg = CreateFontRegister();
         var font = fontreg.LoadComplete(Font);
+
+        OutputHtml(font,
+            args.Length == 0 ?
+                Lists.RangeTo(0, font.MaximumProfile.NumberOfGlyphs).Select(x => (uint)x) :
+                [.. args.Select(x => x.ToUtf32CharArray()).Flatten().Select(x => font.CharToGID(x))]);
+    }
+
+
+    public void OutputHtml(IOpenTypeFont font, IEnumerable<uint> gids)
+    {
         var name = font.Name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == 1)?.Name ?? font.PostScriptName;
 
         var gid_to_char = new Dictionary<uint, int>();
@@ -52,7 +64,7 @@ public class FontHtml : SvgOutput
 </thead>
 <tbody>
 """);
-        for (var gid = 0u; gid <= font.MaximumProfile.NumberOfGlyphs; gid++)
+        foreach (var gid in gids)
         {
             var found = gid_to_char.TryGetValue(gid, out var c);
             var s = found ? char.ConvertFromUtf32(c) : "";
