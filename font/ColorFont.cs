@@ -106,10 +106,11 @@ public static class ColorFont
                     var rotated_p02 = new Vector2(p0.X + (p02.Y * scale), p0.Y - (p02.X * scale));
                     return [new LinearGradientLayer
                     {
-                        XY1 = Vector2.Transform(p0, transform),
-                        XY2 = Vector2.Transform(rotated_p02, transform),
+                        XY1 = p0,
+                        XY2 = rotated_p02,
                         StopColors = ColorStopToStops(p.ColorLine.ColorStops, cpal),
                         SpreadMethod = ExtendToSpreadMethod(p.ColorLine.Extend),
+                        GradientTransform = transform,
                     }];
                 }
 
@@ -117,21 +118,16 @@ public static class ColorFont
                 break;
 
             case PaintRadialGradient p:
+                return [new RadialGradientLayer
                 {
-                    var m11 = transform.M11;
-                    var m12 = transform.M12;
-                    var xscale = MathF.Sqrt((m11 * m11) + (m12 * m12));
-
-                    return [new RadialGradientLayer
-                    {
-                        Cxy = Vector2.Transform(new Vector2(p.X0, p.Y0), transform),
-                        Fxy = Vector2.Transform(new Vector2(p.X1, p.Y1), transform),
-                        Fr = p.Radius0 * xscale,
-                        R = p.Radius1 * xscale,
-                        StopColors = ColorStopToStops(p.ColorLine.ColorStops, cpal),
-                        SpreadMethod = ExtendToSpreadMethod(p.ColorLine.Extend),
-                    }];
-                }
+                    Cxy = new Vector2(p.X0, p.Y0),
+                    Fxy = new Vector2(p.X1, p.Y1),
+                    Fr = p.Radius0,
+                    R = p.Radius1,
+                    StopColors = ColorStopToStops(p.ColorLine.ColorStops, cpal),
+                    SpreadMethod = ExtendToSpreadMethod(p.ColorLine.Extend),
+                    GradientTransform = transform,
+                }];
 
             case PaintVarRadialGradient p:
                 break;

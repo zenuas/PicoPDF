@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace PicoPDF.TestAll;
@@ -33,6 +34,8 @@ public class SvgOutput : FontRegisterCommand
 
     [CommandOption("debug")]
     public bool Debug { get; init; } = false;
+
+    public static readonly Matrix3x2 FlipY = Matrix3x2.CreateScale(1, -1);
 
     public override void Run(string[] args)
     {
@@ -74,7 +77,7 @@ public class SvgOutput : FontRegisterCommand
         var left = 0f;
         var baseline = top + (ymax * r);
 
-        OutputDefs(writer, r, left, baseline, gradient_layers, unique_id);
+        OutputDefs(writer, r, left, baseline, gradient_layers, unique_id, Debug);
         for (var i = 0; i < cids.Length; i++)
         {
             writer.WriteLine();
@@ -180,7 +183,7 @@ public class SvgOutput : FontRegisterCommand
         _ = d.Append(layer_d);
     }
 
-    public static void OutputDefs(TextWriter writer, float r, float left, float baseline, Dictionary<IColorLayer, int> gradient_layers, string unique_id)
+    public static void OutputDefs(TextWriter writer, float r, float left, float baseline, Dictionary<IColorLayer, int> gradient_layers, string unique_id, bool isdebug)
     {
         writer.WriteLine("    <defs>");
         foreach (var (color_layer, id) in gradient_layers)
@@ -190,13 +193,38 @@ public class SvgOutput : FontRegisterCommand
                 case LinearGradientLayer linear:
                     writer.Write($"""        <linearGradient """);
                     writer.Write($"""id="{unique_id}_{id}" """);
-                    writer.Write($"""gradientUnits="userSpaceOnUse" """);
                     writer.Write($"""spreadMethod="{linear.SpreadMethod.ToString().ToLower()}" """);
-                    writer.Write($"""x1="{left + (linear.XY1.X * r)}" """);
-                    writer.Write($"""y1="{baseline - (linear.XY1.Y * r)}" """);
-                    writer.Write($"""x2="{left + (linear.XY2.X * r)}" """);
-                    writer.Write($"""y2="{baseline - (linear.XY2.Y * r)}">""");
+                    writer.Write($"""gradientUnits="userSpaceOnUse" """);
+                    if (!linear.GradientTransform.IsIdentity)
+                    {
+                        var m = linear.GradientTransform * Matrix3x2.CreateScale(r) * FlipY * Matrix3x2.CreateTranslation(left, baseline);
+                        writer.Write($"""gradientTransform="matrix({m.M11}, {m.M12}, {m.M21}, {m.M22}, {m.M31}, {m.M32})" """);
+                        writer.Write($"""x1="{linear.XY1.X}" """);
+                        writer.Write($"""y1="{linear.XY1.Y}" """);
+                        writer.Write($"""x2="{linear.XY2.X}" """);
+                        writer.Write($"""y2="{linear.XY2.Y}">""");
+                    }
+                    else
+                    {
+                        writer.Write($"""x1="{left + (linear.XY1.X * r)}" """);
+                        writer.Write($"""y1="{baseline - (linear.XY1.Y * r)}" """);
+                        writer.Write($"""x2="{left + (linear.XY2.X * r)}" """);
+                        writer.Write($"""y2="{baseline - (linear.XY2.Y * r)}">""");
+                    }
                     writer.WriteLine();
+                    if (isdebug && !linear.GradientTransform.IsIdentity)
+                    {
+                        var m = linear.GradientTransform * Matrix3x2.CreateScale(r) * FlipY * Matrix3x2.CreateTranslation(left, baseline);
+                        var xy1 = Vector2.Transform(linear.XY1, m);
+                        var xy2 = Vector2.Transform(linear.XY2, m);
+                        writer.Write($"""            <!-- """);
+                        writer.Write($"""x1="{xy1.X}" """);
+                        writer.Write($"""y1="{xy1.Y}" """);
+                        writer.Write($"""x2="{xy2.X}" """);
+                        writer.Write($"""y2="{xy2.Y}" """);
+                        writer.Write($"""-->""");
+                        writer.WriteLine();
+                    }
                     foreach (var (offset, color) in linear.StopColors)
                     {
                         writer.WriteLine($"""            <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{color.A / 255F}" />""");
@@ -207,15 +235,42 @@ public class SvgOutput : FontRegisterCommand
                 case RadialGradientLayer radial:
                     writer.Write($"""        <radialGradient """);
                     writer.Write($"""id="{unique_id}_{id}" """);
-                    writer.Write($"""gradientUnits="userSpaceOnUse" """);
                     writer.Write($"""spreadMethod="{radial.SpreadMethod.ToString().ToLower()}" """);
-                    writer.Write($"""cx="{left + (radial.Cxy.X * r)}" """);
-                    writer.Write($"""cy="{baseline - (radial.Cxy.Y * r)}" """);
-                    writer.Write($"""fx="{left + (radial.Fxy.X * r)}" """);
-                    writer.Write($"""fy="{baseline - (radial.Fxy.Y * r)}" """);
-                    writer.Write($"""fr="{radial.Fr * r}" """);
-                    writer.Write($"""r="{radial.R * r}">""");
+                    writer.Write($"""gradientUnits="userSpaceOnUse" """);
+                    if (!radial.GradientTransform.IsIdentity)
+                    {
+                        var m = radial.GradientTransform * Matrix3x2.CreateScale(r) * FlipY * Matrix3x2.CreateTranslation(left, baseline);
+                        writer.Write($"""gradientTransform="matrix({m.M11}, {m.M12}, {m.M21}, {m.M22}, {m.M31}, {m.M32})" """);
+                        writer.Write($"""cx="{radial.Cxy.X}" """);
+                        writer.Write($"""cy="{radial.Cxy.Y}" """);
+                        writer.Write($"""fx="{radial.Fxy.X}" """);
+                        writer.Write($"""fy="{radial.Fxy.Y}" """);
+                        writer.Write($"""fr="{radial.Fr}" """);
+                        writer.Write($"""r="{radial.R}">""");
+                    }
+                    else
+                    {
+                        writer.Write($"""cx="{left + (radial.Cxy.X * r)}" """);
+                        writer.Write($"""cy="{baseline - (radial.Cxy.Y * r)}" """);
+                        writer.Write($"""fx="{left + (radial.Fxy.X * r)}" """);
+                        writer.Write($"""fy="{baseline - (radial.Fxy.Y * r)}" """);
+                        writer.Write($"""fr="{radial.Fr * r}" """);
+                        writer.Write($"""r="{radial.R * r}">""");
+                    }
                     writer.WriteLine();
+                    if (isdebug && !radial.GradientTransform.IsIdentity)
+                    {
+                        var m = radial.GradientTransform * Matrix3x2.CreateScale(r) * FlipY * Matrix3x2.CreateTranslation(left, baseline);
+                        var cxy = Vector2.Transform(radial.Cxy, m);
+                        var fxy = Vector2.Transform(radial.Fxy, m);
+                        writer.Write($"""            <!-- """);
+                        writer.Write($"""cx="{cxy.X}" """);
+                        writer.Write($"""cy="{cxy.Y}" """);
+                        writer.Write($"""fx="{fxy.X}" """);
+                        writer.Write($"""fy="{fxy.Y}" """);
+                        writer.Write($"""-->""");
+                        writer.WriteLine();
+                    }
                     foreach (var (offset, color) in radial.StopColors)
                     {
                         writer.WriteLine($"""            <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{color.A / 255F}" />""");
