@@ -188,7 +188,15 @@ public class SvgOutput : FontRegisterCommand
             switch (color_layer)
             {
                 case LinearGradientLayer linear:
-                    writer.WriteLine($"""        <linearGradient id="{unique_id}_{id}" gradientUnits="userSpaceOnUse" spreadMethod="{linear.SpreadMethod.ToString().ToLower()}" x1="{left + (linear.XY1.X * r)}" y1="{baseline - (linear.XY1.Y * r)}" x2="{left + (linear.XY2.X * r)}" y2="{baseline - (linear.XY2.Y * r)}">""");
+                    writer.Write($"""        <linearGradient """);
+                    writer.Write($"""id="{unique_id}_{id}" """);
+                    writer.Write($"""gradientUnits="userSpaceOnUse" """);
+                    writer.Write($"""spreadMethod="{linear.SpreadMethod.ToString().ToLower()}" """);
+                    writer.Write($"""x1="{left + (linear.XY1.X * r)}" """);
+                    writer.Write($"""y1="{baseline - (linear.XY1.Y * r)}" """);
+                    writer.Write($"""x2="{left + (linear.XY2.X * r)}" """);
+                    writer.Write($"""y2="{baseline - (linear.XY2.Y * r)}">""");
+                    writer.WriteLine();
                     foreach (var (offset, color) in linear.StopColors)
                     {
                         writer.WriteLine($"""            <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{color.A / 255F}" />""");
@@ -197,7 +205,17 @@ public class SvgOutput : FontRegisterCommand
                     break;
 
                 case RadialGradientLayer radial:
-                    writer.WriteLine($"""        <radialGradient id="{unique_id}_{id}" gradientUnits="userSpaceOnUse" spreadMethod="{radial.SpreadMethod.ToString().ToLower()}" cx="{left + (radial.Cxy.X * r)}" cy="{baseline - (radial.Cxy.Y * r)}" fx="{left + (radial.Fxy.X * r)}" fy="{baseline - (radial.Fxy.Y * r)}" fr="{radial.Fr * r}" r="{radial.R * r}">""");
+                    writer.Write($"""        <radialGradient """);
+                    writer.Write($"""id="{unique_id}_{id}" """);
+                    writer.Write($"""gradientUnits="userSpaceOnUse" """);
+                    writer.Write($"""spreadMethod="{radial.SpreadMethod.ToString().ToLower()}" """);
+                    writer.Write($"""cx="{left + (radial.Cxy.X * r)}" """);
+                    writer.Write($"""cy="{baseline - (radial.Cxy.Y * r)}" """);
+                    writer.Write($"""fx="{left + (radial.Fxy.X * r)}" """);
+                    writer.Write($"""fy="{baseline - (radial.Fxy.Y * r)}" """);
+                    writer.Write($"""fr="{radial.Fr * r}" """);
+                    writer.Write($"""r="{radial.R * r}">""");
+                    writer.WriteLine();
                     foreach (var (offset, color) in radial.StopColors)
                     {
                         writer.WriteLine($"""            <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{color.A / 255F}" />""");
