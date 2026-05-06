@@ -211,7 +211,17 @@ public static class ColorFont
                 break;
 
             case PaintComposite p:
-                break;
+                {
+                    var backdrop = ToOutline(font, surfaces, p.BackdropPaint, colr, cpal, transform);
+                    var source = ToOutline(font, surfaces, p.SourcePaint, colr, cpal, transform);
+                    var color_layer = backdrop.OfType<IHaveColorLayer>().Where(x => x.ColorLayer is { }).FirstOrDefault()?.ColorLayer;
+
+                    return [.. source.Select(x =>
+                        x is Surface surface ? new Surface { Edges = ToEdges(surface.Edges, transform), ColorLayer = color_layer } :
+                        x is Layer layer ? new Layer { Surfaces = layer.Surfaces, ColorLayer = color_layer } :
+                        x
+                    )];
+                }
         }
         return surfaces;
     }
