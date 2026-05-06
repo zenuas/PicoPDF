@@ -9,7 +9,7 @@ public class PaintComposite : IPaintFormat
 {
     public required byte Format { get; init; }
     public required int SourcePaintOffset { get; init; }
-    public required byte CompositeMode { get; init; }
+    public required CompositeModes CompositeMode { get; init; }
     public required int BackdropPaintOffset { get; init; }
     public required IPaintFormat SourcePaint { get; init; }
     public required IPaintFormat BackdropPaint { get; init; }
@@ -25,7 +25,7 @@ public class PaintComposite : IPaintFormat
         {
             Format = 32,
             SourcePaintOffset = sourcePaintOffset,
-            CompositeMode = compositeMode,
+            CompositeMode = (CompositeModes)compositeMode,
             BackdropPaintOffset = backdropPaintOffset,
             SourcePaint = PaintFormat.ReadFrom(stream, position + sourcePaintOffset, paintCache, colorLineCache, affineCache),
             BackdropPaint = PaintFormat.ReadFrom(stream, position + backdropPaintOffset, paintCache, colorLineCache, affineCache),
@@ -39,7 +39,7 @@ public class PaintComposite : IPaintFormat
 
         stream.WriteByte(Format);
         stream.WriteOffset24(SizeOf());
-        stream.WriteByte(CompositeMode);
+        stream.WriteByte((byte)CompositeMode);
         stream.WriteOffset24(SizeOf() + (int)mem.Length);
         stream.Write(mem.ToArray());
         BackdropPaint.WriteTo(stream);
