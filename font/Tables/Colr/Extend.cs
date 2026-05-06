@@ -1,6 +1,6 @@
 ﻿namespace OpenType.Tables.Colr;
 
-public enum Extend
+public enum Extend : byte
 {
     EXTEND_PAD = 0,
     EXTEND_REPEAT = 1,
