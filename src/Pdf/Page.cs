@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Font;
+using PicoPDF.Pdf.Shading;
 using PicoPDF.Pdf.XObject;
 using System.Linq;
 
@@ -44,6 +45,14 @@ public class Page : PdfObject
             var xobjdic = new ElementDictionary();
             xobjs.Each(x => xobjdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
             dic.Dictionary.Add("XObject", xobjdic);
+        }
+
+        var shs = Document.PdfObjects.OfType<IShading>().ToArray();
+        if (shs.Length > 0)
+        {
+            var shdic = new ElementDictionary();
+            shs.Each(x => shdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
+            dic.Dictionary.Add("Shading", shdic);
         }
     }
 }

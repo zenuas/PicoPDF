@@ -6,6 +6,7 @@ using OpenType;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Font;
+using PicoPDF.Pdf.Shading;
 using PicoPDF.Pdf.XObject;
 using System;
 using System.Collections.Generic;
@@ -177,6 +178,13 @@ public class Document
         PdfObjects.Add(image.Cast<PdfObject>());
 
         return image;
+    }
+
+    public IShading AddShading(IShading shading)
+    {
+        PdfObjects.Add(shading.Cast<PdfObject>());
+
+        return shading;
     }
 
     public PdfObject AddInfo(

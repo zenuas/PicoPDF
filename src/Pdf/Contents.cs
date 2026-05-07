@@ -6,7 +6,9 @@ using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf.Color;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Font;
+using PicoPDF.Pdf.Function;
 using PicoPDF.Pdf.Operation;
+using PicoPDF.Pdf.Shading;
 using PicoPDF.Pdf.XObject;
 using System;
 using System.Collections.Generic;
@@ -21,7 +23,7 @@ public class Contents : PdfObject
 
     public void DrawTextOnBaseline(string text, double basey, double left, double size, IFont font) => Operations.Add(CreateDrawTextOnBaselineOperation(text, basey, left, size, font));
 
-    public void DrawPathOnBaseline(string text, double basey, double left, double size, Type0Font font) => Operations.AddRange(CreateDrawPathOnBaselineOperation(text, basey, left, size, font));
+    public void DrawPathOnBaseline(string text, double basey, double left, double size, Type0Font font) => Operations.AddRange(CreateDrawPathOnBaselineOperation(text, basey, left, size, font, Page.Document));
 
     public static DrawString CreateDrawTextOnBaselineOperation(string text, double basey, double left, double size, IFont font, IColor? color = null)
     {
@@ -37,7 +39,7 @@ public class Contents : PdfObject
         };
     }
 
-    public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(string text, double basey, double left, double size, Type0Font font, IColor? color = null)
+    public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(string text, double basey, double left, double size, Type0Font font, Document document, IColor? color = null)
     {
         var opentype_font = font.EmbeddedFont ?? font.Font;
         var r = 1f / opentype_font.FontHeader.UnitsPerEm * size;
@@ -47,7 +49,7 @@ public class Contents : PdfObject
             var outlines = opentype_font.GIDToOutline(gid, true);
             var opes = new List<IPathOperation>();
 
-            foreach (var x in CreateDrawPathOnBaselineOperation(outlines, c, r, basey, left, size, font, color))
+            foreach (var x in CreateDrawPathOnBaselineOperation(outlines, c, r, basey, left, size, font, document, color))
             {
                 yield return x;
             }
@@ -55,7 +57,7 @@ public class Contents : PdfObject
         }
     }
 
-    public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(IOutline[] outlines, int c, double r, double basey, double left, double size, Type0Font font, IColor? color)
+    public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(IOutline[] outlines, int c, double r, double basey, double left, double size, Type0Font font, Document document, IColor? color)
     {
         var opes = new List<IPathOperation>();
         IColorLayer? color_Layer = null;
@@ -113,7 +115,7 @@ public class Contents : PdfObject
                     }
 
                 case Layer layer:
-                    foreach (var x in CreateDrawPathOnBaselineOperation(layer.Surfaces, c, r, basey, left, size, font, color))
+                    foreach (var x in CreateDrawPathOnBaselineOperation(layer.Surfaces, c, r, basey, left, size, font, document, color))
                     {
                         yield return x;
                     }
@@ -129,22 +131,75 @@ public class Contents : PdfObject
             {
                 case SolidColorLayer solid_color:
                     opes.Insert(0, new DrawAnyOperator { Operator = PdfUtility.ToDeviceRGB(solid_color.Color).CreateColor(false) });
+                    opes.Add(new DrawAnyOperator { Operator = "f*" });
                     break;
 
-                case LinearGradientLayer linear:
-                    break;
+                case LinearGradientLayer linear when linear.StopColors.Length > 0:
+                    {
+                        var exponentials = new ExponentialInterpolationFunction[linear.StopColors.Length];
+                        var bounds = new float[linear.StopColors.Length];
+                        var encode = new float[linear.StopColors.Length * 2];
+                        if (linear.StopColors.Length == 1)
+                        {
+                            exponentials[0] = new ExponentialInterpolationFunction
+                            {
+                                Domain = [0.0f, 1.0f],
+                                C0 = ColorToRGB(linear.StopColors[0].StopColor),
+                                C1 = ColorToRGB(linear.StopColors[0].StopColor),
+                                N = 1,
+                            };
+                            bounds[0] = 1.0f;
+                            encode[0] = 0.0f;
+                            encode[1] = 1.0f;
+                        }
+                        else
+                        {
+                            for (var i = 0; i < linear.StopColors.Length - 1; i++)
+                            {
+                                var (offset0, color0) = linear.StopColors[i];
+                                var (offset1, color1) = linear.StopColors[i + 1];
+                                exponentials[i] = new ExponentialInterpolationFunction
+                                {
+                                    Domain = [0.0f, 1.0f],
+                                    C0 = ColorToRGB(color0),
+                                    C1 = ColorToRGB(color1),
+                                    N = 1,
+                                };
+                                bounds[i] = 1.0f;
+                                encode[i * 2] = 0.0f;
+                                encode[i * 2 + 1] = 1.0f;
+                            }
+                        }
+                        var stitching_function = new StitchingFunction
+                        {
+                            Domain = [0.0f, 1.0f],
+                            Functions = [.. exponentials],
+                            Bounds = [.. bounds],
+                            Encode = [.. encode],
+                        };
+                        var shading = new AxialShading
+                        {
+                            Name = $"sh{linear.GetHashCode()}",
+                            Coords = (new PointValue(linear.XY1.X), new PointValue(linear.XY1.Y), new PointValue(linear.XY2.X), new PointValue(linear.XY2.Y)),
+                            Function = stitching_function,
+                            Extend = (true, true),
+                        };
+                        opes.Add(new DrawAnyOperator { Operator = "h" });
+                        opes.Add(new DrawAnyOperator { Operator = "W*" });
+                        opes.Add(new DrawAnyOperator { Operator = "n" });
+                        opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
+                        break;
+                    }
 
-                case RadialGradientLayer radial:
-                    break;
-
-                case null:
-                    if (color is { }) opes.Insert(0, new DrawAnyOperator { Operator = color.CreateColor(false) });
+                case RadialGradientLayer radial when radial.StopColors.Length > 0:
+                    opes.Add(new DrawAnyOperator { Operator = "f*" });
                     break;
 
                 default:
-                    throw new();
+                    if (color is { }) opes.Insert(0, new DrawAnyOperator { Operator = color.CreateColor(false) });
+                    opes.Add(new DrawAnyOperator { Operator = "f*" });
+                    break;
             }
-            opes.Add(new DrawAnyOperator { Operator = "f*" });
             yield return new()
             {
                 Text = char.ConvertFromUtf32(c),
@@ -153,6 +208,8 @@ public class Contents : PdfObject
             };
         }
     }
+
+    public static float[] ColorToRGB(System.Drawing.Color color) => [color.R / 255f, color.G / 255f, color.B / 255f];
 
     public double DrawText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
     {
@@ -177,7 +234,7 @@ public class Contents : PdfObject
                 _ => left,
             };
 
-            opes.AddRange(CreateDrawTextOperation(textfonts, basey, text_left, text_size, style.HasFlag(TextStyle.Stroke), color));
+            opes.AddRange(CreateDrawTextOperation(textfonts, basey, text_left, text_size, style.HasFlag(TextStyle.Stroke), Page.Document, color));
             if ((style & TextStyle.TextStyleMask) > 0) opes.AddRange(CreateDrawTextStyleOperations(style, linetop, text_left, basey, text_width, text_height, color));
             linetop += text_height;
             prev_linegap = allbox.LineGap * text_size;
@@ -204,7 +261,7 @@ public class Contents : PdfObject
         return linetop - top;
     }
 
-    public static IEnumerable<IOperation> CreateDrawTextOperation((string Text, Type0Font Font)[] textfonts, double basey, double left, double size, bool stroke, IColor? color = null)
+    public static IEnumerable<IOperation> CreateDrawTextOperation((string Text, Type0Font Font)[] textfonts, double basey, double left, double size, bool stroke, Document document, IColor? color = null)
     {
         var start = left;
         foreach (var (text, font) in textfonts)
@@ -212,7 +269,7 @@ public class Contents : PdfObject
             var box = font.MeasureStringBox(text);
             if (stroke || font.FontEmbed == FontEmbed.Stroke)
             {
-                foreach (var op in CreateDrawPathOnBaselineOperation(text, basey, start, size, font, color)) yield return op;
+                foreach (var op in CreateDrawPathOnBaselineOperation(text, basey, start, size, font, document, color)) yield return op;
             }
             else
             {

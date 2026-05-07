@@ -1,4 +1,8 @@
-﻿namespace PicoPDF.Pdf.Function;
+﻿using Mina.Extension;
+using PicoPDF.Pdf.Elements;
+using System.Linq;
+
+namespace PicoPDF.Pdf.Function;
 
 public class StitchingFunction : PdfObject, IFunction
 {
@@ -7,4 +11,14 @@ public class StitchingFunction : PdfObject, IFunction
     public required IFunction[] Functions { get; init; }
     public required float[] Bounds { get; init; }
     public required float[] Encode { get; init; }
+
+    public override void DoExport(PdfExportOption option)
+    {
+        Functions.OfType<PdfObject>().Each(RelatedObjects.Add);
+        _ = Elements.TryAdd("FunctionType", (int)FunctionType);
+        _ = Elements.TryAdd("Domain", $"[{Domain.Select(x => PdfUtility.PointToString(x, option.PointFormat)).Join(" ")}]");
+        _ = Elements.TryAdd("Functions", new ElementArray<ElementIndirectObject>(Functions.OfType<PdfObject>().Select(x => new ElementIndirectObject { References = x })));
+        _ = Elements.TryAdd("Bounds", $"[{Bounds.Select(x => PdfUtility.PointToString(x, option.PointFormat)).Join(" ")}]");
+        _ = Elements.TryAdd("Encode", $"[{Encode.Select(x => PdfUtility.PointToString(x, option.PointFormat)).Join(" ")}]");
+    }
 }
