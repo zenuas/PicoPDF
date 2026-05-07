@@ -125,8 +125,25 @@ public class Contents : PdfObject
         }
         if (opes.Count > 0)
         {
-            if (color_Layer is SolidColorLayer { } solid_color) color = PdfUtility.ToDeviceRGB(solid_color.Color);
-            if (color is { }) opes.Insert(0, new DrawAnyOperator { Operator = color.CreateColor(false) });
+            switch (color_Layer)
+            {
+                case SolidColorLayer solid_color:
+                    opes.Insert(0, new DrawAnyOperator { Operator = PdfUtility.ToDeviceRGB(solid_color.Color).CreateColor(false) });
+                    break;
+
+                case LinearGradientLayer linear:
+                    break;
+
+                case RadialGradientLayer radial:
+                    break;
+
+                case null:
+                    if (color is { }) opes.Insert(0, new DrawAnyOperator { Operator = color.CreateColor(false) });
+                    break;
+
+                default:
+                    throw new();
+            }
             opes.Add(new DrawAnyOperator { Operator = "f*" });
             yield return new()
             {
