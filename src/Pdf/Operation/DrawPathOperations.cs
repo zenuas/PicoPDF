@@ -14,7 +14,7 @@ public class DrawPathOperations : IOperation
     {
         if (option.Debug) writer.Write($"% {Text.ReplaceLineEndings("")}\n");
         writer.Write("q\n");
-        writer.Write($"{IOperation.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
+        writer.Write($"{PdfUtility.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
         Operations.Each(x => x.OperationWrite(width, height, writer, option));
         writer.Write("Q\n");
     }

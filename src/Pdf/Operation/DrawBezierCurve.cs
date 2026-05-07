@@ -19,7 +19,7 @@ public class DrawBezierCurve : IOperation
         writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
         writer.Write($"{LineWidth.ToPoint()} w\n");
-        writer.Write($"{IOperation.PointToString(Start, height, option.PointFormat)} m {IOperation.PointToString(ControlPoint1, height, option.PointFormat)} {IOperation.PointToString(ControlPoint2, height, option.PointFormat)} {IOperation.PointToString(End, height, option.PointFormat)} c S\n");
+        writer.Write($"{PdfUtility.PointToString(Start, height, option.PointFormat)} m {PdfUtility.PointToString(ControlPoint1, height, option.PointFormat)} {PdfUtility.PointToString(ControlPoint2, height, option.PointFormat)} {PdfUtility.PointToString(End, height, option.PointFormat)} c S\n");
         writer.Write("Q\n");
     }
 }

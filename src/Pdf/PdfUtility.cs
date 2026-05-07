@@ -9,6 +9,7 @@ using PicoPDF.Pdf.Font;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -77,4 +78,11 @@ public static class PdfUtility
     public static FontBox MeasureTextFontBox((string Text, Type0Font Font)[] textfonts) => textfonts
         .Select(x => x.Font.MeasureStringBox(x.Text))
         .Aggregate(new FontBox(), (acc, x) => new(Math.Min(acc.Ascender, x.Ascender), Math.Max(acc.Descender, x.Descender), Math.Max(acc.LineGap, x.LineGap), acc.Width + x.Width));
+
+    public static string PointToString((IPoint X, IPoint Y) point, int height, string format) => $"{PointToString(point.X.ToPoint(), format)} {PointToString(height - point.Y.ToPoint(), format)}";
+
+    public static string PointToString(double point, string format) =>
+        point <= long.MaxValue &&
+        point >= long.MinValue &&
+        point % 1d == 0d ? ((long)point).ToString() : point.ToString(format, CultureInfo.InvariantCulture);
 }

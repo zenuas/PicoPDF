@@ -16,8 +16,8 @@ public class DrawLine : IOperation
     {
         writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
-        writer.Write($"{IOperation.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
-        writer.Write($"{IOperation.PointToString(Points.First(), height, option.PointFormat)} m {Points.Skip(1).Select(x => IOperation.PointToString(x, height, option.PointFormat)).Join(" l ")} l S\n");
+        writer.Write($"{PdfUtility.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
+        writer.Write($"{PdfUtility.PointToString(Points.First(), height, option.PointFormat)} m {Points.Skip(1).Select(x => PdfUtility.PointToString(x, height, option.PointFormat)).Join(" l ")} l S\n");
         writer.Write("Q\n");
     }
 }

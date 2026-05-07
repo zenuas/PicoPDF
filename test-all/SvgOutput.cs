@@ -2,7 +2,7 @@
 using Mina.Extension;
 using OpenType;
 using OpenType.Outline;
-using PicoPDF.Pdf.Operation;
+using PicoPDF.Pdf;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -62,7 +62,7 @@ public class SvgOutput : FontRegisterCommand
             max_width = Math.Max(width, max_width);
         }
         writer.Flush();
-        Output.WriteLine($"""<svg width="{IOperation.PointToString(max_width, PointFormat)}" height="{IOperation.PointToString(top, PointFormat)}" xmlns="http://www.w3.org/2000/svg">""");
+        Output.WriteLine($"""<svg width="{PdfUtility.PointToString(max_width, PointFormat)}" height="{PdfUtility.PointToString(top, PointFormat)}" xmlns="http://www.w3.org/2000/svg">""");
         Output.Write(Encoding.UTF8.GetString(mem.ToArray()));
         Output.WriteLine("</svg>");
     }
@@ -96,7 +96,7 @@ public class SvgOutput : FontRegisterCommand
         if (Debug)
         {
             writer.WriteLine($"    <!-- baseline -->");
-            writer.WriteLine($"""    <line x1="0" y1="{IOperation.PointToString(baseline, PointFormat)}" x2="{IOperation.PointToString(total_width * r, PointFormat)}" y2="{IOperation.PointToString(baseline, PointFormat)}" stroke="red" />""");
+            writer.WriteLine($"""    <line x1="0" y1="{PdfUtility.PointToString(baseline, PointFormat)}" x2="{PdfUtility.PointToString(total_width * r, PointFormat)}" y2="{PdfUtility.PointToString(baseline, PointFormat)}" stroke="red" />""");
         }
         return (total_width * r, Math.Max(ascent - descent, ymax - ymin) * r);
     }
@@ -121,7 +121,7 @@ public class SvgOutput : FontRegisterCommand
                         {
                             if (surface.ColorLayer is { } && gradient_layers.TryGetValue(surface.ColorLayer, out var id))
                             {
-                                _ = d.AppendLine($"""    <path fill="url(#{unique_id}_{IOperation.PointToString(id, PointFormat)})" fill-rule="evenodd" """);
+                                _ = d.AppendLine($"""    <path fill="url(#{unique_id}_{PdfUtility.PointToString(id, PointFormat)})" fill-rule="evenodd" """);
                             }
                             else
                             {
@@ -132,16 +132,16 @@ public class SvgOutput : FontRegisterCommand
                             isfirst = false;
                         }
                         var start = surface.Edges.First().Start;
-                        if (JointPoint > 0) _ = c.AppendLine($"""    <circle cx="{IOperation.PointToString(left + (start.X * r), PointFormat)}" cy="{IOperation.PointToString(baseline - (start.Y * r), PointFormat)}" r="{IOperation.PointToString(JointPoint, PointFormat)}" fill="blue" />""");
+                        if (JointPoint > 0) _ = c.AppendLine($"""    <circle cx="{PdfUtility.PointToString(left + (start.X * r), PointFormat)}" cy="{PdfUtility.PointToString(baseline - (start.Y * r), PointFormat)}" r="{PdfUtility.PointToString(JointPoint, PointFormat)}" fill="blue" />""");
                         _ = d.AppendLine();
-                        _ = d.AppendLine($"          M {IOperation.PointToString(left + (start.X * r), PointFormat)} {IOperation.PointToString(baseline - (start.Y * r), PointFormat)}");
+                        _ = d.AppendLine($"          M {PdfUtility.PointToString(left + (start.X * r), PointFormat)} {PdfUtility.PointToString(baseline - (start.Y * r), PointFormat)}");
                         foreach (var edge in surface.Edges)
                         {
                             switch (edge)
                             {
                                 case Line line:
-                                    if (JointPoint > 0) _ = c.AppendLine($"""    <circle cx="{IOperation.PointToString(left + (line.End.X * r), PointFormat)}" cy="{IOperation.PointToString(baseline - (line.End.Y * r), PointFormat)}" r="{IOperation.PointToString(JointPoint, PointFormat)}" fill="blue" />""");
-                                    _ = d.AppendLine($"          L {IOperation.PointToString(left + (line.End.X * r), PointFormat)} {IOperation.PointToString(baseline - (line.End.Y * r), PointFormat)}");
+                                    if (JointPoint > 0) _ = c.AppendLine($"""    <circle cx="{PdfUtility.PointToString(left + (line.End.X * r), PointFormat)}" cy="{PdfUtility.PointToString(baseline - (line.End.Y * r), PointFormat)}" r="{PdfUtility.PointToString(JointPoint, PointFormat)}" fill="blue" />""");
+                                    _ = d.AppendLine($"          L {PdfUtility.PointToString(left + (line.End.X * r), PointFormat)} {PdfUtility.PointToString(baseline - (line.End.Y * r), PointFormat)}");
                                     break;
 
                                 case BezierCurve bezier when bezier.ControlPoint.Length == 1:
@@ -149,10 +149,10 @@ public class SvgOutput : FontRegisterCommand
                                         var cp = bezier.ControlPoint[0];
                                         if (JointPoint > 0)
                                         {
-                                            _ = c.AppendLine($"""    <circle cx="{IOperation.PointToString(left + (cp.X * r), PointFormat)}" cy="{IOperation.PointToString(baseline - (cp.Y * r), PointFormat)}" r="{IOperation.PointToString(JointPoint, PointFormat)}" fill="red" />""");
-                                            _ = c.AppendLine($"""    <circle cx="{IOperation.PointToString(left + (bezier.End.X * r), PointFormat)}" cy="{IOperation.PointToString(baseline - (bezier.End.Y * r), PointFormat)}" r="{IOperation.PointToString(JointPoint, PointFormat)}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
+                                            _ = c.AppendLine($"""    <circle cx="{PdfUtility.PointToString(left + (cp.X * r), PointFormat)}" cy="{PdfUtility.PointToString(baseline - (cp.Y * r), PointFormat)}" r="{PdfUtility.PointToString(JointPoint, PointFormat)}" fill="red" />""");
+                                            _ = c.AppendLine($"""    <circle cx="{PdfUtility.PointToString(left + (bezier.End.X * r), PointFormat)}" cy="{PdfUtility.PointToString(baseline - (bezier.End.Y * r), PointFormat)}" r="{PdfUtility.PointToString(JointPoint, PointFormat)}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
                                         }
-                                        _ = d.AppendLine($"          Q {IOperation.PointToString(left + (cp.X * r), PointFormat)} {IOperation.PointToString(baseline - (cp.Y * r), PointFormat)}, {IOperation.PointToString(left + (bezier.End.X * r), PointFormat)} {IOperation.PointToString(baseline - (bezier.End.Y * r), PointFormat)}");
+                                        _ = d.AppendLine($"          Q {PdfUtility.PointToString(left + (cp.X * r), PointFormat)} {PdfUtility.PointToString(baseline - (cp.Y * r), PointFormat)}, {PdfUtility.PointToString(left + (bezier.End.X * r), PointFormat)} {PdfUtility.PointToString(baseline - (bezier.End.Y * r), PointFormat)}");
                                         break;
                                     }
 
@@ -162,11 +162,11 @@ public class SvgOutput : FontRegisterCommand
                                         var cp2 = bezier.ControlPoint[1];
                                         if (JointPoint > 0)
                                         {
-                                            _ = c.AppendLine($"""    <circle cx="{IOperation.PointToString(left + (cp1.X * r), PointFormat)}" cy="{IOperation.PointToString(baseline - (cp1.Y * r), PointFormat)}" r="{IOperation.PointToString(JointPoint, PointFormat)}" fill="red" />""");
-                                            _ = c.AppendLine($"""    <circle cx="{IOperation.PointToString(left + (cp2.X * r), PointFormat)}" cy="{IOperation.PointToString(baseline - (cp2.Y * r), PointFormat)}" r="{IOperation.PointToString(JointPoint, PointFormat)}" fill="red" />""");
-                                            _ = c.AppendLine($"""    <circle cx="{IOperation.PointToString(left + (bezier.End.X * r), PointFormat)}" cy="{IOperation.PointToString(baseline - (bezier.End.Y * r), PointFormat)}" r="{IOperation.PointToString(JointPoint, PointFormat)}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
+                                            _ = c.AppendLine($"""    <circle cx="{PdfUtility.PointToString(left + (cp1.X * r), PointFormat)}" cy="{PdfUtility.PointToString(baseline - (cp1.Y * r), PointFormat)}" r="{PdfUtility.PointToString(JointPoint, PointFormat)}" fill="red" />""");
+                                            _ = c.AppendLine($"""    <circle cx="{PdfUtility.PointToString(left + (cp2.X * r), PointFormat)}" cy="{PdfUtility.PointToString(baseline - (cp2.Y * r), PointFormat)}" r="{PdfUtility.PointToString(JointPoint, PointFormat)}" fill="red" />""");
+                                            _ = c.AppendLine($"""    <circle cx="{PdfUtility.PointToString(left + (bezier.End.X * r), PointFormat)}" cy="{PdfUtility.PointToString(baseline - (bezier.End.Y * r), PointFormat)}" r="{PdfUtility.PointToString(JointPoint, PointFormat)}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
                                         }
-                                        _ = d.AppendLine($"          C {IOperation.PointToString(left + (cp1.X * r), PointFormat)} {IOperation.PointToString(baseline - (cp1.Y * r), PointFormat)}, {IOperation.PointToString(left + (cp2.X * r), PointFormat)} {IOperation.PointToString(baseline - (cp2.Y * r), PointFormat)}, {IOperation.PointToString(left + (bezier.End.X * r), PointFormat)} {IOperation.PointToString(baseline - (bezier.End.Y * r), PointFormat)}");
+                                        _ = d.AppendLine($"          C {PdfUtility.PointToString(left + (cp1.X * r), PointFormat)} {PdfUtility.PointToString(baseline - (cp1.Y * r), PointFormat)}, {PdfUtility.PointToString(left + (cp2.X * r), PointFormat)} {PdfUtility.PointToString(baseline - (cp2.Y * r), PointFormat)}, {PdfUtility.PointToString(left + (bezier.End.X * r), PointFormat)} {PdfUtility.PointToString(baseline - (bezier.End.Y * r), PointFormat)}");
                                         break;
                                     }
                             }
@@ -202,18 +202,18 @@ public class SvgOutput : FontRegisterCommand
                     if (!linear.GradientTransform.IsIdentity)
                     {
                         var m = linear.GradientTransform * Matrix3x2.CreateScale(r) * FlipY * Matrix3x2.CreateTranslation(left, baseline);
-                        writer.Write($"""gradientTransform="matrix({IOperation.PointToString(m.M11, PointFormat)}, {IOperation.PointToString(m.M12, PointFormat)}, {IOperation.PointToString(m.M21, PointFormat)}, {IOperation.PointToString(m.M22, PointFormat)}, {IOperation.PointToString(m.M31, PointFormat)}, {IOperation.PointToString(m.M32, PointFormat)})" """);
-                        writer.Write($"""x1="{IOperation.PointToString(linear.XY1.X, PointFormat)}" """);
-                        writer.Write($"""y1="{IOperation.PointToString(linear.XY1.Y, PointFormat)}" """);
-                        writer.Write($"""x2="{IOperation.PointToString(linear.XY2.X, PointFormat)}" """);
-                        writer.Write($"""y2="{IOperation.PointToString(linear.XY2.Y, PointFormat)}">""");
+                        writer.Write($"""gradientTransform="matrix({PdfUtility.PointToString(m.M11, PointFormat)}, {PdfUtility.PointToString(m.M12, PointFormat)}, {PdfUtility.PointToString(m.M21, PointFormat)}, {PdfUtility.PointToString(m.M22, PointFormat)}, {PdfUtility.PointToString(m.M31, PointFormat)}, {PdfUtility.PointToString(m.M32, PointFormat)})" """);
+                        writer.Write($"""x1="{PdfUtility.PointToString(linear.XY1.X, PointFormat)}" """);
+                        writer.Write($"""y1="{PdfUtility.PointToString(linear.XY1.Y, PointFormat)}" """);
+                        writer.Write($"""x2="{PdfUtility.PointToString(linear.XY2.X, PointFormat)}" """);
+                        writer.Write($"""y2="{PdfUtility.PointToString(linear.XY2.Y, PointFormat)}">""");
                     }
                     else
                     {
-                        writer.Write($"""x1="{IOperation.PointToString(left + (linear.XY1.X * r), PointFormat)}" """);
-                        writer.Write($"""y1="{IOperation.PointToString(baseline - (linear.XY1.Y * r), PointFormat)}" """);
-                        writer.Write($"""x2="{IOperation.PointToString(left + (linear.XY2.X * r), PointFormat)}" """);
-                        writer.Write($"""y2="{IOperation.PointToString(baseline - (linear.XY2.Y * r), PointFormat)}">""");
+                        writer.Write($"""x1="{PdfUtility.PointToString(left + (linear.XY1.X * r), PointFormat)}" """);
+                        writer.Write($"""y1="{PdfUtility.PointToString(baseline - (linear.XY1.Y * r), PointFormat)}" """);
+                        writer.Write($"""x2="{PdfUtility.PointToString(left + (linear.XY2.X * r), PointFormat)}" """);
+                        writer.Write($"""y2="{PdfUtility.PointToString(baseline - (linear.XY2.Y * r), PointFormat)}">""");
                     }
                     writer.WriteLine();
                     if (isdebug && !linear.GradientTransform.IsIdentity)
@@ -222,16 +222,16 @@ public class SvgOutput : FontRegisterCommand
                         var xy1 = Vector2.Transform(linear.XY1, m);
                         var xy2 = Vector2.Transform(linear.XY2, m);
                         writer.Write($"""            <!-- """);
-                        writer.Write($"""x1="{IOperation.PointToString(xy1.X, PointFormat)}" """);
-                        writer.Write($"""y1="{IOperation.PointToString(xy1.Y, PointFormat)}" """);
-                        writer.Write($"""x2="{IOperation.PointToString(xy2.X, PointFormat)}" """);
-                        writer.Write($"""y2="{IOperation.PointToString(xy2.Y, PointFormat)}" """);
+                        writer.Write($"""x1="{PdfUtility.PointToString(xy1.X, PointFormat)}" """);
+                        writer.Write($"""y1="{PdfUtility.PointToString(xy1.Y, PointFormat)}" """);
+                        writer.Write($"""x2="{PdfUtility.PointToString(xy2.X, PointFormat)}" """);
+                        writer.Write($"""y2="{PdfUtility.PointToString(xy2.Y, PointFormat)}" """);
                         writer.Write($"""-->""");
                         writer.WriteLine();
                     }
                     foreach (var (offset, color) in linear.StopColors)
                     {
-                        writer.WriteLine($"""            <stop offset="{IOperation.PointToString(offset, PointFormat)}%" stop-color="{ColorToHex(color)}" stop-opacity="{IOperation.PointToString(color.A / 255F, PointFormat)}" />""");
+                        writer.WriteLine($"""            <stop offset="{PdfUtility.PointToString(offset, PointFormat)}%" stop-color="{ColorToHex(color)}" stop-opacity="{PdfUtility.PointToString(color.A / 255F, PointFormat)}" />""");
                     }
                     writer.WriteLine("        </linearGradient>");
                     break;
@@ -244,22 +244,22 @@ public class SvgOutput : FontRegisterCommand
                     if (!radial.GradientTransform.IsIdentity)
                     {
                         var m = radial.GradientTransform * Matrix3x2.CreateScale(r) * FlipY * Matrix3x2.CreateTranslation(left, baseline);
-                        writer.Write($"""gradientTransform="matrix({IOperation.PointToString(m.M11, PointFormat)}, {IOperation.PointToString(m.M12, PointFormat)}, {IOperation.PointToString(m.M21, PointFormat)}, {IOperation.PointToString(m.M22, PointFormat)}, {IOperation.PointToString(m.M31, PointFormat)}, {IOperation.PointToString(m.M32, PointFormat)})" """);
-                        writer.Write($"""cx="{IOperation.PointToString(radial.Cxy.X, PointFormat)}" """);
-                        writer.Write($"""cy="{IOperation.PointToString(radial.Cxy.Y, PointFormat)}" """);
-                        writer.Write($"""fx="{IOperation.PointToString(radial.Fxy.X, PointFormat)}" """);
-                        writer.Write($"""fy="{IOperation.PointToString(radial.Fxy.Y, PointFormat)}" """);
-                        writer.Write($"""fr="{IOperation.PointToString(radial.Fr, PointFormat)}" """);
-                        writer.Write($"""r="{IOperation.PointToString(radial.R, PointFormat)}">""");
+                        writer.Write($"""gradientTransform="matrix({PdfUtility.PointToString(m.M11, PointFormat)}, {PdfUtility.PointToString(m.M12, PointFormat)}, {PdfUtility.PointToString(m.M21, PointFormat)}, {PdfUtility.PointToString(m.M22, PointFormat)}, {PdfUtility.PointToString(m.M31, PointFormat)}, {PdfUtility.PointToString(m.M32, PointFormat)})" """);
+                        writer.Write($"""cx="{PdfUtility.PointToString(radial.Cxy.X, PointFormat)}" """);
+                        writer.Write($"""cy="{PdfUtility.PointToString(radial.Cxy.Y, PointFormat)}" """);
+                        writer.Write($"""fx="{PdfUtility.PointToString(radial.Fxy.X, PointFormat)}" """);
+                        writer.Write($"""fy="{PdfUtility.PointToString(radial.Fxy.Y, PointFormat)}" """);
+                        writer.Write($"""fr="{PdfUtility.PointToString(radial.Fr, PointFormat)}" """);
+                        writer.Write($"""r="{PdfUtility.PointToString(radial.R, PointFormat)}">""");
                     }
                     else
                     {
-                        writer.Write($"""cx="{IOperation.PointToString(left + (radial.Cxy.X * r), PointFormat)}" """);
-                        writer.Write($"""cy="{IOperation.PointToString(baseline - (radial.Cxy.Y * r), PointFormat)}" """);
-                        writer.Write($"""fx="{IOperation.PointToString(left + (radial.Fxy.X * r), PointFormat)}" """);
-                        writer.Write($"""fy="{IOperation.PointToString(baseline - (radial.Fxy.Y * r), PointFormat)}" """);
-                        writer.Write($"""fr="{IOperation.PointToString(radial.Fr * r, PointFormat)}" """);
-                        writer.Write($"""r="{IOperation.PointToString(radial.R * r, PointFormat)}">""");
+                        writer.Write($"""cx="{PdfUtility.PointToString(left + (radial.Cxy.X * r), PointFormat)}" """);
+                        writer.Write($"""cy="{PdfUtility.PointToString(baseline - (radial.Cxy.Y * r), PointFormat)}" """);
+                        writer.Write($"""fx="{PdfUtility.PointToString(left + (radial.Fxy.X * r), PointFormat)}" """);
+                        writer.Write($"""fy="{PdfUtility.PointToString(baseline - (radial.Fxy.Y * r), PointFormat)}" """);
+                        writer.Write($"""fr="{PdfUtility.PointToString(radial.Fr * r, PointFormat)}" """);
+                        writer.Write($"""r="{PdfUtility.PointToString(radial.R * r, PointFormat)}">""");
                     }
                     writer.WriteLine();
                     if (isdebug && !radial.GradientTransform.IsIdentity)
@@ -268,16 +268,16 @@ public class SvgOutput : FontRegisterCommand
                         var cxy = Vector2.Transform(radial.Cxy, m);
                         var fxy = Vector2.Transform(radial.Fxy, m);
                         writer.Write($"""            <!-- """);
-                        writer.Write($"""cx="{IOperation.PointToString(cxy.X, PointFormat)}" """);
-                        writer.Write($"""cy="{IOperation.PointToString(cxy.Y, PointFormat)}" """);
-                        writer.Write($"""fx="{IOperation.PointToString(fxy.X, PointFormat)}" """);
-                        writer.Write($"""fy="{IOperation.PointToString(fxy.Y, PointFormat)}" """);
+                        writer.Write($"""cx="{PdfUtility.PointToString(cxy.X, PointFormat)}" """);
+                        writer.Write($"""cy="{PdfUtility.PointToString(cxy.Y, PointFormat)}" """);
+                        writer.Write($"""fx="{PdfUtility.PointToString(fxy.X, PointFormat)}" """);
+                        writer.Write($"""fy="{PdfUtility.PointToString(fxy.Y, PointFormat)}" """);
                         writer.Write($"""-->""");
                         writer.WriteLine();
                     }
                     foreach (var (offset, color) in radial.StopColors)
                     {
-                        writer.WriteLine($"""            <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{IOperation.PointToString(color.A / 255F, PointFormat)}" />""");
+                        writer.WriteLine($"""            <stop offset="{offset}%" stop-color="{ColorToHex(color)}" stop-opacity="{PdfUtility.PointToString(color.A / 255F, PointFormat)}" />""");
                     }
                     writer.WriteLine("        </radialGradient>");
                     break;

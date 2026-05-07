@@ -19,7 +19,7 @@ public class DrawImage : IOperation
         var imageheight = Image.Height * ZoomHeight;
 
         writer.Write("q\n");
-        writer.Write($"{IOperation.PointToString(imagewidth, option.PointFormat)} 0 0 {IOperation.PointToString(imageheight, option.PointFormat)} {IOperation.PointToString(X.ToPoint(), option.PointFormat)} {IOperation.PointToString(height - imageheight - Y.ToPoint(), option.PointFormat)} cm\n");
+        writer.Write($"{PdfUtility.PointToString(imagewidth, option.PointFormat)} 0 0 {PdfUtility.PointToString(imageheight, option.PointFormat)} {PdfUtility.PointToString(X.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(height - imageheight - Y.ToPoint(), option.PointFormat)} cm\n");
         writer.Write($"/{Image.Name} Do\n");
         writer.Write("Q\n");
     }
