@@ -192,7 +192,61 @@ public class Contents : PdfObject
                     }
 
                 case RadialGradientLayer radial when radial.StopColors.Length > 0:
-                    opes.Add(new DrawAnyOperator { Operator = "f*" });
+                    {
+                        var exponentials = new ExponentialInterpolationFunction[radial.StopColors.Length];
+                        var bounds = new float[radial.StopColors.Length];
+                        var encode = new float[radial.StopColors.Length * 2];
+                        if (radial.StopColors.Length == 1)
+                        {
+                            exponentials[0] = new ExponentialInterpolationFunction
+                            {
+                                Domain = [0.0f, 1.0f],
+                                C0 = ColorToRGB(radial.StopColors[0].StopColor),
+                                C1 = ColorToRGB(radial.StopColors[0].StopColor),
+                                N = 1,
+                            };
+                            bounds[0] = radial.StopColors[0].Offset;
+                            encode[0] = 0.0f;
+                            encode[1] = 1.0f;
+                        }
+                        else
+                        {
+                            for (var i = 0; i < radial.StopColors.Length - 1; i++)
+                            {
+                                var (_, color0) = radial.StopColors[i];
+                                var (offset1, color1) = radial.StopColors[i + 1];
+                                exponentials[i] = new ExponentialInterpolationFunction
+                                {
+                                    Domain = [0.0f, 1.0f],
+                                    C0 = ColorToRGB(color0),
+                                    C1 = ColorToRGB(color1),
+                                    N = 1,
+                                };
+                                bounds[i] = offset1;
+                                encode[i * 2] = 0.0f;
+                                encode[i * 2 + 1] = 1.0f;
+                            }
+                        }
+                        var stitching_function = new StitchingFunction
+                        {
+                            Domain = [0.0f, bounds[^1]],
+                            Functions = [.. exponentials],
+                            Bounds = [.. bounds],
+                            Encode = [.. encode],
+                        };
+                        var shading = new RadialShading
+                        {
+                            Name = $"sh{radial.GetHashCode()}",
+                            Coords = (new PointValue(radial.Fxy.X), new PointValue(radial.Fxy.Y), new PointValue(radial.Fr), new PointValue(radial.Cxy.X), new PointValue(radial.Cxy.Y), new PointValue(radial.R)),
+                            Function = stitching_function,
+                            Extend = (true, true),
+                        };
+                        opes.Add(new DrawAnyOperator { Operator = "h" });
+                        opes.Add(new DrawAnyOperator { Operator = "W*" });
+                        opes.Add(new DrawAnyOperator { Operator = "n" });
+                        opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
+                        break;
+                    }
                     break;
 
                 default:
