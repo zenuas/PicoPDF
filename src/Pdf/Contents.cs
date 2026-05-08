@@ -92,8 +92,8 @@ public class Contents : PdfObject
                                         var cp = bezier.ControlPoint[0];
                                         opes.Add(new DrawBezierCurvePath
                                         {
-                                            ControlPoint1 = (new PointValue(left + (bezier.Start.X + (cp.X - bezier.Start.X) * 2 / 3) * r), new PointValue(basey - (bezier.Start.Y + (cp.Y - bezier.Start.Y) * 2 / 3) * r)),
-                                            ControlPoint2 = (new PointValue(left + (cp.X + (bezier.End.X - cp.X) * 2 / 3) * r), new PointValue(basey - (cp.Y + (bezier.End.Y - cp.Y) * 2 / 3) * r)),
+                                            ControlPoint1 = (new PointValue(left + ((((cp.X * 2.0f) + bezier.Start.X) / 3.0f) * r)), new PointValue(basey - ((((cp.Y * 2.0f) + bezier.Start.Y) / 3.0f) * r))),
+                                            ControlPoint2 = (new PointValue(left + ((((cp.X * 2.0f) + bezier.End.X) / 3.0f) * r)), new PointValue(basey - ((((cp.Y * 2.0f) + bezier.End.Y) / 3.0f) * r))),
                                             End = (new PointValue(left + bezier.End.X * r), new PointValue(basey - bezier.End.Y * r)),
                                         });
                                         break;
