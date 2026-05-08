@@ -130,7 +130,7 @@ public class Contents : PdfObject
             switch (color_Layer)
             {
                 case SolidColorLayer solid_color:
-                    opes.Insert(0, new DrawAnyOperator { Operator = PdfUtility.ToDeviceRGB(solid_color.Color).CreateColor(false) });
+                    opes.Add(new DrawAnyOperator { Operator = PdfUtility.ToDeviceRGB(solid_color.Color).CreateColor(false) });
                     opes.Add(new DrawAnyOperator { Operator = "f*" });
                     break;
 
@@ -167,7 +167,7 @@ public class Contents : PdfObject
                     }
 
                 default:
-                    if (color is { }) opes.Insert(0, new DrawAnyOperator { Operator = color.CreateColor(false) });
+                    if (color is { }) opes.Add(new DrawAnyOperator { Operator = color.CreateColor(false) });
                     opes.Add(new DrawAnyOperator { Operator = "f*" });
                     break;
             }
