@@ -136,52 +136,11 @@ public class Contents : PdfObject
 
                 case LinearGradientLayer linear when linear.StopColors.Length > 0:
                     {
-                        var exponentials = new ExponentialInterpolationFunction[linear.StopColors.Length];
-                        var bounds = new float[linear.StopColors.Length];
-                        var encode = new float[linear.StopColors.Length * 2];
-                        if (linear.StopColors.Length == 1)
-                        {
-                            exponentials[0] = new ExponentialInterpolationFunction
-                            {
-                                Domain = [0.0f, 1.0f],
-                                C0 = ColorToRGB(linear.StopColors[0].StopColor),
-                                C1 = ColorToRGB(linear.StopColors[0].StopColor),
-                                N = 1,
-                            };
-                            bounds[0] = linear.StopColors[0].Offset;
-                            encode[0] = 0.0f;
-                            encode[1] = 1.0f;
-                        }
-                        else
-                        {
-                            for (var i = 0; i < linear.StopColors.Length - 1; i++)
-                            {
-                                var (_, color0) = linear.StopColors[i];
-                                var (offset1, color1) = linear.StopColors[i + 1];
-                                exponentials[i] = new ExponentialInterpolationFunction
-                                {
-                                    Domain = [0.0f, 1.0f],
-                                    C0 = ColorToRGB(color0),
-                                    C1 = ColorToRGB(color1),
-                                    N = 1,
-                                };
-                                bounds[i] = offset1;
-                                encode[i * 2] = 0.0f;
-                                encode[i * 2 + 1] = 1.0f;
-                            }
-                        }
-                        var stitching_function = new StitchingFunction
-                        {
-                            Domain = [0.0f, bounds[^1]],
-                            Functions = [.. exponentials],
-                            Bounds = [.. bounds],
-                            Encode = [.. encode],
-                        };
                         var shading = new AxialShading
                         {
                             Name = $"sh{linear.GetHashCode()}",
                             Coords = (new PointValue(linear.XY1.X), new PointValue(linear.XY1.Y), new PointValue(linear.XY2.X), new PointValue(linear.XY2.Y)),
-                            Function = stitching_function,
+                            Function = StopColorsToFunction(linear.StopColors),
                             Extend = (true, true),
                         };
                         opes.Add(new DrawAnyOperator { Operator = "h" });
@@ -193,52 +152,11 @@ public class Contents : PdfObject
 
                 case RadialGradientLayer radial when radial.StopColors.Length > 0:
                     {
-                        var exponentials = new ExponentialInterpolationFunction[radial.StopColors.Length];
-                        var bounds = new float[radial.StopColors.Length];
-                        var encode = new float[radial.StopColors.Length * 2];
-                        if (radial.StopColors.Length == 1)
-                        {
-                            exponentials[0] = new ExponentialInterpolationFunction
-                            {
-                                Domain = [0.0f, 1.0f],
-                                C0 = ColorToRGB(radial.StopColors[0].StopColor),
-                                C1 = ColorToRGB(radial.StopColors[0].StopColor),
-                                N = 1,
-                            };
-                            bounds[0] = radial.StopColors[0].Offset;
-                            encode[0] = 0.0f;
-                            encode[1] = 1.0f;
-                        }
-                        else
-                        {
-                            for (var i = 0; i < radial.StopColors.Length - 1; i++)
-                            {
-                                var (_, color0) = radial.StopColors[i];
-                                var (offset1, color1) = radial.StopColors[i + 1];
-                                exponentials[i] = new ExponentialInterpolationFunction
-                                {
-                                    Domain = [0.0f, 1.0f],
-                                    C0 = ColorToRGB(color0),
-                                    C1 = ColorToRGB(color1),
-                                    N = 1,
-                                };
-                                bounds[i] = offset1;
-                                encode[i * 2] = 0.0f;
-                                encode[i * 2 + 1] = 1.0f;
-                            }
-                        }
-                        var stitching_function = new StitchingFunction
-                        {
-                            Domain = [0.0f, bounds[^1]],
-                            Functions = [.. exponentials],
-                            Bounds = [.. bounds],
-                            Encode = [.. encode],
-                        };
                         var shading = new RadialShading
                         {
                             Name = $"sh{radial.GetHashCode()}",
                             Coords = (new PointValue(radial.Fxy.X), new PointValue(radial.Fxy.Y), new PointValue(radial.Fr), new PointValue(radial.Cxy.X), new PointValue(radial.Cxy.Y), new PointValue(radial.R)),
-                            Function = stitching_function,
+                            Function = StopColorsToFunction(radial.StopColors),
                             Extend = (true, true),
                         };
                         opes.Add(new DrawAnyOperator { Operator = "h" });
@@ -247,7 +165,6 @@ public class Contents : PdfObject
                         opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
                         break;
                     }
-                    break;
 
                 default:
                     if (color is { }) opes.Insert(0, new DrawAnyOperator { Operator = color.CreateColor(false) });
@@ -264,6 +181,51 @@ public class Contents : PdfObject
     }
 
     public static float[] ColorToRGB(System.Drawing.Color color) => [color.R / 255f, color.G / 255f, color.B / 255f];
+
+    public static IFunction StopColorsToFunction((float Offset, System.Drawing.Color StopColor)[] stops)
+    {
+        var exponentials = new ExponentialInterpolationFunction[stops.Length];
+        var bounds = new float[stops.Length];
+        var encode = new float[stops.Length * 2];
+        if (stops.Length == 1)
+        {
+            exponentials[0] = new ExponentialInterpolationFunction
+            {
+                Domain = [0.0f, 1.0f],
+                C0 = ColorToRGB(stops[0].StopColor),
+                C1 = ColorToRGB(stops[0].StopColor),
+                N = 1,
+            };
+            bounds[0] = stops[0].Offset;
+            encode[0] = 0.0f;
+            encode[1] = 1.0f;
+        }
+        else
+        {
+            for (var i = 0; i < stops.Length - 1; i++)
+            {
+                var (_, color0) = stops[i];
+                var (offset1, color1) = stops[i + 1];
+                exponentials[i] = new ExponentialInterpolationFunction
+                {
+                    Domain = [0.0f, 1.0f],
+                    C0 = ColorToRGB(color0),
+                    C1 = ColorToRGB(color1),
+                    N = 1,
+                };
+                bounds[i] = offset1;
+                encode[i * 2] = 0.0f;
+                encode[i * 2 + 1] = 1.0f;
+            }
+        }
+        return new StitchingFunction
+        {
+            Domain = [0.0f, bounds[^1]],
+            Functions = exponentials,
+            Bounds = bounds,
+            Encode = encode,
+        };
+    }
 
     public double DrawText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
     {
