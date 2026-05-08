@@ -140,7 +140,12 @@ public class Contents : PdfObject
                         var shading = new AxialShading
                         {
                             Name = $"sh{linear.GetHashCode()}",
-                            Coords = (new PointValue(linear.XY1.X), new PointValue(linear.XY1.Y), new PointValue(linear.XY2.X), new PointValue(linear.XY2.Y)),
+                            Coords = (
+                                    new PointValue(linear.XY1.X),
+                                    new PointValue(linear.XY1.Y),
+                                    new PointValue(linear.XY2.X),
+                                    new PointValue(linear.XY2.Y)
+                                ),
                             Function = StopColorsToFunction(linear.StopColors),
                             Extend = (true, true),
                         };
@@ -156,7 +161,14 @@ public class Contents : PdfObject
                         var shading = new RadialShading
                         {
                             Name = $"sh{radial.GetHashCode()}",
-                            Coords = (new PointValue(radial.Fxy.X), new PointValue(radial.Fxy.Y), new PointValue(radial.Fr), new PointValue(radial.Cxy.X), new PointValue(radial.Cxy.Y), new PointValue(radial.R)),
+                            Coords = (
+                                    new PointValue(radial.Fxy.X),
+                                    new PointValue(radial.Fxy.Y),
+                                    new PointValue(radial.Fr),
+                                    new PointValue(radial.Cxy.X),
+                                    new PointValue(radial.Cxy.Y),
+                                    new PointValue(radial.R)
+                                ),
                             Function = StopColorsToFunction(radial.StopColors),
                             Extend = (true, true),
                         };
