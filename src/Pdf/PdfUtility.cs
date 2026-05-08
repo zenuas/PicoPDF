@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace PicoPDF.Pdf;
@@ -25,6 +26,8 @@ public static class PdfUtility
     [Obsolete("use SI")] public static double PointToInch(double v) => v / 72;
 
     public static readonly char[][] EscapeChars = [['('], [')'], ['\\']];
+
+    public static readonly Matrix3x2 FlipY = Matrix3x2.CreateScale(1, -1);
 
     public static string ToEscapeString(string s, Encoding encoding) => s.All(char.IsAscii) ? $"({s.ReplaceBeforeInsert(EscapeChars, ['\\']).ToStringByChars()})" : ToHexString(s, encoding);
 
