@@ -40,11 +40,14 @@ public static class PdfExport
         });
 
         var startxref = stream.Position;
-        stream.Write("xref\n");
-        stream.Write($"0 {xref.Count + 1}\n");
-        stream.Write("0000000000 65535 f\r\n");
-        xref.Each(x => stream.Write($"{x:0000000000} 00000 n\r\n"));
-        stream.Write("\n");
+        if (option.OutputCrossReferenceTable)
+        {
+            stream.Write("xref\n");
+            stream.Write($"0 {xref.Count + 1}\n");
+            stream.Write("0000000000 65535 f\r\n");
+            xref.Each(x => stream.Write($"{x:0000000000} 00000 n\r\n"));
+            stream.Write("\n");
+        }
 
         stream.Write("trailer\n");
         stream.Write("<<\n");
@@ -52,8 +55,11 @@ public static class PdfExport
         stream.Write($"  /Root {doc.Catalog.IndirectIndex} 0 R\n");
         if (doc.Info is { }) stream.Write($"  /Info {doc.Info.IndirectIndex} 0 R\n");
         stream.Write(">>\n");
-        stream.Write("startxref\n");
-        stream.Write($"{startxref}\n");
+        if (option.OutputCrossReferenceTable)
+        {
+            stream.Write("startxref\n");
+            stream.Write($"{startxref}\n");
+        }
         stream.Write("%%EOF\n");
     }
 
