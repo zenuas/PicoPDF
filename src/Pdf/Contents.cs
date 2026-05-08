@@ -148,7 +148,7 @@ public class Contents : PdfObject
                                 C1 = ColorToRGB(linear.StopColors[0].StopColor),
                                 N = 1,
                             };
-                            bounds[0] = 1.0f;
+                            bounds[0] = linear.StopColors[0].Offset;
                             encode[0] = 0.0f;
                             encode[1] = 1.0f;
                         }
@@ -156,7 +156,7 @@ public class Contents : PdfObject
                         {
                             for (var i = 0; i < linear.StopColors.Length - 1; i++)
                             {
-                                var (offset0, color0) = linear.StopColors[i];
+                                var (_, color0) = linear.StopColors[i];
                                 var (offset1, color1) = linear.StopColors[i + 1];
                                 exponentials[i] = new ExponentialInterpolationFunction
                                 {
@@ -165,14 +165,14 @@ public class Contents : PdfObject
                                     C1 = ColorToRGB(color1),
                                     N = 1,
                                 };
-                                bounds[i] = 1.0f;
+                                bounds[i] = offset1;
                                 encode[i * 2] = 0.0f;
                                 encode[i * 2 + 1] = 1.0f;
                             }
                         }
                         var stitching_function = new StitchingFunction
                         {
-                            Domain = [0.0f, 1.0f],
+                            Domain = [0.0f, bounds[^1]],
                             Functions = [.. exponentials],
                             Bounds = [.. bounds],
                             Encode = [.. encode],

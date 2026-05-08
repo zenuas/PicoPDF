@@ -23,6 +23,6 @@ public class AxialShading : PdfObject, IShading
         _ = Elements.TryAdd("Coords", $"[{PdfUtility.PointToString(Coords.X0.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(Coords.Y0.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(Coords.X1.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(Coords.Y1.ToPoint(), option.PointFormat)}]");
         _ = Elements.TryAdd("Domain", $"[{PdfUtility.PointToString(Domain.T0, option.PointFormat)} {PdfUtility.PointToString(Domain.T1, option.PointFormat)}]");
         _ = Elements.TryAdd("Function", new ElementIndirectObject { References = Function.Cast<PdfObject>() });
-        _ = Elements.TryAdd("Extend", $"[{Extend.B0} {Extend.B1}]");
+        _ = Elements.TryAdd("Extend", $"[{Extend.B0.ToString().ToLower()} {Extend.B1.ToString().ToLower()}]");
     }
 }
