@@ -795,25 +795,12 @@ public static class FontExtract
             });
     }
 
-    public static SimpleGlyph OutlineToSimpleGlyph(IGlyph glyph, IReadOnlyList<IGlyph> glyphs)
+    public static IGlyph OutlineToSimpleGlyph(IGlyph glyph, IReadOnlyList<IGlyph> glyphs)
     {
         var surfaces = glyph.ToOutline(glyphs);
         if (surfaces.Length == 0)
         {
-            return new()
-            {
-                NumberOfContours = 0,
-                XMin = 0,
-                YMin = 0,
-                XMax = 0,
-                YMax = 0,
-                EndPointsOfContours = [],
-                InstructionLength = 0,
-                Instructions = [],
-                Flags = [],
-                XCoordinates = [],
-                YCoordinates = [],
-            };
+            return new NotdefGlyph();
         }
         var end_points_of_contours = new List<ushort>();
         var flags = new List<SimpleGlyphFlags>();
@@ -855,7 +842,7 @@ public static class FontExtract
         }
 
         var (width, left, ymax, ymin) = Utility.GetSurfaceSize([.. surfaces]);
-        return new()
+        return new SimpleGlyph()
         {
             NumberOfContours = (short)end_points_of_contours.Count,
             XMin = (short)left,
