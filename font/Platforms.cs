@@ -2,7 +2,7 @@
 
 namespace OpenType;
 
-public enum Platforms
+public enum Platforms : ushort
 {
     Unicode = 0,
 

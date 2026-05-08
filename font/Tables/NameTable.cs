@@ -72,10 +72,10 @@ public class NameTable : IExportable
             var offset = strings.Position;
             strings.Write(x.NameRecord.GetEncoding().GetBytes(x.Name));
 
-            stream.WriteUShortByBigEndian(x.NameRecord.PlatformID);
-            stream.WriteUShortByBigEndian(x.NameRecord.EncodingID);
+            stream.WriteUShortByBigEndian((ushort)x.NameRecord.PlatformID);
+            stream.WriteUShortByBigEndian((ushort)x.NameRecord.EncodingID);
             stream.WriteUShortByBigEndian(x.NameRecord.LanguageID);
-            stream.WriteUShortByBigEndian(x.NameRecord.NameID);
+            stream.WriteUShortByBigEndian((ushort)x.NameRecord.NameID);
             stream.WriteUShortByBigEndian((ushort)(strings.Position - offset));
             stream.WriteOffset16((ushort)offset);
         }

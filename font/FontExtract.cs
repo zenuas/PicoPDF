@@ -184,10 +184,10 @@ public static class FontExtract
     public static NameTable ExtractNameTable(NameTable name, FontExtractOption opt)
     {
         var names = name.NameRecords.Where(name_record => opt.OutputNames.Contains(x =>
-                (x.PlatformID is null || ((ushort)x.PlatformID == name_record.NameRecord.PlatformID)) &&
-                (x.EncodingID is null || ((ushort)x.EncodingID == name_record.NameRecord.EncodingID)) &&
+                (x.PlatformID is null || (x.PlatformID == name_record.NameRecord.PlatformID)) &&
+                (x.EncodingID is null || (x.EncodingID == name_record.NameRecord.EncodingID)) &&
                 (x.LanguageID is null || (x.LanguageID == name_record.NameRecord.LanguageID)) &&
-                (x.NameID is null || ((ushort)x.NameID == name_record.NameRecord.NameID))
+                (x.NameID is null || (x.NameID == name_record.NameRecord.NameID))
             )).ToArray();
 
         return new() { Format = 0, Count = (ushort)names.Length, StringOffset = 0, NameRecords = names };

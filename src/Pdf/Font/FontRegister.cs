@@ -86,7 +86,7 @@ public class FontRegister : IFontRegister
         var r = new PropertyGetSet<IOpenTypeHeader>() { Value = font };
         Fonts.Add(name, r);
         font.Name.NameRecords
-            .Where(x => x.NameRecord.NameID == 4)
+            .Where(x => x.NameRecord.NameID == NameIDs.FullFontName)
             .Each(x => Fonts.TryAdd(x.Name, r));
         return true;
     }

@@ -4,7 +4,7 @@ namespace OpenType;
 
 #pragma warning disable CA1069 // Enums values should not be duplicated
 
-public enum Encodings
+public enum Encodings : ushort
 {
     [Obsolete("deprecated")]
     Unicode1_0 = 0,

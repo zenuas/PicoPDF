@@ -49,11 +49,11 @@ public static class FontLoader
         string namev(NameIDs nameid)
         {
             var names = opt.PlatformIDOrder
-                .Select(x => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == (ushort)x && y.NameRecord.NameID == (ushort)nameid)?.Name)
+                .Select(platform => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == platform && y.NameRecord.NameID == nameid)?.Name)
                 .Where(x => x is { });
 
             if (names.Any()) return names.First()!;
-            return name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == (ushort)nameid)?.Name ?? throw new();
+            return name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == nameid)?.Name ?? throw new();
         }
 
         return new()

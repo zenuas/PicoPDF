@@ -25,7 +25,7 @@ public class FontHtml : SvgOutput
 
     public void OutputHtml(IOpenTypeFont font, IEnumerable<uint> gids)
     {
-        var name = font.Name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == 1)?.Name ?? font.PostScriptName;
+        var name = font.Name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == NameIDs.FontFamilyName)?.Name ?? font.PostScriptName;
 
         var gid_to_char = new Dictionary<uint, int>();
         for (var i = 0; i <= 0xFF_FFFF; i++)

@@ -1,6 +1,6 @@
 ﻿namespace OpenType;
 
-public enum NameIDs
+public enum NameIDs : ushort
 {
     CopyrightNotice = 0,
     FontFamilyName = 1,

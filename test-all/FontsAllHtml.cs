@@ -1,5 +1,6 @@
 ﻿using Mina.Command;
 using Mina.Extension;
+using OpenType;
 using System;
 
 namespace PicoPDF.TestAll;
@@ -53,7 +54,7 @@ public class FontsAllHtml : SvgOutput
             if (gid == 0) continue;
 
             var s = char.ConvertFromUtf32(Char);
-            var namev = font.Name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == 1)?.Name ?? font.PostScriptName;
+            var namev = font.Name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == NameIDs.FontFamilyName)?.Name ?? font.PostScriptName;
             Output.WriteLine($"""
     <tr>
         <td>{namev}</td>
