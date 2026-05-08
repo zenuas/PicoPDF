@@ -59,7 +59,7 @@ public class Document
         return page;
     }
 
-    public CIDFont AddFont(string name, string basefont, CMap cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public CIDFont AddFont(string name, string basefont, CMap cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Nonsymbolic)
     {
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary()
@@ -137,7 +137,7 @@ public class Document
         return type0;
     }
 
-    public Type1Font AddFont(string name, string basefont, Type1Encoding encoding, FontDescriptorFlags flags = FontDescriptorFlags.Serif)
+    public Type1Font AddFont(string name, string basefont, Type1Encoding encoding, FontDescriptorFlags flags = FontDescriptorFlags.Nonsymbolic)
     {
         var fontdict = new FontDescriptor()
         {
