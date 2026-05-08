@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 
 namespace PicoPDF.Pdf;
 
@@ -137,6 +138,7 @@ public class Contents : PdfObject
 
                 case LinearGradientLayer linear when linear.StopColors.Length > 0:
                     {
+                        var move = opes[0].Cast<DrawMovePath>();
                         var shading = new AxialShading
                         {
                             Name = $"sh{linear.GetHashCode()}",
@@ -152,12 +154,21 @@ public class Contents : PdfObject
                         opes.Add(new DrawAnyOperator { Operator = "h" });
                         opes.Add(new DrawAnyOperator { Operator = "W*" });
                         opes.Add(new DrawAnyOperator { Operator = "n" });
+                        opes.Add(new DrawTransformationMatrix
+                        {
+                            Transform =
+                                linear.GradientTransform *
+                                Matrix3x2.CreateScale((float)r) *
+                                PdfUtility.FlipY *
+                                Matrix3x2.CreateTranslation((float)move.Start.X.ToPoint(), (float)move.Start.Y.ToPoint()),
+                        });
                         opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
                         break;
                     }
 
                 case RadialGradientLayer radial when radial.StopColors.Length > 0:
                     {
+                        var move = opes[0].Cast<DrawMovePath>();
                         var shading = new RadialShading
                         {
                             Name = $"sh{radial.GetHashCode()}",
@@ -175,6 +186,14 @@ public class Contents : PdfObject
                         opes.Add(new DrawAnyOperator { Operator = "h" });
                         opes.Add(new DrawAnyOperator { Operator = "W*" });
                         opes.Add(new DrawAnyOperator { Operator = "n" });
+                        opes.Add(new DrawTransformationMatrix
+                        {
+                            Transform =
+                                radial.GradientTransform *
+                                Matrix3x2.CreateScale((float)r) *
+                                PdfUtility.FlipY *
+                                Matrix3x2.CreateTranslation((float)move.Start.X.ToPoint(), (float)move.Start.Y.ToPoint()),
+                        });
                         opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
                         break;
                     }
