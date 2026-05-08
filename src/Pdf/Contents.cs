@@ -141,7 +141,7 @@ public class Contents : PdfObject
                         var move = opes[0].Cast<DrawMovePath>();
                         var shading = new AxialShading
                         {
-                            Name = $"sh{linear.GetHashCode()}",
+                            Name = $"sh{document.PdfObjects.Count}",
                             Coords = (
                                     new PointValue(linear.XY1.X),
                                     new PointValue(linear.XY1.Y),
@@ -171,7 +171,7 @@ public class Contents : PdfObject
                         var move = opes[0].Cast<DrawMovePath>();
                         var shading = new RadialShading
                         {
-                            Name = $"sh{radial.GetHashCode()}",
+                            Name = $"sh{document.PdfObjects.Count}",
                             Coords = (
                                     new PointValue(radial.Fxy.X),
                                     new PointValue(radial.Fxy.Y),
