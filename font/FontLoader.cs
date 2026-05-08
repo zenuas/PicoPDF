@@ -46,10 +46,15 @@ public static class FontLoader
             .ToDictionary(x => x.TableTag, x => x);
 
         var name = ReadTableRecord(tables, "name", stream, NameTable.ReadFrom).Try();
-        string namev(NameIDs nameid) => opt.PlatformIDOrder
-            .Select(x => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == (ushort)x && y.NameRecord.NameID == (ushort)nameid)?.Name)
-            .Where(x => x is { })
-            .FirstOrDefault() ?? "";
+        string namev(NameIDs nameid)
+        {
+            var names = opt.PlatformIDOrder
+                .Select(x => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == (ushort)x && y.NameRecord.NameID == (ushort)nameid)?.Name)
+                .Where(x => x is { });
+
+            if (names.Any()) return names.First()!;
+            return name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.NameID == (ushort)nameid)?.Name ?? throw new();
+        }
 
         return new()
         {
