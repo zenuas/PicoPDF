@@ -38,7 +38,7 @@ public class PdfCreate : FontRegisterCommand
     public bool OutputCrossReferenceTable { get; init; } = true;
 
     [CommandOption("point-format")]
-    public string PointFormat { get; init; } = "F2";
+    public string PointFormat { get; init; } = "F%";
 
     public override void Run(string[] args)
     {

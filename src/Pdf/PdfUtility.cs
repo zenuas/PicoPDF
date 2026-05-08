@@ -85,7 +85,8 @@ public static class PdfUtility
     public static string PointToString((IPoint X, IPoint Y) point, int height, string format) => $"{PointToString(point.X.ToPoint(), format)} {PointToString(height - point.Y.ToPoint(), format)}";
 
     public static string PointToString(double point, string format) =>
-        point <= long.MaxValue &&
-        point >= long.MinValue &&
-        point % 1d == 0d ? ((long)point).ToString() : point.ToString(format, CultureInfo.InvariantCulture);
+        format == "F%" ? point.ToString("F7", CultureInfo.InvariantCulture).TrimEnd('0').TrimEnd('.') :
+            point <= long.MaxValue &&
+            point >= long.MinValue &&
+            point % 1d == 0d ? ((long)point).ToString() : point.ToString(format, CultureInfo.InvariantCulture);
 }
