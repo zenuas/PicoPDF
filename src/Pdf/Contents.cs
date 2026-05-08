@@ -12,6 +12,7 @@ using PicoPDF.Pdf.Shading;
 using PicoPDF.Pdf.XObject;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace PicoPDF.Pdf;
@@ -184,43 +185,38 @@ public class Contents : PdfObject
 
     public static IFunction StopColorsToFunction((float Offset, System.Drawing.Color StopColor)[] stops)
     {
+        Debug.Assert(stops.Length > 0);
         var exponentials = new ExponentialInterpolationFunction[stops.Length];
-        var bounds = new float[stops.Length];
+        var bounds = new float[stops.Length - 1];
         var encode = new float[stops.Length * 2];
-        if (stops.Length == 1)
+
+        exponentials[0] = new ExponentialInterpolationFunction
         {
-            exponentials[0] = new ExponentialInterpolationFunction
+            Domain = [0.0f, 1.0f],
+            C0 = ColorToRGB(stops[0].StopColor),
+            C1 = ColorToRGB(stops[0].StopColor),
+            N = 1,
+        };
+        encode[0] = 0.0f;
+        encode[1] = 1.0f;
+        for (var i = 0; i < stops.Length - 1; i++)
+        {
+            var (offset0, color0) = stops[i];
+            var (_, color1) = stops[i + 1];
+            exponentials[i + 1] = new ExponentialInterpolationFunction
             {
                 Domain = [0.0f, 1.0f],
-                C0 = ColorToRGB(stops[0].StopColor),
-                C1 = ColorToRGB(stops[0].StopColor),
+                C0 = ColorToRGB(color0),
+                C1 = ColorToRGB(color1),
                 N = 1,
             };
-            bounds[0] = stops[0].Offset;
-            encode[0] = 0.0f;
-            encode[1] = 1.0f;
-        }
-        else
-        {
-            for (var i = 0; i < stops.Length - 1; i++)
-            {
-                var (_, color0) = stops[i];
-                var (offset1, color1) = stops[i + 1];
-                exponentials[i] = new ExponentialInterpolationFunction
-                {
-                    Domain = [0.0f, 1.0f],
-                    C0 = ColorToRGB(color0),
-                    C1 = ColorToRGB(color1),
-                    N = 1,
-                };
-                bounds[i] = offset1;
-                encode[i * 2] = 0.0f;
-                encode[i * 2 + 1] = 1.0f;
-            }
+            bounds[i] = offset0 / 100.0f;
+            encode[i * 2 + 2] = 0.0f;
+            encode[i * 2 + 3] = 1.0f;
         }
         return new StitchingFunction
         {
-            Domain = [0.0f, bounds[^1]],
+            Domain = [0.0f, stops[^1].Offset / 100.0f],
             Functions = exponentials,
             Bounds = bounds,
             Encode = encode,
