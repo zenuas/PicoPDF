@@ -5,6 +5,7 @@ using Mina.Text;
 using OpenType;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf.Elements;
+using PicoPDF.Pdf.ExtGState;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.Shading;
 using PicoPDF.Pdf.XObject;
@@ -185,6 +186,13 @@ public class Document
         PdfObjects.Add(shading.Cast<PdfObject>());
 
         return shading;
+    }
+
+    public IGraphicsStateParameter AddGraphicsStateParameter(IGraphicsStateParameter gstate)
+    {
+        PdfObjects.Add(gstate.Cast<PdfObject>());
+
+        return gstate;
     }
 
     public PdfObject AddInfo(
