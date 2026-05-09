@@ -1,8 +1,8 @@
 ﻿using PicoPDF.Pdf.Drawing;
 
-namespace PicoPDF.Pdf.XObject;
+namespace PicoPDF.Pdf.XObject.Form;
 
-public class FormXObject : PdfObject
+public class FormXObject : PdfObject, IXObject
 {
     public required (IPoint Left, IPoint Bottom, IPoint Right, IPoint Top) BBox { get; init; }
 

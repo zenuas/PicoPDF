@@ -1,6 +1,6 @@
-﻿namespace PicoPDF.Pdf.XObject;
+﻿namespace PicoPDF.Pdf.XObject.Image;
 
-public interface IImageXObject
+public interface IImageXObject : IXObject
 {
     public string Name { get; init; }
     public int Width { get; init; }

@@ -2,7 +2,7 @@
 using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.Shading;
-using PicoPDF.Pdf.XObject;
+using PicoPDF.Pdf.XObject.Image;
 using System.Linq;
 
 namespace PicoPDF.Pdf;

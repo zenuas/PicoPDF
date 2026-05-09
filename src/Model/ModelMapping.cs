@@ -4,7 +4,7 @@ using PicoPDF.Loader.Sections;
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Font;
-using PicoPDF.Pdf.XObject;
+using PicoPDF.Pdf.XObject.Image;
 using System;
 using System.Linq;
 

@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Pdf.XObject;
+﻿namespace PicoPDF.Pdf.XObject.Image;
 
 public class ImageXObject : PdfObject, IImageXObject
 {

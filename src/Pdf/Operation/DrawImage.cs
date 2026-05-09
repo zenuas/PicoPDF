@@ -1,6 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
-using PicoPDF.Pdf.XObject;
+using PicoPDF.Pdf.XObject.Image;
 using System.IO;
 
 namespace PicoPDF.Pdf.Operation;

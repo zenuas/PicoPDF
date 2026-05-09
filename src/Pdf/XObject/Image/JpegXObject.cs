@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace PicoPDF.Pdf.XObject;
+namespace PicoPDF.Pdf.XObject.Image;
 
 public class JpegXObject : PdfObject, IImageXObject
 {
