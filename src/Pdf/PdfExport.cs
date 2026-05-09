@@ -21,7 +21,7 @@ public static class PdfExport
                 (font.FontEmbed == FontEmbed.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
         }
         var xref = new List<long>();
-        GetAllReferences(doc, option).Each((x, i) =>
+        GetAllReferences(doc, option).Where(x => x is not Type0Font font || font.Chars.Count > 0).Each((x, i) =>
         {
             xref.Add(stream.Position);
             stream.Write($"{x.IndirectIndex} 0 obj\n");
