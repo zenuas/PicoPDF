@@ -198,10 +198,15 @@ public class Contents : PdfObject
                         break;
                     }
 
-                default:
+                case LinearGradientLayer:
+                case RadialGradientLayer:
+                case null:
                     if (color is { }) opes.Add(new DrawAnyOperator { Operator = color.CreateColor(false) });
                     opes.Add(new DrawAnyOperator { Operator = "f*" });
                     break;
+
+                default:
+                    throw new();
             }
             yield return new()
             {
