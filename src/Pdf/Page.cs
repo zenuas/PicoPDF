@@ -1,8 +1,10 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Font;
+using PicoPDF.Pdf.Operation;
 using PicoPDF.Pdf.Shading;
 using PicoPDF.Pdf.XObject.Image;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PicoPDF.Pdf;
@@ -31,24 +33,45 @@ public class Page : PdfObject
         _ = Elements.TryAdd("Resources", dic);
         dic.Dictionary.Add("ProcSet", new string[] { "/PDF", "/Text", "/ImageB", "/ImageC", "/ImageI" });
 
-        var fonts = Document.PdfObjects.OfType<IFont>().ToArray();
-        if (fonts.Length > 0)
+        var page_fonts = new HashSet<IFont>();
+        var page_images = new HashSet<IImageXObject>();
+        var page_shadings = new HashSet<IShading>();
+        foreach (var ope in Contents.EnumOperations(Contents.Operations))
+        {
+            switch (ope)
+            {
+                case DrawString x:
+                    _ = page_fonts.Add(x.Font);
+                    break;
+
+                case DrawImage x:
+                    _ = page_images.Add(x.Image);
+                    break;
+
+                case DrawPathShading x:
+                    _ = page_shadings.Add(x.Shading);
+                    break;
+            }
+        }
+
+        var fonts = Document.PdfObjects.OfType<IFont>().Where(page_fonts.Contains);
+        if (fonts.Any())
         {
             var fontdic = new ElementDictionary();
             fonts.Each(x => fontdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x }));
             dic.Dictionary.Add("Font", fontdic);
         }
 
-        var xobjs = Document.PdfObjects.OfType<IImageXObject>().ToArray();
-        if (xobjs.Length > 0)
+        var xobjs = Document.PdfObjects.OfType<IImageXObject>().Where(page_images.Contains);
+        if (xobjs.Any())
         {
             var xobjdic = new ElementDictionary();
             xobjs.Each(x => xobjdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
             dic.Dictionary.Add("XObject", xobjdic);
         }
 
-        var shs = Document.PdfObjects.OfType<IShading>().ToArray();
-        if (shs.Length > 0)
+        var shs = Document.PdfObjects.OfType<IShading>().Where(page_shadings.Contains);
+        if (shs.Any())
         {
             var shdic = new ElementDictionary();
             shs.Each(x => shdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));

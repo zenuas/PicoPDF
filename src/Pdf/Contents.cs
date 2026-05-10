@@ -481,4 +481,22 @@ public class Contents : PdfObject
         Operations.Each(x => x.OperationWrite(Page.Width, Page.Height, writer, option));
         writer.Flush();
     }
+
+    public static IEnumerable<IOperation> EnumOperations(IEnumerable<IOperation> opes)
+    {
+        foreach (var op in opes)
+        {
+            yield return op;
+            switch (op)
+            {
+                case DrawClipping clip:
+                    foreach (var x in EnumOperations(clip.Operations)) yield return x;
+                    break;
+
+                case DrawPathOperations path:
+                    foreach (var x in EnumOperations(path.Operations)) yield return x;
+                    break;
+            }
+        }
+    }
 }
