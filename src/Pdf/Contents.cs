@@ -252,7 +252,7 @@ public class Contents : PdfObject
         }
         return new StitchingFunction
         {
-            Domain = [0.0f, stops[^1].Offset / 100.0f],
+            Domain = [0.0f, 1.0f],
             Functions = exponentials,
             Bounds = bounds,
             Encode = encode,
