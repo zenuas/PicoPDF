@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Elements;
+using PicoPDF.Pdf.ExtGState;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.Operation;
 using PicoPDF.Pdf.Shading;
@@ -36,6 +37,7 @@ public class Page : PdfObject
         var page_fonts = new HashSet<IFont>();
         var page_images = new HashSet<IImageXObject>();
         var page_shadings = new HashSet<IShading>();
+        var page_extgstates = new HashSet<IGraphicsStateParameter>();
         foreach (var ope in Contents.EnumOperations(Contents.Operations))
         {
             switch (ope)
@@ -50,6 +52,10 @@ public class Page : PdfObject
 
                 case DrawPathShading x:
                     _ = page_shadings.Add(x.Shading);
+                    break;
+
+                case DrawPathExtGState x:
+                    _ = page_extgstates.Add(x.ExtGState);
                     break;
             }
         }
@@ -76,6 +82,14 @@ public class Page : PdfObject
             var shdic = new ElementDictionary();
             shs.Each(x => shdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
             dic.Dictionary.Add("Shading", shdic);
+        }
+
+        var gss = Document.PdfObjects.OfType<IGraphicsStateParameter>().Where(page_extgstates.Contains);
+        if (gss.Any())
+        {
+            var gsdic = new ElementDictionary();
+            gss.Each(x => gsdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
+            dic.Dictionary.Add("ExtGState", gsdic);
         }
     }
 }

@@ -5,10 +5,13 @@ using PicoPDF.Loader.Elements;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf.Color;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.ExtGState;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.Function;
 using PicoPDF.Pdf.Operation;
 using PicoPDF.Pdf.Shading;
+using PicoPDF.Pdf.SoftMasks;
+using PicoPDF.Pdf.XObject.Form;
 using PicoPDF.Pdf.XObject.Image;
 using System;
 using System.Collections.Generic;
@@ -139,6 +142,18 @@ public class Contents : PdfObject
                 case LinearGradientLayer linear when linear.StopColors.Length > 0:
                     {
                         var move = opes[0].Cast<DrawMovePath>();
+                        var g = new FormXObject
+                        {
+                            BBox = (new PointValue(linear.XY1.X), new PointValue(linear.XY2.Y), new PointValue(linear.XY2.X), new PointValue(linear.XY1.Y)),
+                        };
+                        var gstate = new GraphicsStateParameter
+                        {
+                            Name = $"gs{document.PdfObjects.Count}",
+                            SMask = new SoftMask { S = MaskMethods.Luminosity, G = g },
+                            Ca = 1.0f,
+                            CA = 1.0f,
+                            AIS = false,
+                        };
                         var shading = new AxialShading
                         {
                             Name = $"sh{document.PdfObjects.Count}",
@@ -162,6 +177,7 @@ public class Contents : PdfObject
                                 PdfUtility.FlipY *
                                 Matrix3x2.CreateTranslation((float)move.Start.X.ToPoint(), (float)move.Start.Y.ToPoint()),
                         });
+                        //opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(gstate) });
                         opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
                         break;
                     }
@@ -169,6 +185,18 @@ public class Contents : PdfObject
                 case RadialGradientLayer radial when radial.StopColors.Length > 0:
                     {
                         var move = opes[0].Cast<DrawMovePath>();
+                        var g = new FormXObject
+                        {
+                            BBox = (new PointValue(1), new PointValue(1), new PointValue(1000), new PointValue(1000)),
+                        };
+                        var gstate = new GraphicsStateParameter
+                        {
+                            Name = $"gs{document.PdfObjects.Count}",
+                            SMask = new SoftMask { S = MaskMethods.Luminosity, G = g },
+                            Ca = 1.0f,
+                            CA = 1.0f,
+                            AIS = false,
+                        };
                         var shading = new RadialShading
                         {
                             Name = $"sh{document.PdfObjects.Count}",
@@ -194,6 +222,7 @@ public class Contents : PdfObject
                                 PdfUtility.FlipY *
                                 Matrix3x2.CreateTranslation((float)move.Start.X.ToPoint(), (float)move.Start.Y.ToPoint()),
                         });
+                        //opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(gstate) });
                         opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
                         break;
                     }
