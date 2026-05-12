@@ -118,7 +118,7 @@ public static class FontLoader
             HorizontalMetrics = hmtx,
             CMap = cmap,
             CharToGID = current_cmap.CreateCharToGID(),
-            GIDToOutline = (gid, iscolor) => (colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyf[(int)gid].ToOutline(glyf),
+            GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyf[(int)gid].ToOutline(glyf),
             Glyphs = glyf,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
