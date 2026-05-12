@@ -141,7 +141,6 @@ public class Contents : PdfObject
 
                 case LinearGradientLayer linear when linear.StopColors.Length > 0:
                     {
-                        var move = opes[0].Cast<DrawMovePath>();
                         var g = new FormXObject
                         {
                             BBox = (new PointValue(linear.XY1.X), new PointValue(linear.XY2.Y), new PointValue(linear.XY2.X), new PointValue(linear.XY1.Y)),
@@ -175,7 +174,7 @@ public class Contents : PdfObject
                                 linear.GradientTransform *
                                 Matrix3x2.CreateScale((float)r) *
                                 PdfUtility.FlipY *
-                                Matrix3x2.CreateTranslation((float)move.Start.X.ToPoint(), (float)move.Start.Y.ToPoint()),
+                                Matrix3x2.CreateTranslation((float)left, (float)basey),
                         });
                         //opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(gstate) });
                         opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
@@ -184,7 +183,6 @@ public class Contents : PdfObject
 
                 case RadialGradientLayer radial when radial.StopColors.Length > 0:
                     {
-                        var move = opes[0].Cast<DrawMovePath>();
                         var g = new FormXObject
                         {
                             BBox = (new PointValue(1), new PointValue(1), new PointValue(1000), new PointValue(1000)),
@@ -220,7 +218,7 @@ public class Contents : PdfObject
                                 radial.GradientTransform *
                                 Matrix3x2.CreateScale((float)r) *
                                 PdfUtility.FlipY *
-                                Matrix3x2.CreateTranslation((float)move.Start.X.ToPoint(), (float)move.Start.Y.ToPoint()),
+                                Matrix3x2.CreateTranslation((float)left, (float)basey),
                         });
                         //opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(gstate) });
                         opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
