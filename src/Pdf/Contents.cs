@@ -141,10 +141,27 @@ public class Contents : PdfObject
 
                 case LinearGradientLayer linear when linear.StopColors.Length > 0:
                     {
+                        var shadinga = new AxialShading
+                        {
+                            Name = $"sha{document.PdfObjects.Count}",
+                            ColorSpace = "/DeviceGray",
+                            Coords = (
+                                    new PointValue(linear.XY1.X),
+                                    new PointValue(linear.XY1.Y),
+                                    new PointValue(linear.XY2.X),
+                                    new PointValue(linear.XY2.Y)
+                                ),
+                            Function = StopColorsToFunction(linear.StopColors, ColorToAlpha),
+                            Extend = (true, true),
+                        };
                         var g = new FormXObject
                         {
-                            BBox = (new PointValue(linear.XY1.X), new PointValue(linear.XY2.Y), new PointValue(linear.XY2.X), new PointValue(linear.XY1.Y)),
+                            BBox = (new PointValue(1), new PointValue(1), new PointValue(1000), new PointValue(1000)),
+                            ResourcesShading = [shadinga],
                         };
+                        var gstream = g.GetWriteStream(false);
+                        (new DrawPathShading { Shading = shadinga }).OperationWrite(0, 0, gstream, new());
+                        gstream.Flush();
                         var gstate = new GraphicsStateParameter
                         {
                             Name = $"gs{document.PdfObjects.Count}",
@@ -162,7 +179,7 @@ public class Contents : PdfObject
                                     new PointValue(linear.XY2.X),
                                     new PointValue(linear.XY2.Y)
                                 ),
-                            Function = StopColorsToFunction(linear.StopColors),
+                            Function = StopColorsToFunction(linear.StopColors, ColorToRGB),
                             Extend = (true, true),
                         };
                         opes.Add(new DrawAnyOperator { Operator = "h" });
@@ -176,17 +193,36 @@ public class Contents : PdfObject
                                 PdfUtility.FlipY *
                                 Matrix3x2.CreateTranslation((float)left, (float)basey),
                         });
-                        //opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(gstate) });
+                        opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(gstate) });
                         opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
                         break;
                     }
 
                 case RadialGradientLayer radial when radial.StopColors.Length > 0:
                     {
+                        var shadinga = new RadialShading
+                        {
+                            Name = $"sha{document.PdfObjects.Count}",
+                            ColorSpace = "/DeviceGray",
+                            Coords = (
+                                    new PointValue(radial.Fxy.X),
+                                    new PointValue(radial.Fxy.Y),
+                                    new PointValue(radial.Fr),
+                                    new PointValue(radial.Cxy.X),
+                                    new PointValue(radial.Cxy.Y),
+                                    new PointValue(radial.R)
+                                ),
+                            Function = StopColorsToFunction(radial.StopColors, ColorToAlpha),
+                            Extend = (true, true),
+                        };
                         var g = new FormXObject
                         {
                             BBox = (new PointValue(1), new PointValue(1), new PointValue(1000), new PointValue(1000)),
+                            ResourcesShading = [shadinga],
                         };
+                        var gstream = g.GetWriteStream(false);
+                        (new DrawPathShading { Shading = shadinga }).OperationWrite(0, 0, gstream, new());
+                        gstream.Flush();
                         var gstate = new GraphicsStateParameter
                         {
                             Name = $"gs{document.PdfObjects.Count}",
@@ -206,7 +242,7 @@ public class Contents : PdfObject
                                     new PointValue(radial.Cxy.Y),
                                     new PointValue(radial.R)
                                 ),
-                            Function = StopColorsToFunction(radial.StopColors),
+                            Function = StopColorsToFunction(radial.StopColors, ColorToRGB),
                             Extend = (true, true),
                         };
                         opes.Add(new DrawAnyOperator { Operator = "h" });
@@ -220,7 +256,7 @@ public class Contents : PdfObject
                                 PdfUtility.FlipY *
                                 Matrix3x2.CreateTranslation((float)left, (float)basey),
                         });
-                        //opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(gstate) });
+                        opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(gstate) });
                         opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
                         break;
                     }
@@ -246,7 +282,9 @@ public class Contents : PdfObject
 
     public static float[] ColorToRGB(System.Drawing.Color color) => [color.R / 255f, color.G / 255f, color.B / 255f];
 
-    public static IFunction StopColorsToFunction((float Offset, System.Drawing.Color StopColor)[] stops)
+    public static float[] ColorToAlpha(System.Drawing.Color color) => [color.A / 255f];
+
+    public static IFunction StopColorsToFunction((float Offset, System.Drawing.Color StopColor)[] stops, Func<System.Drawing.Color, float[]> f)
     {
         Debug.Assert(stops.Length > 0);
         var exponentials = new ExponentialInterpolationFunction[stops.Length];
@@ -256,8 +294,8 @@ public class Contents : PdfObject
         exponentials[0] = new ExponentialInterpolationFunction
         {
             Domain = [0.0f, 1.0f],
-            C0 = ColorToRGB(stops[0].StopColor),
-            C1 = ColorToRGB(stops[0].StopColor),
+            C0 = f(stops[0].StopColor),
+            C1 = f(stops[0].StopColor),
             N = 1,
         };
         encode[0] = 0.0f;
@@ -269,8 +307,8 @@ public class Contents : PdfObject
             exponentials[i + 1] = new ExponentialInterpolationFunction
             {
                 Domain = [0.0f, 1.0f],
-                C0 = ColorToRGB(color0),
-                C1 = ColorToRGB(color1),
+                C0 = f(color0),
+                C1 = f(color1),
                 N = 1,
             };
             bounds[i] = offset0 / 100.0f;
