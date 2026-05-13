@@ -156,7 +156,7 @@ public class Contents : PdfObject
                         };
                         var g = new FormXObject
                         {
-                            BBox = (new PointValue(1), new PointValue(1), new PointValue(1000), new PointValue(1000)),
+                            BBox = (new PointValue(-10000), new PointValue(-10000), new PointValue(10000), new PointValue(10000)),
                             ResourcesShading = [shadinga],
                         };
                         var gstream = g.GetWriteStream(false);
@@ -217,7 +217,7 @@ public class Contents : PdfObject
                         };
                         var g = new FormXObject
                         {
-                            BBox = (new PointValue(1), new PointValue(1), new PointValue(1000), new PointValue(1000)),
+                            BBox = (new PointValue(-10000), new PointValue(-10000), new PointValue(10000), new PointValue(10000)),
                             ResourcesShading = [shadinga],
                         };
                         var gstream = g.GetWriteStream(false);
