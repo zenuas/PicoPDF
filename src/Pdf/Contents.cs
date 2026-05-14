@@ -12,6 +12,7 @@ using PicoPDF.Pdf.Operation;
 using PicoPDF.Pdf.Shading;
 using PicoPDF.Pdf.SoftMasks;
 using PicoPDF.Pdf.XObject.Form;
+using PicoPDF.Pdf.XObject.Group;
 using PicoPDF.Pdf.XObject.Image;
 using System;
 using System.Collections.Generic;
@@ -158,6 +159,12 @@ public class Contents : PdfObject
                         {
                             BBox = (new PointValue(-10000), new PointValue(-10000), new PointValue(10000), new PointValue(10000)),
                             ResourcesShading = [shadinga],
+                            Group = new GroupXObject
+                            {
+                                S = "/Transparency",
+                                I = true,
+                                CS = "/DeviceGray",
+                            },
                         };
                         var gstream = g.GetWriteStream(false);
                         (new DrawPathShading { Shading = shadinga }).OperationWrite(0, 0, gstream, new());
@@ -219,6 +226,12 @@ public class Contents : PdfObject
                         {
                             BBox = (new PointValue(-10000), new PointValue(-10000), new PointValue(10000), new PointValue(10000)),
                             ResourcesShading = [shadinga],
+                            Group = new GroupXObject
+                            {
+                                S = "/Transparency",
+                                I = true,
+                                CS = "/DeviceGray",
+                            },
                         };
                         var gstream = g.GetWriteStream(false);
                         (new DrawPathShading { Shading = shadinga }).OperationWrite(0, 0, gstream, new());
