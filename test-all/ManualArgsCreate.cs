@@ -1,5 +1,4 @@
 ﻿using Mina.Command;
-using Mina.Extension;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf;
 
@@ -25,10 +24,12 @@ public class ManualArgsCreate : FontRegisterCommand
 
         var doc = new Document() { FontRegister = fontreg };
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientation.Horizontal);
-        var page = doc.NewPage(width, height);
-
         var font = doc.AddFont("fo", fontreg.LoadComplete(Font), FontEmbed);
-        _ = page.Contents.DrawText(args.Join(""), 100, 100, Point, [font]);
+        foreach (var arg in args)
+        {
+            var page = doc.NewPage(width, height);
+            _ = page.Contents.DrawText(arg, 100, 100, Point, [font]);
+        }
 
         doc.Save(Output, new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });
     }
