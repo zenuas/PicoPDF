@@ -442,36 +442,36 @@ public class Contents : PdfObject
     {
         var bottom = top + height;
         var right = left + width;
-        linewidth ??= height / 20;
+        var line = linewidth ?? height / 20;
 
         if (style.HasFlag(TextStyle.Border))
         {
-            yield return CreateDrawRectangleOperation(left, top, width, height, color, linewidth);
+            yield return CreateDrawRectangleOperation(left, top, width, height, color, line);
         }
         if ((style & (TextStyle.BorderTop | TextStyle.BorderBottom)) == 0)
         {
-            if (style.HasFlag(TextStyle.BorderLeft)) yield return CreateDrawLinesOperation([(left, top), (left, bottom)], color, linewidth);
-            if (style.HasFlag(TextStyle.BorderRight)) yield return CreateDrawLinesOperation([(right, top), (right, bottom)], color, linewidth);
+            if (style.HasFlag(TextStyle.BorderLeft)) yield return CreateDrawLinesOperation([(left, top), (left, bottom)], color, line);
+            if (style.HasFlag(TextStyle.BorderRight)) yield return CreateDrawLinesOperation([(right, top), (right, bottom)], color, line);
         }
         else if ((style & (TextStyle.BorderLeft | TextStyle.BorderRight)) == 0)
         {
-            if (style.HasFlag(TextStyle.BorderTop)) yield return CreateDrawLinesOperation([(left, top), (right, top)], color, linewidth);
-            if (style.HasFlag(TextStyle.BorderBottom)) yield return CreateDrawLinesOperation([(left, bottom), (right, bottom)], color, linewidth);
+            if (style.HasFlag(TextStyle.BorderTop)) yield return CreateDrawLinesOperation([(left, top), (right, top)], color, line);
+            if (style.HasFlag(TextStyle.BorderBottom)) yield return CreateDrawLinesOperation([(left, bottom), (right, bottom)], color, line);
         }
         else
         {
             // draw one stroke
             switch (style & TextStyle.BorderStyleMask)
             {
-                case TextStyle.BorderTop | TextStyle.BorderRight: yield return CreateDrawLinesOperation([(left, top), (right, top), (right, bottom)], color, linewidth); break;
-                case TextStyle.BorderRight | TextStyle.BorderBottom: yield return CreateDrawLinesOperation([(right, top), (right, bottom), (left, bottom)], color, linewidth); break;
-                case TextStyle.BorderBottom | TextStyle.BorderLeft: yield return CreateDrawLinesOperation([(right, bottom), (left, bottom), (left, top)], color, linewidth); break;
-                case TextStyle.BorderLeft | TextStyle.BorderTop: yield return CreateDrawLinesOperation([(left, bottom), (left, top), (right, top)], color, linewidth); break;
+                case TextStyle.BorderTop | TextStyle.BorderRight: yield return CreateDrawLinesOperation([(left, top), (right, top), (right, bottom)], color, line); break;
+                case TextStyle.BorderRight | TextStyle.BorderBottom: yield return CreateDrawLinesOperation([(right, top), (right, bottom), (left, bottom)], color, line); break;
+                case TextStyle.BorderBottom | TextStyle.BorderLeft: yield return CreateDrawLinesOperation([(right, bottom), (left, bottom), (left, top)], color, line); break;
+                case TextStyle.BorderLeft | TextStyle.BorderTop: yield return CreateDrawLinesOperation([(left, bottom), (left, top), (right, top)], color, line); break;
 
-                case TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom: yield return CreateDrawLinesOperation([(left, top), (right, top), (right, bottom), (left, bottom)], color, linewidth); break;
-                case TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft: yield return CreateDrawLinesOperation([(right, top), (right, bottom), (left, bottom), (left, top)], color, linewidth); break;
-                case TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop: yield return CreateDrawLinesOperation([(right, bottom), (left, bottom), (left, top), (right, top)], color, linewidth); break;
-                case TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight: yield return CreateDrawLinesOperation([(left, bottom), (left, top), (right, top), (right, bottom)], color, linewidth); break;
+                case TextStyle.BorderTop | TextStyle.BorderRight | TextStyle.BorderBottom: yield return CreateDrawLinesOperation([(left, top), (right, top), (right, bottom), (left, bottom)], color, line); break;
+                case TextStyle.BorderRight | TextStyle.BorderBottom | TextStyle.BorderLeft: yield return CreateDrawLinesOperation([(right, top), (right, bottom), (left, bottom), (left, top)], color, line); break;
+                case TextStyle.BorderBottom | TextStyle.BorderLeft | TextStyle.BorderTop: yield return CreateDrawLinesOperation([(right, bottom), (left, bottom), (left, top), (right, top)], color, line); break;
+                case TextStyle.BorderLeft | TextStyle.BorderTop | TextStyle.BorderRight: yield return CreateDrawLinesOperation([(left, bottom), (left, top), (right, top), (right, bottom)], color, line); break;
             }
         }
     }
