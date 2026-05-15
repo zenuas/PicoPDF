@@ -17,6 +17,8 @@ public class Page : PdfObject
     public required int Height { get; init; }
     public Contents Contents { get; }
 
+    public static readonly string[] ProcSet = ["/PDF", "/Text", "/ImageB", "/ImageC", "/ImageI"];
+
     public Page()
     {
         Contents = new() { Page = this };
@@ -32,7 +34,7 @@ public class Page : PdfObject
 
         var dic = new ElementDictionary();
         _ = Elements.TryAdd("Resources", dic);
-        dic.Dictionary.Add("ProcSet", new string[] { "/PDF", "/Text", "/ImageB", "/ImageC", "/ImageI" });
+        dic.Dictionary.Add("ProcSet", ProcSet);
 
         var page_fonts = new HashSet<IFont>();
         var page_images = new HashSet<IImageXObject>();
