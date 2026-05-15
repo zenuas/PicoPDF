@@ -149,8 +149,10 @@ public class SectionModel : ISectionModel<SectionModel>
                     ZoomWidth = x.ZoomWidth,
                     ZoomHeight = x.ZoomHeight,
                 };
+
+            default:
+                throw new();
         }
-        throw new();
     }
 
     public static TextModel CreateTextModel(ITextElement element, string text, FontPath[] default_fonts) => new()
