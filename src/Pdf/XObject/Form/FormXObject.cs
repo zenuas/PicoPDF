@@ -3,7 +3,6 @@ using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Shading;
 using PicoPDF.Pdf.XObject.Group;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PicoPDF.Pdf.XObject.Form;
@@ -11,7 +10,7 @@ namespace PicoPDF.Pdf.XObject.Form;
 public class FormXObject : PdfObject, IXObject
 {
     public required (IPoint Left, IPoint Bottom, IPoint Right, IPoint Top) BBox { get; init; }
-    public List<IShading> ResourcesShading { get; init; } = [];
+    public IShading[] ResourcesShading { get; init; } = [];
     public GroupXObject? Group { get; init; } = null;
 
     public override void DoExport(PdfExportOption option)
@@ -23,7 +22,7 @@ public class FormXObject : PdfObject, IXObject
         _ = Elements.TryAdd("Subtype", "/Form");
         _ = Elements.TryAdd("BBox", $"[{PdfUtility.PointToString(BBox.Left.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(BBox.Bottom.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(BBox.Right.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(BBox.Top.ToPoint(), option.PointFormat)}]");
 
-        if (ResourcesShading.Count > 0)
+        if (ResourcesShading.Length > 0)
         {
             var dic = new ElementDictionary();
 
