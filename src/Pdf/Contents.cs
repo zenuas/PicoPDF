@@ -132,11 +132,6 @@ public class Contents : PdfObject
         {
             switch (outlines.OfType<Surface>().Where(x => x.ColorLayer is { }).FirstOrDefault()?.ColorLayer)
             {
-                case SolidColorLayer solid_color:
-                    opes.Add(new DrawAnyOperator { Operator = PdfUtility.ToDeviceRGB(solid_color.Color).CreateColor(false) });
-                    opes.Add(new DrawAnyOperator { Operator = "f*" });
-                    break;
-
                 case LinearGradientLayer linear when linear.StopColors.Length > 0:
                     {
                         opes.Add(new DrawAnyOperator { Operator = "h" });
@@ -277,6 +272,11 @@ public class Contents : PdfObject
                         break;
                     }
 
+                case SolidColorLayer solid_color:
+                    opes.Add(new DrawAnyOperator { Operator = PdfUtility.ToDeviceRGB(solid_color.Color).CreateColor(false) });
+                    opes.Add(new DrawAnyOperator { Operator = "f*" });
+                    break;
+
                 case LinearGradientLayer:
                 case RadialGradientLayer:
                 case null:
@@ -287,12 +287,7 @@ public class Contents : PdfObject
                 default:
                     throw new();
             }
-            yield return new()
-            {
-                Text = char.ConvertFromUtf32(c),
-                Operations = [.. opes],
-                LineWidth = new PointValue(size * r),
-            };
+            yield return new() { Text = char.ConvertFromUtf32(c), Operations = [.. opes] };
         }
     }
 
