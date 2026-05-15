@@ -65,7 +65,6 @@ public class Contents : PdfObject
     public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(IOutline[] outlines, int c, double r, double basey, double left, double size, Type0Font font, Document document, IColor? color)
     {
         var opes = new List<IPathOperation>();
-        IColorLayer? color_Layer = null;
         foreach (var outline in outlines)
         {
             switch (outline)
@@ -76,7 +75,6 @@ public class Contents : PdfObject
 
                 case Surface surface:
                     {
-                        if (surface.ColorLayer is { } layer) color_Layer = layer;
                         var start = surface.Edges.First().Start;
                         opes.Add(new DrawMovePath { Start = (new PointValue(left + start.X * r), new PointValue(basey - start.Y * r)) });
                         foreach (var edge in surface.Edges)
@@ -132,7 +130,7 @@ public class Contents : PdfObject
         }
         if (opes.Count > 0)
         {
-            switch (color_Layer)
+            switch (outlines.OfType<Surface>().Where(x => x.ColorLayer is { }).FirstOrDefault()?.ColorLayer)
             {
                 case SolidColorLayer solid_color:
                     opes.Add(new DrawAnyOperator { Operator = PdfUtility.ToDeviceRGB(solid_color.Color).CreateColor(false) });
