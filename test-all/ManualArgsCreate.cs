@@ -1,4 +1,5 @@
 ﻿using Mina.Command;
+using PicoPDF.Loader.Elements;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf.Documents;
 
@@ -34,7 +35,7 @@ public class ManualArgsCreate : FontRegisterCommand
         foreach (var arg in args)
         {
             var page = doc.NewPage(width, height);
-            _ = page.Contents.DrawText(arg, Top, Left, Point, [font], width - Left);
+            _ = page.Contents.DrawText(arg, Top, Left, Point, [font], width - Left, style: TextStyle.MultiLine);
         }
 
         doc.Save(Output, new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });

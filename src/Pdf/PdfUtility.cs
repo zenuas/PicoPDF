@@ -1,5 +1,6 @@
 ﻿using Binder;
 using Mina.Extension;
+using OpenType;
 using PicoPDF.Loader;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Model;
@@ -45,36 +46,55 @@ public static class PdfUtility
 
     public static IFontRegister CreateDefaultFontRegister() => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetFontDirectories()]));
 
-    public static IEnumerable<(string Text, Type0Font Font)[]> GetMultilineTextFont(string text, Type0Font[] fonts)
+    public static IEnumerable<(string Text, Type0Font Font)[]> GetMultilineTextFont(string text, Type0Font[] fonts, double size, double width)
     {
         foreach (var line in text.SplitLine())
         {
-            yield return GetTextFont(line, fonts).ToArray();
+            foreach (var textfonts in GetTextFont(line, fonts, size, width)) yield return textfonts;
         }
     }
 
-    public static IEnumerable<(string Text, Type0Font Font)> GetTextFont(string line, Type0Font[] fonts)
+    public static IEnumerable<(string Text, Type0Font Font)[]> GetTextFont(string line, Type0Font[] fonts, double size, double width)
     {
         if (line.Length == 0) yield break;
 
         var xs = line.ToUtf32CharArray().Select(x => (Char: x, Font: GetTextFont(x, fonts))).ToArray();
+        var textfonts = new List<(string Text, Type0Font Font)>();
         var prev_font = xs[0].Font;
         var prev_text = new List<int>() { xs[0].Char };
+        var total_width = xs[0].Font.Font.MeasureChar(xs[0].Char) * size;
         for (var i = 1; i < xs.Length; i++)
         {
-            if (ReferenceEquals(prev_font, xs[i].Font))
+            var char_width = xs[i].Font.Font.MeasureChar(xs[i].Char) * size;
+            if (width > 0 && total_width + char_width > width)
             {
-                prev_text.Add(xs[i].Char);
-            }
-            else
-            {
-                yield return (prev_text.ToStringByChars(), prev_font);
+                textfonts.Add((prev_text.ToStringByChars(), prev_font));
+                yield return [.. textfonts];
+                textfonts.Clear();
+
                 prev_font = xs[i].Font;
                 prev_text.Clear();
                 prev_text.Add(xs[i].Char);
+                total_width = char_width;
+            }
+            else
+            {
+                if (ReferenceEquals(prev_font, xs[i].Font))
+                {
+                    prev_text.Add(xs[i].Char);
+                }
+                else
+                {
+                    textfonts.Add((prev_text.ToStringByChars(), prev_font));
+                    prev_font = xs[i].Font;
+                    prev_text.Clear();
+                    prev_text.Add(xs[i].Char);
+                }
+                total_width += char_width;
             }
         }
-        yield return (prev_text.ToStringByChars(), prev_font);
+        textfonts.Add((prev_text.ToStringByChars(), prev_font));
+        yield return [.. textfonts];
     }
 
     public static Type0Font GetTextFont(int c, Type0Font[] fonts) => fonts.Where(x => x.Font.CharToGID(c) > 0).FirstOrDefault() ?? fonts[0];

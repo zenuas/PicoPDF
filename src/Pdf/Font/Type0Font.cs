@@ -69,9 +69,9 @@ public class Type0Font : PdfObject, IFont, IFontChars
         var font = EmbeddedFont ?? Font;
         FontDictionary.W = new(Chars
                 .Order()
-                .Select(x => (Char: x, GID: font.CharToGID(x), Width: font.MeasureGID(font.CharToGID(x))))
+                .Select(x => (Char: x, GID: font.CharToGID(x), Width: font.MeasureGID(font.CharToGID(x)) * 1000))
                 .Where(x => x.GID != 0 && (FontDictionary.DW is not { } dw || x.Width != dw))
-                .Select(x => new ElementString { Value = $"{x.GID}[{x.Width}]{(option.Debug ? $" %{char.ConvertFromUtf32(x.Char)}" : "")}\n" })
+                .Select(x => new ElementString { Value = $"{x.GID}[{PdfUtility.PointToString(x.Width, option.PointFormat)}]{(option.Debug ? $" %{char.ConvertFromUtf32(x.Char)}" : "")}\n" })
             );
     }
 
@@ -80,7 +80,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
         Ascender = (double)-(Font.OS2?.STypoAscender ?? Font.HorizontalHeader.Ascender) / Font.FontHeader.UnitsPerEm,
         Descender = (double)-(Font.OS2?.STypoDescender ?? Font.HorizontalHeader.Descender) / Font.FontHeader.UnitsPerEm,
         LineGap = (double)Font.HorizontalHeader.LineGap / Font.FontHeader.UnitsPerEm,
-        Width = (double)Font.MeasureString(s) / 1000,
+        Width = (double)Font.MeasureString(s),
     };
 
     public string CreateTextShowingOperator(string s) => $"<{s.ToUtf32CharArray().Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";

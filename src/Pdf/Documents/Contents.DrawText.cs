@@ -34,7 +34,7 @@ public partial class Contents
         var max_width = 0.0;
         var max_height = 0.0;
         var opes = new List<IOperation>();
-        foreach (var textfonts in PdfUtility.GetMultilineTextFont(text, fonts))
+        foreach (var textfonts in PdfUtility.GetMultilineTextFont(text, fonts, size, style.HasFlag(TextStyle.MultiLine) ? width : 0))
         {
             if (prev_linegap is { } gap) linetop += gap;
 
