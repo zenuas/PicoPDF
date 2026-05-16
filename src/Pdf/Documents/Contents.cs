@@ -160,9 +160,16 @@ public class Contents : PdfObject
                                 Function = StopColorsToFunction(linear.StopColors, ColorToAlpha),
                                 Extend = (true, true),
                             };
+                            // Set a sufficiently large enough for the BBox.
+                            var minx = Math.Min(linear.XY1.X, linear.XY2.X);
+                            var miny = Math.Min(linear.XY1.Y, linear.XY2.Y);
+                            var maxx = Math.Max(linear.XY1.X, linear.XY2.X);
+                            var maxy = Math.Max(linear.XY1.Y, linear.XY2.Y);
+                            var width = Math.Max(Math.Abs(maxx), Math.Abs(minx)) * 2;
+                            var height = Math.Max(Math.Abs(maxy), Math.Abs(miny)) * 2;
                             var g = new FormXObject
                             {
-                                BBox = (new PointValue(-10000), new PointValue(-10000), new PointValue(10000), new PointValue(10000)),
+                                BBox = (new PointValue(minx - width), new PointValue(miny - height), new PointValue(maxx + width), new PointValue(maxy + height)),
                                 ResourcesShading = [shadinga],
                                 Group = new GroupXObject
                                 {
@@ -230,9 +237,15 @@ public class Contents : PdfObject
                                 Function = StopColorsToFunction(radial.StopColors, ColorToAlpha),
                                 Extend = (true, true),
                             };
+                            // Set a sufficiently large enough for the BBox.
+                            var minx = Math.Min(radial.Fxy.X, radial.Cxy.X);
+                            var miny = Math.Min(radial.Fxy.Y, radial.Cxy.Y);
+                            var maxx = Math.Max(radial.Fxy.X, radial.Cxy.X);
+                            var maxy = Math.Max(radial.Fxy.Y, radial.Cxy.Y);
+                            var maxr = Math.Max(radial.Fr, radial.R);
                             var g = new FormXObject
                             {
-                                BBox = (new PointValue(-10000), new PointValue(-10000), new PointValue(10000), new PointValue(10000)),
+                                BBox = (new PointValue(minx - maxr), new PointValue(miny - maxr), new PointValue(maxx + maxr), new PointValue(maxy + maxr)),
                                 ResourcesShading = [shadinga],
                                 Group = new GroupXObject
                                 {
