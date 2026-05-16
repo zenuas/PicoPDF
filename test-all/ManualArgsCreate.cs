@@ -18,6 +18,12 @@ public class ManualArgsCreate : FontRegisterCommand
     [CommandOption("embed")]
     public FontEmbed FontEmbed { get; init; } = FontEmbed.PossibleEmbed;
 
+    [CommandOption("top")]
+    public int Top { get; init; } = 100;
+
+    [CommandOption("left")]
+    public int Left { get; init; } = 100;
+
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister();
@@ -28,7 +34,7 @@ public class ManualArgsCreate : FontRegisterCommand
         foreach (var arg in args)
         {
             var page = doc.NewPage(width, height);
-            _ = page.Contents.DrawText(arg, 100, 100, Point, [font]);
+            _ = page.Contents.DrawText(arg, Top, Left, Point, [font], width - Left);
         }
 
         doc.Save(Output, new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });
