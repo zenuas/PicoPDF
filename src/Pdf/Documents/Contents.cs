@@ -147,19 +147,7 @@ public class Contents : PdfObject
                         });
                         if (linear.StopColors.Any(x => x.StopColor.A < 255))
                         {
-                            var shadinga = new AxialShading
-                            {
-                                Name = $"sha{document.PdfObjects.Count}",
-                                ColorSpace = "/DeviceGray",
-                                Coords = (
-                                        new PointValue(linear.XY1.X),
-                                        new PointValue(linear.XY1.Y),
-                                        new PointValue(linear.XY2.X),
-                                        new PointValue(linear.XY2.Y)
-                                    ),
-                                Function = StopColorsToFunction(linear.StopColors, ColorToAlpha),
-                                Extend = (true, true),
-                            };
+                            var shading = CreateAxialShading(document, linear, ColorToAlpha, "/DeviceGray");
                             // Set a sufficiently large enough for the BBox.
                             var minx = Math.Min(linear.XY1.X, linear.XY2.X);
                             var miny = Math.Min(linear.XY1.Y, linear.XY2.Y);
@@ -167,43 +155,13 @@ public class Contents : PdfObject
                             var maxy = Math.Max(linear.XY1.Y, linear.XY2.Y);
                             var width = Math.Max(Math.Abs(maxx), Math.Abs(minx)) * 2;
                             var height = Math.Max(Math.Abs(maxy), Math.Abs(miny)) * 2;
-                            var g = new FormXObject
-                            {
-                                BBox = (new PointValue(minx - width), new PointValue(miny - height), new PointValue(maxx + width), new PointValue(maxy + height)),
-                                ResourcesShading = [shadinga],
-                                Group = new GroupXObject
-                                {
-                                    S = "/Transparency",
-                                    I = true,
-                                    CS = "/DeviceGray",
-                                },
-                            };
+                            var g = CreateTransparencyFormXObject(minx - width, miny - height, maxx + width, maxy + height, shading);
                             var gstream = g.GetWriteStream(false);
-                            (new DrawPathShading { Shading = shadinga }).OperationWrite(0, 0, gstream, new());
+                            (new DrawPathShading { Shading = shading }).OperationWrite(0, 0, gstream, new());
                             gstream.Flush();
-                            var gstate = new GraphicsStateParameter
-                            {
-                                Name = $"gs{document.PdfObjects.Count}",
-                                SMask = new SoftMask { S = MaskMethods.Luminosity, G = g },
-                                Ca = 1.0f,
-                                CA = 1.0f,
-                                AIS = false,
-                            };
-                            opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(gstate) });
+                            opes.Add(new DrawPathExtGState { ExtGState = CreateTransparencyGraphicsStateParameter(document, g) });
                         }
-                        var shading = new AxialShading
-                        {
-                            Name = $"sh{document.PdfObjects.Count}",
-                            Coords = (
-                                    new PointValue(linear.XY1.X),
-                                    new PointValue(linear.XY1.Y),
-                                    new PointValue(linear.XY2.X),
-                                    new PointValue(linear.XY2.Y)
-                                ),
-                            Function = StopColorsToFunction(linear.StopColors, ColorToRGB),
-                            Extend = (true, true),
-                        };
-                        opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
+                        opes.Add(new DrawPathShading { Shading = CreateAxialShading(document, linear, ColorToRGB, "/DeviceRGB") });
                         break;
                     }
 
@@ -222,66 +180,20 @@ public class Contents : PdfObject
                         });
                         if (radial.StopColors.Any(x => x.StopColor.A < 255))
                         {
-                            var shadinga = new RadialShading
-                            {
-                                Name = $"sha{document.PdfObjects.Count}",
-                                ColorSpace = "/DeviceGray",
-                                Coords = (
-                                        new PointValue(radial.Fxy.X),
-                                        new PointValue(radial.Fxy.Y),
-                                        new PointValue(radial.Fr),
-                                        new PointValue(radial.Cxy.X),
-                                        new PointValue(radial.Cxy.Y),
-                                        new PointValue(radial.R)
-                                    ),
-                                Function = StopColorsToFunction(radial.StopColors, ColorToAlpha),
-                                Extend = (true, true),
-                            };
+                            var shading = CreateRadialShading(document, radial, ColorToAlpha, "/DeviceGray");
                             // Set a sufficiently large enough for the BBox.
                             var minx = Math.Min(radial.Fxy.X, radial.Cxy.X);
                             var miny = Math.Min(radial.Fxy.Y, radial.Cxy.Y);
                             var maxx = Math.Max(radial.Fxy.X, radial.Cxy.X);
                             var maxy = Math.Max(radial.Fxy.Y, radial.Cxy.Y);
                             var maxr = Math.Max(radial.Fr, radial.R);
-                            var g = new FormXObject
-                            {
-                                BBox = (new PointValue(minx - maxr), new PointValue(miny - maxr), new PointValue(maxx + maxr), new PointValue(maxy + maxr)),
-                                ResourcesShading = [shadinga],
-                                Group = new GroupXObject
-                                {
-                                    S = "/Transparency",
-                                    I = true,
-                                    CS = "/DeviceGray",
-                                },
-                            };
+                            var g = CreateTransparencyFormXObject(minx - maxr, miny - maxr, maxx + maxr, maxy + maxr, shading);
                             var gstream = g.GetWriteStream(false);
-                            (new DrawPathShading { Shading = shadinga }).OperationWrite(0, 0, gstream, new());
+                            (new DrawPathShading { Shading = shading }).OperationWrite(0, 0, gstream, new());
                             gstream.Flush();
-                            var gstate = new GraphicsStateParameter
-                            {
-                                Name = $"gs{document.PdfObjects.Count}",
-                                SMask = new SoftMask { S = MaskMethods.Luminosity, G = g },
-                                Ca = 1.0f,
-                                CA = 1.0f,
-                                AIS = false,
-                            };
-                            opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(gstate) });
+                            opes.Add(new DrawPathExtGState { ExtGState = CreateTransparencyGraphicsStateParameter(document, g) });
                         }
-                        var shading = new RadialShading
-                        {
-                            Name = $"sh{document.PdfObjects.Count}",
-                            Coords = (
-                                    new PointValue(radial.Fxy.X),
-                                    new PointValue(radial.Fxy.Y),
-                                    new PointValue(radial.Fr),
-                                    new PointValue(radial.Cxy.X),
-                                    new PointValue(radial.Cxy.Y),
-                                    new PointValue(radial.R)
-                                ),
-                            Function = StopColorsToFunction(radial.StopColors, ColorToRGB),
-                            Extend = (true, true),
-                        };
-                        opes.Add(new DrawPathShading { Shading = document.AddShading(shading) });
+                        opes.Add(new DrawPathShading { Shading = CreateRadialShading(document, radial, ColorToRGB, "/DeviceRGB") });
                         break;
                     }
 
@@ -302,6 +214,72 @@ public class Contents : PdfObject
             }
             yield return new() { Text = char.ConvertFromUtf32(c), Operations = [.. opes] };
         }
+    }
+
+    public static AxialShading CreateAxialShading(Document document, LinearGradientLayer linear, Func<System.Drawing.Color, float[]> f, string color_space)
+    {
+        var shading = new AxialShading
+        {
+            Name = $"sh{document.PdfObjects.Count}",
+            ColorSpace = color_space,
+            Coords = (
+                    new PointValue(linear.XY1.X),
+                    new PointValue(linear.XY1.Y),
+                    new PointValue(linear.XY2.X),
+                    new PointValue(linear.XY2.Y)
+                ),
+            Function = StopColorsToFunction(linear.StopColors, f),
+            Extend = (true, true),
+        };
+        _ = document.AddShading(shading);
+        return shading;
+    }
+
+    public static RadialShading CreateRadialShading(Document document, RadialGradientLayer radial, Func<System.Drawing.Color, float[]> f, string color_space)
+    {
+        var shading = new RadialShading
+        {
+            Name = $"sh{document.PdfObjects.Count}",
+            ColorSpace = color_space,
+            Coords = (
+                    new PointValue(radial.Fxy.X),
+                    new PointValue(radial.Fxy.Y),
+                    new PointValue(radial.Fr),
+                    new PointValue(radial.Cxy.X),
+                    new PointValue(radial.Cxy.Y),
+                    new PointValue(radial.R)
+                ),
+            Function = StopColorsToFunction(radial.StopColors, f),
+            Extend = (true, true),
+        };
+        _ = document.AddShading(shading);
+        return shading;
+    }
+
+    public static FormXObject CreateTransparencyFormXObject(float left, float bottom, float right, float top, IShading shading) => new FormXObject
+    {
+        BBox = (new PointValue(left), new PointValue(bottom), new PointValue(right), new PointValue(top)),
+        ResourcesShading = [shading],
+        Group = new GroupXObject
+        {
+            S = "/Transparency",
+            I = true,
+            CS = "/DeviceGray",
+        },
+    };
+
+    public static GraphicsStateParameter CreateTransparencyGraphicsStateParameter(Document document, FormXObject g)
+    {
+        var gstate = new GraphicsStateParameter
+        {
+            Name = $"gs{document.PdfObjects.Count}",
+            SMask = new SoftMask { S = MaskMethods.Luminosity, G = g },
+            Ca = 1.0f,
+            CA = 1.0f,
+            AIS = false,
+        };
+        _ = document.AddGraphicsStateParameter(gstate);
+        return gstate;
     }
 
     public static float[] ColorToRGB(System.Drawing.Color color) => [color.R / 255f, color.G / 255f, color.B / 255f];
