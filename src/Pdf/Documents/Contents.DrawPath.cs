@@ -234,7 +234,7 @@ public partial class Contents
         return shading;
     }
 
-    public static FormXObject CreateTransparencyFormXObject(float left, float bottom, float right, float top, IShading shading) => new FormXObject
+    public static FormXObject CreateTransparencyFormXObject(float left, float bottom, float right, float top, IShading shading) => new()
     {
         BBox = (new PointValue(left), new PointValue(bottom), new PointValue(right), new PointValue(top)),
         ResourcesShading = [shading],
