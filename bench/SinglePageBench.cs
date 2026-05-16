@@ -4,7 +4,7 @@ using Mina.Extension;
 using PicoPDF.Loader;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Model;
-using PicoPDF.Pdf;
+using PicoPDF.Pdf.Documents;
 using PicoPDF.Pdf.Font;
 using System;
 using System.Collections.Generic;

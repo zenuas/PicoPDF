@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Loader.Sections;
+using PicoPDF.Pdf.Documents;
 using PicoPDF.Pdf.Font;
 using System.Collections.Generic;
 using System.IO;

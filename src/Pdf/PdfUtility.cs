@@ -4,6 +4,7 @@ using PicoPDF.Loader;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Model;
 using PicoPDF.Pdf.Color;
+using PicoPDF.Pdf.Documents;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Font;
 using System;

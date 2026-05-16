@@ -3,6 +3,7 @@ using Mina.Extension;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
+using PicoPDF.Pdf.Documents;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.XObject.Image;
 using System;

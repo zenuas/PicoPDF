@@ -20,7 +20,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
-namespace PicoPDF.Pdf;
+namespace PicoPDF.Pdf.Documents;
 
 public class Contents : PdfObject
 {

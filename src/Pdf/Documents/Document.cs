@@ -16,7 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace PicoPDF.Pdf;
+namespace PicoPDF.Pdf.Documents;
 
 public class Document
 {

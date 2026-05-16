@@ -8,7 +8,7 @@ using PicoPDF.Pdf.XObject.Image;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PicoPDF.Pdf;
+namespace PicoPDF.Pdf.Documents;
 
 public class Page : PdfObject
 {
