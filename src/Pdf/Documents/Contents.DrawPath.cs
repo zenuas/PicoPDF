@@ -26,7 +26,7 @@ public partial class Contents
     public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(string text, double basey, double left, double size, Type0Font font, Document document, IColor? color = null)
     {
         var opentype_font = font.EmbeddedFont ?? font.Font;
-        var r = 1f / opentype_font.FontHeader.UnitsPerEm * size;
+        var r = (1f / opentype_font.FontHeader.UnitsPerEm) * size;
         foreach (var c in text.ToUtf32CharArray())
         {
             var gid = opentype_font.CharToGID(c);
@@ -54,7 +54,7 @@ public partial class Contents
                 case Surface surface:
                     {
                         var start = surface.Edges.First().Start;
-                        opes.Add(new DrawMovePath { Start = (new PointValue(left + start.X * r), new PointValue(basey - start.Y * r)) });
+                        opes.Add(new DrawMovePath { Start = (new PointValue(left + (start.X * r)), new PointValue(basey - (start.Y * r))) });
                         foreach (var edge in surface.Edges)
                         {
                             switch (edge)
@@ -62,7 +62,7 @@ public partial class Contents
                                 case Line line:
                                     opes.Add(new DrawLinePath
                                     {
-                                        End = (new PointValue(left + line.End.X * r), new PointValue(basey - line.End.Y * r)),
+                                        End = (new PointValue(left + (line.End.X * r)), new PointValue(basey - (line.End.Y * r))),
                                     });
                                     break;
 
@@ -71,9 +71,9 @@ public partial class Contents
                                         var cp = bezier.ControlPoint[0];
                                         opes.Add(new DrawBezierCurvePath
                                         {
-                                            ControlPoint1 = (new PointValue(left + ((((cp.X * 2.0f) + bezier.Start.X) / 3.0f) * r)), new PointValue(basey - ((((cp.Y * 2.0f) + bezier.Start.Y) / 3.0f) * r))),
-                                            ControlPoint2 = (new PointValue(left + ((((cp.X * 2.0f) + bezier.End.X) / 3.0f) * r)), new PointValue(basey - ((((cp.Y * 2.0f) + bezier.End.Y) / 3.0f) * r))),
-                                            End = (new PointValue(left + bezier.End.X * r), new PointValue(basey - bezier.End.Y * r)),
+                                            ControlPoint1 = (new PointValue(left + (((cp.X + cp.X + bezier.Start.X) / 3.0f) * r)), new PointValue(basey - (((cp.Y + cp.Y + bezier.Start.Y) / 3.0f) * r))),
+                                            ControlPoint2 = (new PointValue(left + (((cp.X + cp.X + bezier.End.X) / 3.0f) * r)), new PointValue(basey - (((cp.Y + cp.Y + bezier.End.Y) / 3.0f) * r))),
+                                            End = (new PointValue(left + (bezier.End.X * r)), new PointValue(basey - (bezier.End.Y * r))),
                                         });
                                         break;
                                     }
@@ -84,9 +84,9 @@ public partial class Contents
                                         var cp2 = bezier.ControlPoint[1];
                                         opes.Add(new DrawBezierCurvePath
                                         {
-                                            ControlPoint1 = (new PointValue(left + cp1.X * r), new PointValue(basey - cp1.Y * r)),
-                                            ControlPoint2 = (new PointValue(left + cp2.X * r), new PointValue(basey - cp2.Y * r)),
-                                            End = (new PointValue(left + bezier.End.X * r), new PointValue(basey - bezier.End.Y * r)),
+                                            ControlPoint1 = (new PointValue(left + (cp1.X * r)), new PointValue(basey - (cp1.Y * r))),
+                                            ControlPoint2 = (new PointValue(left + (cp2.X * r)), new PointValue(basey - (cp2.Y * r))),
+                                            End = (new PointValue(left + (bezier.End.X * r)), new PointValue(basey - (bezier.End.Y * r))),
                                         });
                                         break;
                                     }
