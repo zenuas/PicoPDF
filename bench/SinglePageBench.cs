@@ -59,7 +59,7 @@ public class SinglePageBench
     {
         var doc = new Document() { FontRegister = FontRegister };
         var pages = SectionBinder.Bind<T, PageModel, SectionModel>(PageSection, datas, mapper);
-        ModelMapping.Mapping(doc, pages);
+        ModelMapping.Mapping(doc, pages, new());
         return doc;
     }
 
@@ -67,7 +67,7 @@ public class SinglePageBench
     {
         var doc = new Document() { FontRegister = FontRegister };
         var pages = SectionBinder.Bind<T, PageModel, SectionModel>(PageSection, datas);
-        ModelMapping.Mapping(doc, pages);
+        ModelMapping.Mapping(doc, pages, new());
         return doc;
     }
 
@@ -75,7 +75,7 @@ public class SinglePageBench
     {
         var doc = new Document() { FontRegister = FontRegister };
         var pages = SectionBinder.Bind<PageModel, SectionModel>(PageSection, table);
-        ModelMapping.Mapping(doc, pages);
+        ModelMapping.Mapping(doc, pages, new());
         return doc;
     }
 
