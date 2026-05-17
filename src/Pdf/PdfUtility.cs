@@ -58,37 +58,37 @@ public static class PdfUtility
     {
         if (line.Length == 0) yield break;
 
-        var xs = line.ToUtf32CharArray().Select(x => (Char: x, Font: GetTextFont(x, fonts))).ToArray();
+        var charfonts = line.ToUtf32CharArray().Select(x => (Char: x, Font: GetTextFont(x, fonts))).ToArray();
         var textfonts = new List<(string Text, Type0Font Font)>();
-        var prev_font = xs[0].Font;
-        var prev_text = new List<int>() { xs[0].Char };
-        var total_width = xs[0].Font.Font.MeasureChar(xs[0].Char) * size;
-        for (var i = 1; i < xs.Length; i++)
+        var prev_font = charfonts[0].Font;
+        var prev_text = new List<int>() { charfonts[0].Char };
+        var total_width = charfonts[0].Font.Font.MeasureChar(charfonts[0].Char) * size;
+        for (var i = 1; i < charfonts.Length; i++)
         {
-            var char_width = xs[i].Font.Font.MeasureChar(xs[i].Char) * size;
+            var char_width = charfonts[i].Font.Font.MeasureChar(charfonts[i].Char) * size;
             if (width > 0 && total_width + char_width > width)
             {
                 textfonts.Add((prev_text.ToStringByChars(), prev_font));
                 yield return [.. textfonts];
                 textfonts.Clear();
 
-                prev_font = xs[i].Font;
+                prev_font = charfonts[i].Font;
                 prev_text.Clear();
-                prev_text.Add(xs[i].Char);
+                prev_text.Add(charfonts[i].Char);
                 total_width = char_width;
             }
             else
             {
-                if (ReferenceEquals(prev_font, xs[i].Font))
+                if (ReferenceEquals(prev_font, charfonts[i].Font))
                 {
-                    prev_text.Add(xs[i].Char);
+                    prev_text.Add(charfonts[i].Char);
                 }
                 else
                 {
                     textfonts.Add((prev_text.ToStringByChars(), prev_font));
-                    prev_font = xs[i].Font;
+                    prev_font = charfonts[i].Font;
                     prev_text.Clear();
-                    prev_text.Add(xs[i].Char);
+                    prev_text.Add(charfonts[i].Char);
                 }
                 total_width += char_width;
             }
