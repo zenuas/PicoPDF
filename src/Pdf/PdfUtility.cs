@@ -116,7 +116,7 @@ public static class PdfUtility
         Ascender = (double)-(font.OS2?.STypoAscender ?? font.HorizontalHeader.Ascender) / font.FontHeader.UnitsPerEm,
         Descender = (double)-(font.OS2?.STypoDescender ?? font.HorizontalHeader.Descender) / font.FontHeader.UnitsPerEm,
         LineGap = (double)font.HorizontalHeader.LineGap / font.FontHeader.UnitsPerEm,
-        Width = (double)font.MeasureString(s),
+        Width = font.MeasureString(s),
     };
 
     public static string PointToString((IPoint X, IPoint Y) point, int height, string format) => $"{PointToString(point.X.ToPoint(), format)} {PointToString(height - point.Y.ToPoint(), format)}";
