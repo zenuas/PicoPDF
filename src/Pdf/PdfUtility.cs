@@ -46,15 +46,15 @@ public static class PdfUtility
 
     public static IFontRegister CreateDefaultFontRegister() => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetFontDirectories()]));
 
-    public static IEnumerable<(string Text, Type0Font Font)[]> GetMultilineTextFont(string text, Type0Font[] fonts, double size, double width)
+    public static IEnumerable<(string Text, Type0Font Font)[]> GetMultilineTextFont(string text, Type0Font[] fonts, double size, double width, ILineBreakRule linebreak_rule)
     {
         foreach (var line in text.SplitLine())
         {
-            foreach (var textfonts in GetTextFont(line, fonts, size, width)) yield return textfonts;
+            foreach (var textfonts in GetTextFont(line, fonts, size, width, linebreak_rule)) yield return textfonts;
         }
     }
 
-    public static IEnumerable<(string Text, Type0Font Font)[]> GetTextFont(string line, Type0Font[] fonts, double size, double width)
+    public static IEnumerable<(string Text, Type0Font Font)[]> GetTextFont(string line, Type0Font[] fonts, double size, double width, ILineBreakRule linebreak_rule)
     {
         if (line.Length == 0) yield break;
 
@@ -68,7 +68,15 @@ public static class PdfUtility
             var char_width = charfonts[i].Font.Font.MeasureChar(charfonts[i].Char) * size;
             if (width > 0 && total_width + char_width > width)
             {
-                textfonts.Add((prev_text.ToStringByChars(), prev_font));
+                if (linebreak_rule.DenyStartChar.Contains(charfonts[i].Char) || linebreak_rule.DenyEndChar.Contains(charfonts[i - 1].Char))
+                {
+                    if (prev_text.Count > 1) textfonts.Add((prev_text[0..^1].ToStringByChars(), prev_font));
+                    i--;
+                }
+                else
+                {
+                    textfonts.Add((prev_text.ToStringByChars(), prev_font));
+                }
                 yield return [.. textfonts];
                 textfonts.Clear();
 

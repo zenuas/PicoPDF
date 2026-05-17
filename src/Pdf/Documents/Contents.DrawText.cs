@@ -27,14 +27,14 @@ public partial class Contents
         };
     }
 
-    public double DrawText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null)
+    public double DrawText(string text, double top, double left, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
     {
         var linetop = top;
         double? prev_linegap = null;
         var max_width = 0.0;
         var max_height = 0.0;
         var opes = new List<IOperation>();
-        foreach (var textfonts in PdfUtility.GetMultilineTextFont(text, fonts, size, style.HasFlag(TextStyle.MultiLine) ? width : 0))
+        foreach (var textfonts in PdfUtility.GetMultilineTextFont(text, fonts, size, style.HasFlag(TextStyle.MultiLine) ? width : 0, linebreak_rule ?? (style.HasFlag(TextStyle.LineBreak) ? new GenericLineBreakRule() : new NoneLineBreakRule())))
         {
             if (prev_linegap is { } gap) linetop += gap;
 

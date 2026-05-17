@@ -5,6 +5,7 @@ using OpenType.Outline;
 using OpenType.Tables;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf;
+using PicoPDF.Pdf.Documents;
 using PicoPDF.Pdf.Font;
 using System;
 using System.Collections.Generic;
@@ -64,7 +65,10 @@ public class MultilineTest
 
     public static readonly Type0Font[] Fonts = [Type0FontMock.Create()];
 
-    public string[] GetText(string line, double size, double width) => [.. PdfUtility.GetTextFont(line, Fonts, size, width).Select(x => x.Select(y => y.Text).Join(""))];
+    public string[] GetText(string line, double size, double width, ILineBreakRule? linebreak_rule = null) => [..
+            PdfUtility.GetTextFont(line, Fonts, size, width, linebreak_rule ?? new NoneLineBreakRule())
+            .Select(x => x.Select(y => y.Text).Join(""))
+        ];
 
     [Fact]
     public void NoLineBreakTest()
@@ -84,5 +88,23 @@ public class MultilineTest
         Assert.Equal(GetText("abcde", 1, 30), new[] { "abc", "de" });
         Assert.Equal(GetText("abcdef", 1, 30), new[] { "abc", "def" });
         Assert.Equal(GetText("abcdefg", 1, 30), new[] { "abc", "def", "g" });
+    }
+
+    [Fact]
+    public void LineBreakRuleTest()
+    {
+        var linebrak_rule = new GenericLineBreakRule();
+
+        Assert.Equal(GetText("ab,", 1, 30, linebrak_rule), new[] { "ab," });
+        Assert.Equal(GetText("abc,", 1, 30, linebrak_rule), new[] { "ab", "c," });
+        Assert.Equal(GetText("abcd,", 1, 30, linebrak_rule), new[] { "abc", "d," });
+        Assert.Equal(GetText("abcde,", 1, 30, linebrak_rule), new[] { "abc", "de," });
+        Assert.Equal(GetText("abcdef,", 1, 30, linebrak_rule), new[] { "abc", "de", "f," });
+
+        Assert.Equal(GetText("ab(x)", 1, 30, linebrak_rule), new[] { "ab", "(x)" });
+        Assert.Equal(GetText("abc(x)", 1, 30, linebrak_rule), new[] { "abc", "(x)" });
+        Assert.Equal(GetText("abcd(x)", 1, 30, linebrak_rule), new[] { "abc", "d(", "x)" });
+        Assert.Equal(GetText("abcde(x)", 1, 30, linebrak_rule), new[] { "abc", "de", "(x)" });
+        Assert.Equal(GetText("abcdef(x)", 1, 30, linebrak_rule), new[] { "abc", "def", "(x)" });
     }
 }
