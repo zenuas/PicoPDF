@@ -1,7 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType;
 using PicoPDF.Loader.Sections;
-using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Elements;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,14 +73,6 @@ public class Type0Font : PdfObject, IFont, IFontChars
                 .Select(x => new ElementString { Value = $"{x.GID}[{PdfUtility.PointToString(x.Width, option.PointFormat)}]{(option.Debug ? $" %{char.ConvertFromUtf32(x.Char)}" : "")}\n" })
             );
     }
-
-    public FontBox MeasureStringBox(string s) => new()
-    {
-        Ascender = (double)-(Font.OS2?.STypoAscender ?? Font.HorizontalHeader.Ascender) / Font.FontHeader.UnitsPerEm,
-        Descender = (double)-(Font.OS2?.STypoDescender ?? Font.HorizontalHeader.Descender) / Font.FontHeader.UnitsPerEm,
-        LineGap = (double)Font.HorizontalHeader.LineGap / Font.FontHeader.UnitsPerEm,
-        Width = (double)Font.MeasureString(s),
-    };
 
     public string CreateTextShowingOperator(string s) => $"<{s.ToUtf32CharArray().Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";
 }

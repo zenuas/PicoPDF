@@ -82,7 +82,7 @@ public partial class Contents
         var start = left;
         foreach (var (text, font) in textfonts)
         {
-            var box = font.MeasureStringBox(text);
+            var box = PdfUtility.MeasureStringBox(font.Font, text);
             if (stroke || font.FontEmbed == FontEmbed.Stroke)
             {
                 foreach (var op in CreateDrawPathOnBaselineOperation(text, basey, start, size, font, document, color)) yield return op;

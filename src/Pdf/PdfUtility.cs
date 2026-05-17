@@ -100,8 +100,16 @@ public static class PdfUtility
     public static Type0Font GetTextFont(int c, Type0Font[] fonts) => fonts.Where(x => x.Font.CharToGID(c) > 0).FirstOrDefault() ?? fonts[0];
 
     public static FontBox MeasureTextFontBox((string Text, Type0Font Font)[] textfonts) => textfonts
-        .Select(x => x.Font.MeasureStringBox(x.Text))
+        .Select(x => MeasureStringBox(x.Font.Font, x.Text))
         .Aggregate(new FontBox(), (acc, x) => new(Math.Min(acc.Ascender, x.Ascender), Math.Max(acc.Descender, x.Descender), Math.Max(acc.LineGap, x.LineGap), acc.Width + x.Width));
+
+    public static FontBox MeasureStringBox(IOpenTypeFont font, string s) => new()
+    {
+        Ascender = (double)-(font.OS2?.STypoAscender ?? font.HorizontalHeader.Ascender) / font.FontHeader.UnitsPerEm,
+        Descender = (double)-(font.OS2?.STypoDescender ?? font.HorizontalHeader.Descender) / font.FontHeader.UnitsPerEm,
+        LineGap = (double)font.HorizontalHeader.LineGap / font.FontHeader.UnitsPerEm,
+        Width = (double)font.MeasureString(s),
+    };
 
     public static string PointToString((IPoint X, IPoint Y) point, int height, string format) => $"{PointToString(point.X.ToPoint(), format)} {PointToString(height - point.Y.ToPoint(), format)}";
 
