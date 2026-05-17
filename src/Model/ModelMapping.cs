@@ -39,14 +39,14 @@ public static class ModelMapping
         };
     }
 
-    public static void Mapping(Document doc, PageModel[] pages)
+    public static void Mapping(Document doc, PageModel[] pages, PdfEventOption option)
     {
         var fontget = CreateFontCache(doc);
         var imageget = CreateImageCache(doc);
         foreach (var page in pages)
         {
             var pdfpage = doc.NewPage(page.Width, page.Height);
-            page.Models.Each(section => section.Elements.Each(x => Mapping(pdfpage, fontget, imageget, x, section.Top, section.Left)));
+            page.Models.Each(section => section.Elements.Each(x => option.Mapping(pdfpage, fontget, imageget, x, section.Top, section.Left)));
         }
     }
 

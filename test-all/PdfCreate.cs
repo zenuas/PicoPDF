@@ -1,7 +1,10 @@
 ﻿using Mina.Command;
 using Mina.Extension;
+using PicoPDF.Loader.Elements;
+using PicoPDF.Model;
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
+using PicoPDF.Pdf.Documents;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -60,7 +63,7 @@ public class PdfCreate : FontRegisterCommand
         {
             BindElement = (section, element, data, model) =>
             {
-                if (element.Name != "")
+                if (element.Name.StartsWith("Test"))
                 {
                     if (model is TextModel text)
                     {
@@ -76,7 +79,20 @@ public class PdfCreate : FontRegisterCommand
                     }
                 }
                 return model;
-            }
+            },
+            Mapping = (page, fontget, imageget, model, top, left) =>
+            {
+                if (model is ITextModel x && model.Element is ITextElement e && e.Name == "Jp")
+                {
+                    double posx = model.X + left;
+                    double posy = model.Y + top;
+                    _ = page.Contents.DrawText(model.Cast<ITextModel>().Text, posy, posx, x.Size, [.. x.Font.Select(x => fontget(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
+                }
+                else
+                {
+                    ModelMapping.Mapping(page, fontget, imageget, model, top, left);
+                }
+            },
         };
 
         var datacache = new Dictionary<string, DataTable>();
