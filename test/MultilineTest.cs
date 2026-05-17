@@ -101,10 +101,28 @@ public class MultilineTest
         Assert.Equal(GetText("abcde,", 1, 30, linebrak_rule), new[] { "abc", "de," });
         Assert.Equal(GetText("abcdef,", 1, 30, linebrak_rule), new[] { "abc", "de", "f," });
 
-        Assert.Equal(GetText("ab(x)", 1, 30, linebrak_rule), new[] { "ab", "(x)" });
-        Assert.Equal(GetText("abc(x)", 1, 30, linebrak_rule), new[] { "abc", "(x)" });
-        Assert.Equal(GetText("abcd(x)", 1, 30, linebrak_rule), new[] { "abc", "d(", "x)" });
-        Assert.Equal(GetText("abcde(x)", 1, 30, linebrak_rule), new[] { "abc", "de", "(x)" });
-        Assert.Equal(GetText("abcdef(x)", 1, 30, linebrak_rule), new[] { "abc", "def", "(x)" });
+        Assert.Equal(GetText("ab{x}", 1, 30, linebrak_rule), new[] { "ab", "{x}" });
+        Assert.Equal(GetText("abc{x}", 1, 30, linebrak_rule), new[] { "abc", "{x}" });
+        Assert.Equal(GetText("abcd{x}", 1, 30, linebrak_rule), new[] { "abc", "d{", "x}" });
+        Assert.Equal(GetText("abcde{x}", 1, 30, linebrak_rule), new[] { "abc", "de", "{x}" });
+        Assert.Equal(GetText("abcdef{x}", 1, 30, linebrak_rule), new[] { "abc", "def", "{x}" });
+    }
+
+    [Fact]
+    public void JapaneseLineBreakRuleTest()
+    {
+        var linebrak_rule = new JapaneseLineBreakRule();
+
+        Assert.Equal(GetText("ab,", 1, 30, linebrak_rule), new[] { "ab," });
+        Assert.Equal(GetText("abc,", 1, 30, linebrak_rule), new[] { "ab", "c," });
+        Assert.Equal(GetText("abcd,", 1, 30, linebrak_rule), new[] { "abc", "d," });
+        Assert.Equal(GetText("abcde,", 1, 30, linebrak_rule), new[] { "abc", "de," });
+        Assert.Equal(GetText("abcdef,", 1, 30, linebrak_rule), new[] { "abc", "de", "f," });
+
+        Assert.Equal(GetText("ab{x}", 1, 30, linebrak_rule), new[] { "ab{", "x}" });
+        Assert.Equal(GetText("abc{x}", 1, 30, linebrak_rule), new[] { "abc", "{x}" });
+        Assert.Equal(GetText("abcd{x}", 1, 30, linebrak_rule), new[] { "abc", "d{x", "}" });
+        Assert.Equal(GetText("abcde{x}", 1, 30, linebrak_rule), new[] { "abc", "de{", "x}" });
+        Assert.Equal(GetText("abcdef{x}", 1, 30, linebrak_rule), new[] { "abc", "def", "{x}" });
     }
 }
