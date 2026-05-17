@@ -72,10 +72,12 @@ public static class PdfUtility
                 {
                     if (prev_text.Count > 1) textfonts.Add((prev_text[0..^1].ToStringByChars(), prev_font));
                     i--;
+                    total_width = charfonts[i].Font.Font.MeasureChar(charfonts[i].Char) * size;
                 }
                 else
                 {
                     textfonts.Add((prev_text.ToStringByChars(), prev_font));
+                    total_width = char_width;
                 }
                 yield return [.. textfonts];
                 textfonts.Clear();
@@ -83,7 +85,6 @@ public static class PdfUtility
                 prev_font = charfonts[i].Font;
                 prev_text.Clear();
                 prev_text.Add(charfonts[i].Char);
-                total_width = char_width;
             }
             else
             {
