@@ -1,0 +1,29 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": ["Meiryo Bold"],
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "abcdefghij",      "Size": 30, "X":  10, "Y":   0, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghijk",     "Size": 30, "X": 150, "Y":   0, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghijkl",    "Size": 30, "X": 300, "Y":   0, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghijklm",   "Size": 30, "X": 450, "Y":   0, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghijklmn",  "Size": 30, "X":  10, "Y": 100, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghijklmno", "Size": 30, "X": 150, "Y": 100, "Width": 100, "Style": "MultiLine, LineBreak"},
+			
+			{"Type": "TextElement", "Text": "abcdef(xyz)ghij",      "Size": 30, "X":  10, "Y": 250, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefg(xyz)hijk",     "Size": 30, "X": 150, "Y": 250, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefgh(xyz)ijkl",    "Size": 30, "X": 300, "Y": 250, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghi(xyz)jklm",   "Size": 30, "X": 450, "Y": 250, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghij(xyz)klmn",  "Size": 30, "X":  10, "Y": 350, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghijk(xyz)lmno", "Size": 30, "X": 150, "Y": 350, "Width": 100, "Style": "MultiLine, LineBreak"},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+	],
+}

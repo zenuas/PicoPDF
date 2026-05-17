@@ -11,6 +11,9 @@ namespace PicoPDF.Pdf.Documents;
 
 public partial class Contents
 {
+    public static readonly NoneLineBreakRule NoneLineBreakRule = new();
+    public static readonly GenericLineBreakRule GenericLineBreakRule = new();
+
     public void DrawTextOnBaseline(string text, double basey, double left, double size, IFont font) => Operations.Add(CreateDrawTextOnBaselineOperation(text, basey, left, size, font));
 
     public static DrawString CreateDrawTextOnBaselineOperation(string text, double basey, double left, double size, IFont font, IColor? color = null)
@@ -34,7 +37,7 @@ public partial class Contents
         var max_width = 0.0;
         var max_height = 0.0;
         var opes = new List<IOperation>();
-        foreach (var textfonts in PdfUtility.GetMultilineTextFont(text, fonts, size, style.HasFlag(TextStyle.MultiLine) ? width : 0, linebreak_rule ?? (style.HasFlag(TextStyle.LineBreak) ? new GenericLineBreakRule() : new NoneLineBreakRule())))
+        foreach (var textfonts in PdfUtility.GetMultilineTextFont(text, fonts, size, style.HasFlag(TextStyle.MultiLine) ? width : 0, linebreak_rule ?? (style.HasFlag(TextStyle.LineBreak) ? GenericLineBreakRule : NoneLineBreakRule)))
         {
             if (prev_linegap is { } gap) linetop += gap;
 
