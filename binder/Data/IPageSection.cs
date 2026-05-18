@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using Binder.Model;
+using System;
+using System.Globalization;
 
 namespace Binder.Data;
 
@@ -8,4 +10,5 @@ public interface IPageSection : IParentSection
     public int Height { get; init; }
     public AllSides Padding { get; init; }
     public CultureInfo DefaultCulture { get; init; }
+    public Func<ISectionBaseModel, ISectionBaseModel> BindSection { get; init; }
 }
