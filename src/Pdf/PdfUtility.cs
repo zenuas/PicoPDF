@@ -49,8 +49,6 @@ public static class PdfUtility
         return doc;
     }
 
-    public static IFontRegister CreateDefaultFontRegister() => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetFontDirectories()]));
-
     public static IEnumerable<(string Text, Type0Font Font)[]> GetMultilineTextFont(string text, Type0Font[] fonts, double size, double width, ILineBreakRule linebreak_rule)
     {
         foreach (var line in text.SplitLine())
