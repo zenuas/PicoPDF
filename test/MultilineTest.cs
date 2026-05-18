@@ -4,7 +4,6 @@ using OpenType;
 using OpenType.Outline;
 using OpenType.Tables;
 using PicoPDF.Loader.Sections;
-using PicoPDF.Pdf;
 using PicoPDF.Pdf.Documents;
 using PicoPDF.Pdf.Font;
 using System;
@@ -66,7 +65,7 @@ public class MultilineTest
     public static readonly Type0Font[] Fonts = [Type0FontMock.Create()];
 
     public string[] GetText(string line, double size, double width, ILineBreakRule? linebreak_rule = null) => [..
-            PdfUtility.GetTextFont(line, Fonts, size, width, linebreak_rule ?? new NoneLineBreakRule())
+            Contents.GetTextFont(line, Fonts, size, width, linebreak_rule ?? new NoneLineBreakRule())
             .Select(x => x.Select(y => y.Text).Join(""))
         ];
 
