@@ -250,6 +250,7 @@ public class SectionBinder2SectionTest
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/4");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Detail/5");
         Assert.Equal(ToSectionString(models[0].Models[i++]), "Footer1/200/P-Sum=15/P-Cnt=5/P-Avg=3/P-Max=5/P-Min=1/G-Sum=21/G-Cnt=6/G-Avg=3/G-Max=6/G-Min=1");
+        Assert.Equal(ToSectionString(models[0].Models[i++]), "PageFooter/PageFooter/P-Sum=15/P-Cnt=5/P-Avg=3/P-Max=5/P-Min=1/A-Sum=22/A-Cnt=7/A-Avg=3/A-Max=6/A-Min=1/1///2");
 
         i = 0;
         Assert.Equal(models[1].Models.Length, 5);
