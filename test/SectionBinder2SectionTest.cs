@@ -71,7 +71,7 @@ public class SectionBinder2SectionTest
 		]},
 	],
 }
-""");
+""", new());
 
     public static PageModel[] CreatePageModel<T>(IEnumerable<(T, T)> datas)
     {

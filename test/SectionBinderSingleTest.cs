@@ -50,7 +50,7 @@ public class SectionBinderSingleTest
 		]},
 	],
 }
-""");
+""", new());
 
     public static PageModel[] CreatePageModel<T>(IEnumerable<T> datas)
     {

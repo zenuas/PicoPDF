@@ -1,63 +1,30 @@
-﻿using Image;
-using Mina.Extension;
-using PicoPDF.Loader.Sections;
+﻿using Mina.Extension;
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Documents;
-using PicoPDF.Pdf.Font;
-using PicoPDF.Pdf.XObject.Image;
-using System;
 using System.Linq;
 
 namespace PicoPDF.Model;
 
 public static class ModelMapping
 {
-    public static Func<string, FontEmbed, Type0Font> CreateFontCache(Document doc)
-    {
-        var fontcache = doc.PdfObjects.OfType<Type0Font>().ToDictionary(x => x.Name, x => x);
-        return (name, embed) =>
-        {
-            var namekey = $"{name};{embed}";
-            if (fontcache.TryGetValue(namekey, out var value)) return value;
-            var x = doc.AddFont($"F{fontcache.Count}", doc.FontRegister.LoadComplete(name), embed);
-            fontcache.Add(namekey, x);
-            return x;
-        };
-    }
-
-    public static Func<ImageModel, IImageXObject> CreateImageCache(Document doc)
-    {
-        var imagecache = doc.PdfObjects.OfType<IImageXObject>().ToDictionary(x => x.Name, x => x);
-        return (image) =>
-        {
-            if (imagecache.TryGetValue(image.Path, out var value)) return value;
-            var load = ImageLoader.FromFile(image.Path)!;
-            var x = doc.AddImage($"X{imagecache.Count}", image.Path, load.Width, load.Height);
-            imagecache.Add(image.Path, x);
-            return x;
-        };
-    }
-
     public static void Mapping(Document doc, PageModel[] pages, PdfEventOption option)
     {
-        var fontget = CreateFontCache(doc);
-        var imageget = CreateImageCache(doc);
         foreach (var page in pages)
         {
             var pdfpage = doc.NewPage(page.Width, page.Height);
-            page.Models.Each(section => section.Elements.Each(x => option.Mapping(pdfpage, fontget, imageget, x, section.Top, section.Left)));
+            page.Models.Each(section => section.Elements.Each(x => option.Mapping(pdfpage, x, section.Top, section.Left)));
         }
     }
 
-    public static void Mapping(Page page, Func<string, FontEmbed, Type0Font> fontget, Func<ImageModel, IImageXObject> imageget, IModelElement model, int top, int left)
+    public static void Mapping(Page page, IModelElement model, int top, int left)
     {
         double posx = model.X + left;
         double posy = model.Y + top;
         switch (model)
         {
             case ITextModel x:
-                _ = page.Contents.DrawText(x.Text, posy, posx, x.Size, [.. x.Font.Select(x => fontget(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
+                _ = page.Contents.DrawText(x.Text, posy, posx, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
                 return;
 
             case ILineModel x:
@@ -73,7 +40,7 @@ public static class ModelMapping
                 return;
 
             case ImageModel x:
-                page.Contents.DrawImage(posx, posy, imageget(x), x.ZoomWidth, x.ZoomHeight);
+                page.Contents.DrawImage(posx, posy, page.Document.GetImage(x), x.ZoomWidth, x.ZoomHeight);
                 return;
         }
         throw new();

@@ -45,8 +45,6 @@ public class PdfCreate : FontRegisterCommand
 
     public override void Run(string[] args)
     {
-        var fontreg = CreateFontRegister(true);
-
         var export_opt = new PdfExportOption
         {
             Debug = Debug,
@@ -59,8 +57,10 @@ public class PdfCreate : FontRegisterCommand
             PointFormat = PointFormat,
         };
 
+        var fontreg = CreateFontRegister(true);
         var event_opt = new PdfEventOption
         {
+            CreateFontRegister = () => fontreg,
             BindElement = (section, element, data, model) =>
             {
                 if (element.Name.StartsWith("Test"))
@@ -80,17 +80,17 @@ public class PdfCreate : FontRegisterCommand
                 }
                 return model;
             },
-            Mapping = (page, fontget, imageget, model, top, left) =>
+            Mapping = (page, model, top, left) =>
             {
                 if (model is ITextModel x && model.Element is ITextElement e && e.Name == "Jp")
                 {
                     double posx = model.X + left;
                     double posy = model.Y + top;
-                    _ = page.Contents.DrawText(model.Cast<ITextModel>().Text, posy, posx, x.Size, [.. x.Font.Select(x => fontget(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
+                    _ = page.Contents.DrawText(model.Cast<ITextModel>().Text, posy, posx, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
                 }
                 else
                 {
-                    ModelMapping.Mapping(page, fontget, imageget, model, top, left);
+                    ModelMapping.Mapping(page, model, top, left);
                 }
             },
         };
@@ -123,7 +123,7 @@ public class PdfCreate : FontRegisterCommand
 
             tasks.Add(Task.Run(() =>
             {
-                var doc = PdfUtility.CreateDocument(json, table, fontreg, event_opt);
+                var doc = PdfUtility.CreateDocument(json, table, event_opt);
                 _ = doc.AddInfo(
                     title: fname,
                     producer: "PicoPDF for 🍣 (susi edition)",

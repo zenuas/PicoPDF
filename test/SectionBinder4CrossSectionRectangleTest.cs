@@ -91,7 +91,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
     [Fact]
     public void Line0()
@@ -227,7 +227,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
     [Fact]
     public void LineAf0()
@@ -362,7 +362,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
     [Fact]
     public void LineBf0()
@@ -497,7 +497,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
     [Fact]
     public void LineCf0()
@@ -632,7 +632,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
     [Fact]
     public void LineAl0()
@@ -767,7 +767,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
     [Fact]
     public void LineBl0()
@@ -902,7 +902,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
 
     [Fact]
@@ -1038,7 +1038,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
     [Fact]
     public void LineBlCl0()
@@ -1172,7 +1172,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
     [Fact]
     public void LineAlBlCl0()
@@ -1284,7 +1284,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
     [Fact]
     public void LineNoFooter()
@@ -1404,7 +1404,7 @@ public class SectionBinder4CrossSectionRectangleTest
 		]},
 	],
 }
-""");
+""", new());
 
 
     [Fact]

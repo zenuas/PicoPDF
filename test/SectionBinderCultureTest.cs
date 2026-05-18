@@ -49,7 +49,7 @@ public class SectionBinderCultureTest
 		]},
 	],
 }
-""");
+""", new());
 
     public static PageModel[] CreatePageModel<T>(IEnumerable<T> datas, DateTime d)
     {

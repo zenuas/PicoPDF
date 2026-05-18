@@ -4,6 +4,7 @@ using Mina.Extension;
 using Mina.Text;
 using OpenType;
 using PicoPDF.Loader.Sections;
+using PicoPDF.Model.Elements;
 using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.ExtGState;
 using PicoPDF.Pdf.Font;
@@ -40,6 +41,8 @@ public class Document
     };
     public PdfObject? Info { get; set; }
     public required IFontRegister FontRegister { get; init; }
+    public Func<string, FontEmbed, Type0Font> GetFont { get; init; }
+    public Func<ImageModel, IImageXObject> GetImage { get; init; }
 
     public Document()
     {
@@ -47,6 +50,35 @@ public class Document
 
         PdfObjects.Add(Catalog);
         PdfObjects.Add(PageTree);
+
+        GetFont = CreateFontCache();
+        GetImage = CreateImageCache();
+    }
+
+    public Func<string, FontEmbed, Type0Font> CreateFontCache()
+    {
+        var fontcache = PdfObjects.OfType<Type0Font>().ToDictionary(x => x.Name, x => x);
+        return (name, embed) =>
+        {
+            var namekey = $"{name};{embed}";
+            if (fontcache.TryGetValue(namekey, out var value)) return value;
+            var x = AddFont($"F{fontcache.Count}", FontRegister.LoadComplete(name), embed);
+            fontcache.Add(namekey, x);
+            return x;
+        };
+    }
+
+    public Func<ImageModel, IImageXObject> CreateImageCache()
+    {
+        var imagecache = PdfObjects.OfType<IImageXObject>().ToDictionary(x => x.Name, x => x);
+        return (image) =>
+        {
+            if (imagecache.TryGetValue(image.Path, out var value)) return value;
+            var load = ImageLoader.FromFile(image.Path)!;
+            var x = AddImage($"X{imagecache.Count}", image.Path, load.Width, load.Height);
+            imagecache.Add(image.Path, x);
+            return x;
+        };
     }
 
     public Page NewPage(int width, int height)

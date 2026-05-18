@@ -102,7 +102,7 @@ public class SectionBinder3SectionKey1Test
 		]},
 	],
 }
-""");
+""", new());
 
     public static PageModel[] CreatePageModel(IEnumerable<(int, string, string)> datas)
     {

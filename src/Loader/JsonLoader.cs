@@ -16,11 +16,11 @@ namespace PicoPDF.Loader;
 
 public static class JsonLoader
 {
-    public static PageSection CreatePageFromJsonFile(string path, PdfEventOption? option = null) => CreatePageFromJson(File.ReadAllText(path), option);
+    public static PageSection CreatePageFromJsonFile(string path, PdfEventOption option) => CreatePageFromJson(File.ReadAllText(path), option);
 
-    public static PageSection CreatePageFromJson(string json, PdfEventOption? option = null) => CreatePageFromJson(JsonNode.Parse(json, null, new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip })!, option);
+    public static PageSection CreatePageFromJson(string json, PdfEventOption option) => CreatePageFromJson(JsonNode.Parse(json, null, new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip })!, option);
 
-    public static PageSection CreatePageFromJson(JsonNode json, PdfEventOption? option = null)
+    public static PageSection CreatePageFromJson(JsonNode json, PdfEventOption option)
     {
         var sections = json["Sections"]!
             .AsArray()
@@ -40,7 +40,7 @@ public static class JsonLoader
             SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
             Padding = LoadAllSides(json["Padding"]),
             DefaultCulture = json["DefaultCulture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : CultureInfo.InvariantCulture,
-            EventOption = option ?? new PdfEventOption(),
+            EventOption = option,
         };
     }
 

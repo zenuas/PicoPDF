@@ -37,12 +37,17 @@ public static class PdfUtility
 
     public static DeviceRGB ToDeviceRGB(this System.Drawing.Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
 
-    public static Document CreateDocument<T>(string json, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null, IFontRegister? register = null, PdfEventOption? option = null) => CreateDocument(JsonLoader.CreatePageFromJsonFile(json, option), datas, mapper, register, option);
-    public static Document CreateDocument(string json, DataTable table, IFontRegister? register = null, PdfEventOption? option = null) => CreateDocument(JsonLoader.CreatePageFromJsonFile(json, option), table, register, option);
-    public static Document CreateDocument(string json, DataView view, IFontRegister? register = null, PdfEventOption? option = null) => CreateDocument(JsonLoader.CreatePageFromJsonFile(json, option), view, register, option);
-    public static Document CreateDocument<T>(PageSection pagesection, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null, IFontRegister? register = null, PdfEventOption? option = null) => new Document { FontRegister = register ?? CreateDefaultFontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind<T, PageModel, SectionModel>(pagesection, datas, mapper), option ?? new()));
-    public static Document CreateDocument(PageSection pagesection, DataTable table, IFontRegister? register = null, PdfEventOption? option = null) => new Document { FontRegister = register ?? CreateDefaultFontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind<PageModel, SectionModel>(pagesection, table), option ?? new()));
-    public static Document CreateDocument(PageSection pagesection, DataView view, IFontRegister? register = null, PdfEventOption? option = null) => new Document { FontRegister = register ?? CreateDefaultFontRegister() }.Return(x => ModelMapping.Mapping(x, SectionBinder.Bind<PageModel, SectionModel>(pagesection, view), option ?? new()));
+    public static Document CreateDocument<T>(string json, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null, PdfEventOption? option = null) => CreateDocument(json, (section) => SectionBinder.Bind<T, PageModel, SectionModel>(section, datas, mapper), option ?? new());
+    public static Document CreateDocument(string json, DataTable table, PdfEventOption? option = null) => CreateDocument(json, (section) => SectionBinder.Bind<PageModel, SectionModel>(section, table), option ?? new());
+    public static Document CreateDocument(string json, DataView view, PdfEventOption? option = null) => CreateDocument(json, (section) => SectionBinder.Bind<PageModel, SectionModel>(section, view), option ?? new());
+
+    public static Document CreateDocument(string json, Func<PageSection, PageModel[]> pages, PdfEventOption option)
+    {
+        var opt = option ?? new();
+        var doc = new Document { FontRegister = opt.CreateFontRegister() };
+        ModelMapping.Mapping(doc, pages(JsonLoader.CreatePageFromJsonFile(json, opt)), opt);
+        return doc;
+    }
 
     public static IFontRegister CreateDefaultFontRegister() => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetFontDirectories()]));
 

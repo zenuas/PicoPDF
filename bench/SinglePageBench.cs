@@ -44,7 +44,7 @@ public class SinglePageBench
 		]},
 	],
 }
-""");
+""", new());
 
     public class DataLine
     {
