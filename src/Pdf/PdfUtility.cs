@@ -17,13 +17,6 @@ namespace PicoPDF.Pdf;
 
 public static class PdfUtility
 {
-    public static double CentimeterToPoint(double v) => v * 72 / 2.54;
-    public static double MillimeterToPoint(double v) => v * 72 / 25.4;
-    [Obsolete("use SI")] public static double InchToPoint(double v) => v * 72;
-    public static double PointToCentimeter(double v) => v / 72 * 2.54;
-    public static double PointToMillimeter(double v) => v / 72 * 25.4;
-    [Obsolete("use SI")] public static double PointToInch(double v) => v / 72;
-
     public static readonly char[][] EscapeChars = [['('], [')'], ['\\']];
 
     public static string ToEscapeString(string s, Encoding encoding) => s.All(char.IsAscii) ? $"({s.ReplaceBeforeInsert(EscapeChars, ['\\']).ToStringByChars()})" : ToHexString(s, encoding);
