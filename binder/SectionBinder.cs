@@ -98,17 +98,17 @@ public static class SectionBinder
                 .SkipWhileOrPageFirst(x => page_count == 1 || (x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](firstdata))))
                 .Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, firstdata, bind, x.BreakCount, x.Depth)).Cast<TSection>())
                 .Each(models.Add);
-            var section_break = false;
+            var page_first = true;
             var breakcount = 0;
 
             while (true)
             {
                 _ = datas.Next(0, out var current);
-                var breakheader = !section_break ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
+                var breakheader = page_first ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
                 var height = pageheight_minus_everypagefooter - (breakheader?.Select(x => x.Section.Height).Sum() ?? 0) - models.Select(x => x.Height).Sum();
 
-                var temp_everyfooter = everyfooter is null || !section_break ? null : page.BindSection(TSection.CreateSectionModel(page, everyfooter, lastdata, bind, 0, null));
-                if (section_break) bind.SectionBreak(lastdata, page);
+                var temp_everyfooter = everyfooter is null || page_first ? null : page.BindSection(TSection.CreateSectionModel(page, everyfooter, lastdata, bind, 0, null));
+                if (!page_first) bind.SectionBreak(lastdata, page);
 
                 var details = GetBreakOrTakeDetail(page, detail, datas, bind, keys, height - minimum_breakfooter_height);
                 if (details.Count == 0)
@@ -160,7 +160,7 @@ public static class SectionBinder
                     bind.KeyBreak(lastdata, breakcount, keys, page);
                     if (datas.IsLast) break;
                 }
-                section_break = true;
+                page_first = false;
             }
 
             bind.PageBreak(lastdata, page);
