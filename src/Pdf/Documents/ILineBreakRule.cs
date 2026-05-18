@@ -1,7 +1,9 @@
-﻿namespace PicoPDF.Pdf.Documents;
+﻿using System.Collections.Generic;
+
+namespace PicoPDF.Pdf.Documents;
 
 public interface ILineBreakRule
 {
-    public int[] DenyStartChar { get; init; }
-    public int[] DenyEndChar { get; init; }
+    public IReadOnlySet<int> DenyStartChar { get; init; }
+    public IReadOnlySet<int> DenyEndChar { get; init; }
 }
