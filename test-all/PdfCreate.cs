@@ -61,6 +61,24 @@ public class PdfCreate : FontRegisterCommand
         var event_opt = new PdfEventOption
         {
             CreateFontRegister = () => fontreg,
+            BindSection = section =>
+            {
+                if (section is SectionModel section_model && section_model.Section.Name.StartsWith("Test"))
+                {
+                    return new SectionModel()
+                    {
+                        Section = section_model.Section,
+                        Depth = section_model.Depth,
+                        Top = section_model.Top,
+                        Left = section_model.Left,
+                        Height = section_model.Height + section_model.PageCount * 5,
+                        IsFooter = section_model.IsFooter,
+                        Elements = section_model.Elements,
+                        PageCount = section_model.PageCount,
+                    };
+                }
+                return section;
+            },
             BindElement = (section, element, data, model) =>
             {
                 if (element.Name.StartsWith("Test"))

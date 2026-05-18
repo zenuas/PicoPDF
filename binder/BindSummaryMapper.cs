@@ -14,6 +14,7 @@ public class BindSummaryMapper<T, TSection>
     public string[] Keys { get; init; } = [];
     public required IReadOnlyDictionary<string, ClearableDynamicValue> SummaryPool { get; init; }
     public Action<T>[] SummaryAction { get; init; } = [];
+    public Action<T>[] SummaryCancelAction { get; init; } = [];
     public required List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>[] SummaryGoBack { get; init; }
     public required List<ICrossSectionModel<TSection>>[] CrossSectionGoBack { get; init; }
     public required Func<int> GetPageCount { get; init; }
@@ -24,6 +25,7 @@ public class BindSummaryMapper<T, TSection>
         Keys = [],
         SummaryPool = new Dictionary<string, ClearableDynamicValue>(),
         SummaryAction = [],
+        SummaryCancelAction = [],
         SummaryGoBack = CreateSummaryGoBack(0),
         CrossSectionGoBack = CreateCrossSectionGoBack(0),
         GetPageCount = () => 0,
@@ -31,23 +33,25 @@ public class BindSummaryMapper<T, TSection>
 
     public static BindSummaryMapper<T, TSection> Create(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] keys, int depth)
     {
-        var (pool, actions) = CreatePool(page, mapper, keys);
+        var (pool, actions, cancels) = CreatePool(page, mapper, keys);
         return new()
         {
             Mapper = mapper,
             Keys = keys,
             SummaryPool = pool,
             SummaryAction = actions,
+            SummaryCancelAction = cancels,
             SummaryGoBack = CreateSummaryGoBack(keys.Length),
             CrossSectionGoBack = CreateCrossSectionGoBack(depth),
             GetPageCount = () => (int)pool["#:PAGECOUNT()"].Value!
         };
     }
 
-    public static (Dictionary<string, ClearableDynamicValue> Pool, Action<T>[] Actions) CreatePool(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] allkeys)
+    public static (Dictionary<string, ClearableDynamicValue> Pool, Action<T>[] Actions, Action<T>[] Cancels) CreatePool(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] allkeys)
     {
         var pool = new Dictionary<string, ClearableDynamicValue>();
         var actions = new List<Action<T>>();
+        var cancels = new List<Action<T>>();
 
         pool.Add("#:PAGECOUNT()", new() { Value = 1, Clear = _ => { } });
         TraversSummaryElement([], page).Each(sr =>
@@ -70,6 +74,7 @@ public class BindSummaryMapper<T, TSection>
                             pool.Add(key, v);
                             mapper.Add(key, _ => v.Value);
                             actions.Add(x => v.Value += (dynamic)mapper[sr.SummaryElement.Bind](x));
+                            cancels.Add(x => v.Value -= (dynamic)mapper[sr.SummaryElement.Bind](x));
                         }
                         sr.SummaryElement.SummaryBind = key;
                         if (sr.SummaryElement.SummaryType == SummaryType.Average) goto case SummaryType.Count;
@@ -85,6 +90,7 @@ public class BindSummaryMapper<T, TSection>
                             pool.Add(key, v);
                             mapper.Add(key, _ => v.Value);
                             actions.Add(x => v.Value++);
+                            cancels.Add(x => v.Value--);
                         }
                         sr.SummaryElement.SummaryCount = key;
                         break;
@@ -95,13 +101,20 @@ public class BindSummaryMapper<T, TSection>
                         var key = $"{breakpoint}:MAX({sr.SummaryElement.Bind})";
                         if (!pool.ContainsKey(key))
                         {
-                            var v = new ClearableDynamicValue() { Value = null, Clear = x => x.Value = null };
+                            var values = new List<dynamic>();
+                            var v = new ClearableDynamicValue() { Value = null, Clear = x => { x.Value = null; values.Clear(); } };
                             pool.Add(key, v);
                             mapper.Add(key, _ => v.Value!);
                             actions.Add(x =>
                             {
                                 var value = (dynamic)mapper[sr.SummaryElement.Bind](x);
                                 v.Value = v.Value is null ? value : (v.Value < value ? value : v.Value);
+                                values.Add(value);
+                            });
+                            cancels.Add(_ =>
+                            {
+                                values.RemoveAt(values.Count - 1);
+                                v.Value = values.Count > 0 ? values.Max() : null;
                             });
                         }
                         sr.SummaryElement.SummaryBind = key;
@@ -113,13 +126,20 @@ public class BindSummaryMapper<T, TSection>
                         var key = $"{breakpoint}:MIN({sr.SummaryElement.Bind})";
                         if (!pool.ContainsKey(key))
                         {
-                            var v = new ClearableDynamicValue() { Value = null, Clear = x => x.Value = null };
+                            var values = new List<dynamic>();
+                            var v = new ClearableDynamicValue() { Value = null, Clear = x => { x.Value = null; values.Clear(); } };
                             pool.Add(key, v);
                             mapper.Add(key, _ => v.Value!);
                             actions.Add(x =>
                             {
                                 var value = (dynamic)mapper[sr.SummaryElement.Bind](x);
                                 v.Value = v.Value is null ? value : (v.Value > value ? value : v.Value);
+                                values.Add(value);
+                            });
+                            cancels.Add(_ =>
+                            {
+                                values.RemoveAt(values.Count - 1);
+                                v.Value = values.Count > 0 ? values.Min() : null;
                             });
                         }
                         sr.SummaryElement.SummaryBind = key;
@@ -127,7 +147,7 @@ public class BindSummaryMapper<T, TSection>
                     }
             }
         });
-        return (pool, [.. actions]);
+        return (pool, [.. actions], [.. cancels]);
     }
 
     public static List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>[] CreateSummaryGoBack(int key_count) => [.. Lists.RangeTo(0, key_count + 2).Select(_ => new List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>())];
@@ -227,6 +247,8 @@ public class BindSummaryMapper<T, TSection>
     public void SetPageCount(int pagecount) => SummaryPool["#:PAGECOUNT()"].Value = pagecount;
 
     public void DataBind(T data) => SummaryAction.Each(x => x(data));
+
+    public void DataBindCancel(T data) => SummaryCancelAction.Each(x => x(data));
 
     public object GetSummary(ISummaryElement x, T data)
     {

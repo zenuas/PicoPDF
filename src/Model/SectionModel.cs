@@ -18,6 +18,7 @@ public class SectionModel : ISectionModel<SectionModel>
     public required int Height { get; init; }
     public required bool IsFooter { get; init; }
     public IModelElement[] Elements { get; init; } = [];
+    public required int PageCount { get; init; }
 
     public void UpdatePosition() => Elements
         .OfType<ICrossSectionModel<SectionModel>>()
@@ -32,6 +33,7 @@ public class SectionModel : ISectionModel<SectionModel>
         Height = section.Height,
         IsFooter = section is IFooterSection footer && footer.IsFooter,
         Elements = BindElements(section, data, bind, page.Cast<PageSection>(), break_count, depth),
+        PageCount = bind.GetPageCount(),
     };
 
     public static IModelElement[] BindElements<T>(ISection section, T data, BindSummaryMapper<T, SectionModel> bind, PageSection page, int break_count, int? depth) => [.. section.Elements.Select(x => page.EventOption.BindElement(section, x, data, BindElement(x, data, bind, page, break_count, depth)))];

@@ -5,6 +5,7 @@ using Mina.Mapper;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Binder;
@@ -106,39 +107,54 @@ public static class SectionBinder
                 _ = datas.Next(0, out var current);
                 var breakheader = page_first ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
                 var height = pageheight_minus_everypagefooter - (breakheader?.Select(x => x.Section.Height).Sum() ?? 0) - models.Select(x => x.Height).Sum();
-                var count = GetBreakOrTakeCount(datas, bind, keys, (height - minimum_breakfooter_height) / detail.Height);
-                if (count == 0)
+                var details = GetBreakOrTakeDetail(page, detail, datas, bind, keys, height - minimum_breakfooter_height, !page_first ? 2 : 0);
+                if (details.Count == 0)
                 {
                     if (everyfooter is { }) models.Add(page.BindSection(TSection.CreateSectionModel(page, everyfooter, lastdata, bind, 0, null)).Cast<TSection>().Return(x => bind.BreakSection(x)));
                     break;
                 }
 
-                var existnext = datas.Next(count, out var next);
+                var existnext = datas.Next(0, out var next);
                 breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next))).Count() : 0);
                 var breakfooter = (existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next)))] : footers);
 
-                if (height < (count * detail.Height) + breakfooter.Select(x => x.Section.Height).Sum())
+                if (height < details.Select(x => x.Section.Height).Sum() + breakfooter.Select(x => x.Section.Height).Sum())
                 {
-                    if (--count <= 0)
+                    bind.DataBindCancel(details[^1].Data);
+                    datas.PushBack(details[^1].Data);
+                    details.RemoveAt(details.Count - 1);
+                    if (details.Count <= 0)
                     {
                         if (everyfooter is { }) models.Add(page.BindSection(TSection.CreateSectionModel(page, everyfooter, lastdata, bind, 0, null)).Cast<TSection>().Return(x => bind.BreakSection(x)));
+                        bind.SectionBreak(lastdata, page);
                         break;
                     }
                     breakcount = 0;
                     breakfooter = [.. footers.SkipWhileOrEveryPage(_ => false)];
                 }
-                if (!page_first) bind.SectionBreak(lastdata, page);
-                breakheader?.Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, current, bind, x.BreakCount, x.Depth)).Cast<TSection>()).Each(models.Add);
-
-                _ = datas.Next(count - 1, out lastdata);
-                foreach (var x in datas.GetRange(count))
+                else if (!page_first && (breakheader?.Any() ?? false))
                 {
-                    bind.DataBind(x);
-                    models.Add(page.BindSection(TSection.CreateSectionModel(page, detail, x, bind, keys.Length, null)).Cast<TSection>());
+                    Debug.Assert(details.Count <= 2);
+                    for (var i = details.Count - 1; i >= 0; i--)
+                    {
+                        bind.DataBindCancel(details[i].Data);
+                        datas.PushBack(details[i].Data);
+                    }
+
+                    bind.SectionBreak(lastdata, page);
+                    details = GetBreakOrTakeDetail(page, detail, datas, bind, keys, height - minimum_breakfooter_height, 0);
+
+                    existnext = datas.Next(0, out var next2);
+                    breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next2))).Count() : 0);
+                    breakfooter = (existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next2)))] : footers);
                 }
+
+                breakheader?.Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, current, bind, x.BreakCount, x.Depth)).Cast<TSection>()).Each(models.Add);
+                details.Select(x => x.Section).Each(models.Add);
+                lastdata = details[^1].Data;
                 if (breakcount > 0 && detail.Fill)
                 {
-                    var fillcount = (height - (count * detail.Height) - breakfooter.Select(x => x.Section.Height).Sum()) / detail.Height;
+                    var fillcount = (height - details.Select(x => x.Section.Height).Sum() - breakfooter.Select(x => x.Section.Height).Sum()) / detail.Height;
                     for (var i = 0; i < fillcount; i++)
                     {
                         models.Add(page.BindSection(TSection.CreateSectionModel(page, detail, default!, BindSummaryMapper<T, TSection>.Empty, keys.Length, null)).Cast<TSection>());
@@ -152,14 +168,13 @@ public static class SectionBinder
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys, page);
                     break;
                 }
-                if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys, page);
-                page_first = false;
-
-                if (datas.IsLast)
+                if (datas.IsLast && page.Footer is ISection lastfooter) models.Add(page.BindSection(TSection.CreateSectionModel(page, lastfooter, lastdata, bind, 0, null)).Cast<TSection>());
+                if (datas.IsLast || breakcount > 0)
                 {
-                    if (page.Footer is ISection lastfooter) models.Add(page.BindSection(TSection.CreateSectionModel(page, lastfooter, lastdata, bind, 0, null)).Cast<TSection>());
-                    break;
+                    bind.KeyBreak(lastdata, breakcount, keys, page);
+                    if (datas.IsLast) break;
                 }
+                page_first = false;
             }
 
             bind.PageBreak(lastdata, page);
@@ -169,20 +184,38 @@ public static class SectionBinder
         }
     }
 
-    public static int GetBreakOrTakeCount<T, TSection>(BufferedEnumerator<T> datas, BindSummaryMapper<T, TSection> bind, string[] keys, int maxcount)
+    public static List<(TSection Section, T Data)> GetBreakOrTakeDetail<T, TSection>(IPageSection page, IDetailSection detail, BufferedEnumerator<T> datas, BindSummaryMapper<T, TSection> bind, string[] keys, int max_height, int max_count)
         where TSection : ISectionModel<TSection>
     {
-        if (maxcount <= 0) return 0;
+        if (max_height <= 0) return [];
 
+        var details = new List<(TSection Section, T Data)>();
         _ = datas.Next(0, out var prev);
         var prevkey = keys.ToDictionary(x => x, x => bind.Mapper[x](prev));
+        bind.DataBind(prev);
+        var first = page.BindSection(TSection.CreateSectionModel(page, detail, prev, bind, 0, null)).Cast<TSection>();
+        var height = first.Height;
+        details.Add((first, prev));
+        _ = datas.GetRange(1);
 
-        for (var i = 1; i < maxcount; i++)
+        while (max_count == 0 || details.Count < max_count)
         {
-            if (!datas.Next(i, out var data) ||
-                !keys.All(x => prevkey[x].Equals(bind.Mapper[x](data)))) return i;
+            if (!datas.Next(0, out var data) ||
+                !keys.All(x => prevkey[x].Equals(bind.Mapper[x](data)))) break;
+
+            bind.DataBind(data);
+            var next = page.BindSection(TSection.CreateSectionModel(page, detail, data, bind, 0, null)).Cast<TSection>();
+            height += next.Height;
+            if (height > max_height)
+            {
+                bind.DataBindCancel(data);
+                break;
+            }
+
+            _ = datas.GetRange(1);
+            details.Add((next, data));
         }
-        return maxcount;
+        return details;
     }
 
     public static IEnumerable<SectionInfo> SkipWhileOrPageFirst(this IEnumerable<SectionInfo> self, Func<SectionInfo, bool> f)

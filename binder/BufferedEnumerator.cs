@@ -33,4 +33,9 @@ public class BufferedEnumerator<T>
         Buffer.RemoveRange(0, count);
         return xs;
     }
+
+    public void PushBack(T item)
+    {
+        Buffer.Insert(0, item);
+    }
 }
