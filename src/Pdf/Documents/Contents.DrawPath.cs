@@ -120,7 +120,7 @@ public partial class Contents
                             Transform =
                                 linear.GradientTransform *
                                 Matrix3x2.CreateScale((float)r) *
-                                PdfUtility.FlipY *
+                                Matrix3x2.CreateScale(1, -1) *
                                 Matrix3x2.CreateTranslation((float)left, (float)basey),
                         });
                         if (linear.StopColors.Any(x => x.StopColor.A < 255))
@@ -153,7 +153,7 @@ public partial class Contents
                             Transform =
                                 radial.GradientTransform *
                                 Matrix3x2.CreateScale((float)r) *
-                                PdfUtility.FlipY *
+                                Matrix3x2.CreateScale(1, -1) *
                                 Matrix3x2.CreateTranslation((float)left, (float)basey),
                         });
                         if (radial.StopColors.Any(x => x.StopColor.A < 255))

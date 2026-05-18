@@ -199,7 +199,7 @@ public class SvgOutput : FontRegisterCommand
                     writer.Write($"""gradientUnits="userSpaceOnUse" """);
                     if (!linear.GradientTransform.IsIdentity)
                     {
-                        var m = linear.GradientTransform * Matrix3x2.CreateScale(r) * PdfUtility.FlipY * Matrix3x2.CreateTranslation(left, baseline);
+                        var m = linear.GradientTransform * Matrix3x2.CreateScale(r) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
                         writer.Write($"""gradientTransform="matrix({PdfUtility.PointToString(m.M11, PointFormat)}, {PdfUtility.PointToString(m.M12, PointFormat)}, {PdfUtility.PointToString(m.M21, PointFormat)}, {PdfUtility.PointToString(m.M22, PointFormat)}, {PdfUtility.PointToString(m.M31, PointFormat)}, {PdfUtility.PointToString(m.M32, PointFormat)})" """);
                         writer.Write($"""x1="{PdfUtility.PointToString(linear.XY1.X, PointFormat)}" """);
                         writer.Write($"""y1="{PdfUtility.PointToString(linear.XY1.Y, PointFormat)}" """);
@@ -216,7 +216,7 @@ public class SvgOutput : FontRegisterCommand
                     writer.WriteLine();
                     if (isdebug && !linear.GradientTransform.IsIdentity)
                     {
-                        var m = linear.GradientTransform * Matrix3x2.CreateScale(r) * PdfUtility.FlipY * Matrix3x2.CreateTranslation(left, baseline);
+                        var m = linear.GradientTransform * Matrix3x2.CreateScale(r) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
                         var xy1 = Vector2.Transform(linear.XY1, m);
                         var xy2 = Vector2.Transform(linear.XY2, m);
                         writer.Write($"""            <!-- """);
@@ -241,7 +241,7 @@ public class SvgOutput : FontRegisterCommand
                     writer.Write($"""gradientUnits="userSpaceOnUse" """);
                     if (!radial.GradientTransform.IsIdentity)
                     {
-                        var m = radial.GradientTransform * Matrix3x2.CreateScale(r) * PdfUtility.FlipY * Matrix3x2.CreateTranslation(left, baseline);
+                        var m = radial.GradientTransform * Matrix3x2.CreateScale(r) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
                         writer.Write($"""gradientTransform="matrix({PdfUtility.PointToString(m.M11, PointFormat)}, {PdfUtility.PointToString(m.M12, PointFormat)}, {PdfUtility.PointToString(m.M21, PointFormat)}, {PdfUtility.PointToString(m.M22, PointFormat)}, {PdfUtility.PointToString(m.M31, PointFormat)}, {PdfUtility.PointToString(m.M32, PointFormat)})" """);
                         writer.Write($"""cx="{PdfUtility.PointToString(radial.Cxy.X, PointFormat)}" """);
                         writer.Write($"""cy="{PdfUtility.PointToString(radial.Cxy.Y, PointFormat)}" """);
@@ -262,7 +262,7 @@ public class SvgOutput : FontRegisterCommand
                     writer.WriteLine();
                     if (isdebug && !radial.GradientTransform.IsIdentity)
                     {
-                        var m = radial.GradientTransform * Matrix3x2.CreateScale(r) * PdfUtility.FlipY * Matrix3x2.CreateTranslation(left, baseline);
+                        var m = radial.GradientTransform * Matrix3x2.CreateScale(r) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
                         var cxy = Vector2.Transform(radial.Cxy, m);
                         var fxy = Vector2.Transform(radial.Fxy, m);
                         writer.Write($"""            <!-- """);
