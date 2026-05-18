@@ -99,21 +99,22 @@ public static class SectionBinder
                 .SkipWhileOrPageFirst(x => page_count == 1 || (x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](firstdata))))
                 .Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, firstdata, bind, x.BreakCount, x.Depth)).Cast<TSection>())
                 .Each(models.Add);
-            var page_first = true;
+            var section_break = false;
             var breakcount = 0;
 
             while (true)
             {
                 _ = datas.Next(0, out var current);
-                var breakheader = page_first ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
+                var breakheader = !section_break ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
                 var height = pageheight_minus_everypagefooter - (breakheader?.Select(x => x.Section.Height).Sum() ?? 0) - models.Select(x => x.Height).Sum();
-                var details = GetBreakOrTakeDetail(page, detail, datas, bind, keys, height - minimum_breakfooter_height, !page_first ? 2 : 0);
+                var details = GetBreakOrTakeDetail(page, detail, datas, bind, keys, height - minimum_breakfooter_height, section_break ? 2 : 0);
                 if (details.Count == 0)
                 {
                     if (everyfooter is { }) models.Add(page.BindSection(TSection.CreateSectionModel(page, everyfooter, lastdata, bind, 0, null)).Cast<TSection>().Return(x => bind.BreakSection(x)));
                     break;
                 }
 
+            SECTION_BREAK_RESTART:
                 var existnext = datas.Next(0, out var next);
                 breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next))).Count() : 0);
                 var breakfooter = (existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next)))] : footers);
@@ -132,7 +133,7 @@ public static class SectionBinder
                     breakcount = 0;
                     breakfooter = [.. footers.SkipWhileOrEveryPage(_ => false)];
                 }
-                else if (!page_first && (breakheader?.Any() ?? false))
+                else if (section_break && (breakheader?.Any() ?? false))
                 {
                     Debug.Assert(details.Count <= 2);
                     for (var i = details.Count - 1; i >= 0; i--)
@@ -143,10 +144,8 @@ public static class SectionBinder
 
                     bind.SectionBreak(lastdata, page);
                     details = GetBreakOrTakeDetail(page, detail, datas, bind, keys, height - minimum_breakfooter_height, 0);
-
-                    existnext = datas.Next(0, out var next2);
-                    breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next2))).Count() : 0);
-                    breakfooter = (existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next2)))] : footers);
+                    section_break = false;
+                    goto SECTION_BREAK_RESTART;
                 }
 
                 breakheader?.Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, current, bind, x.BreakCount, x.Depth)).Cast<TSection>()).Each(models.Add);
@@ -174,7 +173,7 @@ public static class SectionBinder
                     bind.KeyBreak(lastdata, breakcount, keys, page);
                     if (datas.IsLast) break;
                 }
-                page_first = false;
+                section_break = true;
             }
 
             bind.PageBreak(lastdata, page);
