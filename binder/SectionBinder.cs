@@ -5,7 +5,6 @@ using Mina.Mapper;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Binder;
@@ -107,14 +106,17 @@ public static class SectionBinder
                 _ = datas.Next(0, out var current);
                 var breakheader = !section_break ? null : headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)));
                 var height = pageheight_minus_everypagefooter - (breakheader?.Select(x => x.Section.Height).Sum() ?? 0) - models.Select(x => x.Height).Sum();
-                var details = GetBreakOrTakeDetail(page, detail, datas, bind, keys, height - minimum_breakfooter_height, section_break ? 2 : 0);
+
+                var temp_everyfooter = everyfooter is null || !section_break ? null : page.BindSection(TSection.CreateSectionModel(page, everyfooter, lastdata, bind, 0, null));
+                if (section_break) bind.SectionBreak(lastdata, page);
+
+                var details = GetBreakOrTakeDetail(page, detail, datas, bind, keys, height - minimum_breakfooter_height);
                 if (details.Count == 0)
                 {
-                    if (everyfooter is { }) models.Add(page.BindSection(TSection.CreateSectionModel(page, everyfooter, lastdata, bind, 0, null)).Cast<TSection>().Return(x => bind.BreakSection(x)));
+                    if (temp_everyfooter is { }) models.Add(temp_everyfooter.Cast<TSection>().Return(x => bind.BreakSection(x)));
                     break;
                 }
 
-            SECTION_BREAK_RESTART:
                 var existnext = datas.Next(0, out var next);
                 breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next))).Count() : 0);
                 var breakfooter = (existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next)))] : footers);
@@ -126,26 +128,11 @@ public static class SectionBinder
                     details.RemoveAt(details.Count - 1);
                     if (details.Count <= 0)
                     {
-                        if (everyfooter is { }) models.Add(page.BindSection(TSection.CreateSectionModel(page, everyfooter, lastdata, bind, 0, null)).Cast<TSection>().Return(x => bind.BreakSection(x)));
-                        bind.SectionBreak(lastdata, page);
+                        if (temp_everyfooter is { }) models.Add(temp_everyfooter.Cast<TSection>().Return(x => bind.BreakSection(x)));
                         break;
                     }
                     breakcount = 0;
                     breakfooter = [.. footers.SkipWhileOrEveryPage(_ => false)];
-                }
-                else if (section_break && (breakheader?.Any() ?? false))
-                {
-                    Debug.Assert(details.Count <= 2);
-                    for (var i = details.Count - 1; i >= 0; i--)
-                    {
-                        bind.DataBindCancel(details[i].Data);
-                        datas.PushBack(details[i].Data);
-                    }
-
-                    bind.SectionBreak(lastdata, page);
-                    details = GetBreakOrTakeDetail(page, detail, datas, bind, keys, height - minimum_breakfooter_height, 0);
-                    section_break = false;
-                    goto SECTION_BREAK_RESTART;
                 }
 
                 breakheader?.Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, current, bind, x.BreakCount, x.Depth)).Cast<TSection>()).Each(models.Add);
@@ -183,7 +170,7 @@ public static class SectionBinder
         }
     }
 
-    public static List<(TSection Section, T Data)> GetBreakOrTakeDetail<T, TSection>(IPageSection page, IDetailSection detail, BufferedEnumerator<T> datas, BindSummaryMapper<T, TSection> bind, string[] keys, int max_height, int max_count)
+    public static List<(TSection Section, T Data)> GetBreakOrTakeDetail<T, TSection>(IPageSection page, IDetailSection detail, BufferedEnumerator<T> datas, BindSummaryMapper<T, TSection> bind, string[] keys, int max_height)
         where TSection : ISectionModel<TSection>
     {
         if (max_height <= 0) return [];
@@ -197,7 +184,7 @@ public static class SectionBinder
         details.Add((first, prev));
         _ = datas.GetRange(1);
 
-        while (max_count == 0 || details.Count < max_count)
+        while (true)
         {
             if (!datas.Next(0, out var data) ||
                 !keys.All(x => prevkey[x].Equals(bind.Mapper[x](data)))) break;
