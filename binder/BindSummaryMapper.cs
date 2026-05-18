@@ -16,6 +16,7 @@ public class BindSummaryMapper<T, TSection>
     public Action<T>[] SummaryAction { get; init; } = [];
     public required List<(ISummaryElement SummaryElement, IMutableTextModel TextModel)>[] SummaryGoBack { get; init; }
     public required List<ICrossSectionModel<TSection>>[] CrossSectionGoBack { get; init; }
+    public required Func<int> GetPageCount { get; init; }
 
     public readonly static BindSummaryMapper<T, TSection> Empty = new()
     {
@@ -25,6 +26,7 @@ public class BindSummaryMapper<T, TSection>
         SummaryAction = [],
         SummaryGoBack = CreateSummaryGoBack(0),
         CrossSectionGoBack = CreateCrossSectionGoBack(0),
+        GetPageCount = () => 0,
     };
 
     public static BindSummaryMapper<T, TSection> Create(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] keys, int depth)
@@ -38,6 +40,7 @@ public class BindSummaryMapper<T, TSection>
             SummaryAction = actions,
             SummaryGoBack = CreateSummaryGoBack(keys.Length),
             CrossSectionGoBack = CreateCrossSectionGoBack(depth),
+            GetPageCount = () => (int)pool["#:PAGECOUNT()"].Value!
         };
     }
 
