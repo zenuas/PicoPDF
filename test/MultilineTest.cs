@@ -64,7 +64,7 @@ public class MultilineTest
 
     public static readonly Type0Font[] Fonts = [Type0FontMock.Create()];
 
-    public string[] GetText(string line, double size, double width, ILineBreakRule? linebreak_rule = null) => [..
+    public static string[] GetText(string line, double size, double width, ILineBreakRule? linebreak_rule = null) => [..
             Contents.GetTextFont(line, Fonts, size, width, linebreak_rule ?? new NoneLineBreakRule())
             .Select(x => x.Select(y => y.Text).Join(""))
         ];
