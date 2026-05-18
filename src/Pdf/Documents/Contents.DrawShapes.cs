@@ -1,5 +1,4 @@
-﻿using PicoPDF.Pdf.Color;
-using PicoPDF.Pdf.Drawing;
+﻿using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Operation;
 using System.Linq;
 

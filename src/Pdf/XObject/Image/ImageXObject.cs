@@ -1,11 +1,13 @@
-﻿namespace PicoPDF.Pdf.XObject.Image;
+﻿using System.Drawing;
+
+namespace PicoPDF.Pdf.XObject.Image;
 
 public class ImageXObject : PdfObject, IImageXObject
 {
     public required string Name { get; init; }
     public required int Width { get; init; }
     public required int Height { get; init; }
-    public required System.Drawing.Color[][] Canvas { get; init; }
+    public required Color[][] Canvas { get; init; }
 
     public override void DoExport(PdfExportOption option)
     {

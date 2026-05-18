@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Pdf.Color;
+﻿namespace PicoPDF.Pdf.Drawing;
 
 public record class DeviceCMYK(double C, double M, double Y, double K) : IColor
 {

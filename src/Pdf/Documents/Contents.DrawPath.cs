@@ -1,7 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType;
 using OpenType.Outline;
-using PicoPDF.Pdf.Color;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.ExtGState;
 using PicoPDF.Pdf.Font;
@@ -14,6 +13,7 @@ using PicoPDF.Pdf.XObject.Group;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 
@@ -194,7 +194,7 @@ public partial class Contents
         }
     }
 
-    public static AxialShading CreateAxialShading(Document document, LinearGradientLayer linear, Func<System.Drawing.Color, float[]> f, string color_space)
+    public static AxialShading CreateAxialShading(Document document, LinearGradientLayer linear, Func<Color, float[]> f, string color_space)
     {
         var shading = new AxialShading
         {
@@ -213,7 +213,7 @@ public partial class Contents
         return shading;
     }
 
-    public static RadialShading CreateRadialShading(Document document, RadialGradientLayer radial, Func<System.Drawing.Color, float[]> f, string color_space)
+    public static RadialShading CreateRadialShading(Document document, RadialGradientLayer radial, Func<Color, float[]> f, string color_space)
     {
         var shading = new RadialShading
         {
@@ -260,11 +260,11 @@ public partial class Contents
         return gstate;
     }
 
-    public static float[] ColorToRGB(System.Drawing.Color color) => [color.R / 255f, color.G / 255f, color.B / 255f];
+    public static float[] ColorToRGB(Color color) => [color.R / 255f, color.G / 255f, color.B / 255f];
 
-    public static float[] ColorToAlpha(System.Drawing.Color color) => [color.A / 255f];
+    public static float[] ColorToAlpha(Color color) => [color.A / 255f];
 
-    public static IFunction StopColorsToFunction((float Offset, System.Drawing.Color StopColor)[] stops, Func<System.Drawing.Color, float[]> f)
+    public static IFunction StopColorsToFunction((float Offset, Color StopColor)[] stops, Func<Color, float[]> f)
     {
         Debug.Assert(stops.Length > 0);
         var exponentials = new ExponentialInterpolationFunction[stops.Length];

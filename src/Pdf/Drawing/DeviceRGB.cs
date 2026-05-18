@@ -1,4 +1,4 @@
-﻿namespace PicoPDF.Pdf.Color;
+﻿namespace PicoPDF.Pdf.Drawing;
 
 public record class DeviceRGB(double R, double G, double B) : IColor
 {
