@@ -142,7 +142,7 @@ public static class SectionBinder
                     var fillcount = (height - details.Select(x => x.Section.Height).Sum() - breakfooter.Select(x => x.Section.Height).Sum()) / detail.Height;
                     for (var i = 0; i < fillcount; i++)
                     {
-                        models.Add(page.BindSection(TSection.CreateSectionModel(page, detail, default!, BindSummaryMapper<T, TSection>.Empty, keys.Length, null)).Cast<TSection>());
+                        models.Add(page.BindSection(TSection.CreateSectionModel(page, detail, default!, bind.Empty, keys.Length, null)).Cast<TSection>());
                     }
                 }
                 lastdetail = models.Last();
