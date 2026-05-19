@@ -185,7 +185,9 @@ public static class SectionBinder
                     }
                 }
                 lastdetail = models.Last();
-                breakfooter_section.Where(x => x.IsVisible).Each(models.Add);
+                breakfooter_section
+                    .Where(x => x.IsVisible)
+                    .Each(models.Add);
                 if (breakfooter_section.Contains(x => x.Cast<ISectionBaseModel>().IsPageBreak))
                 {
                     if (everyfooter is { })
