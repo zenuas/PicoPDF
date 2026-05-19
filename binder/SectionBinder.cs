@@ -123,8 +123,9 @@ public static class SectionBinder
 
                 if (height < details.Select(x => x.Section.Height).Sum() + breakfooter.Select(x => x.Section.Height).Sum())
                 {
-                    bind.DataBindCancel(details[^1].Data);
-                    datas.PushBack(details[^1].Data);
+                    var last = details[^1].Data;
+                    bind.DataBindCancel(last);
+                    datas.PushBack(last);
                     details.RemoveAt(details.Count - 1);
                     if (details.Count <= 0)
                     {
