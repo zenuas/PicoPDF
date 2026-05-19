@@ -150,12 +150,11 @@ public static class SectionBinder
                 var breakfooter_section = breakfooter
                     .FooterSort()
                     .Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, lastdata, bind, x.BreakCount, x.Depth)).Cast<TSection>().Return(x => bind.BreakSection(x)))
-                    .Where(x => x.IsVisible)
                     .ToArray();
 
                 if (breakcount > 0 && detail.Fill)
                 {
-                    var fillarea = height - details.Select(x => x.Section.Height).Sum() - breakfooter_section.Select(x => x.Height).Sum();
+                    var fillarea = height - details.Select(x => x.Section.Height).Sum() - breakfooter_section.Where(x => x.IsVisible).Select(x => x.Height).Sum();
                     while (fillarea > 0)
                     {
                         var fill = page.BindSection(TSection.CreateSectionModel(page, detail, default!, bind.Empty, keys.Length, null));
@@ -165,7 +164,7 @@ public static class SectionBinder
                     }
                 }
                 lastdetail = models.Last();
-                breakfooter_section.Each(models.Add);
+                breakfooter_section.Where(x => x.IsVisible).Each(models.Add);
                 if (breakfooter_section.Contains(x => x.Cast<ISectionBaseModel>().IsPageBreak))
                 {
                     if (everyfooter is { })
