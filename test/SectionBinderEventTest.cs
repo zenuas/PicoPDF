@@ -587,7 +587,7 @@ public class SectionBinderEventTest
     };
 
     [Fact]
-    public void FooterNoExpand1()
+    public void FooterNoExpandFill1()
     {
         var i = 0;
         var models = CreatePageModel(LineFill8,
@@ -607,7 +607,7 @@ public class SectionBinderEventTest
     }
 
     [Fact]
-    public void FooterExpand1()
+    public void FooterExpandFill1()
     {
         var i = 0;
         var models = CreatePageModel(LineFill8,
