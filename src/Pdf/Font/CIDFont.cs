@@ -14,7 +14,7 @@ public class CIDFont : PdfObject, IFont
     public required CIDFontDictionary FontDictionary { get; init; }
     public required Encoding TextEncoding { get; init; }
 
-    public Dictionary<char, int> Widths { get; init; } = new()
+    public IReadOnlyDictionary<char, int> Widths { get; init; } = new Dictionary<char, int>
     {
         {' ', 500},  // SP
         {'!', 500},  // !
@@ -125,7 +125,7 @@ public class CIDFont : PdfObject, IFont
 
     public string CreateTextShowingOperator(string s) => $"[{SplitWidth(s, Widths).Select(x => $"{PdfUtility.ToHexString(x.Text, TextEncoding)}{x.Width}").Join(" ")}] TJ";
 
-    public static IEnumerable<(string Text, int Width)> SplitWidth(string text, Dictionary<char, int> widths)
+    public static IEnumerable<(string Text, int Width)> SplitWidth(string text, IReadOnlyDictionary<char, int> widths)
     {
         foreach (var (values, found, separator) in text.SplitFor(widths.ContainsKey))
         {
