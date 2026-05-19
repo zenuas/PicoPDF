@@ -14,7 +14,7 @@ namespace PicoPDF.Test;
 [Collection("SectionBinder")]
 public class SectionBinderEventTest
 {
-    public static string Json { get; } = """
+    public static string Line5 { get; } = """
 {
 	"Size": [100, 50],
 	"Orientation": "Vertical",
@@ -50,10 +50,10 @@ public class SectionBinderEventTest
 }
 """;
 
-    public static PageModel[] CreatePageModel<T>(IEnumerable<(T, T)> datas, PdfEventOption? option)
+    public static PageModel[] CreatePageModel<T>(string json, IEnumerable<(T, T)> datas, PdfEventOption? option)
     {
         var mapper = new Dictionary<string, Func<(T, T), object>> { ["Foo"] = (x) => x!.Item1!, ["Key1"] = (x) => x!.Item2! };
-        return SectionBinder.Bind<(T, T), PageModel, SectionModel>(JsonLoader.CreatePageFromJson(Json, option ?? new()), datas, mapper);
+        return SectionBinder.Bind<(T, T), PageModel, SectionModel>(JsonLoader.CreatePageFromJson(json, option ?? new()), datas, mapper);
     }
 
     public static IEnumerable<(int, int)> MakeSectionData(int key1, int from, int to) => Lists.RangeTo(from, to).Select(x => (x, key1));
@@ -64,7 +64,7 @@ public class SectionBinderEventTest
     public void NoEvent0()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 0), null);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 0), null);
         Assert.Equal(models.Length, 1);
         Assert.Equal(models[0].Models.Length, 4);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -77,7 +77,7 @@ public class SectionBinderEventTest
     public void NoEvent1()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 1), null);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 1), null);
         Assert.Equal(models.Length, 1);
         Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -92,7 +92,7 @@ public class SectionBinderEventTest
     {
         // Only 5 lines per page.
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 2), null);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 2), null);
         Assert.Equal(models.Length, 2);
         Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -114,7 +114,7 @@ public class SectionBinderEventTest
     public void NoEvent3()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 3), null);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 3), null);
         Assert.Equal(models.Length, 3);
         Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -171,7 +171,7 @@ public class SectionBinderEventTest
     public void NextNoPageHeader0()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 0), NextNoPageHeader);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 0), NextNoPageHeader);
         Assert.Equal(models.Length, 1);
         Assert.Equal(models[0].Models.Length, 4);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -184,7 +184,7 @@ public class SectionBinderEventTest
     public void NextNoPageHeader1()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 1), NextNoPageHeader);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 1), NextNoPageHeader);
         Assert.Equal(models.Length, 1);
         Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -198,7 +198,7 @@ public class SectionBinderEventTest
     public void NextNoPageHeader2()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 2), NextNoPageHeader);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 2), NextNoPageHeader);
         Assert.Equal(models.Length, 2);
         Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -219,7 +219,7 @@ public class SectionBinderEventTest
     public void NextNoPageHeader3()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 3), NextNoPageHeader);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 3), NextNoPageHeader);
         Assert.Equal(models.Length, 2);
         Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -242,7 +242,7 @@ public class SectionBinderEventTest
     public void NextNoPageHeader4()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 4), NextNoPageHeader);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 4), NextNoPageHeader);
         Assert.Equal(models.Length, 3);
         Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -299,7 +299,7 @@ public class SectionBinderEventTest
     public void NextNoFooter0()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 0), NextNoFooter);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 0), NextNoFooter);
         Assert.Equal(models.Length, 1);
         Assert.Equal(models[0].Models.Length, 4);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -312,7 +312,7 @@ public class SectionBinderEventTest
     public void NextNoFooter1()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 1), NextNoFooter);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 1), NextNoFooter);
         Assert.Equal(models.Length, 1);
         Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -326,7 +326,7 @@ public class SectionBinderEventTest
     public void NextNoFooter2()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 2), NextNoFooter);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 2), NextNoFooter);
         Assert.Equal(models.Length, 2);
         Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
@@ -347,7 +347,7 @@ public class SectionBinderEventTest
     public void NextNoFooter3()
     {
         var i = 0;
-        var models = CreatePageModel(MakeSectionData(100, 1, 3), NextNoFooter);
+        var models = CreatePageModel(Line5, MakeSectionData(100, 1, 3), NextNoFooter);
         Assert.Equal(models.Length, 3);
         Assert.Equal(models[0].Models.Length, 5);
         Assert.Equal(ToSectionString(models[0].Models[i++]), "PageHeader/PageHeader");
