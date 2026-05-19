@@ -24,7 +24,7 @@ public static class ModelMapping
         switch (model)
         {
             case ITextModel x:
-                _ = page.Contents.DrawText(x.Text, posy, posx, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
+                _ = page.Contents.DrawText(x.Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
                 return;
 
             case ILineModel x:

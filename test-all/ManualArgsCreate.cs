@@ -35,7 +35,7 @@ public class ManualArgsCreate : FontRegisterCommand
         foreach (var arg in args)
         {
             var page = doc.NewPage(width, height);
-            _ = page.Contents.DrawText(arg, Top, Left, Point, [font], width - Left, style: TextStyle.MultiLine);
+            _ = page.Contents.DrawText(arg, Left, Top, Point, [font], width - Left, style: TextStyle.MultiLine);
         }
 
         doc.Save(Output, new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });

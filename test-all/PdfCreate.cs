@@ -86,7 +86,7 @@ public class PdfCreate : FontRegisterCommand
                 {
                     double posx = model.X + left;
                     double posy = model.Y + top;
-                    _ = page.Contents.DrawText(model.Cast<ITextModel>().Text, posy, posx, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
+                    _ = page.Contents.DrawText(model.Cast<ITextModel>().Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
                 }
                 else
                 {
