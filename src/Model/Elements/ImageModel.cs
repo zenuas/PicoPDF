@@ -2,7 +2,7 @@
 
 namespace PicoPDF.Model.Elements;
 
-public class ImageModel : IModelElement
+public record class ImageModel : IModelElement
 {
     public required IElement Element { get; init; }
     public required int X { get; init; }

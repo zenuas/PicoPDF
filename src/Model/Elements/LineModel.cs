@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace PicoPDF.Model.Elements;
 
-public class LineModel : ILineModel
+public record class LineModel : ILineModel
 {
     public required IElement Element { get; init; }
     public required int X { get; init; }

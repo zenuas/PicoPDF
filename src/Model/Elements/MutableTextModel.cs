@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace PicoPDF.Model.Elements;
 
-public class MutableTextModel : ITextModel, IMutableTextModel
+public record class MutableTextModel : ITextModel, IMutableTextModel
 {
     public required IElement Element { get; init; }
     public required int X { get; init; }

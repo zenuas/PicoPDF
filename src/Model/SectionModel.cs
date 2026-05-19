@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace PicoPDF.Model;
 
-public class SectionModel : ISectionModel<SectionModel>
+public record class SectionModel : ISectionModel<SectionModel>
 {
     public required ISection Section { get; init; }
     public required int Depth { get; init; }

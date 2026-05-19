@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace PicoPDF.Model.Elements;
 
-public class FillRectangleModel : IFillRectangleModel
+public record class FillRectangleModel : IFillRectangleModel
 {
     public required IElement Element { get; init; }
     public required int X { get; init; }

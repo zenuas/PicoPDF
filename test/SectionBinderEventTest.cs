@@ -151,20 +151,7 @@ public class SectionBinderEventTest
             {
                 if (section_model.PageCount != 1)
                 {
-                    return new SectionModel
-                    {
-                        Section = section_model.Section,
-                        Depth = section_model.Depth,
-                        Top = section_model.Top,
-                        Left = section_model.Left,
-                        Height = section_model.Height,
-                        IsFooter = section_model.IsFooter,
-                        IsPageBreak = section_model.IsPageBreak,
-                        Elements = section_model.Elements,
-                        PageCount = section_model.PageCount,
-                        IsEmpty = section_model.IsEmpty,
-                        IsVisible = false,
-                    };
+                    return section_model with { IsVisible = false };
                 }
             }
             return section;
@@ -280,20 +267,7 @@ public class SectionBinderEventTest
             {
                 if (section_model.PageCount != 1)
                 {
-                    return new SectionModel
-                    {
-                        Section = section_model.Section,
-                        Depth = section_model.Depth,
-                        Top = section_model.Top,
-                        Left = section_model.Left,
-                        Height = section_model.Height,
-                        IsFooter = section_model.IsFooter,
-                        IsPageBreak = section_model.IsPageBreak,
-                        Elements = section_model.Elements,
-                        PageCount = section_model.PageCount,
-                        IsEmpty = section_model.IsEmpty,
-                        IsVisible = false,
-                    };
+                    return section_model with { IsVisible = false };
                 }
             }
             return section;
@@ -419,20 +393,7 @@ public class SectionBinderEventTest
             {
                 var key1 = section_model.Elements.OfType<ITextModel>().First(x => x.Element.Name == "Key1");
 
-                return new SectionModel
-                {
-                    Section = section_model.Section,
-                    Depth = section_model.Depth,
-                    Top = section_model.Top,
-                    Left = section_model.Left,
-                    Height = int.Parse(key1.Text),
-                    IsFooter = section_model.IsFooter,
-                    IsPageBreak = section_model.IsPageBreak,
-                    Elements = section_model.Elements,
-                    PageCount = section_model.PageCount,
-                    IsEmpty = section_model.IsEmpty,
-                    IsVisible = section_model.IsVisible,
-                };
+                return section_model with { Height = int.Parse(key1.Text) };
             }
             return section;
         },
@@ -567,20 +528,7 @@ public class SectionBinderEventTest
             {
                 var key1 = section_model.Elements.OfType<ITextModel>().First(x => x.Element is BindElement bind && bind.Bind == "Key1");
 
-                return new SectionModel
-                {
-                    Section = section_model.Section,
-                    Depth = section_model.Depth,
-                    Top = section_model.Top,
-                    Left = section_model.Left,
-                    Height = int.Parse(key1.Text),
-                    IsFooter = section_model.IsFooter,
-                    IsPageBreak = section_model.IsPageBreak,
-                    Elements = section_model.Elements,
-                    PageCount = section_model.PageCount,
-                    IsEmpty = section_model.IsEmpty,
-                    IsVisible = section_model.IsVisible,
-                };
+                return section_model with { Height = int.Parse(key1.Text) };
             }
             return section;
         },

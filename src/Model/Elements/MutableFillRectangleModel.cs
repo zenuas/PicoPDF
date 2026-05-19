@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace PicoPDF.Model.Elements;
 
-public class MutableFillRectangleModel : IFillRectangleModel, ICrossSectionModel<SectionModel>
+public record class MutableFillRectangleModel : IFillRectangleModel, ICrossSectionModel<SectionModel>
 {
     public required IElement Element { get; init; }
     public ISectionModel<SectionModel>? TargetSection { get; set; }

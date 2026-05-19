@@ -65,20 +65,7 @@ public class PdfCreate : FontRegisterCommand
             {
                 if (section is SectionModel section_model && section_model.Section.Name.StartsWith("Test"))
                 {
-                    return new SectionModel()
-                    {
-                        Section = section_model.Section,
-                        Depth = section_model.Depth,
-                        Top = section_model.Top,
-                        Left = section_model.Left,
-                        Height = section_model.Height + section_model.PageCount * 5,
-                        IsFooter = section_model.IsFooter,
-                        IsPageBreak = section_model.IsPageBreak,
-                        Elements = section_model.Elements,
-                        PageCount = section_model.PageCount,
-                        IsEmpty = section_model.IsEmpty,
-                        IsVisible = section_model.IsVisible,
-                    };
+                    return section_model with { Height = section_model.Height + section_model.PageCount * 5 };
                 }
                 return section;
             },
@@ -88,15 +75,7 @@ public class PdfCreate : FontRegisterCommand
                 {
                     if (model is TextModel text)
                     {
-                        return new TextModel
-                        {
-                            Element = element,
-                            X = text.X,
-                            Y = text.Y,
-                            Text = $"{section.Name}_{element.Name}_{text.Text}",
-                            Size = text.Size,
-                            Font = text.Font,
-                        };
+                        return text with { Text = $"{section.Name}_{element.Name}_{text.Text}" };
                     }
                 }
                 return model;
