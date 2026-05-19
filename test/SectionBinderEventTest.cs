@@ -1,6 +1,7 @@
 ﻿using Binder;
 using Mina.Extension;
 using PicoPDF.Loader;
+using PicoPDF.Loader.Elements;
 using PicoPDF.Model;
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
@@ -158,6 +159,7 @@ public class SectionBinderEventTest
                         Left = section_model.Left,
                         Height = section_model.Height,
                         IsFooter = section_model.IsFooter,
+                        IsPageBreak = section_model.IsPageBreak,
                         Elements = section_model.Elements,
                         PageCount = section_model.PageCount,
                         IsEmpty = section_model.IsEmpty,
@@ -286,6 +288,7 @@ public class SectionBinderEventTest
                         Left = section_model.Left,
                         Height = section_model.Height,
                         IsFooter = section_model.IsFooter,
+                        IsPageBreak = section_model.IsPageBreak,
                         Elements = section_model.Elements,
                         PageCount = section_model.PageCount,
                         IsEmpty = section_model.IsEmpty,
@@ -424,6 +427,7 @@ public class SectionBinderEventTest
                     Left = section_model.Left,
                     Height = int.Parse(key1.Text),
                     IsFooter = section_model.IsFooter,
+                    IsPageBreak = section_model.IsPageBreak,
                     Elements = section_model.Elements,
                     PageCount = section_model.PageCount,
                     IsEmpty = section_model.IsEmpty,
@@ -521,5 +525,103 @@ public class SectionBinderEventTest
         Assert.Equal(ToSectionString2(models[1].Models[i++]), "Header1,Height=20/20");
         Assert.Equal(ToSectionString2(models[1].Models[i++]), "Detail,Height=10/2");
         Assert.Equal(ToSectionString2(models[1].Models[i++]), "Footer1,Height=10/20");
+    }
+
+    public static string LineFill8 { get; } = """
+{
+	"Size": [100, 80],
+	"Orientation": "Vertical",
+	"DefaultFont": "Meiryo-Bold",
+	"Padding": [0, 10, 0],
+	
+	"Header": "PageHeader",
+	"Detail": {
+        "BreakKey": "Key1",
+        "Header": "Header1",
+        "Detail": "Detail",
+        "Footer": "Footer1",
+		},
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 10, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "PageHeader", "Size": 30, "X": 10, "Y": 0},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 10, "Fill": true, "Elements": [
+			{"Type": "BindElement", "Bind": "Foo",  "Size": 10, "X": 10, "Y": 0},
+		]},
+		{"Type": "HeaderSection", "Name": "Header1", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1", "Name": "Key1",  "Size": 10, "X": 10, "Y": 0},
+		]},
+		{"Type": "FooterSection", "Name": "Footer1", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",   "Size": 10, "X": 10,  "Y": 0},
+		]},
+	],
+}
+""";
+
+    public static readonly PdfEventOption FooterExpand = new()
+    {
+        BindSection = (section) =>
+        {
+            if (section is SectionModel section_model && section_model.Section.Name == "Footer1")
+            {
+                var key1 = section_model.Elements.OfType<ITextModel>().First(x => x.Element is BindElement bind && bind.Bind == "Key1");
+
+                return new SectionModel
+                {
+                    Section = section_model.Section,
+                    Depth = section_model.Depth,
+                    Top = section_model.Top,
+                    Left = section_model.Left,
+                    Height = int.Parse(key1.Text),
+                    IsFooter = section_model.IsFooter,
+                    IsPageBreak = section_model.IsPageBreak,
+                    Elements = section_model.Elements,
+                    PageCount = section_model.PageCount,
+                    IsEmpty = section_model.IsEmpty,
+                    IsVisible = section_model.IsVisible,
+                };
+            }
+            return section;
+        },
+    };
+
+    [Fact]
+    public void FooterNoExpand1()
+    {
+        var i = 0;
+        var models = CreatePageModel(LineFill8,
+            [
+                .. MakeSectionData(20, 1, 1),
+            ], null);
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Length, 8);
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "PageHeader,Height=10/PageHeader");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=10/20");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=10/20");
+    }
+
+    [Fact]
+    public void FooterExpand1()
+    {
+        var i = 0;
+        var models = CreatePageModel(LineFill8,
+            [
+                .. MakeSectionData(20, 1, 1),
+            ], FooterExpand);
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Length, 7);
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "PageHeader,Height=10/PageHeader");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=10/20");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=20/20");
     }
 }

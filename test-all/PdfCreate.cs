@@ -73,6 +73,7 @@ public class PdfCreate : FontRegisterCommand
                         Left = section_model.Left,
                         Height = section_model.Height + section_model.PageCount * 5,
                         IsFooter = section_model.IsFooter,
+                        IsPageBreak = section_model.IsPageBreak,
                         Elements = section_model.Elements,
                         PageCount = section_model.PageCount,
                         IsEmpty = section_model.IsEmpty,

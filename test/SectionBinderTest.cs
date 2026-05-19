@@ -90,7 +90,7 @@ public class SectionBinderTest
         ISubSection subsection = new Section()
         {
             Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100, PageBreak = false },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, IsPageBreak = false },
             SubSection = detail,
             BreakKey = "break",
         };
@@ -122,11 +122,11 @@ public class SectionBinderTest
         ISubSection subsection = new Section()
         {
             Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100, PageBreak = false },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, IsPageBreak = false },
             SubSection = new Section()
             {
                 Header = new HeaderSection() { Name = "header2", Height = 100 },
-                Footer = new FooterSection() { Name = "footer2", Height = 100, PageBreak = false },
+                Footer = new FooterSection() { Name = "footer2", Height = 100, IsPageBreak = false },
                 SubSection = detail,
                 BreakKey = "break2",
             },
@@ -168,15 +168,15 @@ public class SectionBinderTest
         ISubSection subsection = new Section()
         {
             Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100, PageBreak = false },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, IsPageBreak = false },
             SubSection = new Section()
             {
                 Header = new HeaderSection() { Name = "header2", Height = 100 },
-                Footer = new FooterSection() { Name = "footer2", Height = 100, PageBreak = false },
+                Footer = new FooterSection() { Name = "footer2", Height = 100, IsPageBreak = false },
                 SubSection = new Section()
                 {
                     Header = new HeaderSection() { Name = "header3", Height = 100 },
-                    Footer = new FooterSection() { Name = "footer3", Height = 100, PageBreak = false },
+                    Footer = new FooterSection() { Name = "footer3", Height = 100, IsPageBreak = false },
                     SubSection = detail,
                     BreakKey = "break3",
                 },
@@ -228,15 +228,15 @@ public class SectionBinderTest
         ISubSection subsection = new Section()
         {
             Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100, PageBreak = false },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, IsPageBreak = false },
             SubSection = new Section()
             {
                 Header = new HeaderSection() { Name = "header2", Height = 100 },
-                Footer = new FooterSection() { Name = "footer2", Height = 100, PageBreak = false },
+                Footer = new FooterSection() { Name = "footer2", Height = 100, IsPageBreak = false },
                 SubSection = new Section()
                 {
                     Header = new HeaderSection() { Name = "header3", Height = 100 },
-                    Footer = new FooterSection() { Name = "footer3", Height = 100, PageBreak = false },
+                    Footer = new FooterSection() { Name = "footer3", Height = 100, IsPageBreak = false },
                     SubSection = detail,
                     BreakKey = "break3",
                 },
@@ -288,15 +288,15 @@ public class SectionBinderTest
         ISubSection subsection = new Section()
         {
             Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100, PageBreak = false },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, IsPageBreak = false },
             SubSection = new Section()
             {
                 Header = null,
-                Footer = new FooterSection() { Name = "footer2", Height = 100, PageBreak = false },
+                Footer = new FooterSection() { Name = "footer2", Height = 100, IsPageBreak = false },
                 SubSection = new Section()
                 {
                     Header = new HeaderSection() { Name = "header3", Height = 100 },
-                    Footer = new FooterSection() { Name = "footer3", Height = 100, PageBreak = false },
+                    Footer = new FooterSection() { Name = "footer3", Height = 100, IsPageBreak = false },
                     SubSection = detail,
                     BreakKey = "break3",
                 },
@@ -344,7 +344,7 @@ public class SectionBinderTest
         ISubSection subsection = new Section()
         {
             Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100, PageBreak = false },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, IsPageBreak = false },
             SubSection = new Section()
             {
                 Header = new HeaderSection() { Name = "header2", Height = 100 },
@@ -352,7 +352,7 @@ public class SectionBinderTest
                 SubSection = new Section()
                 {
                     Header = new HeaderSection() { Name = "header3", Height = 100 },
-                    Footer = new FooterSection() { Name = "footer3", Height = 100, PageBreak = false },
+                    Footer = new FooterSection() { Name = "footer3", Height = 100, IsPageBreak = false },
                     SubSection = detail,
                     BreakKey = "break3",
                 },
@@ -400,15 +400,15 @@ public class SectionBinderTest
         ISubSection subsection = new Section()
         {
             Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100, PageBreak = false },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, IsPageBreak = false },
             SubSection = new Section()
             {
                 Header = new HeaderSection() { Name = "header2", Height = 100 },
-                Footer = new FooterSection() { Name = "footer2", Height = 100, PageBreak = false },
+                Footer = new FooterSection() { Name = "footer2", Height = 100, IsPageBreak = false },
                 SubSection = new Section()
                 {
                     Header = new HeaderSection() { Name = "header3", Height = 100 },
-                    Footer = new FooterSection() { Name = "footer3", Height = 100, PageBreak = false },
+                    Footer = new FooterSection() { Name = "footer3", Height = 100, IsPageBreak = false },
                     SubSection = null!,
                     BreakKey = "break3",
                 },

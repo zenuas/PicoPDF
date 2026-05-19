@@ -17,6 +17,7 @@ public class SectionModel : ISectionModel<SectionModel>
     public required int Left { get; init; }
     public required int Height { get; init; }
     public required bool IsFooter { get; init; }
+    public required bool IsPageBreak { get; init; }
     public IModelElement[] Elements { get; init; } = [];
     public required int PageCount { get; init; }
     public required bool IsEmpty { get; init; }
@@ -34,6 +35,7 @@ public class SectionModel : ISectionModel<SectionModel>
         Left = page.Padding.Left,
         Height = section.Height,
         IsFooter = section is IFooterSection footer && footer.IsFooter,
+        IsPageBreak = section is IFooterSection footer2 && footer2.IsPageBreak,
         Elements = BindElements(section, data, bind, page.Cast<PageSection>(), break_count, depth),
         PageCount = bind.GetPageCount(),
         IsEmpty = bind.IsEmpty,
@@ -191,5 +193,5 @@ public class SectionModel : ISectionModel<SectionModel>
         Color = element.Color,
     };
 
-    public override string ToString() => $"{Section.Name}, Top={Top}, Height={Section.Height}, Elements={Elements.Length}";
+    public override string ToString() => $"{Section.Name}, Top={Top}, Height={Height}, Elements={Elements.Length}";
 }

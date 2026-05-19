@@ -63,8 +63,8 @@ public static class JsonLoader
         {
             "HeaderSection" => new HeaderSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode },
             "DetailSection" => new DetailSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, Fill = json["Fill"]?.AsValue() is { } fill && (bool)fill },
-            "TotalSection" => new TotalSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, PageBreak = pagebreak },
-            "FooterSection" => new FooterSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, PageBreak = pagebreak },
+            "TotalSection" => new TotalSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, IsPageBreak = pagebreak },
+            "FooterSection" => new FooterSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, IsPageBreak = pagebreak },
             _ => throw new(),
         };
     }
