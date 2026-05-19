@@ -624,4 +624,46 @@ public class SectionBinderEventTest
         Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/");
         Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=20/20");
     }
+
+    [Fact]
+    public void FooterExpand4()
+    {
+        var i = 0;
+        var models = CreatePageModel(Line8,
+            [
+                .. MakeSectionData(20, 1, 4),
+            ], FooterExpand);
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Length, 7);
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "PageHeader,Height=10/PageHeader");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=10/20");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/2");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/3");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/4");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=20/20");
+    }
+
+    [Fact]
+    public void FooterExpand5()
+    {
+        /* Determine the number of lines for the Detail section after ensuring there is space for the Footer.
+           The Footer1 is extended and overlaps with the Detail section.
+         */
+        var i = 0;
+        var models = CreatePageModel(Line8,
+            [
+                .. MakeSectionData(20, 1, 5),
+            ], FooterExpand);
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Length, 8);
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "PageHeader,Height=10/PageHeader");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=10/20");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/2");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/3");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/4");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/5");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=20/20");
+    }
 }
