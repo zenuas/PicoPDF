@@ -76,8 +76,13 @@ public static class SectionBinder
             T nodata = default!;
             var models = new List<TSection>();
             bind.SetPageCount(1);
-            headers.Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, nodata, bind, x.BreakCount, x.Depth)).Cast<TSection>()).Each(models.Add);
-            footers.FooterSort().Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, nodata, bind, x.BreakCount, x.Depth)).Cast<TSection>().Return(x => bind.BreakSection(x))).Each(models.Add);
+            headers
+                .Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, nodata, bind, x.BreakCount, x.Depth)).Cast<TSection>())
+                .Each(models.Add);
+            footers
+                .FooterSort()
+                .Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, nodata, bind, x.BreakCount, x.Depth)).Cast<TSection>().Return(x => bind.BreakSection(x)))
+                .Each(models.Add);
             if (page.Footer is ISection lastfooter) models.Add(page.BindSection(TSection.CreateSectionModel(page, lastfooter, nodata, bind, 0, null)).Cast<TSection>().Return(x => bind.BreakSection(x)));
             bind.KeyBreak(nodata, keys.Length, keys, page);
             bind.PageBreak(nodata, page);
