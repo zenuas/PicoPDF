@@ -60,6 +60,8 @@ public class SectionBinderEventTest
 
     public static string ToSectionString(SectionModel section) => $"{section.Section.Name}/{section.Elements.OfType<ITextModel>().Select(x => x.Text).Join("/")}";
 
+    public static string ToSectionString2(SectionModel section) => $"{section.Section.Name},Height={section.Height}/{section.Elements.OfType<ITextModel>().Select(x => x.Text).Join("/")}";
+
     [Fact]
     public void NoEvent0()
     {
@@ -372,5 +374,152 @@ public class SectionBinderEventTest
         Assert.Equal(ToSectionString(models[2].Models[i++]), "Header1/100");
         Assert.Equal(ToSectionString(models[2].Models[i++]), "Detail/3");
         Assert.Equal(ToSectionString(models[2].Models[i++]), "PageFooter/100");
+    }
+
+    public static string Line8 { get; } = """
+{
+	"Size": [100, 80],
+	"Orientation": "Vertical",
+	"DefaultFont": "Meiryo-Bold",
+	"Padding": [0, 10, 0],
+	
+	"Header": "PageHeader",
+	"Detail": {
+        "BreakKey": "Key1",
+        "Header": "Header1",
+        "Detail": "Detail",
+        "Footer": "Footer1",
+		},
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 10, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "PageHeader", "Size": 30, "X": 10, "Y": 0},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Foo",  "Size": 10, "X": 10, "Y": 0},
+		]},
+		{"Type": "HeaderSection", "Name": "Header1", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1", "Name": "Key1",  "Size": 10, "X": 10, "Y": 0},
+		]},
+		{"Type": "FooterSection", "Name": "Footer1", "Height": 10, "Elements": [
+			{"Type": "BindElement", "Bind": "Key1",   "Size": 10, "X": 10,  "Y": 0},
+		]},
+	],
+}
+""";
+
+    public static readonly PdfEventOption HeaderExpand = new()
+    {
+        BindSection = (section) =>
+        {
+            if (section is SectionModel section_model && section_model.Section.Name == "Header1")
+            {
+                var key1 = section_model.Elements.OfType<ITextModel>().First(x => x.Element.Name == "Key1");
+
+                return new SectionModel
+                {
+                    Section = section_model.Section,
+                    Depth = section_model.Depth,
+                    Top = section_model.Top,
+                    Left = section_model.Left,
+                    Height = int.Parse(key1.Text),
+                    IsFooter = section_model.IsFooter,
+                    Elements = section_model.Elements,
+                    PageCount = section_model.PageCount,
+                    IsEmpty = section_model.IsEmpty,
+                    IsVisible = section_model.IsVisible,
+                };
+            }
+            return section;
+        },
+    };
+
+    [Fact]
+    public void HeaderNoExpand1_1()
+    {
+        var i = 0;
+        var models = CreatePageModel(Line8,
+            [
+                .. MakeSectionData(10, 1, 1),
+                .. MakeSectionData(20, 1, 1),
+            ], null);
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Length, 7);
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "PageHeader,Height=10/PageHeader");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=10/10");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=10/10");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=10/20");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=10/20");
+    }
+
+    [Fact]
+    public void HeaderNoExpand1_2()
+    {
+        var i = 0;
+        var models = CreatePageModel(Line8,
+            [
+                .. MakeSectionData(10, 1, 1),
+                .. MakeSectionData(20, 1, 2),
+            ], null);
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Length, 8);
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "PageHeader,Height=10/PageHeader");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=10/10");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=10/10");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=10/20");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/2");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=10/20");
+    }
+
+    [Fact]
+    public void HeaderExpand1_1()
+    {
+        var i = 0;
+        var models = CreatePageModel(Line8,
+            [
+                .. MakeSectionData(10, 1, 1),
+                .. MakeSectionData(20, 1, 1),
+            ], HeaderExpand);
+        Assert.Equal(models.Length, 1);
+        Assert.Equal(models[0].Models.Length, 7);
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "PageHeader,Height=10/PageHeader");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=10/10");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=10/10");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=20/20");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=10/20");
+    }
+
+    [Fact]
+    public void HeaderExpand1_2()
+    {
+        // Header1/20 height is too large, it doesn't fit on one page, and the Detail section moves to the next page.
+        var i = 0;
+        var models = CreatePageModel(Line8,
+            [
+                .. MakeSectionData(10, 1, 1),
+                .. MakeSectionData(20, 1, 2),
+            ], HeaderExpand);
+        Assert.Equal(models.Length, 2);
+        Assert.Equal(models[0].Models.Length, 7);
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "PageHeader,Height=10/PageHeader");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=10/10");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=10/10");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Header1,Height=20/20");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Detail,Height=10/1");
+        Assert.Equal(ToSectionString2(models[0].Models[i++]), "Footer1,Height=10/20");
+
+        i = 0;
+        Assert.Equal(models[1].Models.Length, 4);
+        Assert.Equal(ToSectionString2(models[1].Models[i++]), "PageHeader,Height=10/PageHeader");
+        Assert.Equal(ToSectionString2(models[1].Models[i++]), "Header1,Height=20/20");
+        Assert.Equal(ToSectionString2(models[1].Models[i++]), "Detail,Height=10/2");
+        Assert.Equal(ToSectionString2(models[1].Models[i++]), "Footer1,Height=10/20");
     }
 }
