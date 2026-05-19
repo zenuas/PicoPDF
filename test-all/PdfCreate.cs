@@ -75,6 +75,8 @@ public class PdfCreate : FontRegisterCommand
                         IsFooter = section_model.IsFooter,
                         Elements = section_model.Elements,
                         PageCount = section_model.PageCount,
+                        IsEmpty = section_model.IsEmpty,
+                        IsVisible = section_model.IsVisible,
                     };
                 }
                 return section;
