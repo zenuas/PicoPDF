@@ -136,8 +136,8 @@ public static class SectionBinder
                     breakfooter = [.. footers.SkipWhileOrEveryPage(_ => false)];
                 }
 
-                breakheader?
-                    .Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, current, bind, x.BreakCount, x.Depth)).Cast<TSection>())
+                breakheader
+                    ?.Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, current, bind, x.BreakCount, x.Depth)).Cast<TSection>())
                     .Where(x => x.IsVisible)
                     .Each(models.Add);
                 details
