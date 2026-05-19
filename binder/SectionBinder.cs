@@ -200,7 +200,7 @@ public static class SectionBinder
         var first = page.BindSection(TSection.CreateSectionModel(page, detail, prev, bind, 0, null)).Cast<TSection>();
         var height = first.Height;
         details.Add((first, prev));
-        _ = datas.GetRange(1);
+        _ = datas.Pop();
 
         while (true)
         {
@@ -216,7 +216,7 @@ public static class SectionBinder
                 break;
             }
 
-            _ = datas.GetRange(1);
+            _ = datas.Pop();
             details.Add((next, data));
         }
         return details;

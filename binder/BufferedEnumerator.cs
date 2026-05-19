@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Binder;
 
@@ -22,16 +21,16 @@ public class BufferedEnumerator<T>
         return true;
     }
 
-    public T[] GetRange(int count)
+    public T Pop()
     {
-        while (count > Buffer.Count)
+        if (Buffer.Count == 0)
         {
             if (!BaseEnumerator.MoveNext()) throw new IndexOutOfRangeException();
-            Buffer.Add(BaseEnumerator.Current);
+            return BaseEnumerator.Current;
         }
-        var xs = Buffer.Take(count).ToArray();
-        Buffer.RemoveRange(0, count);
-        return xs;
+        var value = Buffer[0];
+        Buffer.RemoveAt(0);
+        return value;
     }
 
     public void PushBack(T item)
