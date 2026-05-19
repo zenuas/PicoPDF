@@ -61,6 +61,10 @@ public static class SectionBinder
         return ([.. headers], [.. footers], detail, [.. keys]);
     }
 
+    public static bool CompareBreakKey<T, TSection>(BindSummaryMapper<T, TSection> bind, string break_key, T data1, T data2)
+        where TSection : ISectionModel<TSection>
+        => bind.Mapper[break_key](data1).Equals(bind.Mapper[break_key](data2));
+
     public static IEnumerable<TSection[]> BindPageModels<T, TSection>(IPageSection page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
         where TSection : ISectionModel<TSection>
     {
@@ -95,7 +99,7 @@ public static class SectionBinder
             _ = datas.Next(0, out var firstdata);
             if (page_count == 1) lastdata = firstdata;
             headers
-                .SkipWhileOrPageFirst(x => page_count == 1 || (x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](firstdata))))
+                .SkipWhileOrPageFirst(x => page_count == 1 || (x.BreakKey != "" && !CompareBreakKey(bind, x.BreakKey, lastdata, firstdata)))
                 .Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, firstdata, bind, x.BreakCount, x.Depth)).Cast<TSection>())
                 .Where(x => x.IsVisible)
                 .Each(models.Add);
@@ -106,7 +110,7 @@ public static class SectionBinder
                 _ = datas.Next(0, out var current);
                 var breakheader_section = page_first ?
                     null :
-                    headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](lastdata).Equals(bind.Mapper[x.BreakKey](current)))
+                    headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !CompareBreakKey(bind, x.BreakKey, lastdata, current))
                         ?.Select(x => page.BindSection(TSection.CreateSectionModel(page, x.Section, current, bind, x.BreakCount, x.Depth)).Cast<TSection>())
                         .Where(x => x.IsVisible)
                         .ToArray();
@@ -123,9 +127,8 @@ public static class SectionBinder
                 }
 
                 var existnext = datas.Next(0, out var next);
-                var breakcount = keys.Length - (existnext ? keys.TakeWhile(x => bind.Mapper[x](current).Equals(bind.Mapper[x](next))).Count() : 0);
-                var breakfooter = (existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !bind.Mapper[x.BreakKey](current).Equals(bind.Mapper[x.BreakKey](next)))] : footers);
-
+                var breakcount = keys.Length - (existnext ? keys.TakeWhile(x => CompareBreakKey(bind, x, current, next)).Count() : 0);
+                var breakfooter = (existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !CompareBreakKey(bind, x.BreakKey, current, next))] : footers);
                 if (height < details.Select(x => x.Section.Height).Sum() + breakfooter.Select(x => x.Section.Height).Sum())
                 {
                     var last = details[^1].Data;
