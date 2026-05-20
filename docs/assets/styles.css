@@ -234,6 +234,14 @@ pre
 	white-space: pre-wrap;
 }
 
+th code,
+td code
+{
+	font-family: monospace;
+	font-size: 1.0rem;
+	background-color: #636837;
+}
+
 /* Tables */
 
 table
