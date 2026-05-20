@@ -28,7 +28,7 @@ public record class SectionModel : ISectionModel<SectionModel>
         .Where(x => x.TargetSection is { })
         .Each(x => x.UpdatePosition(this));
 
-    public static SectionModel CreateSectionModel<T>(IPageSection page, ISection section, T data, BindSummaryMapper<T, SectionModel> bind, int break_count, int? depth) => new()
+    public static SectionModel CreateSectionModel<T>(IPageSection<SectionModel> page, ISection section, T data, BindSummaryMapper<T, SectionModel> bind, int break_count, int? depth) => new()
     {
         Section = section,
         Depth = depth ?? 0,

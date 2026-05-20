@@ -4,11 +4,12 @@ using System.Globalization;
 
 namespace Binder.Data;
 
-public interface IPageSection : IParentSection
+public interface IPageSection<TSection> : IParentSection
+    where TSection : ISectionModel<TSection>
 {
     public int Width { get; init; }
     public int Height { get; init; }
     public AllSides Padding { get; init; }
     public CultureInfo DefaultCulture { get; init; }
-    public Func<ISectionBaseModel, ISectionBaseModel> BindSection { get; init; }
+    public Func<TSection, TSection> BindSection { get; init; }
 }

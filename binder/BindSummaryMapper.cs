@@ -35,7 +35,7 @@ public class BindSummaryMapper<T, TSection>
         IsEmpty = true,
     };
 
-    public static BindSummaryMapper<T, TSection> Create(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] keys, int depth)
+    public static BindSummaryMapper<T, TSection> Create(IPageSection<TSection> page, Dictionary<string, Func<T, object>> mapper, string[] keys, int depth)
     {
         var (pool, actions, cancels) = CreatePool(page, mapper, keys);
         return new()
@@ -65,7 +65,7 @@ public class BindSummaryMapper<T, TSection>
         };
     }
 
-    public static (Dictionary<string, ClearableDynamicValue> Pool, Action<T>[] Actions, Action<T>[] Cancels) CreatePool(IPageSection page, Dictionary<string, Func<T, object>> mapper, string[] allkeys)
+    public static (Dictionary<string, ClearableDynamicValue> Pool, Action<T>[] Actions, Action<T>[] Cancels) CreatePool(IPageSection<TSection> page, Dictionary<string, Func<T, object>> mapper, string[] allkeys)
     {
         var pool = new Dictionary<string, ClearableDynamicValue>();
         var actions = new List<Action<T>>();
@@ -197,14 +197,14 @@ public class BindSummaryMapper<T, TSection>
 
     public void AddCrossSectionGoBack(ICrossSectionModel<TSection> model, int depth) => CrossSectionGoBack[depth].Add(model);
 
-    public void SectionBreak(T data, IPageSection page)
+    public void SectionBreak(T data, IPageSection<TSection> page)
     {
         SummaryGoBack[1].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
         SummaryGoBack[1].Clear();
         SummaryPool.Keys.Where(x => x.StartsWith('&')).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
-    public void PageBreak(T data, IPageSection page)
+    public void PageBreak(T data, IPageSection<TSection> page)
     {
         SectionBreak(data, page);
 
@@ -213,7 +213,7 @@ public class BindSummaryMapper<T, TSection>
         SummaryPool.Keys.Where(x => x.StartsWith('%')).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
-    public void KeyBreak(T data, int hierarchy_count, string[] allkeys, IPageSection page)
+    public void KeyBreak(T data, int hierarchy_count, string[] allkeys, IPageSection<TSection> page)
     {
         for (var i = SummaryGoBack.Length - hierarchy_count; i < SummaryGoBack.Length; i++)
         {
@@ -227,7 +227,7 @@ public class BindSummaryMapper<T, TSection>
         SummaryPool.Keys.Where(x => x.StartsWith(sumkey_via_prefix) || x.StartsWith(sumkey_direct_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
-    public void LastBreak(T data, IPageSection page)
+    public void LastBreak(T data, IPageSection<TSection> page)
     {
         SummaryGoBack[0].Each(x => x.TextModel.Text = BindFormat(GetSummary(x.SummaryElement, data), x.SummaryElement.Format, x.SummaryElement.Culture ?? page.DefaultCulture, x.SummaryElement.NaN));
         SummaryGoBack[0].Clear();

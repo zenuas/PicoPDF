@@ -1,5 +1,4 @@
 ﻿using Binder.Data;
-using Binder.Model;
 using Mina.Extension;
 using PicoPDF.Model;
 using PicoPDF.Model.Elements;
@@ -12,7 +11,7 @@ namespace PicoPDF.Pdf;
 public class PdfEventOption
 {
     public Func<IFontRegister> CreateFontRegister { get; init; } = () => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetFontDirectories()]));
-    public Func<ISectionBaseModel, ISectionBaseModel> BindSection { get; init; } = (section) => section;
+    public Func<SectionModel, SectionModel> BindSection { get; init; } = (section) => section;
     public Func<ISection, IElement, object?, IModelElement, IModelElement> BindElement { get; init; } = (_, _, _, model) => model;
     public Action<Page, IModelElement, int, int> Mapping { get; init; } = ModelMapping.Mapping;
 }
