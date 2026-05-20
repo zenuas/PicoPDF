@@ -141,7 +141,7 @@ public static class SectionBinder
 
                 var existnext = datas.Next(0, out var next);
                 var breakcount = keys.Length - (existnext ? keys.TakeWhile(x => CompareBreakKey(bind, x, current, next)).Count() : 0);
-                var breakfooter = (existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !CompareBreakKey(bind, x.BreakKey, current, next))] : footers);
+                var breakfooter = existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !CompareBreakKey(bind, x.BreakKey, current, next))] : footers;
                 if (height < details.Select(x => x.Section.Height).Sum() + breakfooter.Select(x => x.Section.Height).Sum())
                 {
                     var last = details[^1].Data;
