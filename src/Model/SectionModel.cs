@@ -28,19 +28,24 @@ public record class SectionModel : ISectionModel<SectionModel>
         .Where(x => x.TargetSection is { })
         .Each(x => x.UpdatePosition(this));
 
-    public static SectionModel CreateSectionModel<T>(IPageSection<SectionModel> page, ISection section, T data, BindSummaryMapper<T, SectionModel> bind, int break_count, int? depth) => new()
+    public static SectionModel CreateSectionModel<T>(IPageSection<SectionModel> page, ISection section, T data, BindSummaryMapper<T, SectionModel> bind, int break_count, int? depth)
     {
-        Section = section,
-        Depth = depth ?? 0,
-        Left = page.Padding.Left,
-        Height = section.Height,
-        IsFooter = section is IFooterSection footer && footer.IsFooter,
-        IsPageBreak = section is IFooterSection footer2 && footer2.IsPageBreak,
-        Elements = BindElements(section, data, bind, page.Cast<PageSection>(), break_count, depth),
-        PageCount = bind.GetPageCount(),
-        IsEmpty = bind.IsEmpty,
-        IsVisible = true,
-    };
+        var page_section = page.Cast<PageSection>();
+        var footer = section as IFooterSection;
+        return page_section.EventOption.BindSection(new()
+        {
+            Section = section,
+            Depth = depth ?? 0,
+            Left = page.Padding.Left,
+            Height = section.Height,
+            IsFooter = footer?.IsFooter ?? false,
+            IsPageBreak = footer?.IsPageBreak ?? false,
+            Elements = BindElements(section, data, bind, page_section, break_count, depth),
+            PageCount = bind.GetPageCount(),
+            IsEmpty = bind.IsEmpty,
+            IsVisible = true,
+        });
+    }
 
     public static IModelElement[] BindElements<T>(ISection section, T data, BindSummaryMapper<T, SectionModel> bind, PageSection page, int break_count, int? depth) => [.. section.Elements.Select(x => page.EventOption.BindElement(section, x, data, BindElement(x, data, bind, page, break_count, depth)))];
 
