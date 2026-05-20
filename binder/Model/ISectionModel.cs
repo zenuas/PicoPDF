@@ -8,6 +8,7 @@ public interface ISectionModel<TSection>
     public int Depth { get; init; }
     public int Top { get; set; }
     public int Height { get; init; }
+    public bool Fill { get; init; }
     public bool IsFooter { get; init; }
     public bool IsPageBreak { get; init; }
     public bool IsEmpty { get; init; }

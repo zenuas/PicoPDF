@@ -169,7 +169,7 @@ public static class SectionBinder
                     .Select(bind.ReturnBreakSection)
                     .ToArray();
 
-                if (breakcount > 0 && detail.Fill)
+                if (breakcount > 0 && (detail.Fill || breakfooter_section.Any(x => x.Fill)))
                 {
                     var fillarea = height - details.Select(x => x.Section.Height).Sum() - breakfooter_section.Where(x => x.IsVisible).Select(x => x.Height).Sum();
                     while (fillarea > 0)
