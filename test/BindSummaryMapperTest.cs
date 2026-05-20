@@ -108,6 +108,6 @@ public class BindSummaryMapperTest
         var culture = CultureInfo.InvariantCulture;
 
         var d = new DateTime(4321, 12, 31, 12, 34, 56);
-        Assert.Throws<FormatException>(() => BindSummaryMapper<int, SectionModel>.BindFormat(d, "#", culture, d));
+        _ = Assert.Throws<FormatException>(() => BindSummaryMapper<int, SectionModel>.BindFormat(d, "#", culture, d));
     }
 }
