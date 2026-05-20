@@ -16,7 +16,7 @@ public record class SectionModel : ISectionModel<SectionModel>
     public int Top { get; set; }
     public required int Left { get; init; }
     public required int Height { get; init; }
-    public required bool Fill { get; init; }
+    public required bool IsFill { get; init; }
     public required bool IsFooter { get; init; }
     public required bool IsPageBreak { get; init; }
     public IModelElement[] Elements { get; init; } = [];
@@ -39,7 +39,7 @@ public record class SectionModel : ISectionModel<SectionModel>
             Depth = depth ?? 0,
             Left = page.Padding.Left,
             Height = section.Height,
-            Fill = footer?.Fill ?? false,
+            IsFill = footer?.IsFill ?? false,
             IsFooter = footer?.IsFooter ?? false,
             IsPageBreak = footer?.IsPageBreak ?? false,
             Elements = BindElements(section, data, bind, page_section, break_count, depth),

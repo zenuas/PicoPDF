@@ -62,9 +62,9 @@ public static class JsonLoader
         return json["Type"]!.ToString() switch
         {
             "HeaderSection" => new HeaderSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode },
-            "DetailSection" => new DetailSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, Fill = json["Fill"]?.AsValue() is { } fill && (bool)fill },
-            "TotalSection" => new TotalSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, IsPageBreak = pagebreak, Fill = json["Fill"]?.AsValue() is { } fill && (bool)fill },
-            "FooterSection" => new FooterSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, IsPageBreak = pagebreak, Fill = json["Fill"]?.AsValue() is { } fill && (bool)fill },
+            "DetailSection" => new DetailSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, IsFill = json["Fill"]?.AsValue() is { } fill && (bool)fill },
+            "TotalSection" => new TotalSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, IsPageBreak = pagebreak, IsFill = json["Fill"]?.AsValue() is { } fill && (bool)fill },
+            "FooterSection" => new FooterSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, IsPageBreak = pagebreak, IsFill = json["Fill"]?.AsValue() is { } fill && (bool)fill },
             _ => throw new(),
         };
     }
