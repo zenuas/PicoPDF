@@ -10,8 +10,6 @@ public class ContentsTest
 {
     public static (int X, int Y)[][] GetBorderStrokes(TextStyles style)
     {
-        var contens = new Contents() { Page = null! };
-
         var left = 1;
         var top = 2;
         var height = 4;
@@ -19,8 +17,7 @@ public class ContentsTest
         var bottom = top + height;
         var right = left + width;
 
-        contens.DrawBorderStyle(style, top, left, width, height);
-        return [.. contens.Operations
+        return [.. Contents.CreateDrawBorderStyleOperations(style, top, left, width, height)
                 .OfType<DrawLine>()
                 .Select(line => line.Points.Select(pt => ((int)pt.X.ToPoint(), (int)pt.Y.ToPoint())).ToArray())
             ];

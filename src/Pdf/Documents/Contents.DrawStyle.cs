@@ -1,5 +1,4 @@
-﻿using Mina.Extension;
-using PicoPDF.Loader.Elements;
+﻿using PicoPDF.Loader.Elements;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Operation;
 using System.Collections.Generic;
@@ -8,8 +7,6 @@ namespace PicoPDF.Pdf.Documents;
 
 public partial class Contents
 {
-    public void DrawTextStyle(TextStyles style, double top, double left, double basey, double width, double height, IColor? color = null) => CreateDrawTextStyleOperations(style, top, left, basey, width, height, color).Each(Operations.Add);
-
     public static IEnumerable<IOperation> CreateDrawTextStyleOperations(TextStyles style, double top, double left, double basey, double width, double height, IColor? color = null)
     {
         var right = left + width;
@@ -35,8 +32,6 @@ public partial class Contents
             }
         }
     }
-
-    public void DrawBorderStyle(TextStyles style, double top, double left, double width, double height, double? linewidth = null, IColor? color = null) => CreateDrawBorderStyleOperations(style, top, left, width, height, linewidth, color).Each(Operations.Add);
 
     public static IEnumerable<IOperation> CreateDrawBorderStyleOperations(TextStyles style, double top, double left, double width, double height, double? linewidth = null, IColor? color = null)
     {

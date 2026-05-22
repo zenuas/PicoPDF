@@ -21,8 +21,6 @@ namespace PicoPDF.Pdf.Documents;
 
 public partial class Contents
 {
-    public void DrawPathOnBaseline(string text, double basey, double left, double size, Type0Font font) => Operations.AddRange(CreateDrawPathOnBaselineOperation(text, basey, left, size, font, Page.Document));
-
     public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(string text, double basey, double left, double size, Type0Font font, Document document, IColor? color = null)
     {
         var opentype_font = font.EmbeddedFont ?? font.Font;

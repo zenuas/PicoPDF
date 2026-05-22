@@ -16,8 +16,6 @@ public partial class Contents
     public static readonly NoneLineBreakRule NoneLineBreakRule = new();
     public static readonly GenericLineBreakRule GenericLineBreakRule = new();
 
-    public void DrawTextOnBaseline(string text, double basey, double left, double size, IFont font) => Operations.Add(CreateDrawTextOnBaselineOperation(text, basey, left, size, font));
-
     public static DrawString CreateDrawTextOnBaselineOperation(string text, double basey, double left, double size, IFont font, IColor? color = null)
     {
         if (font is IFontChars fontchars) fontchars.AddCharCache(text);

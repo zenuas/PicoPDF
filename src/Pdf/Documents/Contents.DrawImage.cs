@@ -6,8 +6,6 @@ namespace PicoPDF.Pdf.Documents;
 
 public partial class Contents
 {
-    public void DrawImage(double x, double y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0) => Operations.Add(CreateDrawImageOperation(x, y, image, zoomwidth, zoomheight));
-
     public static DrawImage CreateDrawImageOperation(double x, double y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0) => CreateDrawImageOperation(
         new PointValue(x),
         new PointValue(y),
