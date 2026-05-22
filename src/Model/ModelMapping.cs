@@ -2,6 +2,7 @@
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Documents;
+using PicoPDF.Pdf.Operation;
 using System.Linq;
 
 namespace PicoPDF.Model;
@@ -13,35 +14,33 @@ public static class ModelMapping
         foreach (var page in pages)
         {
             var pdfpage = doc.NewPage(page.Width, page.Height);
-            page.Models.Each(section => section.Elements.Each(x => option.Mapping(pdfpage, x, section.Top, section.Left)));
+            page.Models
+                .Select(section => section.Elements.Select(x => option.Mapping(pdfpage, x, section.Top, section.Left)))
+                .Flatten()
+                .Each(pdfpage.Contents.Operations.Add);
         }
     }
 
-    public static void Mapping(Page page, IModelElement model, int top, int left)
+    public static IOperation Mapping(Page page, IModelElement model, int top, int left)
     {
         double posx = model.X + left;
         double posy = model.Y + top;
         switch (model)
         {
             case ITextModel x:
-                _ = page.Contents.DrawText(x.Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
-                return;
+                return Contents.CreateDrawText(page.Document, x.Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
 
             case ILineModel x:
-                page.Contents.DrawLine(posx, posy, posx + x.Width, posy + x.Height, x.Color?.ToDeviceRGB(), x.LineWidth);
-                return;
+                return Contents.CreateDrawLinesOperation([(posx, posy), (posx + x.Width, posy + x.Height)], x.Color?.ToDeviceRGB(), x.LineWidth);
 
             case IRectangleModel x:
-                page.Contents.DrawRectangle(posx, posy, x.Width, x.Height, x.Color?.ToDeviceRGB(), x.LineWidth);
-                return;
+                return Contents.CreateDrawRectangleOperation(posx, posy, x.Width, x.Height, x.Color?.ToDeviceRGB(), x.LineWidth);
 
             case IFillRectangleModel x:
-                page.Contents.DrawFillRectangle(posx, posy, x.Width, x.Height, x.LineColor.ToDeviceRGB(), x.FillColor.ToDeviceRGB(), x.LineWidth);
-                return;
+                return Contents.CreateDrawFillRectangleOperation(posx, posy, x.Width, x.Height, x.LineColor.ToDeviceRGB(), x.FillColor.ToDeviceRGB(), x.LineWidth);
 
             case ImageModel x:
-                page.Contents.DrawImage(posx, posy, page.Document.GetImage(x), x.ZoomWidth, x.ZoomHeight);
-                return;
+                return Contents.CreateDrawImageOperation(posx, posy, page.Document.GetImage(x), x.ZoomWidth, x.ZoomHeight);
         }
         throw new();
     }

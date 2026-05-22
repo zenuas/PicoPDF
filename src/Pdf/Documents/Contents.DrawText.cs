@@ -32,7 +32,7 @@ public partial class Contents
         };
     }
 
-    public double DrawText(string text, double left, double top, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyles style = TextStyles.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
+    public static IOperation CreateDrawText(Document doc, string text, double left, double top, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyles style = TextStyles.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
     {
         var linetop = top;
         double? prev_linegap = null;
@@ -55,7 +55,7 @@ public partial class Contents
                 _ => left,
             };
 
-            opes.AddRange(CreateDrawTextOperation(textfonts, basey, text_left, text_size, style.HasFlag(TextStyles.Stroke), Page.Document, color));
+            opes.AddRange(CreateDrawTextOperation(textfonts, basey, text_left, text_size, style.HasFlag(TextStyles.Stroke), doc, color));
             if ((style & TextStyles.TextStyleMask) > 0) opes.AddRange(CreateDrawTextStyleOperations(style, linetop, text_left, basey, text_width, text_height, color));
             linetop += text_height;
             prev_linegap = allbox.LineGap * text_size;
@@ -66,20 +66,19 @@ public partial class Contents
 
         if (style.HasFlag(TextStyles.Clipping))
         {
-            Operations.Add(new DrawClipping()
+            return new DrawClipping()
             {
                 X = new PointValue(left),
                 Y = new PointValue(top),
                 Width = new PointValue(width),
                 Height = new PointValue(height > 0 ? height : linetop - top),
                 Operations = [.. opes],
-            });
+            };
         }
         else
         {
-            Operations.AddRange(opes);
+            return new DrawOperations() { Operations = [.. opes] };
         }
-        return linetop - top;
     }
 
     public static IEnumerable<IOperation> CreateDrawTextOperation((string Text, Type0Font Font)[] textfonts, double basey, double left, double size, bool stroke, Document document, IColor? color = null)

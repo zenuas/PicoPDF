@@ -27,29 +27,29 @@ public class ManualCreate : FontRegisterCommand
         page.Contents.DrawTextOnBaseline("Type1 Font!", 140, 100, 12, type1);
 
         var post = doc.AddFont("POST1", fontreg.LoadComplete("test-case/NotoSansCJK-Regular.ttc,0"));
-        _ = page.Contents.DrawText("PostScript Font! あア亜 𠮷野家", 100, 160, 12, [post]);
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "PostScript Font! あア亜 𠮷野家", 100, 160, 12, [post]));
 
         var ttf = doc.AddFont("true1", fontreg.LoadComplete("Meiryo Bold"));
-        _ = page.Contents.DrawText("TrueType Font! あアģ亜 𠮷野家", 100, 180, 12, [ttf]);
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "TrueType Font! あアģ亜 𠮷野家", 100, 180, 12, [ttf]));
 
         var emoji = doc.AddFont("emoji1", fontreg.LoadComplete("Segoe UI Emoji"));
-        _ = page.Contents.DrawText("aijpqあいうえお👤🐵←Segoe UI Emoji", 100, 200, 12, [ttf, emoji]);
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "aijpqあいうえお👤🐵←Segoe UI Emoji", 100, 200, 12, [ttf, emoji]));
 
         var emojistroke = doc.AddFont("emoji1", fontreg.LoadComplete("Segoe UI Emoji"), FontEmbed.Stroke);
-        _ = page.Contents.DrawText("aijpqあいうえお👤🐵←Segoe UI Emoji(Stroke)", 100, 220, 12, [ttf, emojistroke]);
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "aijpqあいうえお👤🐵←Segoe UI Emoji(Stroke)", 100, 220, 12, [ttf, emojistroke]));
 
         var notocolemoji = doc.AddFont("emoji2", fontreg.LoadComplete("test-case/NotoColorEmoji-Regular.ttf"), FontEmbed.Stroke);
-        _ = page.Contents.DrawText("aijpqあいうえお👤🐵←NotoColorEmoji-Regular(Stroke)", 100, 240, 12, [ttf, notocolemoji]);
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "aijpqあいうえお👤🐵←NotoColorEmoji-Regular(Stroke)", 100, 240, 12, [ttf, notocolemoji]));
 
-        _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 100, 260, 12, [ttf, emoji], style: TextStyles.Border);
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "途中で\n改行コードの\r\n入った\rテキストのテスト", 100, 260, 12, [ttf, emoji], style: TextStyles.Border));
 
-        _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 300, 260, 12, [ttf, emoji], 65, 60, style: TextStyles.Border | TextStyles.Clipping);
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "途中で\n改行コードの\r\n入った\rテキストのテスト", 300, 260, 12, [ttf, emoji], 65, 60, style: TextStyles.Border | TextStyles.Clipping));
 
-        _ = page.Contents.DrawText("TrueTypeでStroke化🍣", 100, 320, 12, [ttf, emoji], style: TextStyles.Stroke | TextStyles.Border);
-        _ = page.Contents.DrawText("PostScriptでStroke化🍣", 100, 340, 12, [post, emoji], style: TextStyles.Stroke | TextStyles.Border);
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "TrueTypeでStroke化🍣", 100, 320, 12, [ttf, emoji], style: TextStyles.Stroke | TextStyles.Border));
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "PostScriptでStroke化🍣", 100, 340, 12, [post, emoji], style: TextStyles.Stroke | TextStyles.Border));
 
-        _ = page.Contents.DrawText("TrueTypeでフォントフォールバックできない⇒🍣", 100, 360, 12, [ttf]);
-        _ = page.Contents.DrawText("PostScriptでフォントフォールバックできない⇒🍣", 100, 380, 12, [post]);
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "TrueTypeでフォントフォールバックできない⇒🍣", 100, 360, 12, [ttf]));
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "PostScriptでフォントフォールバックできない⇒🍣", 100, 380, 12, [post]));
 
         doc.Save("test-case/manual-create.pdf", new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });
     }
