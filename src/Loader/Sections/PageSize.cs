@@ -54,6 +54,10 @@ public class PageSize : ISpanParsable<PageSize>, IEquatable<PageSize>
 
     public bool Equals(PageSize? other) => other is { } && other.Width == Width && other.Height == Height;
 
+    public override bool Equals(object? obj) => Equals(obj as PageSize);
+
+    public override int GetHashCode() => (Width, Height).GetHashCode();
+
     public (int Width, int Height) GetPageSize(Orientation orientation) => orientation == Orientation.Vertical ? (Width, Height) : (Height, Width);
 
     public static (int Width, int Height) GetPageSize(PageSizes size, Orientation orientation)
