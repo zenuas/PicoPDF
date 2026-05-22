@@ -3,7 +3,7 @@
 namespace PicoPDF.Loader.Elements;
 
 [Flags]
-public enum TextStyle
+public enum TextStyles
 {
     None = 0,
     Underline = 1 << 0,

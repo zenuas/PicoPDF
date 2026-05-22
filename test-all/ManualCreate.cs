@@ -18,7 +18,7 @@ public class ManualCreate : FontRegisterCommand
 
         var cid = doc.AddFont("CID", "HeiseiMin", CMap.UniJIS_UCS2_H, Encoding.BigEndianUnicode);
         page.Contents.DrawTextOnBaseline("CID Font! あア亜", 100, 100, 12, cid);
-        page.Contents.DrawTextStyle(TextStyle.Underline, 100, 100, 100, 50, 12);
+        page.Contents.DrawTextStyle(TextStyles.Underline, 100, 100, 100, 50, 12);
 
         var stdtype1 = doc.AddFont("STDTYPE1", StandardType1Fonts.HelveticaBold);
         page.Contents.DrawTextOnBaseline("Standard Type1 Font!", 120, 100, 12, stdtype1);
@@ -41,12 +41,12 @@ public class ManualCreate : FontRegisterCommand
         var notocolemoji = doc.AddFont("emoji2", fontreg.LoadComplete("test-case/NotoColorEmoji-Regular.ttf"), FontEmbed.Stroke);
         _ = page.Contents.DrawText("aijpqあいうえお👤🐵←NotoColorEmoji-Regular(Stroke)", 100, 240, 12, [ttf, notocolemoji]);
 
-        _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 100, 260, 12, [ttf, emoji], style: TextStyle.Border);
+        _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 100, 260, 12, [ttf, emoji], style: TextStyles.Border);
 
-        _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 300, 260, 12, [ttf, emoji], 65, 60, style: TextStyle.Border | TextStyle.Clipping);
+        _ = page.Contents.DrawText("途中で\n改行コードの\r\n入った\rテキストのテスト", 300, 260, 12, [ttf, emoji], 65, 60, style: TextStyles.Border | TextStyles.Clipping);
 
-        _ = page.Contents.DrawText("TrueTypeでStroke化🍣", 100, 320, 12, [ttf, emoji], style: TextStyle.Stroke | TextStyle.Border);
-        _ = page.Contents.DrawText("PostScriptでStroke化🍣", 100, 340, 12, [post, emoji], style: TextStyle.Stroke | TextStyle.Border);
+        _ = page.Contents.DrawText("TrueTypeでStroke化🍣", 100, 320, 12, [ttf, emoji], style: TextStyles.Stroke | TextStyles.Border);
+        _ = page.Contents.DrawText("PostScriptでStroke化🍣", 100, 340, 12, [post, emoji], style: TextStyles.Stroke | TextStyles.Border);
 
         _ = page.Contents.DrawText("TrueTypeでフォントフォールバックできない⇒🍣", 100, 360, 12, [ttf]);
         _ = page.Contents.DrawText("PostScriptでフォントフォールバックできない⇒🍣", 100, 380, 12, [post]);

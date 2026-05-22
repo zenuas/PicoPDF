@@ -32,19 +32,19 @@ public partial class Contents
         };
     }
 
-    public double DrawText(string text, double left, double top, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyle style = TextStyle.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
+    public double DrawText(string text, double left, double top, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyles style = TextStyles.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
     {
         var linetop = top;
         double? prev_linegap = null;
         var max_width = 0.0;
         var max_height = 0.0;
         var opes = new List<IOperation>();
-        foreach (var textfonts in GetMultilineTextFont(text, fonts, size, style.HasFlag(TextStyle.MultiLine) ? width : 0, linebreak_rule ?? (style.HasFlag(TextStyle.LineBreak) ? GenericLineBreakRule : NoneLineBreakRule)))
+        foreach (var textfonts in GetMultilineTextFont(text, fonts, size, style.HasFlag(TextStyles.MultiLine) ? width : 0, linebreak_rule ?? (style.HasFlag(TextStyles.LineBreak) ? GenericLineBreakRule : NoneLineBreakRule)))
         {
             if (prev_linegap is { } gap) linetop += gap;
 
             var allbox = MeasureTextFontBox(textfonts);
-            var text_size = style.HasFlag(TextStyle.ShrinkToFit) && width < (allbox.Width * size) ? width / allbox.Width : size;
+            var text_size = style.HasFlag(TextStyles.ShrinkToFit) && width < (allbox.Width * size) ? width / allbox.Width : size;
             var text_width = allbox.Width * text_size;
             var text_height = allbox.Height * text_size;
             var basey = linetop - (allbox.Ascender * text_size);
@@ -55,16 +55,16 @@ public partial class Contents
                 _ => left,
             };
 
-            opes.AddRange(CreateDrawTextOperation(textfonts, basey, text_left, text_size, style.HasFlag(TextStyle.Stroke), Page.Document, color));
-            if ((style & TextStyle.TextStyleMask) > 0) opes.AddRange(CreateDrawTextStyleOperations(style, linetop, text_left, basey, text_width, text_height, color));
+            opes.AddRange(CreateDrawTextOperation(textfonts, basey, text_left, text_size, style.HasFlag(TextStyles.Stroke), Page.Document, color));
+            if ((style & TextStyles.TextStyleMask) > 0) opes.AddRange(CreateDrawTextStyleOperations(style, linetop, text_left, basey, text_width, text_height, color));
             linetop += text_height;
             prev_linegap = allbox.LineGap * text_size;
             max_width = Math.Max(max_width, text_width);
             max_height = Math.Max(max_height, text_height);
         }
-        if ((style & TextStyle.BorderStyleMask) > 0) opes.AddRange(CreateDrawBorderStyleOperations(style, top, left, width > 0 ? width : max_width, height > 0 ? height : linetop - top, max_height / 20, color));
+        if ((style & TextStyles.BorderStyleMask) > 0) opes.AddRange(CreateDrawBorderStyleOperations(style, top, left, width > 0 ? width : max_width, height > 0 ? height : linetop - top, max_height / 20, color));
 
-        if (style.HasFlag(TextStyle.Clipping))
+        if (style.HasFlag(TextStyles.Clipping))
         {
             Operations.Add(new DrawClipping()
             {

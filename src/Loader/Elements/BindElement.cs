@@ -14,7 +14,7 @@ public class BindElement : ITextElement
     public required int Size { get; init; }
     public FontPath[] Font { get; init; } = [];
     public TextAlignment Alignment { get; init; } = TextAlignment.Start;
-    public TextStyle Style { get; init; } = TextStyle.None;
+    public TextStyles Style { get; init; } = TextStyles.None;
     public int Width { get; init; }
     public int Height { get; init; }
     public Color? Color { get; init; } = null;
