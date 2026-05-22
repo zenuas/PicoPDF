@@ -1,5 +1,8 @@
-﻿namespace PicoPDF.Loader.Sections;
+﻿using System;
 
+namespace PicoPDF.Loader.Sections;
+
+[Flags]
 public enum SectionStyles
 {
     None = 0,
