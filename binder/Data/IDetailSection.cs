@@ -2,5 +2,5 @@
 
 public interface IDetailSection : ISection
 {
-    public bool IsFill { get; init; }
+    public bool IsFill { get; }
 }

@@ -9,7 +9,8 @@ public class TotalSection : IFooterSection
     public required int Height { get; init; }
     public ViewModes ViewMode { get => field; init => field = value is ViewModes.Last or ViewModes.Every ? value : throw new ArgumentException(); } = ViewModes.Last;
     public IElement[] Elements { get; init; } = [];
-    public required bool IsFill { get; init; }
-    public required bool IsPageBreak { get; init; }
-    public bool IsFooter { get; init; } = false;
+    public bool IsFill { get => Style.HasFlag(SectionStyles.Fill); }
+    public bool IsPageBreak { get => Style.HasFlag(SectionStyles.PageBreak); }
+    public bool IsFooter { get; } = false;
+    public SectionStyles Style { get; init; } = SectionStyles.None;
 }

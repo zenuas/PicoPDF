@@ -507,7 +507,7 @@ public class SectionBinderEventTest
 		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 10, "ViewMode": "PageFirst", "Elements": [
 			{"Type": "TextElement", "Text": "PageHeader", "Size": 30, "X": 10, "Y": 0},
 		]},
-		{"Type": "DetailSection", "Name": "Detail", "Height": 10, "Fill": true, "Elements": [
+		{"Type": "DetailSection", "Name": "Detail", "Height": 10, "Style": "Fill", "Elements": [
 			{"Type": "BindElement", "Bind": "Foo",  "Size": 10, "X": 10, "Y": 0},
 		]},
 		{"Type": "HeaderSection", "Name": "Header1", "Height": 10, "Elements": [

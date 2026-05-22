@@ -9,5 +9,6 @@ public class DetailSection : IDetailSection, ISubSection
     public required int Height { get; init; }
     public ViewModes ViewMode { get => ViewModes.Every; init => _ = value == ViewModes.Every ? value : throw new ArgumentException(); }
     public IElement[] Elements { get; init; } = [];
-    public bool IsFill { get; init; }
+    public bool IsFill { get => Style.HasFlag(SectionStyles.Fill); }
+    public SectionStyles Style { get; init; } = SectionStyles.None;
 }

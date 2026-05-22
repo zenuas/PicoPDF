@@ -54,17 +54,17 @@ public static class JsonLoader
 
     public static ISection LoadSubSection(JsonNode json)
     {
-        var elements = json["Elements"]!.AsArray().Select(x => LoadElement(x!)).ToArray();
         var name = json["Name"]!.ToString();
         var height = (int)json["Height"]!.AsValue();
+        var elements = json["Elements"]!.AsArray().Select(x => LoadElement(x!)).ToArray();
         var viewmode = json["ViewMode"] is { } v ? Enum.Parse<ViewModes>(v.ToString()) : ViewModes.Every;
-        var pagebreak = json["PageBreak"]?.AsValue() is { } pb && (bool)pb;
+        var style = json["Style"]?.AsValue() is { } st ? Enum.Parse<SectionStyles>(st.ToString()) : SectionStyles.None;
         return json["Type"]!.ToString() switch
         {
-            "HeaderSection" => new HeaderSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode },
-            "DetailSection" => new DetailSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, IsFill = json["Fill"]?.AsValue() is { } fill && (bool)fill },
-            "TotalSection" => new TotalSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, IsPageBreak = pagebreak, IsFill = json["Fill"]?.AsValue() is { } fill && (bool)fill },
-            "FooterSection" => new FooterSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, IsPageBreak = pagebreak, IsFill = json["Fill"]?.AsValue() is { } fill && (bool)fill },
+            "HeaderSection" => new HeaderSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, Style = style },
+            "DetailSection" => new DetailSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, Style = style },
+            "TotalSection" => new TotalSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, Style = style },
+            "FooterSection" => new FooterSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, Style = style },
             _ => throw new(),
         };
     }

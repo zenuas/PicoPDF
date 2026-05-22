@@ -2,7 +2,7 @@
 
 public interface IFooterSection : ISection
 {
-    public bool IsFill { get; init; }
-    public bool IsPageBreak { get; init; }
-    public bool IsFooter { get; init; }
+    public bool IsFill { get; }
+    public bool IsPageBreak { get; }
+    public bool IsFooter { get; }
 }
