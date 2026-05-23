@@ -13,7 +13,7 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_DetailOnly()
     {
-        var subsection = new DetailSection() { Name = "detail", Height = 100 };
+        var subsection = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         var sections = SectionBinder.GetSectionInfo(subsection, null);
 
         Assert.Equal(sections.Headers.Length, 0);
@@ -25,8 +25,8 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_Single()
     {
-        var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        var subsection = new DetailSection() { Name = "detail", Height = 100 };
+        var pageheader = new HeaderSection() { Name = "header", Height = 100, Width = 50 };
+        var subsection = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         var sections = SectionBinder.GetSectionInfo(subsection, pageheader);
 
         Assert.Equal(sections.Headers.Length, 1);
@@ -42,8 +42,8 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_Depth1_DetailOnly()
     {
-        var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        var detail = new DetailSection() { Name = "detail", Height = 100 };
+        var pageheader = new HeaderSection() { Name = "header", Height = 100, Width = 50 };
+        var detail = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         ISubSection subsection = new Section()
         {
             SubSection = detail,
@@ -63,8 +63,8 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_Depth1_BreakKyeOnly()
     {
-        var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        var detail = new DetailSection() { Name = "detail", Height = 100 };
+        var pageheader = new HeaderSection() { Name = "header", Height = 100, Width = 50 };
+        var detail = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         ISubSection subsection = new Section()
         {
             SubSection = detail,
@@ -85,12 +85,12 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_Depth1()
     {
-        var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        var detail = new DetailSection() { Name = "detail", Height = 100 };
+        var pageheader = new HeaderSection() { Name = "header", Height = 100, Width = 50 };
+        var detail = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         ISubSection subsection = new Section()
         {
-            Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100 },
+            Header = new HeaderSection() { Name = "header1", Height = 100, Width = 50 },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, Width = 50 },
             SubSection = detail,
             BreakKey = "break",
         };
@@ -117,16 +117,16 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_Depth2()
     {
-        var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        var detail = new DetailSection() { Name = "detail", Height = 100 };
+        var pageheader = new HeaderSection() { Name = "header", Height = 100, Width = 50 };
+        var detail = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         ISubSection subsection = new Section()
         {
-            Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100 },
+            Header = new HeaderSection() { Name = "header1", Height = 100, Width = 50 },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, Width = 50 },
             SubSection = new Section()
             {
-                Header = new HeaderSection() { Name = "header2", Height = 100 },
-                Footer = new FooterSection() { Name = "footer2", Height = 100 },
+                Header = new HeaderSection() { Name = "header2", Height = 100, Width = 50 },
+                Footer = new FooterSection() { Name = "footer2", Height = 100, Width = 50 },
                 SubSection = detail,
                 BreakKey = "break2",
             },
@@ -163,20 +163,20 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_Depth3()
     {
-        var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        var detail = new DetailSection() { Name = "detail", Height = 100 };
+        var pageheader = new HeaderSection() { Name = "header", Height = 100, Width = 50 };
+        var detail = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         ISubSection subsection = new Section()
         {
-            Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100 },
+            Header = new HeaderSection() { Name = "header1", Height = 100, Width = 50 },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, Width = 50 },
             SubSection = new Section()
             {
-                Header = new HeaderSection() { Name = "header2", Height = 100 },
-                Footer = new FooterSection() { Name = "footer2", Height = 100 },
+                Header = new HeaderSection() { Name = "header2", Height = 100, Width = 50 },
+                Footer = new FooterSection() { Name = "footer2", Height = 100, Width = 50 },
                 SubSection = new Section()
                 {
-                    Header = new HeaderSection() { Name = "header3", Height = 100 },
-                    Footer = new FooterSection() { Name = "footer3", Height = 100 },
+                    Header = new HeaderSection() { Name = "header3", Height = 100, Width = 50 },
+                    Footer = new FooterSection() { Name = "footer3", Height = 100, Width = 50 },
                     SubSection = detail,
                     BreakKey = "break3",
                 },
@@ -223,20 +223,20 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_Depth3_Sub2NoBreak()
     {
-        var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        var detail = new DetailSection() { Name = "detail", Height = 100 };
+        var pageheader = new HeaderSection() { Name = "header", Height = 100, Width = 50 };
+        var detail = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         ISubSection subsection = new Section()
         {
-            Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100 },
+            Header = new HeaderSection() { Name = "header1", Height = 100, Width = 50 },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, Width = 50 },
             SubSection = new Section()
             {
-                Header = new HeaderSection() { Name = "header2", Height = 100 },
-                Footer = new FooterSection() { Name = "footer2", Height = 100 },
+                Header = new HeaderSection() { Name = "header2", Height = 100, Width = 50 },
+                Footer = new FooterSection() { Name = "footer2", Height = 100, Width = 50 },
                 SubSection = new Section()
                 {
-                    Header = new HeaderSection() { Name = "header3", Height = 100 },
-                    Footer = new FooterSection() { Name = "footer3", Height = 100 },
+                    Header = new HeaderSection() { Name = "header3", Height = 100, Width = 50 },
+                    Footer = new FooterSection() { Name = "footer3", Height = 100, Width = 50 },
                     SubSection = detail,
                     BreakKey = "break3",
                 },
@@ -283,20 +283,20 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_Depth3_Sub2NoHeader()
     {
-        var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        var detail = new DetailSection() { Name = "detail", Height = 100 };
+        var pageheader = new HeaderSection() { Name = "header", Height = 100, Width = 50 };
+        var detail = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         ISubSection subsection = new Section()
         {
-            Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100 },
+            Header = new HeaderSection() { Name = "header1", Height = 100, Width = 50 },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, Width = 50 },
             SubSection = new Section()
             {
                 Header = null,
-                Footer = new FooterSection() { Name = "footer2", Height = 100 },
+                Footer = new FooterSection() { Name = "footer2", Height = 100, Width = 50 },
                 SubSection = new Section()
                 {
-                    Header = new HeaderSection() { Name = "header3", Height = 100 },
-                    Footer = new FooterSection() { Name = "footer3", Height = 100 },
+                    Header = new HeaderSection() { Name = "header3", Height = 100, Width = 50 },
+                    Footer = new FooterSection() { Name = "footer3", Height = 100, Width = 50 },
                     SubSection = detail,
                     BreakKey = "break3",
                 },
@@ -339,20 +339,20 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_Depth3_Sub2NoFooter()
     {
-        var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        var detail = new DetailSection() { Name = "detail", Height = 100 };
+        var pageheader = new HeaderSection() { Name = "header", Height = 100, Width = 50 };
+        var detail = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         ISubSection subsection = new Section()
         {
-            Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100 },
+            Header = new HeaderSection() { Name = "header1", Height = 100, Width = 50 },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, Width = 50 },
             SubSection = new Section()
             {
-                Header = new HeaderSection() { Name = "header2", Height = 100 },
+                Header = new HeaderSection() { Name = "header2", Height = 100, Width = 50 },
                 Footer = null,
                 SubSection = new Section()
                 {
-                    Header = new HeaderSection() { Name = "header3", Height = 100 },
-                    Footer = new FooterSection() { Name = "footer3", Height = 100 },
+                    Header = new HeaderSection() { Name = "header3", Height = 100, Width = 50 },
+                    Footer = new FooterSection() { Name = "footer3", Height = 100, Width = 50 },
                     SubSection = detail,
                     BreakKey = "break3",
                 },
@@ -395,20 +395,20 @@ public class SectionBinderTest
     [Fact]
     public void GetSectionInfo_NoDetail()
     {
-        var pageheader = new HeaderSection() { Name = "header", Height = 100 };
-        var detail = new DetailSection() { Name = "detail", Height = 100 };
+        var pageheader = new HeaderSection() { Name = "header", Height = 100, Width = 50 };
+        var detail = new DetailSection() { Name = "detail", Height = 100, Width = 50 };
         ISubSection subsection = new Section()
         {
-            Header = new HeaderSection() { Name = "header1", Height = 100 },
-            Footer = new FooterSection() { Name = "footer1", Height = 100 },
+            Header = new HeaderSection() { Name = "header1", Height = 100, Width = 50 },
+            Footer = new FooterSection() { Name = "footer1", Height = 100, Width = 50 },
             SubSection = new Section()
             {
-                Header = new HeaderSection() { Name = "header2", Height = 100 },
-                Footer = new FooterSection() { Name = "footer2", Height = 100 },
+                Header = new HeaderSection() { Name = "header2", Height = 100, Width = 50 },
+                Footer = new FooterSection() { Name = "footer2", Height = 100, Width = 50 },
                 SubSection = new Section()
                 {
-                    Header = new HeaderSection() { Name = "header3", Height = 100 },
-                    Footer = new FooterSection() { Name = "footer3", Height = 100 },
+                    Header = new HeaderSection() { Name = "header3", Height = 100, Width = 50 },
+                    Footer = new FooterSection() { Name = "footer3", Height = 100, Width = 50 },
                     SubSection = null!,
                     BreakKey = "break3",
                 },
