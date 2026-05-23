@@ -347,3 +347,8 @@ test-case/*.ttf
 test-case/*.ttc
 test-case/*.otf
 test-case/*.otc
+
+docs/sample/*.ttf
+docs/sample/*.ttc
+docs/sample/*.otf
+docs/sample/*.otc

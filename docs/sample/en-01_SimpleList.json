@@ -1,0 +1,44 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": "Noto Sans JP Regular",
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": {
+			"Header": "Header",
+			"Detail": "Detail",
+		},
+	"Footer": "PageFooter",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "SimpleList", "Size": 30, "X": 10, "Y": 0},
+		]},
+		{"Type": "HeaderSection", "Name": "Header", "Height": 20, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "No",         "Size": 10, "X":  10, "Y": 0},
+			{"Type": "TextElement", "Text": "First Name", "Size": 10, "X":  30, "Y": 0},
+			{"Type": "TextElement", "Text": "Last Name",  "Size": 10, "X": 100, "Y": 0},
+			{"Type": "TextElement", "Text": "Gender",     "Size": 10, "X": 200, "Y": 0},
+			{"Type": "TextElement", "Text": "Country",    "Size": 10, "X": 260, "Y": 0},
+			{"Type": "TextElement", "Text": "City",       "Size": 10, "X": 340, "Y": 0},
+			{"Type": "TextElement", "Text": "Address",    "Size": 10, "X": 440, "Y": 0},
+			{"Type": "LineElement", "X": 0,  "Y": 12, "Width": 550, "Height": 0, "Color": "Black"},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Style": "Fill", "Elements": [
+			{"Type": "BindElement", "Bind": "id",         "Size": 10, "X":  10, "Y": 0, "Alignment": "End", "Width": 10},
+			{"Type": "BindElement", "Bind": "first_name", "Size": 10, "X":  30, "Y": 0},
+			{"Type": "BindElement", "Bind": "last_name",  "Size": 10, "X": 100, "Y": 0},
+			{"Type": "BindElement", "Bind": "gender",     "Size": 10, "X": 200, "Y": 0},
+			{"Type": "BindElement", "Bind": "country",    "Size": 10, "X": 260, "Y": 0},
+			{"Type": "BindElement", "Bind": "city",       "Size": 10, "X": 340, "Y": 0},
+			{"Type": "BindElement", "Bind": "address",    "Size": 10, "X": 440, "Y": 0},
+			{"Type": "LineElement", "X": 0,  "Y": 12, "Width": 550, "Height": 0, "Color": "Gray"},
+		]},
+		{"Type": "FooterSection", "Name": "PageFooter", "Height": 30, "Elements": [
+			{"Type": "SummaryElement",            "Size": 10, "X": 300, "Y": 0, "Format": "Page #,0", "SummaryType": "PageCount", "Alignment": "End",   "Width": 50},
+			{"Type": "TextElement", "Text": "of", "Size": 10, "X": 355, "Y": 0},
+			{"Type": "SummaryElement",            "Size": 10, "X": 370, "Y": 0, "Format": "#,0",      "SummaryType": "PageCount", "Alignment": "Start", "Width": 50, "SummaryMethod": "All"},
+		]},
+	],
+}

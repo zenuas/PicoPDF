@@ -43,6 +43,12 @@ public class PdfCreate : FontRegisterCommand
     [CommandOption("point-format")]
     public string PointFormat { get; init; } = "F%";
 
+    [CommandOption("work-directory")]
+    public string WorkDirectory { get; init; } = "test-case";
+
+    [CommandOption("info-add")]
+    public bool IsInfoAdd { get; init; } = false;
+
     public override void Run(string[] args)
     {
         var export_opt = new PdfExportOption
@@ -97,11 +103,11 @@ public class PdfCreate : FontRegisterCommand
 
         var datacache = new Dictionary<string, DataTable>();
         var tasks = new List<Task>();
-        foreach (var json in args.Length > 0 ? args : Directory.GetFiles("test-case", "*.json"))
+        foreach (var json in args.Length > 0 ? args : Directory.GetFiles(WorkDirectory, "*.json"))
         {
             var fname = Path.GetFileNameWithoutExtension(json);
-            var dataname = $"test-case/{(fname.Contains('-') ? fname[0..fname.LastIndexOf('-')] : fname)}.csv";
-            var pdfname = $"test-case/{fname}.pdf";
+            var dataname = $"{WorkDirectory}/{(fname.Contains('-') ? fname[0..fname.LastIndexOf('-')] : fname)}.csv";
+            var pdfname = $"{WorkDirectory}/{fname}.pdf";
 
             var pdftime = File.GetLastWriteTime(pdfname);
             if (!AlwaysUpdate && pdftime > File.GetLastWriteTime(json) && pdftime > File.GetLastWriteTime(dataname)) continue;
@@ -124,13 +130,16 @@ public class PdfCreate : FontRegisterCommand
             tasks.Add(Task.Run(() =>
             {
                 var doc = PdfUtility.CreateDocument(json, table, event_opt);
-                _ = doc.AddInfo(
-                    title: fname,
-                    producer: "PicoPDF for 🍣 (susi edition)",
-                    creation_date: DateTime.Now,
-                    mod_date: DateTime.Now,
-                    trapped: "/False"
-                );
+                if (IsInfoAdd)
+                {
+                    _ = doc.AddInfo(
+                        title: fname,
+                        producer: "PicoPDF for 🍣 (susi edition)",
+                        creation_date: DateTime.Now,
+                        mod_date: DateTime.Now,
+                        trapped: "/False"
+                    );
+                }
                 doc.Save(pdfname, export_opt);
             }));
         }

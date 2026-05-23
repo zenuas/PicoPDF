@@ -46,6 +46,10 @@
 	dotnet run --project test-all/PicoPDF.TestAll.csproj --no-launch-profile -- %*
 	@exit /b %ERRORLEVEL%
 
+:sample
+	dotnet run --project test-all/PicoPDF.TestAll.csproj --no-launch-profile -- %* create --work-directory docs/sample --register-user-font docs/sample --debug false --contents-deflate true --cmap-deflate true
+	@exit /b %ERRORLEVEL%
+
 :bench
 	dotnet run --project bench/PicoPDF.Benchmark.csproj --no-launch-profile -c Release %*
 	@exit /b %ERRORLEVEL%
