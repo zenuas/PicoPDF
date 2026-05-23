@@ -22,15 +22,15 @@ public static class JsonLoader
 
     public static PageSection CreatePageFromJson(JsonNode json, PdfEventOption option)
     {
+        var fonts = ToFontPathArray(json["DefaultFont"]);
+        if (fonts.Length == 0) throw new("DefaultFont is empty");
+
         var size = LoadPageSize(json["Size"]);
         var padding = LoadAllSides(json["Padding"]);
         var sections = json["Sections"]!
             .AsArray()
             .Select(x => LoadSubSection(x!, size.Width - padding.Left - padding.Right))
             .ToDictionary(x => x.Name, x => x);
-
-        var fonts = ToFontPathArray(json["DefaultFont"]);
-        if (fonts.Length == 0) throw new("DefaultFont is empty");
 
         return new()
         {
