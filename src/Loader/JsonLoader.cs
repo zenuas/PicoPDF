@@ -261,20 +261,21 @@ public static class JsonLoader
     public static PageSize LoadPageSize(JsonNode? node)
     {
         if (node is JsonValue v) return PageSize.Parse((string)v!);
-        if (node is JsonArray xs)
+        else if (node is JsonArray xs)
         {
             switch (xs.Count)
             {
                 case 2: return new((int)xs[0]!, (int)xs[1]!);
             }
         }
+        else if (node is JsonNode n) return new((int)n["Width"]!, (int)n["Height"]!);
         return new(PageSizes.A4);
     }
 
     public static AllSides LoadAllSides(JsonNode? node)
     {
         if (node is JsonValue v) return new((int)v, (int)v, (int)v, (int)v);
-        if (node is JsonArray xs)
+        else if (node is JsonArray xs)
         {
             switch (xs.Count)
             {
@@ -284,6 +285,7 @@ public static class JsonLoader
                 case 4: return new((int)xs[0]!, (int)xs[2]!, (int)xs[3]!, (int)xs[1]!);
             }
         }
+        else if (node is JsonNode n) return new((int)n["Top"]!, (int)n["Bottom"]!, (int)n["Left"]!, (int)n["Right"]!);
         return new(0, 0, 0, 0);
     }
 }
