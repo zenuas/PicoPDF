@@ -15,6 +15,7 @@ public record class SectionModel : ISectionModel<SectionModel>
     public required int Depth { get; init; }
     public int Top { get; set; }
     public required int Left { get; init; }
+    public required int Width { get; init; }
     public required int Height { get; init; }
     public required bool IsFill { get; init; }
     public required bool IsFooter { get; init; }
@@ -38,6 +39,7 @@ public record class SectionModel : ISectionModel<SectionModel>
             Section = section,
             Depth = depth ?? 0,
             Left = page.Padding.Left,
+            Width = section.Width,
             Height = section.Height,
             IsFill = footer?.IsFill ?? false,
             IsFooter = footer?.IsFooter ?? false,

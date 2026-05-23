@@ -1,7 +1,9 @@
 ﻿using Mina.Extension;
+using PicoPDF.Loader.Sections;
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Documents;
+using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Operation;
 using System.Linq;
 
@@ -15,7 +17,20 @@ public static class ModelMapping
         {
             var pdfpage = doc.NewPage(page.Width, page.Height);
             page.Models
-                .Select(section => section.Elements.Select(x => option.Mapping(pdfpage, x, section.Top, section.Left)))
+                .Select(section =>
+                {
+                    var opes = section.Elements.Select(x => option.Mapping(pdfpage, x, section.Top, section.Left));
+                    return (section.Section as ISectionStyle)?.Style.HasFlag(SectionStyles.Clipping) ?? false
+                        ? [new DrawClipping()
+                            {
+                                X = new PointValue(section.Left),
+                                Y = new PointValue(section.Top),
+                                Width = new PointValue(section.Width),
+                                Height = new PointValue(section.Height),
+                                Operations = [.. opes]
+                            }]
+                        : opes;
+                })
                 .Flatten()
                 .Each(pdfpage.Contents.Operations.Add);
         }

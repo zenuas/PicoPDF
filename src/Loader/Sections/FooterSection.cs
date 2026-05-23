@@ -3,9 +3,10 @@ using System;
 
 namespace PicoPDF.Loader.Sections;
 
-public class FooterSection : IFooterSection
+public class FooterSection : IFooterSection, ISectionStyle
 {
     public required string Name { get; init; }
+    public required int Width { get; init; }
     public required int Height { get; init; }
     public ViewModes ViewMode { get => field; init => field = value is ViewModes.Last or ViewModes.Every ? value : throw new ArgumentException(); } = ViewModes.Last;
     public IElement[] Elements { get; init; } = [];

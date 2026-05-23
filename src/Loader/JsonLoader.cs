@@ -22,9 +22,11 @@ public static class JsonLoader
 
     public static PageSection CreatePageFromJson(JsonNode json, PdfEventOption option)
     {
+        var size = LoadPageSize(json["Size"]);
+        var padding = LoadAllSides(json["Padding"]);
         var sections = json["Sections"]!
             .AsArray()
-            .Select(x => LoadSubSection(x!))
+            .Select(x => LoadSubSection(x!, size.Width - padding.Left - padding.Right))
             .ToDictionary(x => x.Name, x => x);
 
         var fonts = ToFontPathArray(json["DefaultFont"]);
@@ -32,13 +34,13 @@ public static class JsonLoader
 
         return new()
         {
-            Size = LoadPageSize(json["Size"]),
+            Size = size,
             Orientation = json["Orientation"] is { } orient ? Enum.Parse<Orientation>(orient!.ToString()) : Orientation.Vertical,
             DefaultFont = fonts,
             Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
             Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
             SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
-            Padding = LoadAllSides(json["Padding"]),
+            Padding = padding,
             DefaultCulture = json["DefaultCulture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : CultureInfo.InvariantCulture,
             EventOption = option,
         };
@@ -52,7 +54,7 @@ public static class JsonLoader
         SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
     };
 
-    public static ISection LoadSubSection(JsonNode json)
+    public static ISection LoadSubSection(JsonNode json, int width)
     {
         var name = json["Name"]!.ToString();
         var height = (int)json["Height"]!.AsValue();
@@ -61,10 +63,10 @@ public static class JsonLoader
         var style = json["Style"]?.AsValue() is { } st ? Enum.Parse<SectionStyles>(st.ToString()) : SectionStyles.None;
         return json["Type"]!.ToString() switch
         {
-            "HeaderSection" => new HeaderSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, Style = style },
-            "DetailSection" => new DetailSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, Style = style },
-            "TotalSection" => new TotalSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, Style = style },
-            "FooterSection" => new FooterSection() { Name = name, Height = height, Elements = elements, ViewMode = viewmode, Style = style },
+            "HeaderSection" => new HeaderSection() { Name = name, Height = height, Width = width, Elements = elements, ViewMode = viewmode, Style = style },
+            "DetailSection" => new DetailSection() { Name = name, Height = height, Width = width, Elements = elements, ViewMode = viewmode, Style = style },
+            "TotalSection" => new TotalSection() { Name = name, Height = height, Width = width, Elements = elements, ViewMode = viewmode, Style = style },
+            "FooterSection" => new FooterSection() { Name = name, Height = height, Width = width, Elements = elements, ViewMode = viewmode, Style = style },
             _ => throw new(),
         };
     }

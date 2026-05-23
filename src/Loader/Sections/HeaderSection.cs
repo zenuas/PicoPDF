@@ -3,9 +3,10 @@ using System;
 
 namespace PicoPDF.Loader.Sections;
 
-public class HeaderSection : IHeaderSection
+public class HeaderSection : IHeaderSection, ISectionStyle
 {
     public required string Name { get; init; }
+    public required int Width { get; init; }
     public required int Height { get; init; }
     public ViewModes ViewMode { get => field; init => field = value is ViewModes.First or ViewModes.Every or ViewModes.PageFirst ? value : throw new ArgumentException(); } = ViewModes.First;
     public IElement[] Elements { get; init; } = [];

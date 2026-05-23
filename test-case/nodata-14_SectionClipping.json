@@ -1,0 +1,18 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": ["Meiryo Bold", "Segoe UI Symbol"],
+	"Padding": [15, 20, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 60, "ViewMode": "PageFirst", "Style": "Clipping", "Elements": [
+			{"Type": "TextElement", "Text": "セクションのClippingテスト", "Size": 30, "X": 10, "Y": 0},
+			{"Type": "TextElement", "Text": "高さ60からはみ出る部分は表示されない", "Size": 30, "X": 10, "Y": 40},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+	],
+}
