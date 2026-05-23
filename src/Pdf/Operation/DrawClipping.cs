@@ -4,7 +4,7 @@ using System.IO;
 
 namespace PicoPDF.Pdf.Operation;
 
-public class DrawClipping : IOperation
+public class DrawClipping : IOperation, IHaveOperations
 {
     public required IPoint X { get; init; }
     public required IPoint Y { get; init; }

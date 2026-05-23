@@ -3,7 +3,7 @@ using System.IO;
 
 namespace PicoPDF.Pdf.Operation;
 
-public class DrawPathOperations : IOperation
+public class DrawPathOperations : IOperation, IHavePathOperations
 {
     public required string Text { get; init; }
     public required IPathOperation[] Operations { get; init; }

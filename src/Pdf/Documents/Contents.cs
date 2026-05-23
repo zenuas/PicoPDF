@@ -23,16 +23,12 @@ public partial class Contents : PdfObject
             yield return op;
             switch (op)
             {
-                case DrawOperations opes2:
-                    foreach (var x in EnumOperations(opes2.Operations)) yield return x;
+                case IHaveOperations xs:
+                    foreach (var x in EnumOperations(xs.Operations)) yield return x;
                     break;
 
-                case DrawClipping clip:
-                    foreach (var x in EnumOperations(clip.Operations)) yield return x;
-                    break;
-
-                case DrawPathOperations path:
-                    foreach (var x in EnumOperations(path.Operations)) yield return x;
+                case IHavePathOperations xs:
+                    foreach (var x in EnumOperations(xs.Operations)) yield return x;
                     break;
             }
         }
