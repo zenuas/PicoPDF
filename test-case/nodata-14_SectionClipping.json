@@ -6,13 +6,18 @@
 	
 	"Header": "PageHeader",
 	"Detail": "Detail",
+	"Footer": "PageFooter",
 	
 	"Sections": [
 		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 60, "ViewMode": "PageFirst", "Style": "Clipping", "Elements": [
 			{"Type": "TextElement", "Text": "セクションのClippingテスト", "Size": 30, "X": 10, "Y": 0},
 			{"Type": "TextElement", "Text": "高さ60からはみ出る部分は表示されない", "Size": 30, "X": 10, "Y": 40},
+			{"Type": "CrossSectionLineElement", "X": 100, "Y": 10, "Width": 0, "Height": 80, "Color": "red"},
 		]},
 		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+		{"Type": "FooterSection", "Name": "PageFooter", "Height": 60, "Elements": [
+			{"Type": "TextElement", "Text": "クロスセクション系はクリッピングを無視する", "Size": 20, "X": 10, "Y": 0},
 		]},
 	],
 }

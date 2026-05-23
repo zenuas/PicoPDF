@@ -1,4 +1,5 @@
-﻿using Mina.Extension;
+﻿using Binder.Data;
+using Mina.Extension;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
@@ -19,17 +20,29 @@ public static class ModelMapping
             page.Models
                 .Select(section =>
                 {
-                    var opes = section.Elements.Select(x => option.Mapping(pdfpage, x, section.Top, section.Left));
-                    return (section.Section as ISectionStyle)?.Style.HasFlag(SectionStyles.Clipping) ?? false
-                        ? [new DrawClipping()
+                    if ((section.Section as ISectionStyle)?.Style.HasFlag(SectionStyles.Clipping) ?? false)
+                    {
+                        var without_cross_sections = section.Elements
+                            .Where(x => x.Element is not ICrossSectionElement)
+                            .Select(x => option.Mapping(pdfpage, x, section.Top, section.Left));
+
+                        var cross_sections = section.Elements
+                            .Where(x => x.Element is ICrossSectionElement)
+                            .Select(x => option.Mapping(pdfpage, x, section.Top, section.Left));
+
+                        return [new DrawClipping()
                             {
                                 X = new PointValue(section.Left),
                                 Y = new PointValue(section.Top),
                                 Width = new PointValue(section.Width),
                                 Height = new PointValue(section.Height),
-                                Operations = [.. opes]
-                            }]
-                        : opes;
+                                Operations = [.. without_cross_sections]
+                            }, ..cross_sections];
+                    }
+                    else
+                    {
+                        return section.Elements.Select(x => option.Mapping(pdfpage, x, section.Top, section.Left));
+                    }
                 })
                 .Flatten()
                 .Each(pdfpage.Contents.Operations.Add);
