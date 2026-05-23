@@ -9,5 +9,4 @@ public enum SectionStyles
     PageBreak = 1 << 0,
     Fill = 1 << 1,
     Clipping = 1 << 2,
-    HeightAdjusting = 1 << 3,
 }
