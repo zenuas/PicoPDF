@@ -21,10 +21,18 @@
 
 :distclean
 	@call :clean
-	rmdir /S /Q src\bin  2>nul
-	rmdir /S /Q src\obj  2>nul
-	rmdir /S /Q test\bin 2>nul
-	rmdir /S /Q test\obj 2>nul
+	rmdir /S /Q src\bin      2>nul
+	rmdir /S /Q src\obj      2>nul
+	rmdir /S /Q binder\bin   2>nul
+	rmdir /S /Q binder\obj   2>nul
+	rmdir /S /Q font\bin     2>nul
+	rmdir /S /Q font\obj     2>nul
+	rmdir /S /Q bench\bin    2>nul
+	rmdir /S /Q bench\obj    2>nul
+	rmdir /S /Q test\bin     2>nul
+	rmdir /S /Q test\obj     2>nul
+	rmdir /S /Q test-all\bin 2>nul
+	rmdir /S /Q test-all\obj 2>nul
 	@exit /b %ERRORLEVEL%
 
 :release
