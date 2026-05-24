@@ -136,7 +136,7 @@ public class PdfCreate : FontRegisterCommand
                 {
                     _ = doc.AddInfo(
                         title: fname,
-                        producer: "PicoPDF for 🍣 (susi edition)",
+                        producer: "PicoPDF",
                         creation_date: DateTime.Now,
                         mod_date: DateTime.Now,
                         trapped: "/False"

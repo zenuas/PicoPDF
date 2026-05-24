@@ -13,7 +13,7 @@ public static class PdfExport
     public static void Export(Document doc, Stream stream, PdfExportOption option)
     {
         stream.Write($"%PDF-{doc.Version / 10}.{doc.Version % 10}\n");
-        stream.Write("%🍣\n\n"u8);
+        stream.Write("%\U0001F363\n\n"u8);
 
         foreach (var font in doc.PdfObjects.OfType<Type0Font>())
         {

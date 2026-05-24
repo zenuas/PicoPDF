@@ -30,26 +30,7 @@ public class ManualCreate : FontRegisterCommand
         page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "PostScript Font! あア亜 𠮷野家", 100, 160, 12, [post]));
 
         var ttf = doc.AddFont("true1", fontreg.LoadComplete("Meiryo Bold"));
-        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "TrueType Font! あアģ亜 𠮷野家", 100, 180, 12, [ttf]));
-
-        var emoji = doc.AddFont("emoji1", fontreg.LoadComplete("Segoe UI Emoji"));
-        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "aijpqあいうえお👤🐵←Segoe UI Emoji", 100, 200, 12, [ttf, emoji]));
-
-        var emojistroke = doc.AddFont("emoji1", fontreg.LoadComplete("Segoe UI Emoji"), FontEmbed.Stroke);
-        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "aijpqあいうえお👤🐵←Segoe UI Emoji(Stroke)", 100, 220, 12, [ttf, emojistroke]));
-
-        var notocolemoji = doc.AddFont("emoji2", fontreg.LoadComplete("test-case/NotoColorEmoji-Regular.ttf"), FontEmbed.Stroke);
-        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "aijpqあいうえお👤🐵←NotoColorEmoji-Regular(Stroke)", 100, 240, 12, [ttf, notocolemoji]));
-
-        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "途中で\n改行コードの\r\n入った\rテキストのテスト", 100, 260, 12, [ttf, emoji], style: TextStyles.Border));
-
-        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "途中で\n改行コードの\r\n入った\rテキストのテスト", 300, 260, 12, [ttf, emoji], 65, 60, style: TextStyles.Border | TextStyles.Clipping));
-
-        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "TrueTypeでStroke化🍣", 100, 320, 12, [ttf, emoji], style: TextStyles.Stroke | TextStyles.Border));
-        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "PostScriptでStroke化🍣", 100, 340, 12, [post, emoji], style: TextStyles.Stroke | TextStyles.Border));
-
-        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "TrueTypeでフォントフォールバックできない⇒🍣", 100, 360, 12, [ttf]));
-        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "PostScriptでフォントフォールバックできない⇒🍣", 100, 380, 12, [post]));
+        page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, "TrueType Font! あア亜 𠮷野家", 100, 180, 12, [ttf]));
 
         doc.Save("test-case/manual-create.pdf", new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });
     }
