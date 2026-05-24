@@ -35,7 +35,7 @@ public static class JsonLoader
         return new()
         {
             Size = size,
-            Orientation = json["Orientation"] is { } orient ? Enum.Parse<Orientation>(orient!.ToString()) : Orientation.Vertical,
+            Orientation = json["Orientation"] is { } orient ? Enum.Parse<Orientations>(orient!.ToString()) : Orientations.Vertical,
             DefaultFont = fonts,
             Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
             Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
@@ -88,7 +88,7 @@ public static class JsonLoader
                         Text = json["Text"]!.ToString(),
                         Font = ToFontPathArray(json["Font"]),
                         Size = (int)json["Size"]!.AsValue(),
-                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
+                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
                         Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
@@ -107,7 +107,7 @@ public static class JsonLoader
                         Format = json["Format"]?.ToString() ?? "",
                         Font = ToFontPathArray(json["Font"]),
                         Size = (int)json["Size"]!.AsValue(),
-                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
+                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
                         Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
@@ -118,9 +118,9 @@ public static class JsonLoader
 
             case "SummaryElement":
                 {
-                    var sumtype = json["SummaryType"] is { } sum ? Enum.Parse<SummaryType>(sum.ToString()) : SummaryType.Summary;
-                    var summethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethod>(method.ToString()) : (sumtype == SummaryType.PageCount ? SummaryMethod.Page : SummaryMethod.Group);
-                    if (json["BreakKey"] is not null && summethod is not (SummaryMethod.Group or SummaryMethod.GroupIncremental)) throw new($"when SummaryElement is SummaryMethod={summethod}, BreakKey is invalid");
+                    var sumtype = json["SummaryType"] is { } sum ? Enum.Parse<SummaryTypes>(sum.ToString()) : SummaryTypes.Summary;
+                    var summethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethods>(method.ToString()) : (sumtype == SummaryTypes.PageCount ? SummaryMethods.Page : SummaryMethods.Group);
+                    if (json["BreakKey"] is not null && summethod is not (SummaryMethods.Group or SummaryMethods.GroupIncremental)) throw new($"when SummaryElement is SummaryMethod={summethod}, BreakKey is invalid");
                     return new SummaryElement()
                     {
                         X = posx,
@@ -130,7 +130,7 @@ public static class JsonLoader
                         Format = json["Format"]?.ToString() ?? "",
                         Font = ToFontPathArray(json["Font"]),
                         Size = (int)json["Size"]!.AsValue(),
-                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignment>(align.ToString()) : TextAlignment.Start,
+                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
                         Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
                         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
                         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
@@ -255,7 +255,7 @@ public static class JsonLoader
         new()
         {
             Path = node["Path"]?.ToString() ?? "",
-            Embed = node["Embed"] is { } embed ? Enum.Parse<FontEmbed>(embed.ToString()) : FontEmbed.PossibleEmbed,
+            Embed = node["Embed"] is { } embed ? Enum.Parse<FontEmbeds>(embed.ToString()) : FontEmbeds.PossibleEmbed,
         };
 
     public static PageSize LoadPageSize(JsonNode? node)

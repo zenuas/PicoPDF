@@ -7,7 +7,7 @@ namespace OpenType.Tables.Colr;
 
 public class VarColorLine : IExportable, IColorLine
 {
-    public required Extend Extend { get; init; }
+    public required Extends Extend { get; init; }
     public required ushort NumberOfStops { get; init; }
     public required VarColorStop[] ColorStops { get; init; }
 
@@ -19,7 +19,7 @@ public class VarColorLine : IExportable, IColorLine
         var numStops = stream.ReadUShortByBigEndian();
         return new()
         {
-            Extend = (Extend)extend,
+            Extend = (Extends)extend,
 
             // A color line requires at least one color stop to paint any color values.
             // If the color line does not have any color stops, then transparent black is used for the entire color line.

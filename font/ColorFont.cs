@@ -228,11 +228,11 @@ public static class ColorFont
 
     public static (float Offset, Color StopColor)[] ColorStopToStops(ColorStop[] colorLine, ColorPaletteTable cpal) => [.. colorLine.Select(x => (x.StopOffset.FloatValue * 100F, GetColor(cpal, x.PaletteIndex, x.Alpha)))];
 
-    public static SpreadMethods ExtendToSpreadMethod(Extend extend) => extend switch
+    public static SpreadMethods ExtendToSpreadMethod(Extends extend) => extend switch
     {
-        Extend.EXTEND_PAD => SpreadMethods.Pad,
-        Extend.EXTEND_REPEAT => SpreadMethods.Repeat,
-        Extend.EXTEND_REFLECT => SpreadMethods.Reflect,
+        Extends.EXTEND_PAD => SpreadMethods.Pad,
+        Extends.EXTEND_REPEAT => SpreadMethods.Repeat,
+        Extends.EXTEND_REFLECT => SpreadMethods.Reflect,
         _ => throw new(),
     };
 }

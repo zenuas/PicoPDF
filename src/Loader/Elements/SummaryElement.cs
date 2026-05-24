@@ -16,13 +16,13 @@ public class SummaryElement : ITextElement, ISummaryElement
     public string Format { get; init; } = "";
     public required int Size { get; init; }
     public FontPath[] Font { get; init; } = [];
-    public TextAlignment Alignment { get; init; } = TextAlignment.Start;
+    public TextAlignments Alignment { get; init; } = TextAlignments.Start;
     public TextStyles Style { get; init; } = TextStyles.None;
     public int Width { get; init; }
     public int Height { get; init; }
     public Color? Color { get; init; } = null;
-    public SummaryType SummaryType { get; init; } = SummaryType.Summary;
-    public SummaryMethod SummaryMethod { get; init; } = SummaryMethod.Group;
+    public SummaryTypes SummaryType { get; init; } = SummaryTypes.Summary;
+    public SummaryMethods SummaryMethod { get; init; } = SummaryMethods.Group;
     public string BreakKey { get; init; } = "";
     public object NaN { get; init; } = "NaN";
     public CultureInfo? Culture { get; init; } = null;

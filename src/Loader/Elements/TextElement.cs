@@ -11,7 +11,7 @@ public class TextElement : ITextElement
     public required string Text { get; init; }
     public required int Size { get; init; }
     public FontPath[] Font { get; init; } = [];
-    public TextAlignment Alignment { get; init; } = TextAlignment.Start;
+    public TextAlignments Alignment { get; init; } = TextAlignments.Start;
     public TextStyles Style { get; init; } = TextStyles.None;
     public int Width { get; init; }
     public int Height { get; init; }

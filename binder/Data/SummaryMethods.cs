@@ -1,6 +1,6 @@
 ﻿namespace Binder.Data;
 
-public enum SummaryMethod
+public enum SummaryMethods
 {
     Page,
     PageIncremental,

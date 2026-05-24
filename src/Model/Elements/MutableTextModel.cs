@@ -14,7 +14,7 @@ public record class MutableTextModel : ITextModel, IMutableTextModel
     public required string Text { get; set; }
     public required int Size { get; init; }
     public required FontPath[] Font { get; init; }
-    public TextAlignment Alignment { get; init; } = TextAlignment.Start;
+    public TextAlignments Alignment { get; init; } = TextAlignments.Start;
     public TextStyles Style { get; init; } = TextStyles.None;
     public int Width { get; init; }
     public int Height { get; init; }

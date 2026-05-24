@@ -30,7 +30,7 @@ public partial class Contents
         };
     }
 
-    public static IOperation CreateDrawText(Document doc, string text, double left, double top, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyles style = TextStyles.None, TextAlignment alignment = TextAlignment.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
+    public static IOperation CreateDrawText(Document doc, string text, double left, double top, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyles style = TextStyles.None, TextAlignments alignment = TextAlignments.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
     {
         var linetop = top;
         double? prev_linegap = null;
@@ -48,8 +48,8 @@ public partial class Contents
             var basey = linetop - (allbox.Ascender * text_size);
             var text_left = alignment switch
             {
-                TextAlignment.Center => left + ((width - text_width) / 2),
-                TextAlignment.End => left + width - text_width,
+                TextAlignments.Center => left + ((width - text_width) / 2),
+                TextAlignments.End => left + width - text_width,
                 _ => left,
             };
 
@@ -80,7 +80,7 @@ public partial class Contents
         foreach (var (text, font) in textfonts)
         {
             var box = MeasureStringBox(font.Font, text);
-            if (stroke || font.FontEmbed == FontEmbed.Stroke)
+            if (stroke || font.FontEmbed == FontEmbeds.Stroke)
             {
                 foreach (var op in CreateDrawPathOnBaselineOperation(text, basey, start, size, font, document, color)) yield return op;
             }

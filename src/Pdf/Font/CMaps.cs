@@ -1,6 +1,6 @@
 ﻿namespace PicoPDF.Pdf.Font;
 
-public enum CMap
+public enum CMaps
 {
     // Chinese (Simplified)
     [CIDSystemInfo("GB-EUC-H", "Adobe", "GB1", 0)]

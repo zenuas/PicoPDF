@@ -17,7 +17,7 @@ public class ManualArgsCreate : FontRegisterCommand
     public float Point { get; init; } = 100.0F;
 
     [CommandOption("embed")]
-    public FontEmbed FontEmbed { get; init; } = FontEmbed.PossibleEmbed;
+    public FontEmbeds FontEmbed { get; init; } = FontEmbeds.PossibleEmbed;
 
     [CommandOption("top")]
     public int Top { get; init; } = 100;
@@ -30,7 +30,7 @@ public class ManualArgsCreate : FontRegisterCommand
         var fontreg = CreateFontRegister();
 
         var doc = new Document() { FontRegister = fontreg };
-        var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientation.Horizontal);
+        var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientations.Horizontal);
         var font = doc.AddFont("fo", fontreg.LoadComplete(Font), FontEmbed);
         foreach (var arg in args)
         {

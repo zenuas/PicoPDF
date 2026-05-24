@@ -8,8 +8,8 @@ public interface ISummaryElement
     public string SummaryBind { get; set; }
     public string SummaryCount { get; set; }
     public string Format { get; init; }
-    public SummaryType SummaryType { get; init; }
-    public SummaryMethod SummaryMethod { get; init; }
+    public SummaryTypes SummaryType { get; init; }
+    public SummaryMethods SummaryMethod { get; init; }
     public string BreakKey { get; init; }
     public object NaN { get; init; }
     public CultureInfo? Culture { get; init; }

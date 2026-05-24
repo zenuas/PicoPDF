@@ -41,7 +41,7 @@ public class Document
     };
     public PdfObject? Info { get; set; }
     public required IFontRegister FontRegister { get; init; }
-    public Func<string, FontEmbed, Type0Font> GetFont { get; init; }
+    public Func<string, FontEmbeds, Type0Font> GetFont { get; init; }
     public Func<ImageModel, IImageXObject> GetImage { get; init; }
 
     public Document()
@@ -55,7 +55,7 @@ public class Document
         GetImage = CreateImageCache();
     }
 
-    public Func<string, FontEmbed, Type0Font> CreateFontCache()
+    public Func<string, FontEmbeds, Type0Font> CreateFontCache()
     {
         var fontcache = PdfObjects.OfType<Type0Font>().ToDictionary(x => x.Name, x => x);
         return (name, embed) =>
@@ -92,7 +92,7 @@ public class Document
         return page;
     }
 
-    public CIDFont AddFont(string name, string basefont, CMap cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Nonsymbolic)
+    public CIDFont AddFont(string name, string basefont, CMaps cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Nonsymbolic)
     {
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary()
@@ -123,7 +123,7 @@ public class Document
         return font;
     }
 
-    public Type0Font AddFont(string name, IOpenTypeFont font, FontEmbed embed = FontEmbed.PossibleEmbed)
+    public Type0Font AddFont(string name, IOpenTypeFont font, FontEmbeds embed = FontEmbeds.PossibleEmbed)
     {
         var flag =
             (font.CMap.EncodingRecords.Contains(x => x.Key.PlatformID == (ushort)Platforms.Windows && x.Key.EncodingID == (ushort)Encodings.Windows_Symbol) ?
@@ -136,9 +136,9 @@ public class Document
         return AddFont(name, font, flag, embed);
     }
 
-    public Type0Font AddFont(string name, IOpenTypeFont font, FontDescriptorFlags flags, FontEmbed embed)
+    public Type0Font AddFont(string name, IOpenTypeFont font, FontDescriptorFlags flags, FontEmbeds embed)
     {
-        var cmap = CMap.Identity_H;
+        var cmap = CMaps.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary()
         {
@@ -170,7 +170,7 @@ public class Document
         return type0;
     }
 
-    public Type1Font AddFont(string name, string basefont, Type1Encoding encoding, FontDescriptorFlags flags = FontDescriptorFlags.Nonsymbolic)
+    public Type1Font AddFont(string name, string basefont, Type1Encodings encoding, FontDescriptorFlags flags = FontDescriptorFlags.Nonsymbolic)
     {
         var fontdict = new FontDescriptor()
         {

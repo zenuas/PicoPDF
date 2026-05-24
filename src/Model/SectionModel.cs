@@ -61,7 +61,7 @@ public record class SectionModel : ISectionModel<SectionModel>
 
             case BindElement x: return CreateTextModel(x, BindSummaryMapper<T, SectionModel>.BindFormat(bind.Mapper[x.Bind](data), x.Format, x.Culture ?? page.DefaultCulture), page.DefaultFont);
 
-            case SummaryElement x when x.SummaryMethod is SummaryMethod.All or SummaryMethod.Page or SummaryMethod.CrossSectionPage or SummaryMethod.Group:
+            case SummaryElement x when x.SummaryMethod is SummaryMethods.All or SummaryMethods.Page or SummaryMethods.CrossSectionPage or SummaryMethods.Group:
                 {
                     var model = CreateMutableTextModel(x, "", page.DefaultFont);
                     bind.AddSummaryGoBack(x, model, break_count);

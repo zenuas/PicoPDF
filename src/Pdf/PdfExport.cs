@@ -18,8 +18,8 @@ public static class PdfExport
         foreach (var font in doc.PdfObjects.OfType<Type0Font>())
         {
             if (font.Chars.Count > 0 &&
-                (font.FontEmbed == FontEmbed.ForceEmbed ||
-                (font.FontEmbed == FontEmbed.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
+                (font.FontEmbed == FontEmbeds.ForceEmbed ||
+                (font.FontEmbed == FontEmbeds.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
         }
         var xref = new List<long>();
         GetAllReferences(doc, option).Where(x => x is not Type0Font font || font.Chars.Count > 0).Each((x, i) =>

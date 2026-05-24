@@ -1,6 +1,6 @@
 ﻿namespace Binder.Data;
 
-public enum SummaryType
+public enum SummaryTypes
 {
     Summary,
     Count,

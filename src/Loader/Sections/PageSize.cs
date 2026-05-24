@@ -58,12 +58,12 @@ public class PageSize : ISpanParsable<PageSize>, IEquatable<PageSize>
 
     public override int GetHashCode() => (Width, Height).GetHashCode();
 
-    public (int Width, int Height) GetPageSize(Orientation orientation) => orientation == Orientation.Vertical ? (Width, Height) : (Height, Width);
+    public (int Width, int Height) GetPageSize(Orientations orientation) => orientation == Orientations.Vertical ? (Width, Height) : (Height, Width);
 
-    public static (int Width, int Height) GetPageSize(PageSizes size, Orientation orientation)
+    public static (int Width, int Height) GetPageSize(PageSizes size, Orientations orientation)
     {
         var (width, height) = GetVerticalPageSize(size);
-        return orientation == Orientation.Vertical ? (width, height) : (height, width);
+        return orientation == Orientations.Vertical ? (width, height) : (height, width);
     }
 
     public static (int Width, int Height) GetVerticalPageSize(PageSizes size) => size switch

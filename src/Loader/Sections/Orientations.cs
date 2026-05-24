@@ -1,6 +1,6 @@
 ﻿namespace PicoPDF.Loader.Sections;
 
-public enum Orientation
+public enum Orientations
 {
     Vertical,
     Horizontal,

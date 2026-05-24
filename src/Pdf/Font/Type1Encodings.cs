@@ -1,6 +1,6 @@
 ﻿namespace PicoPDF.Pdf.Font;
 
-public enum Type1Encoding
+public enum Type1Encodings
 {
     MacRomanEncoding,
     MacExpertEncoding,

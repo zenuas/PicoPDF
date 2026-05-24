@@ -1,6 +1,6 @@
 ﻿namespace PicoPDF.Loader.Sections;
 
-public enum FontEmbed
+public enum FontEmbeds
 {
     NotEmbed,
 

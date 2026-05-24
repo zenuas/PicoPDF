@@ -8,7 +8,7 @@ namespace PicoPDF.Loader.Sections;
 public class PageSection : IPageSection<SectionModel>
 {
     public required PageSize Size { get; init; }
-    public required Orientation Orientation { get; init; }
+    public required Orientations Orientation { get; init; }
     public required FontPath[] DefaultFont { get; init; }
     public IHeaderSection? Header { get; init; } = null;
     public required ISubSection SubSection { get; init; }

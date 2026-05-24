@@ -1,6 +1,6 @@
 ﻿namespace PicoPDF.Loader.Elements;
 
-public enum TextAlignment
+public enum TextAlignments
 {
     Start,
     Center,

@@ -76,14 +76,14 @@ public class BindSummaryMapper<T, TSection>
         {
             var keys = sr.SummaryElement.BreakKey == "" ? sr.BreakKeys : [.. allkeys.Take(allkeys.FindLastIndex(x => x == sr.SummaryElement.BreakKey) + 1)];
             var breakpoint =
-                sr.SummaryElement.SummaryMethod is SummaryMethod.All or SummaryMethod.AllIncremental ? "#" :
-                sr.SummaryElement.SummaryMethod is SummaryMethod.Page or SummaryMethod.PageIncremental ? "&" :
-                sr.SummaryElement.SummaryMethod is SummaryMethod.CrossSectionPage or SummaryMethod.CrossSectionPageIncremental ? "%" :
+                sr.SummaryElement.SummaryMethod is SummaryMethods.All or SummaryMethods.AllIncremental ? "#" :
+                sr.SummaryElement.SummaryMethod is SummaryMethods.Page or SummaryMethods.PageIncremental ? "&" :
+                sr.SummaryElement.SummaryMethod is SummaryMethods.CrossSectionPage or SummaryMethods.CrossSectionPageIncremental ? "%" :
                 $"${keys.Join(".")}";
             switch (sr.SummaryElement.SummaryType)
             {
-                case SummaryType.Summary:
-                case SummaryType.Average:
+                case SummaryTypes.Summary:
+                case SummaryTypes.Average:
                     {
                         var key = $"{breakpoint}:{sr.SummaryElement.Bind}";
                         if (!pool.ContainsKey(key))
@@ -95,11 +95,11 @@ public class BindSummaryMapper<T, TSection>
                             cancels.Add(x => v.Value -= (dynamic)mapper[sr.SummaryElement.Bind](x));
                         }
                         sr.SummaryElement.SummaryBind = key;
-                        if (sr.SummaryElement.SummaryType == SummaryType.Average) goto case SummaryType.Count;
+                        if (sr.SummaryElement.SummaryType == SummaryTypes.Average) goto case SummaryTypes.Count;
                         break;
                     }
 
-                case SummaryType.Count:
+                case SummaryTypes.Count:
                     {
                         var key = $"{breakpoint}:COUNT()";
                         if (!pool.ContainsKey(key))
@@ -114,7 +114,7 @@ public class BindSummaryMapper<T, TSection>
                         break;
                     }
 
-                case SummaryType.Maximum:
+                case SummaryTypes.Maximum:
                     {
                         var key = $"{breakpoint}:MAX({sr.SummaryElement.Bind})";
                         if (!pool.ContainsKey(key))
@@ -139,7 +139,7 @@ public class BindSummaryMapper<T, TSection>
                         break;
                     }
 
-                case SummaryType.Minimum:
+                case SummaryTypes.Minimum:
                     {
                         var key = $"{breakpoint}:MIN({sr.SummaryElement.Bind})";
                         if (!pool.ContainsKey(key))
@@ -176,19 +176,19 @@ public class BindSummaryMapper<T, TSection>
     {
         switch (summary.SummaryMethod)
         {
-            case SummaryMethod.All:
+            case SummaryMethods.All:
                 SummaryGoBack[0].Add((summary, model));
                 break;
 
-            case SummaryMethod.Page:
+            case SummaryMethods.Page:
                 SummaryGoBack[1].Add((summary, model));
                 break;
 
-            case SummaryMethod.CrossSectionPage:
+            case SummaryMethods.CrossSectionPage:
                 SummaryGoBack[2].Add((summary, model));
                 break;
 
-            case SummaryMethod.Group:
+            case SummaryMethods.Group:
                 var hierarchy_count = summary.BreakKey == "" ? break_count - 1 : Keys.FindLastIndex(y => y == summary.BreakKey);
                 SummaryGoBack[hierarchy_count + 3].Add((summary, model));
                 break;
@@ -272,16 +272,16 @@ public class BindSummaryMapper<T, TSection>
     {
         switch (x.SummaryType)
         {
-            case SummaryType.Summary: return Mapper[x.SummaryBind](data);
-            case SummaryType.Count: return (int)Mapper[x.SummaryCount](data);
+            case SummaryTypes.Summary: return Mapper[x.SummaryBind](data);
+            case SummaryTypes.Count: return (int)Mapper[x.SummaryCount](data);
 
-            case SummaryType.Average:
+            case SummaryTypes.Average:
                 dynamic count = Mapper[x.SummaryCount](data);
                 if (count == 0) return x.NaN;
                 return ((dynamic)Mapper[x.SummaryBind](data)) / count;
 
-            case SummaryType.Maximum or SummaryType.Minimum: return Mapper[x.SummaryBind](data);
-            case SummaryType.PageCount: return SummaryPool["#:PAGECOUNT()"].Value!;
+            case SummaryTypes.Maximum or SummaryTypes.Minimum: return Mapper[x.SummaryBind](data);
+            case SummaryTypes.PageCount: return SummaryPool["#:PAGECOUNT()"].Value!;
         }
         throw new();
     }

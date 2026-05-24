@@ -11,7 +11,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
 {
     public required string Name { get; init; }
     public required IOpenTypeFont Font { get; init; }
-    public required FontEmbed FontEmbed { get; init; }
+    public required FontEmbeds FontEmbed { get; init; }
     public IOpenTypeFont? EmbeddedFont { get; set; }
     public required IFontRegister FontRegister { get; init; }
     public required string Encoding { get; init; }
