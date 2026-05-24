@@ -62,9 +62,9 @@ public partial class Contents
         }
         if ((style & TextStyles.BorderStyleMask) > 0) opes.AddRange(CreateDrawBorderStyleOperations(style, top, left, width > 0 ? width : max_width, height > 0 ? height : linetop - top, max_height / 20, color));
 
-        if (style.HasFlag(TextStyles.Clipping))
-        {
-            return new DrawClipping()
+        return !style.HasFlag(TextStyles.Clipping) ?
+            new DrawOperations { Operations = [.. opes] } :
+            new DrawClipping
             {
                 X = new PointValue(left),
                 Y = new PointValue(top),
@@ -72,11 +72,6 @@ public partial class Contents
                 Height = new PointValue(height > 0 ? height : linetop - top),
                 Operations = [.. opes],
             };
-        }
-        else
-        {
-            return new DrawOperations() { Operations = [.. opes] };
-        }
     }
 
     public static IEnumerable<IOperation> CreateDrawTextOperation((string Text, Type0Font Font)[] textfonts, double basey, double left, double size, bool stroke, Document document, IColor? color = null)
@@ -112,7 +107,7 @@ public partial class Contents
         var charfonts = line.ToUtf32CharArray().Select(x => (Char: x, Font: GetTextFont(x, fonts))).ToArray();
         var textfonts = new List<(string Text, Type0Font Font)>();
         var prev_font = charfonts[0].Font;
-        var prev_text = new List<int>() { charfonts[0].Char };
+        var prev_text = new List<int> { charfonts[0].Char };
         var total_width = charfonts[0].Font.Font.MeasureChar(charfonts[0].Char) * size;
         for (var i = 1; i < charfonts.Length; i++)
         {
