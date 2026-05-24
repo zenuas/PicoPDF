@@ -32,9 +32,9 @@ public static class PdfUtility
     public static Document CreateDocument(string json, Func<PageSection, PageModel[]> pages, PdfEventOption option)
     {
         var opt = option ?? new();
-        var doc = new Document { FontRegister = opt.CreateFontRegister() };
-        ModelMapping.Mapping(doc, pages(JsonLoader.CreatePageFromJsonFile(json, opt)), opt);
-        return doc;
+        var document = new Document { FontRegister = opt.CreateFontRegister() };
+        ModelMapping.Mapping(document, pages(JsonLoader.CreatePageFromJsonFile(json, opt)), opt);
+        return document;
     }
 
     public static string PointToString((IPoint X, IPoint Y) point, int height, string format) => $"{PointToString(point.X.ToPoint(), format)} {PointToString(height - point.Y.ToPoint(), format)}";

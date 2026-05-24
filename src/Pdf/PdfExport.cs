@@ -10,19 +10,19 @@ namespace PicoPDF.Pdf;
 
 public static class PdfExport
 {
-    public static void Export(Document doc, Stream stream, PdfExportOption option)
+    public static void Export(Document document, Stream stream, PdfExportOption option)
     {
-        stream.Write($"%PDF-{doc.Version / 10}.{doc.Version % 10}\n");
+        stream.Write($"%PDF-{document.Version / 10}.{document.Version % 10}\n");
         stream.Write("%\U0001F363\n\n"u8);
 
-        foreach (var font in doc.PdfObjects.OfType<Type0Font>())
+        foreach (var font in document.PdfObjects.OfType<Type0Font>())
         {
             if (font.Chars.Count > 0 &&
                 (font.FontEmbed == FontEmbeds.ForceEmbed ||
                 (font.FontEmbed == FontEmbeds.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
         }
         var xref = new List<long>();
-        GetAllReferences(doc, option).Where(x => x is not Type0Font font || font.Chars.Count > 0).Each((x, i) =>
+        GetAllReferences(document, option).Where(x => x is not Type0Font font || font.Chars.Count > 0).Each((x, i) =>
         {
             xref.Add(stream.Position);
             stream.Write($"{x.IndirectIndex} 0 obj\n");
@@ -53,8 +53,8 @@ public static class PdfExport
         stream.Write("trailer\n");
         stream.Write("<<\n");
         stream.Write($"  /Size {xref.Count + 1}\n");
-        stream.Write($"  /Root {doc.Catalog.IndirectIndex} 0 R\n");
-        if (doc.Info is { }) stream.Write($"  /Info {doc.Info.IndirectIndex} 0 R\n");
+        stream.Write($"  /Root {document.Catalog.IndirectIndex} 0 R\n");
+        if (document.Info is { }) stream.Write($"  /Info {document.Info.IndirectIndex} 0 R\n");
         stream.Write(">>\n");
         if (option.OutputCrossReferenceTable)
         {
@@ -64,7 +64,7 @@ public static class PdfExport
         stream.Write("%%EOF\n");
     }
 
-    public static PdfObject[] GetAllReferences(Document doc, PdfExportOption option)
+    public static PdfObject[] GetAllReferences(Document document, PdfExportOption option)
     {
         var refs = new List<PdfObject>();
 
@@ -75,7 +75,7 @@ public static class PdfExport
             refs.Add(x);
             x.RelatedObjects.Each(refsadd);
         }
-        doc.PdfObjects.Each(refsadd);
+        document.PdfObjects.Each(refsadd);
 
         return [.. refs];
     }

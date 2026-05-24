@@ -72,12 +72,12 @@ public class PdfCreate : FontRegisterCommand
             {
                 if (section is SectionModel section_model && section_model.Section.Name.StartsWith("HeightAdjusting"))
                 {
-                    var dummy_doc = new Document() { FontRegister = fontreg };
+                    var dummy_document = new Document() { FontRegister = fontreg };
                     var multilines = section_model.Elements
                         .OfType<TextModel>()
                         .Where(x => x.Style.HasFlag(TextStyles.MultiLine) && !x.Style.HasFlag(TextStyles.Clipping));
                     var maxheight = multilines
-                        .Select(x => x.Y + Contents.CreateDrawText(dummy_doc, x.Text, x.X, x.Y, x.Size, [.. x.Font.Select(f => dummy_doc.GetFont(f.Path, f.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()).Cast<DrawOperations>().Height.ToPoint())
+                        .Select(x => x.Y + Contents.CreateDrawText(dummy_document, x.Text, x.X, x.Y, x.Size, [.. x.Font.Select(f => dummy_document.GetFont(f.Path, f.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()).Cast<DrawOperations>().Height.ToPoint())
                         .Max();
                     if (maxheight > section_model.Height) return section_model with { Height = (int)maxheight };
                 }
@@ -137,10 +137,10 @@ public class PdfCreate : FontRegisterCommand
 
             tasks.Add(Task.Run(() =>
             {
-                var doc = PdfUtility.CreateDocument(json, table, event_opt);
+                var document = PdfUtility.CreateDocument(json, table, event_opt);
                 if (IsInfoAdd)
                 {
-                    _ = doc.AddInfo(
+                    _ = document.AddInfo(
                         title: fname,
                         producer: "PicoPDF",
                         creation_date: DateTime.Now,
@@ -148,7 +148,7 @@ public class PdfCreate : FontRegisterCommand
                         trapped: "/False"
                     );
                 }
-                doc.Save(pdfname, export_opt);
+                document.Save(pdfname, export_opt);
             }));
         }
         Task.WhenAll(tasks).Wait();

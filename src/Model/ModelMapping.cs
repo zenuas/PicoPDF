@@ -12,11 +12,11 @@ namespace PicoPDF.Model;
 
 public static class ModelMapping
 {
-    public static void Mapping(Document doc, PageModel[] pages, PdfEventOption option)
+    public static void Mapping(Document document, PageModel[] pages, PdfEventOption option)
     {
         foreach (var page in pages)
         {
-            var pdfpage = doc.NewPage(page.Width, page.Height);
+            var pdfpage = document.NewPage(page.Width, page.Height);
             page.Models
                 .Select(section =>
                 {

@@ -29,15 +29,15 @@ public class ManualArgsCreate : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
 
-        var doc = new Document() { FontRegister = fontreg };
+        var document = new Document() { FontRegister = fontreg };
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientations.Horizontal);
-        var font = doc.AddFont("fo", fontreg.LoadComplete(Font), FontEmbed);
+        var font = document.AddFont("fo", fontreg.LoadComplete(Font), FontEmbed);
         foreach (var arg in args)
         {
-            var page = doc.NewPage(width, height);
+            var page = document.NewPage(width, height);
             page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, arg, Left, Top, Point, [font], width - Left, style: TextStyles.MultiLine));
         }
 
-        doc.Save(Output, new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });
+        document.Save(Output, new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });
     }
 }

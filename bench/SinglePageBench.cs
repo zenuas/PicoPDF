@@ -57,60 +57,60 @@ public class SinglePageBench
 
     public static Document CreateSinglePage<T>(IEnumerable<T> datas, Dictionary<string, Func<T, object>> mapper)
     {
-        var doc = new Document() { FontRegister = FontRegister };
+        var document = new Document() { FontRegister = FontRegister };
         var pages = SectionBinder.Bind<T, PageModel, SectionModel>(PageSection, datas, mapper);
-        ModelMapping.Mapping(doc, pages, new());
-        return doc;
+        ModelMapping.Mapping(document, pages, new());
+        return document;
     }
 
     public static Document CreateSinglePage<T>(IEnumerable<T> datas)
     {
-        var doc = new Document() { FontRegister = FontRegister };
+        var document = new Document() { FontRegister = FontRegister };
         var pages = SectionBinder.Bind<T, PageModel, SectionModel>(PageSection, datas);
-        ModelMapping.Mapping(doc, pages, new());
-        return doc;
+        ModelMapping.Mapping(document, pages, new());
+        return document;
     }
 
     public static Document CreateSinglePage(DataTable table)
     {
-        var doc = new Document() { FontRegister = FontRegister };
+        var document = new Document() { FontRegister = FontRegister };
         var pages = SectionBinder.Bind<PageModel, SectionModel>(PageSection, table);
-        ModelMapping.Mapping(doc, pages, new());
-        return doc;
+        ModelMapping.Mapping(document, pages, new());
+        return document;
     }
 
     [Benchmark]
     public void Line1()
     {
         var mapper = new Dictionary<string, Func<int, object>> { ["Foo"] = (x) => x, ["Bar"] = (x) => (long)(x * 1000), ["Baz"] = (x) => x.ToString() };
-        var doc = CreateSinglePage([1], mapper);
+        var document = CreateSinglePage([1], mapper);
         using var mem = new MemoryStream();
-        doc.Save(mem);
+        document.Save(mem);
     }
 
     [Benchmark]
     public void Line1K()
     {
         var mapper = new Dictionary<string, Func<int, object>> { ["Foo"] = (x) => x, ["Bar"] = (x) => (long)(x * 1000), ["Baz"] = (x) => x.ToString() };
-        var doc = CreateSinglePage(Lists.Sequence(1).Take(1_000), mapper);
+        var document = CreateSinglePage(Lists.Sequence(1).Take(1_000), mapper);
         using var mem = new MemoryStream();
-        doc.Save(mem);
+        document.Save(mem);
     }
 
     [Benchmark]
     public void Mapper1()
     {
-        var doc = CreateSinglePage([new DataLine() { Foo = 1, Bar = 1000, Baz = "1" }]);
+        var document = CreateSinglePage([new DataLine() { Foo = 1, Bar = 1000, Baz = "1" }]);
         using var mem = new MemoryStream();
-        doc.Save(mem);
+        document.Save(mem);
     }
 
     [Benchmark]
     public void Mapper1K()
     {
-        var doc = CreateSinglePage(Lists.Sequence(1).Take(1_000).Select(x => new DataLine() { Foo = x, Bar = x * 1000, Baz = x.ToString() }));
+        var document = CreateSinglePage(Lists.Sequence(1).Take(1_000).Select(x => new DataLine() { Foo = x, Bar = x * 1000, Baz = x.ToString() }));
         using var mem = new MemoryStream();
-        doc.Save(mem);
+        document.Save(mem);
     }
 
     [Benchmark]
@@ -122,9 +122,9 @@ public class SinglePageBench
         _ = table.Columns.Add("Baz");
         table.Rows.Add(table.NewRow().Return(x => { x["Foo"] = 1; x["Bar"] = (long)1000; x["Baz"] = "1"; }));
 
-        var doc = CreateSinglePage(table);
+        var document = CreateSinglePage(table);
         using var mem = new MemoryStream();
-        doc.Save(mem);
+        document.Save(mem);
     }
 
     [Benchmark]
@@ -136,8 +136,8 @@ public class SinglePageBench
         _ = table.Columns.Add("Baz");
         Lists.Sequence(1).Take(1_000).Each(i => table.Rows.Add(table.NewRow().Return(x => { x["Foo"] = i; x["Bar"] = (long)(i * 1000); x["Baz"] = i.ToString(); })));
 
-        var doc = CreateSinglePage(table);
+        var document = CreateSinglePage(table);
         using var mem = new MemoryStream();
-        doc.Save(mem);
+        document.Save(mem);
     }
 }
