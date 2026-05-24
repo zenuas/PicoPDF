@@ -63,7 +63,14 @@ public partial class Contents
         if ((style & TextStyles.BorderStyleMask) > 0) opes.AddRange(CreateDrawBorderStyleOperations(style, top, left, width > 0 ? width : max_width, height > 0 ? height : linetop - top, max_height / 20, color));
 
         return !style.HasFlag(TextStyles.Clipping) ?
-            new DrawOperations { Operations = [.. opes] } :
+            new DrawOperations
+            {
+                X = new PointValue(left),
+                Y = new PointValue(top),
+                Width = new PointValue(width > 0 ? width : max_width),
+                Height = new PointValue(height > 0 ? height : linetop - top),
+                Operations = [.. opes]
+            } :
             new DrawClipping
             {
                 X = new PointValue(left),

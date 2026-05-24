@@ -5,6 +5,7 @@ using PicoPDF.Model;
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Documents;
+using PicoPDF.Pdf.Operation;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -64,44 +65,52 @@ public class PdfCreate : FontRegisterCommand
         };
 
         var fontreg = CreateFontRegister(true);
-        var event_opt = !Debug ?
-            new PdfEventOption { CreateFontRegister = () => fontreg } :
-            new PdfEventOption
+        var event_opt = new PdfEventOption
+        {
+            CreateFontRegister = () => fontreg,
+            BindSection = section =>
             {
-                CreateFontRegister = () => fontreg,
-                BindSection = section =>
+                if (section is SectionModel section_model && section_model.Section.Name.StartsWith("HeightAdjusting"))
                 {
-                    if (section is SectionModel section_model && section_model.Section.Name.StartsWith("Test"))
-                    {
-                        return section_model with { Height = section_model.Height + section_model.PageCount * 5 };
-                    }
-                    return section;
-                },
-                BindElement = (section, element, data, model) =>
+                    var dummy_doc = new Document() { FontRegister = fontreg };
+                    var multilines = section_model.Elements
+                        .OfType<TextModel>()
+                        .Where(x => x.Style.HasFlag(TextStyles.MultiLine) && !x.Style.HasFlag(TextStyles.Clipping));
+                    var maxheight = multilines
+                        .Select(x => x.Y + Contents.CreateDrawText(dummy_doc, x.Text, x.X, x.Y, x.Size, [.. x.Font.Select(f => dummy_doc.GetFont(f.Path, f.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()).Cast<DrawOperations>().Height.ToPoint())
+                        .Max();
+                    if (maxheight > section_model.Height) return section_model with { Height = (int)maxheight };
+                }
+                return section;
+            },
+            BindElement = (section, element, data, model) =>
+            {
+                if (element.Name.StartsWith("Test"))
                 {
-                    if (element.Name.StartsWith("Test"))
+                    if (model is TextModel text)
                     {
-                        if (model is TextModel text)
-                        {
-                            return text with { Text = $"{section.Name}_{element.Name}_{text.Text}" };
-                        }
+                        return text with { Text = $"{section.Name}_{element.Name}_{text.Text}" };
                     }
-                    return model;
-                },
-                Mapping = (page, model, top, left) =>
+                }
+                return model;
+            },
+            Mapping = (page, model, top, left) =>
+            {
+                if (model is ITextModel x &&
+                    model.Element is ITextElement e &&
+                    e.Style.HasFlag(TextStyles.LineBreak) &&
+                    e.Name.StartsWith("Jp"))
                 {
-                    if (model is ITextModel x && model.Element is ITextElement e && e.Name == "Jp")
-                    {
-                        double posx = model.X + left;
-                        double posy = model.Y + top;
-                        return Contents.CreateDrawText(page.Document, model.Cast<ITextModel>().Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
-                    }
-                    else
-                    {
-                        return ModelMapping.Mapping(page, model, top, left);
-                    }
-                },
-            };
+                    double posx = model.X + left;
+                    double posy = model.Y + top;
+                    return Contents.CreateDrawText(page.Document, model.Cast<ITextModel>().Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
+                }
+                else
+                {
+                    return ModelMapping.Mapping(page, model, top, left);
+                }
+            },
+        };
 
         var datacache = new Dictionary<string, DataTable>();
         var tasks = new List<Task>();
