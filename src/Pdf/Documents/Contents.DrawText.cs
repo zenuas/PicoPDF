@@ -161,13 +161,12 @@ public partial class Contents
 
     public static FontBox MeasureTextFontBox((string Text, Type0Font Font)[] textfonts) => textfonts
         .Select(x => MeasureStringBox(x.Font.Font, x.Text))
-        .Aggregate(new FontBox(), (acc, x) => new(Math.Min(acc.Ascender, x.Ascender), Math.Max(acc.Descender, x.Descender), Math.Max(acc.LineGap, x.LineGap), acc.Width + x.Width));
+        .Aggregate(new FontBox(0, 0, 0, 0), (acc, x) => new(Math.Min(acc.Ascender, x.Ascender), Math.Max(acc.Descender, x.Descender), Math.Max(acc.LineGap, x.LineGap), acc.Width + x.Width));
 
-    public static FontBox MeasureStringBox(IOpenTypeFont font, string s) => new()
-    {
-        Ascender = (double)-(font.OS2?.STypoAscender ?? font.HorizontalHeader.Ascender) / font.FontHeader.UnitsPerEm,
-        Descender = (double)-(font.OS2?.STypoDescender ?? font.HorizontalHeader.Descender) / font.FontHeader.UnitsPerEm,
-        LineGap = (double)font.HorizontalHeader.LineGap / font.FontHeader.UnitsPerEm,
-        Width = font.MeasureString(s),
-    };
+    public static FontBox MeasureStringBox(IOpenTypeFont font, string s) => new(
+        (double)-(font.OS2?.STypoAscender ?? font.HorizontalHeader.Ascender) / font.FontHeader.UnitsPerEm,
+        (double)-(font.OS2?.STypoDescender ?? font.HorizontalHeader.Descender) / font.FontHeader.UnitsPerEm,
+        (double)font.HorizontalHeader.LineGap / font.FontHeader.UnitsPerEm,
+        font.MeasureString(s)
+    );
 }
