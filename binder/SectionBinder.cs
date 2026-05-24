@@ -50,10 +50,17 @@ public static class SectionBinder
 
     public static (SectionInfo[] Headers, SectionInfo[] Footers, IDetailSection Detail, string[] BreakKeys) GetSectionInfo(ISubSection subsection, IHeaderSection? pageheader)
     {
-        var sections = (Section: subsection, Depth: 1, BreakKey: (subsection as IBreakKey)?.BreakKey ?? "").Travers(x => x.Section is IParentSection s ? [(s.SubSection, x.Depth + 1, (s.SubSection as IBreakKey)?.BreakKey ?? "")] : []).ToArray();
-        var detail = sections.Select(x => x.Section).OfType<IDetailSection>().First();
+        var sections = (Section: subsection, Depth: 1, BreakKey: (subsection as IBreakKey)?.BreakKey ?? "")
+            .Travers(x => x.Section is IParentSection s ? [(s.SubSection, x.Depth + 1, (s.SubSection as IBreakKey)?.BreakKey ?? "")] : [])
+            .ToArray();
+        var detail = sections
+            .Select(x => x.Section)
+            .OfType<IDetailSection>()
+            .First();
         var break_count = 0;
-        var hierarchy = sections.Where(x => x.Section is IParentSection).Select(x => (BreakCount: x.BreakKey != "" ? ++break_count : break_count, Section: x.Section.Cast<IParentSection>(), x.Depth, x.BreakKey)).ToArray();
+        var hierarchy = sections.Where(x => x.Section is IParentSection)
+            .Select(x => (BreakCount: x.BreakKey != "" ? ++break_count : break_count, Section: x.Section.Cast<IParentSection>(), x.Depth, x.BreakKey))
+            .ToArray();
         var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Header!, x.Depth));
         var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Footer!, x.Depth));
         var keys = sections.Where(x => x.BreakKey != "").Select(x => x.BreakKey);
