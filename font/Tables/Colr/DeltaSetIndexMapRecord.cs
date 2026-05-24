@@ -14,7 +14,7 @@ public class DeltaSetIndexMapRecord : IExportable
     {
         var format = stream.ReadUByte();
         var entryFormat = stream.ReadUByte();
-        var mapCount = format == 0 ? (uint)stream.ReadUShortByBigEndian() : stream.ReadUIntByBigEndian();
+        var mapCount = format == 0 ? stream.ReadUShortByBigEndian() : stream.ReadUIntByBigEndian();
 
         var entrySize = ((entryFormat & (byte)EntryFormats.MAP_ENTRY_SIZE_MASK) >> 4) + 1;
         var mapData = stream.ReadExactly((int)(entrySize * mapCount));

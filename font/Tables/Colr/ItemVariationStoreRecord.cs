@@ -19,7 +19,7 @@ public class ItemVariationStoreRecord : IExportable
         var format = stream.ReadUShortByBigEndian();
         var variationRegionListOffset = stream.ReadUIntByBigEndian();
         var itemVariationDataCount = stream.ReadUShortByBigEndian();
-        var itemVariationDataOffsets = Lists.Repeat(stream.ReadUIntByBigEndian).Take((int)itemVariationDataCount).ToArray();
+        var itemVariationDataOffsets = Lists.Repeat(stream.ReadUIntByBigEndian).Take(itemVariationDataCount).ToArray();
 
         var variationRegionList = variationRegionListOffset == 0 ? null
             : stream.SeekTo(position + variationRegionListOffset).To(VariationRegionListRecord.ReadFrom);
