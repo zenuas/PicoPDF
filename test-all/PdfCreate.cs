@@ -64,42 +64,44 @@ public class PdfCreate : FontRegisterCommand
         };
 
         var fontreg = CreateFontRegister(true);
-        var event_opt = new PdfEventOption
-        {
-            CreateFontRegister = () => fontreg,
-            BindSection = section =>
+        var event_opt = !Debug ?
+            new PdfEventOption { CreateFontRegister = () => fontreg } :
+            new PdfEventOption
             {
-                if (section is SectionModel section_model && section_model.Section.Name.StartsWith("Test"))
+                CreateFontRegister = () => fontreg,
+                BindSection = section =>
                 {
-                    return section_model with { Height = section_model.Height + section_model.PageCount * 5 };
-                }
-                return section;
-            },
-            BindElement = (section, element, data, model) =>
-            {
-                if (element.Name.StartsWith("Test"))
-                {
-                    if (model is TextModel text)
+                    if (section is SectionModel section_model && section_model.Section.Name.StartsWith("Test"))
                     {
-                        return text with { Text = $"{section.Name}_{element.Name}_{text.Text}" };
+                        return section_model with { Height = section_model.Height + section_model.PageCount * 5 };
                     }
-                }
-                return model;
-            },
-            Mapping = (page, model, top, left) =>
-            {
-                if (model is ITextModel x && model.Element is ITextElement e && e.Name == "Jp")
+                    return section;
+                },
+                BindElement = (section, element, data, model) =>
                 {
-                    double posx = model.X + left;
-                    double posy = model.Y + top;
-                    return Contents.CreateDrawText(page.Document, model.Cast<ITextModel>().Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
-                }
-                else
+                    if (element.Name.StartsWith("Test"))
+                    {
+                        if (model is TextModel text)
+                        {
+                            return text with { Text = $"{section.Name}_{element.Name}_{text.Text}" };
+                        }
+                    }
+                    return model;
+                },
+                Mapping = (page, model, top, left) =>
                 {
-                    return ModelMapping.Mapping(page, model, top, left);
-                }
-            },
-        };
+                    if (model is ITextModel x && model.Element is ITextElement e && e.Name == "Jp")
+                    {
+                        double posx = model.X + left;
+                        double posy = model.Y + top;
+                        return Contents.CreateDrawText(page.Document, model.Cast<ITextModel>().Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
+                    }
+                    else
+                    {
+                        return ModelMapping.Mapping(page, model, top, left);
+                    }
+                },
+            };
 
         var datacache = new Dictionary<string, DataTable>();
         var tasks = new List<Task>();
