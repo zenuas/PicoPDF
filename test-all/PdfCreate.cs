@@ -85,12 +85,9 @@ public class PdfCreate : FontRegisterCommand
             },
             BindElement = (section, element, data, model) =>
             {
-                if (element.Name.StartsWith("Test"))
+                if (model is TextModel text && element.Name.StartsWith("CreationTime"))
                 {
-                    if (model is TextModel text)
-                    {
-                        return text with { Text = $"{section.Name}_{element.Name}_{text.Text}" };
-                    }
+                    return text with { Text = DateTime.Now.ToString(text.Text) };
                 }
                 return model;
             },

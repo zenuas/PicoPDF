@@ -9,9 +9,8 @@
 	
 	"Sections": [
 		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
-			{"Type": "TextElement", "Name": "TestAction_1", "Text": "123", "Size": 30, "X": 10, "Y": 0},
-			{"Type": "TextElement", "Name": "", "Text": "456", "Size": 30, "X": 10, "Y": 30},
-			{"Type": "TextElement", "Text": "789", "Size": 30, "X": 10, "Y": 60},
+			{"Type": "TextElement", "Text": "CreationTimeに変換する、カルチャ指定不可", "Size": 20, "X": 10, "Y": 0},
+			{"Type": "TextElement", "Name": "CreationTime", "Text": "MMM dd yyyy HH:mm:ss", "Size": 20, "X": 10, "Y": 30},
 		]},
 		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
 		]},
