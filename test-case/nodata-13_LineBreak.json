@@ -16,6 +16,7 @@
 			{"Type": "TextElement", "Text": "abcdefghijklmn",  "Size": 30, "X":  10, "Y": 100, "Width": 100, "Style": "MultiLine, LineBreak"},
 			{"Type": "TextElement", "Text": "abcdefghijklmno", "Size": 30, "X": 150, "Y": 100, "Width": 100, "Style": "MultiLine, LineBreak"},
 			
+			{"Type": "TextElement", "Text": "GenericLineBreakRuleが適用され、{ }が禁則文字となる", "Size": 15, "X":  10, "Y": 230},
 			{"Type": "TextElement", "Text": "abcdef{xyz}ghij",      "Size": 30, "X":  10, "Y": 250, "Width": 100, "Style": "MultiLine, LineBreak"},
 			{"Type": "TextElement", "Text": "abcdefg{xyz}hijk",     "Size": 30, "X": 150, "Y": 250, "Width": 100, "Style": "MultiLine, LineBreak"},
 			{"Type": "TextElement", "Text": "abcdefgh{xyz}ijkl",    "Size": 30, "X": 300, "Y": 250, "Width": 100, "Style": "MultiLine, LineBreak"},
@@ -23,12 +24,13 @@
 			{"Type": "TextElement", "Text": "abcdefghij{xyz}klmn",  "Size": 30, "X":  10, "Y": 350, "Width": 100, "Style": "MultiLine, LineBreak"},
 			{"Type": "TextElement", "Text": "abcdefghijk{xyz}lmno", "Size": 30, "X": 150, "Y": 350, "Width": 100, "Style": "MultiLine, LineBreak"},
 			
-			{"Type": "TextElement", "Text": "abcdef{xyz}ghij",      "Name": "Jp", "Size": 30, "X":  10, "Y": 500, "Width": 100, "Style": "MultiLine, LineBreak"},
-			{"Type": "TextElement", "Text": "abcdefg{xyz}hijk",     "Name": "Jp", "Size": 30, "X": 150, "Y": 500, "Width": 100, "Style": "MultiLine, LineBreak"},
-			{"Type": "TextElement", "Text": "abcdefgh{xyz}ijkl",    "Name": "Jp", "Size": 30, "X": 300, "Y": 500, "Width": 100, "Style": "MultiLine, LineBreak"},
-			{"Type": "TextElement", "Text": "abcdefghi{xyz}jklm",   "Name": "Jp", "Size": 30, "X": 450, "Y": 500, "Width": 100, "Style": "MultiLine, LineBreak"},
-			{"Type": "TextElement", "Text": "abcdefghij{xyz}klmn",  "Name": "Jp", "Size": 30, "X":  10, "Y": 600, "Width": 100, "Style": "MultiLine, LineBreak"},
-			{"Type": "TextElement", "Text": "abcdefghijk{xyz}lmno", "Name": "Jp", "Size": 30, "X": 150, "Y": 600, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "JapaneseLineBreakRuleが適用され、{ }が禁則文字とならない", "Size": 15, "X":  10, "Y": 530},
+			{"Type": "TextElement", "Text": "abcdef{xyz}ghij",      "Name": "Jp", "Size": 30, "X":  10, "Y": 550, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefg{xyz}hijk",     "Name": "Jp", "Size": 30, "X": 150, "Y": 550, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefgh{xyz}ijkl",    "Name": "Jp", "Size": 30, "X": 300, "Y": 550, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghi{xyz}jklm",   "Name": "Jp", "Size": 30, "X": 450, "Y": 550, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghij{xyz}klmn",  "Name": "Jp", "Size": 30, "X":  10, "Y": 650, "Width": 100, "Style": "MultiLine, LineBreak"},
+			{"Type": "TextElement", "Text": "abcdefghijk{xyz}lmno", "Name": "Jp", "Size": 30, "X": 150, "Y": 650, "Width": 100, "Style": "MultiLine, LineBreak"},
 		]},
 		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
 		]},
