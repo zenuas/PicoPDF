@@ -2,5 +2,5 @@
 
 public interface IHaveColorLayer
 {
-    public IColorLayer? ColorLayer { get; init; }
+    public IColorLayer? ColorLayer { get; }
 }
