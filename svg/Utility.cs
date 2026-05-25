@@ -22,9 +22,6 @@ public static class Utility
                 case Layer layer:
                     foreach (var x in GetSurfaces(layer.Surfaces)) yield return x;
                     break;
-
-                default:
-                    throw new();
             }
         }
     }

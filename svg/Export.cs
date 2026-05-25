@@ -126,9 +126,6 @@ public static class Export
                 case Layer layer:
                     OutputPath(writer, layer.Surfaces, layer_d, c, r, left, baseline, gradient_layers, unique_id, stroke, fill, joint, format);
                     break;
-
-                default:
-                    throw new();
             }
         }
         if (!isfirst) _ = d.AppendLine("\" />");
