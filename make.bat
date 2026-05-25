@@ -2,6 +2,7 @@
 @set PREVPROMPT=%PROMPT%
 @prompt $E[1A
 @set MAKE=make.bat
+@set PROJ=PicoPDF
 @echo on
 
 @if "%1" == "" (set TARGET=build
@@ -21,7 +22,7 @@
 
 :distclean
 	@call :clean
-	@for /F %%i in ('powershell -c Select-Xml -Path PicoPDF.slnx -XPath "//Solution/Project | ForEach-Object {$_.Node.Path}"') do @(
+	@for /F %%i in ('powershell -c Select-Xml -Path %PROJ%.slnx -XPath "//Solution/Project | ForEach-Object {$_.Node.Path}"') do @(
 		echo rmdir /S /Q %%~dpibin
 		rmdir /S /Q %%~dpibin 2>nul
 		echo rmdir /S /Q %%~dpiobj
@@ -30,10 +31,11 @@
 	@exit /b %ERRORLEVEL%
 
 :release
-	git archive HEAD --output=PicoPDF-%DATE:/=%.zip
+	@call :setenv VERSION_FILE "powershell -Command Get-Date -Format yyyyMMdd"
+	git archive HEAD --output=%PROJ%-%VERSION_FILE%.zip
 	
 	dotnet publish src --nologo -v q --clp:NoSummary -c Release -o .tmp
-	powershell -NoProfile $ProgressPreference = 'SilentlyContinue' ; Compress-Archive -Force -Path .tmp\*, README.md, LICENSE -DestinationPath PicoPDF-lib-%DATE:/=%.zip
+	powershell -NoProfile $ProgressPreference = 'SilentlyContinue' ; Compress-Archive -Force -Path .tmp\*, README.md, LICENSE -DestinationPath %PROJ%-lib-%VERSION_FILE%.zip
 	rmdir /S /Q .tmp 2>nul
 	
 	@exit /b %ERRORLEVEL%
@@ -43,26 +45,27 @@
 	@exit /b %ERRORLEVEL%
 
 :test-all
-	dotnet run --project test-all/PicoPDF.TestAll.csproj --no-launch-profile -- %*
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile -- %*
 	@exit /b %ERRORLEVEL%
 
 :sample
-	dotnet run --project test-all/PicoPDF.TestAll.csproj --no-launch-profile -- %* create --work-directory docs/sample --register-user-font docs/sample --debug false --contents-deflate true --cmap-deflate true
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile -- %* create --work-directory docs/sample --register-user-font docs/sample --debug false --contents-deflate true --cmap-deflate true
 	@exit /b %ERRORLEVEL%
 
 :bench
-	dotnet run --project bench/PicoPDF.Benchmark.csproj --no-launch-profile -c Release %*
+	dotnet run --project bench/%PROJ%.Benchmark.csproj --no-launch-profile -c Release %*
 	@exit /b %ERRORLEVEL%
 
 :publish
 	@call :release
 	
+	@call :setenv VERSION_FILE "powershell -Command Get-Date -Format yyyyMMdd"
 	@call :setenv VERSION_NAME "powershell -Command Get-Date -Format yyyy.M.d"
 	@call :setenv BUILD_NAME   "powershell -Command Get-Date -Format HHmm"
 	@set      VERSION=%VERSION_NAME%
 	git tag %VERSION%
 	git push origin %VERSION%
-	gh release create %VERSION% PicoPDF-lib-%DATE:/=%.zip -t %VERSION% > nul
+	gh release create %VERSION% %PROJ%-lib-%VERSION_FILE%.zip -t %VERSION% > nul
 	@exit /b %ERRORLEVEL%
 
 :setenv
