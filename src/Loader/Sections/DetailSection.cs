@@ -11,5 +11,5 @@ public class DetailSection : IDetailSection, ISubSection, ISectionStyle
     public ViewModes ViewMode { get => ViewModes.Every; init => _ = value == ViewModes.Every ? value : throw new ArgumentException(); }
     public IElement[] Elements { get; init; } = [];
     public bool IsFill { get => Style.HasFlag(SectionStyles.Fill); }
-    public SectionStyles Style { get => field; init => field = !value.HasFlag(SectionStyles.PageBreak) ? value : throw new ArgumentException(); } = SectionStyles.None;
+    public SectionStyles Style { get; init => field = !value.HasFlag(SectionStyles.PageBreak) ? value : throw new ArgumentException(); } = SectionStyles.None;
 }
