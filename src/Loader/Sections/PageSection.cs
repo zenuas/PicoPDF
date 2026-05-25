@@ -15,7 +15,7 @@ public class PageSection : IPageSection<SectionModel>
     public IFooterSection? Footer { get; init; } = null;
     public AllSides Padding { get; init; } = new(0, 0, 0, 0);
     public CultureInfo DefaultCulture { get; init; } = CultureInfo.InvariantCulture;
-    public int Width { get => field = Size.GetPageSize(Orientation).Width; init; }
-    public int Height { get => field = Size.GetPageSize(Orientation).Height; init; }
+    public int Width { get => Size.GetPageSize(Orientation).Width; }
+    public int Height { get => Size.GetPageSize(Orientation).Height; }
     public required PdfEventOption EventOption { get; init; }
 }
