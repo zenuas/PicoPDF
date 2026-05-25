@@ -20,17 +20,17 @@ public static class Export
             float scale,
             float left,
             float baseline,
-            Dictionary<IColorLayer, int> gradient_layers,
-            string unique_id,
-            Color stroke,
-            Color fill,
-            float joint,
-            string format
+            Dictionary<IColorLayer, int>? gradient_layers = null,
+            string unique_id = "id",
+            Color? stroke = null,
+            Color? fill = null,
+            float joint = 0,
+            string format = "F5"
         )
     {
         var path = new StringBuilder();
         var control_point = new StringBuilder();
-        OutputPath(writer, outlines, path, control_point, scale, left, baseline, gradient_layers, unique_id, stroke, fill, joint, format);
+        OutputPath(writer, outlines, path, control_point, scale, left, baseline, gradient_layers ?? [], unique_id, stroke ?? Color.Black, fill ?? Color.Black, joint, format);
         writer.Write(path);
         writer.Write(control_point);
     }
