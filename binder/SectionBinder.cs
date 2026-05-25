@@ -57,10 +57,16 @@ public static class SectionBinder
             .Select(x => x.Section)
             .OfType<IDetailSection>()
             .First();
-        var break_count = 0;
-        var hierarchy = sections.Where(x => x.Section is IParentSection)
-            .Select(x => (BreakCount: x.BreakKey != "" ? ++break_count : break_count, Section: x.Section.Cast<IParentSection>(), x.Depth, x.BreakKey))
-            .ToArray();
+        var hierarchy = sections
+            .Where(x => x.Section is IParentSection)
+            .Aggregate(
+                (BreakCount: 0, List: new List<(int BreakCount, IParentSection Section, int Depth, string BreakKey)>(sections.Length - 1)),
+                (acc, x) =>
+                {
+                    acc.List.Add((x.BreakKey != "" ? ++acc.BreakCount : acc.BreakCount, x.Section.Cast<IParentSection>(), x.Depth, x.BreakKey));
+                    return acc;
+                }
+            ).List;
         var headers = hierarchy.Where(x => x.Section.Header is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Header!, x.Depth));
         var footers = hierarchy.Where(x => x.Section.Footer is { }).Select(x => new SectionInfo(x.BreakKey, x.BreakCount, x.Section.Footer!, x.Depth));
         var keys = sections.Where(x => x.BreakKey != "").Select(x => x.BreakKey);
