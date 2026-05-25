@@ -1,6 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType;
-using OpenType.Outline;
+using Svg.Outline;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.ExtGState;
 using PicoPDF.Pdf.Font;

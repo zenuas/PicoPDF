@@ -11,8 +11,4 @@
     <PackageReference Include="Zenu.Mina" Version="2026.5.12" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Svg\Svg.csproj" />
-  </ItemGroup>
-
 </Project>

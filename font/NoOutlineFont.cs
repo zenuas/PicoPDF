@@ -1,5 +1,5 @@
-﻿using OpenType.Outline;
-using OpenType.Tables;
+﻿using OpenType.Tables;
+using Svg.Outline;
 using System;
 using System.Collections.Generic;
 

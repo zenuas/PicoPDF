@@ -1,4 +1,4 @@
-﻿namespace OpenType.Outline;
+﻿namespace Svg.Outline;
 
 public interface IOutline
 {

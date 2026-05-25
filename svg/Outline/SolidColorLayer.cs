@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace OpenType.Outline;
+namespace Svg.Outline;
 
 public class SolidColorLayer : IOutline, IColorLayer, IHaveColorLayer
 {

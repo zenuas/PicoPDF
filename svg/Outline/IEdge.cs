@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace OpenType.Outline;
+namespace Svg.Outline;
 
 public interface IEdge
 {

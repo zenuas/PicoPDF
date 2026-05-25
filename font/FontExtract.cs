@@ -1,10 +1,10 @@
 ﻿using Mina.Extension;
-using OpenType.Outline;
 using OpenType.Tables;
 using OpenType.Tables.CMap;
 using OpenType.Tables.Colr;
 using OpenType.Tables.PostScript;
 using OpenType.Tables.TrueType;
+using Svg.Outline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -841,7 +841,7 @@ public static class FontExtract
             end_points_of_contours.Add((ushort)(flags.Count - 1));
         }
 
-        var (width, left, ymax, ymin) = Utility.GetSurfaceSize([.. surfaces]);
+        var (width, left, ymax, ymin) = Svg.Utility.GetSurfaceSize([.. surfaces]);
         return new SimpleGlyph()
         {
             NumberOfContours = (short)end_points_of_contours.Count,
@@ -873,7 +873,7 @@ public static class FontExtract
     public static byte[] OutlineToCharStrings(Surface[] surfaces, int nominalWidthX)
     {
         var char_strings = new List<byte>();
-        char_strings.AddRange(Interpreter.NumberToBytes(Utility.GetSurfaceSize(surfaces).Width - nominalWidthX));
+        char_strings.AddRange(Interpreter.NumberToBytes(Svg.Utility.GetSurfaceSize(surfaces).Width - nominalWidthX));
 
         var current = new Vector2(0, 0);
         foreach (var surface in surfaces.Where(x => x.Edges.Length > 0))

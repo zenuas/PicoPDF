@@ -4,6 +4,7 @@
   <Project Path="font/OpenType.csproj" />
   <Project Path="image/Image.csproj" />
   <Project Path="src/PicoPDF.csproj" />
+  <Project Path="svg/Svg.csproj" />
   <Project Path="test-all/PicoPDF.TestAll.csproj" />
   <Project Path="test/PicoPDF.Test.csproj" />
 </Solution>

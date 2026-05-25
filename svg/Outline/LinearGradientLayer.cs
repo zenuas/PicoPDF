@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Numerics;
 
-namespace OpenType.Outline;
+namespace Svg.Outline;
 
 public class LinearGradientLayer : IOutline, IColorLayer, IHaveColorLayer
 {
