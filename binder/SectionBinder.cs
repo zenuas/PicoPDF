@@ -60,6 +60,7 @@ public static class SectionBinder
         var hierarchy = sections
             .Where(x => x.Section is IParentSection)
             .Aggregate(
+                // The length of the List is the number of items excluding one IDetailSection.
                 (BreakCount: 0, List: new List<(int BreakCount, IParentSection Section, int Depth, string BreakKey)>(sections.Length - 1)),
                 (acc, x) =>
                 {
