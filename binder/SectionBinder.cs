@@ -79,18 +79,12 @@ public static class SectionBinder
         where TSection : ISectionModel<TSection>
         => bind.Mapper[break_key](data1).Equals(bind.Mapper[break_key](data2));
 
-    public static TSection ReturnBreakSection<T, TSection>(this BindSummaryMapper<T, TSection> bind, TSection section)
-        where TSection : ISectionModel<TSection>
-    {
-        bind.BreakSection(section);
-        return section;
-    }
-
     public static IEnumerable<TSection[]> BindPageModels<T, TSection>(IPageSection<TSection> page, BufferedEnumerator<T> datas, Dictionary<string, Func<T, object>> mapper)
         where TSection : ISectionModel<TSection>
     {
         var (headers, footers, detail, keys) = GetSectionInfo(page.SubSection, page.Header);
         var bind = BindSummaryMapper<T, TSection>.Create(page, mapper, keys, headers.LastOrDefault()?.Depth ?? 0);
+        var break_section = ((Action<TSection>)bind.BreakSection).Return();
 
         if (datas.IsLast)
         {
@@ -103,9 +97,9 @@ public static class SectionBinder
             footers
                 .FooterSort()
                 .Select(x => TSection.CreateSectionModel(page, x.Section, nodata, bind, x.BreakCount, x.Depth))
-                .Select(bind.ReturnBreakSection)
+                .Select(break_section)
                 .Each(models.Add);
-            if (page.Footer is ISection lastfooter) models.Add(bind.ReturnBreakSection(TSection.CreateSectionModel(page, lastfooter, nodata, bind, 0, null)));
+            if (page.Footer is ISection lastfooter) models.Add(break_section(TSection.CreateSectionModel(page, lastfooter, nodata, bind, 0, null)));
             bind.KeyBreak(nodata, keys.Length, keys, page);
             bind.PageBreak(nodata, page);
             bind.LastBreak(nodata, page);
@@ -149,7 +143,7 @@ public static class SectionBinder
                 var details = GetBreakOrTakeDetail(page, detail, datas, bind, keys, height - minimum_breakfooter_height);
                 if (details.Count == 0)
                 {
-                    if (temp_everyfooter is { } && temp_everyfooter.IsVisible) models.Add(bind.ReturnBreakSection(temp_everyfooter));
+                    if (temp_everyfooter is { } && temp_everyfooter.IsVisible) models.Add(break_section(temp_everyfooter));
                     break;
                 }
 
@@ -164,7 +158,7 @@ public static class SectionBinder
                     details.RemoveAt(details.Count - 1);
                     if (details.Count <= 0)
                     {
-                        if (temp_everyfooter is { } && temp_everyfooter.IsVisible) models.Add(bind.ReturnBreakSection(temp_everyfooter));
+                        if (temp_everyfooter is { } && temp_everyfooter.IsVisible) models.Add(break_section(temp_everyfooter));
                         break;
                     }
                     breakcount = 0;
@@ -180,7 +174,7 @@ public static class SectionBinder
                 var breakfooter_section = breakfooter
                     .FooterSort()
                     .Select(x => TSection.CreateSectionModel(page, x.Section, lastdata, bind, x.BreakCount, x.Depth))
-                    .Select(bind.ReturnBreakSection)
+                    .Select(break_section)
                     .ToArray();
 
                 if (breakcount > 0 && (detail.IsFill || breakfooter_section.Any(x => x.IsFill)))
@@ -203,7 +197,7 @@ public static class SectionBinder
                     if (everyfooter is { })
                     {
                         var pagebreak_footer = TSection.CreateSectionModel(page, everyfooter, lastdata, bind, 0, null);
-                        if (pagebreak_footer.IsVisible) models.Add(bind.ReturnBreakSection(pagebreak_footer));
+                        if (pagebreak_footer.IsVisible) models.Add(break_section(pagebreak_footer));
                     }
                     if (breakcount > 0) bind.KeyBreak(lastdata, breakcount, keys, page);
                     break;

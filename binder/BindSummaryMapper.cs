@@ -233,13 +233,13 @@ public class BindSummaryMapper<T, TSection>
         SummaryGoBack[0].Clear();
     }
 
-    public void BreakSection(ISectionModel<TSection> model)
+    public void BreakSection(TSection model)
     {
         CrossSectionGoBack.Take(model.Depth + 1).Flatten().Each(x => x.TargetSection = model);
         CrossSectionGoBack[model.Depth].Clear();
     }
 
-    public void PageBreakSection(ISectionModel<TSection> model)
+    public void PageBreakSection(TSection model)
     {
         for (var i = 0; i < CrossSectionGoBack.Length; i++)
         {

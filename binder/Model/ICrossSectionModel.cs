@@ -3,11 +3,11 @@
 public interface ICrossSectionModel<TSection>
     where TSection : ISectionModel<TSection>
 {
-    public ISectionModel<TSection>? TargetSection { get; set; }
+    public TSection? TargetSection { get; set; }
     public int Y { get; init; }
     public int Height { get; set; }
 
-    public void UpdatePosition(ISectionModel<TSection> current)
+    public void UpdatePosition(TSection current)
     {
         var overflow_height = Y + Height - current.Height;
         if (overflow_height < 0) return;
