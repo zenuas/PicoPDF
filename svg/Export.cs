@@ -17,7 +17,7 @@ public static class Export
     public static void OutputPath(
             TextWriter writer,
             IOutline[] outlines,
-            float r,
+            float scale,
             float left,
             float baseline,
             Dictionary<IColorLayer, int> gradient_layers,
@@ -28,19 +28,19 @@ public static class Export
             string format
         )
     {
-        var d = new StringBuilder();
-        var c = new StringBuilder();
-        OutputPath(writer, outlines, d, c, r, left, baseline, gradient_layers, unique_id, stroke, fill, joint, format);
-        writer.Write(d);
-        writer.Write(c);
+        var path = new StringBuilder();
+        var control_point = new StringBuilder();
+        OutputPath(writer, outlines, path, control_point, scale, left, baseline, gradient_layers, unique_id, stroke, fill, joint, format);
+        writer.Write(path);
+        writer.Write(control_point);
     }
 
     public static void OutputPath(
             TextWriter writer,
             IOutline[] outlines,
-            StringBuilder d,
-            StringBuilder c,
-            float r,
+            StringBuilder path,
+            StringBuilder control_point,
+            float scale,
             float left,
             float baseline,
             Dictionary<IColorLayer, int> gradient_layers,
@@ -69,27 +69,27 @@ public static class Export
                         {
                             if (surface.ColorLayer is { } && gradient_layers.TryGetValue(surface.ColorLayer, out var id))
                             {
-                                _ = d.AppendLine($"""    <path fill="url(#{unique_id}_{id})" fill-rule="evenodd" """);
+                                _ = path.AppendLine($"""    <path fill="url(#{unique_id}_{id})" fill-rule="evenodd" """);
                             }
                             else
                             {
                                 var color = (surface.ColorLayer as SolidColorLayer)?.Color;
-                                _ = d.AppendLine($"""    <path stroke="{ColorToHex(color ?? stroke)}" fill="{ColorToHex(color ?? fill)}" fill-rule="evenodd" """);
+                                _ = path.AppendLine($"""    <path stroke="{ColorToHex(color ?? stroke)}" fill="{ColorToHex(color ?? fill)}" fill-rule="evenodd" """);
                             }
-                            _ = d.Append("       d=\"");
+                            _ = path.Append("       d=\"");
                             isfirst = false;
                         }
                         var start = surface.Edges.First().Start;
-                        if (joint > 0) _ = c.AppendLine($"""    <circle cx="{(left + (start.X * r)).ToString(format)}" cy="{(baseline - (start.Y * r)).ToString(format)}" r="{joint.ToString(format)}" fill="blue" />""");
-                        _ = d.AppendLine();
-                        _ = d.AppendLine($"          M {(left + (start.X * r)).ToString(format)} {(baseline - (start.Y * r)).ToString(format)}");
+                        if (joint > 0) _ = control_point.AppendLine($"""    <circle cx="{(left + (start.X * scale)).ToString(format)}" cy="{(baseline - (start.Y * scale)).ToString(format)}" r="{joint.ToString(format)}" fill="blue" />""");
+                        _ = path.AppendLine();
+                        _ = path.AppendLine($"          M {(left + (start.X * scale)).ToString(format)} {(baseline - (start.Y * scale)).ToString(format)}");
                         foreach (var edge in surface.Edges)
                         {
                             switch (edge)
                             {
                                 case Line line:
-                                    if (joint > 0) _ = c.AppendLine($"""    <circle cx="{(left + (line.End.X * r)).ToString(format)}" cy="{(baseline - (line.End.Y * r)).ToString(format)}" r="{joint.ToString(format)}" fill="blue" />""");
-                                    _ = d.AppendLine($"          L {(left + (line.End.X * r)).ToString(format)} {(baseline - (line.End.Y * r)).ToString(format)}");
+                                    if (joint > 0) _ = control_point.AppendLine($"""    <circle cx="{(left + (line.End.X * scale)).ToString(format)}" cy="{(baseline - (line.End.Y * scale)).ToString(format)}" r="{joint.ToString(format)}" fill="blue" />""");
+                                    _ = path.AppendLine($"          L {(left + (line.End.X * scale)).ToString(format)} {(baseline - (line.End.Y * scale)).ToString(format)}");
                                     break;
 
                                 case BezierCurve bezier when bezier.ControlPoint.Length == 1:
@@ -97,10 +97,10 @@ public static class Export
                                         var cp = bezier.ControlPoint[0];
                                         if (joint > 0)
                                         {
-                                            _ = c.AppendLine($"""    <circle cx="{(left + (cp.X * r)).ToString(format)}" cy="{(baseline - (cp.Y * r)).ToString(format)}" r="{joint.ToString(format)}" fill="red" />""");
-                                            _ = c.AppendLine($"""    <circle cx="{(left + (bezier.End.X * r)).ToString(format)}" cy="{(baseline - (bezier.End.Y * r)).ToString(format)}" r="{joint.ToString(format)}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
+                                            _ = control_point.AppendLine($"""    <circle cx="{(left + (cp.X * scale)).ToString(format)}" cy="{(baseline - (cp.Y * scale)).ToString(format)}" r="{joint.ToString(format)}" fill="red" />""");
+                                            _ = control_point.AppendLine($"""    <circle cx="{(left + (bezier.End.X * scale)).ToString(format)}" cy="{(baseline - (bezier.End.Y * scale)).ToString(format)}" r="{joint.ToString(format)}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
                                         }
-                                        _ = d.AppendLine($"          Q {(left + (cp.X * r)).ToString(format)} {(baseline - (cp.Y * r)).ToString(format)}, {(left + (bezier.End.X * r)).ToString(format)} {(baseline - (bezier.End.Y * r)).ToString(format)}");
+                                        _ = path.AppendLine($"          Q {(left + (cp.X * scale)).ToString(format)} {(baseline - (cp.Y * scale)).ToString(format)}, {(left + (bezier.End.X * scale)).ToString(format)} {(baseline - (bezier.End.Y * scale)).ToString(format)}");
                                         break;
                                     }
 
@@ -110,31 +110,31 @@ public static class Export
                                         var cp2 = bezier.ControlPoint[1];
                                         if (joint > 0)
                                         {
-                                            _ = c.AppendLine($"""    <circle cx="{(left + (cp1.X * r)).ToString(format)}" cy="{(baseline - (cp1.Y * r)).ToString(format)}" r="{joint.ToString(format)}" fill="red" />""");
-                                            _ = c.AppendLine($"""    <circle cx="{(left + (cp2.X * r)).ToString(format)}" cy="{(baseline - (cp2.Y * r)).ToString(format)}" r="{joint.ToString(format)}" fill="red" />""");
-                                            _ = c.AppendLine($"""    <circle cx="{(left + (bezier.End.X * r)).ToString(format)}" cy="{(baseline - (bezier.End.Y * r)).ToString(format)}" r="{joint.ToString(format)}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
+                                            _ = control_point.AppendLine($"""    <circle cx="{(left + (cp1.X * scale)).ToString(format)}" cy="{(baseline - (cp1.Y * scale)).ToString(format)}" r="{joint.ToString(format)}" fill="red" />""");
+                                            _ = control_point.AppendLine($"""    <circle cx="{(left + (cp2.X * scale)).ToString(format)}" cy="{(baseline - (cp2.Y * scale)).ToString(format)}" r="{joint.ToString(format)}" fill="red" />""");
+                                            _ = control_point.AppendLine($"""    <circle cx="{(left + (bezier.End.X * scale)).ToString(format)}" cy="{(baseline - (bezier.End.Y * scale)).ToString(format)}" r="{joint.ToString(format)}" fill="{(bezier.ComplementPoint ? "green" : "blue")}" />""");
                                         }
-                                        _ = d.AppendLine($"          C {(left + (cp1.X * r)).ToString(format)} {(baseline - (cp1.Y * r)).ToString(format)}, {(left + (cp2.X * r)).ToString(format)} {(baseline - (cp2.Y * r)).ToString(format)}, {(left + (bezier.End.X * r)).ToString(format)} {(baseline - (bezier.End.Y * r)).ToString(format)}");
+                                        _ = path.AppendLine($"          C {(left + (cp1.X * scale)).ToString(format)} {(baseline - (cp1.Y * scale)).ToString(format)}, {(left + (cp2.X * scale)).ToString(format)} {(baseline - (cp2.Y * scale)).ToString(format)}, {(left + (bezier.End.X * scale)).ToString(format)} {(baseline - (bezier.End.Y * scale)).ToString(format)}");
                                         break;
                                     }
                             }
                         }
-                        _ = d.Append("          Z");
+                        _ = path.Append("          Z");
                         break;
                     }
 
                 case Layer layer:
-                    OutputPath(writer, layer.Surfaces, layer_d, c, r, left, baseline, gradient_layers, unique_id, stroke, fill, joint, format);
+                    OutputPath(writer, layer.Surfaces, layer_d, control_point, scale, left, baseline, gradient_layers, unique_id, stroke, fill, joint, format);
                     break;
             }
         }
-        if (!isfirst) _ = d.AppendLine("\" />");
-        _ = d.Append(layer_d);
+        if (!isfirst) _ = path.AppendLine("\" />");
+        _ = path.Append(layer_d);
     }
 
     public static void OutputDefs(
             TextWriter writer,
-            float r,
+            float scale,
             float left,
             float baseline,
             Dictionary<IColorLayer, int> gradient_layers,
@@ -155,7 +155,7 @@ public static class Export
                     writer.Write($"""gradientUnits="userSpaceOnUse" """);
                     if (!linear.GradientTransform.IsIdentity)
                     {
-                        var m = linear.GradientTransform * Matrix3x2.CreateScale(r) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
+                        var m = linear.GradientTransform * Matrix3x2.CreateScale(scale) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
                         writer.Write($"""gradientTransform="matrix({m.M11.ToString(format)}, {m.M12.ToString(format)}, {m.M21.ToString(format)}, {m.M22.ToString(format)}, {m.M31.ToString(format)}, {m.M32.ToString(format)})" """);
                         writer.Write($"""x1="{linear.XY1.X.ToString(format)}" """);
                         writer.Write($"""y1="{linear.XY1.Y.ToString(format)}" """);
@@ -172,7 +172,7 @@ public static class Export
                     writer.WriteLine();
                     if (isdebug && !linear.GradientTransform.IsIdentity)
                     {
-                        var m = linear.GradientTransform * Matrix3x2.CreateScale(r) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
+                        var m = linear.GradientTransform * Matrix3x2.CreateScale(scale) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
                         var xy1 = Vector2.Transform(linear.XY1, m);
                         var xy2 = Vector2.Transform(linear.XY2, m);
                         writer.Write($"""            <!-- """);
@@ -197,7 +197,7 @@ public static class Export
                     writer.Write($"""gradientUnits="userSpaceOnUse" """);
                     if (!radial.GradientTransform.IsIdentity)
                     {
-                        var m = radial.GradientTransform * Matrix3x2.CreateScale(r) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
+                        var m = radial.GradientTransform * Matrix3x2.CreateScale(scale) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
                         writer.Write($"""gradientTransform="matrix({m.M11.ToString(format)}, {m.M12.ToString(format)}, {m.M21.ToString(format)}, {m.M22.ToString(format)}, {m.M31.ToString(format)}, {m.M32.ToString(format)})" """);
                         writer.Write($"""cx="{radial.Cxy.X.ToString(format)}" """);
                         writer.Write($"""cy="{radial.Cxy.Y.ToString(format)}" """);
@@ -208,17 +208,17 @@ public static class Export
                     }
                     else
                     {
-                        writer.Write($"""cx="{(left + (radial.Cxy.X * r)).ToString(format)}" """);
-                        writer.Write($"""cy="{(baseline - (radial.Cxy.Y * r)).ToString(format)}" """);
-                        writer.Write($"""fx="{(left + (radial.Fxy.X * r)).ToString(format)}" """);
-                        writer.Write($"""fy="{(baseline - (radial.Fxy.Y * r)).ToString(format)}" """);
-                        writer.Write($"""fr="{(radial.Fr * r).ToString(format)}" """);
-                        writer.Write($"""r="{(radial.R * r).ToString(format)}">""");
+                        writer.Write($"""cx="{(left + (radial.Cxy.X * scale)).ToString(format)}" """);
+                        writer.Write($"""cy="{(baseline - (radial.Cxy.Y * scale)).ToString(format)}" """);
+                        writer.Write($"""fx="{(left + (radial.Fxy.X * scale)).ToString(format)}" """);
+                        writer.Write($"""fy="{(baseline - (radial.Fxy.Y * scale)).ToString(format)}" """);
+                        writer.Write($"""fr="{(radial.Fr * scale).ToString(format)}" """);
+                        writer.Write($"""r="{(radial.R * scale).ToString(format)}">""");
                     }
                     writer.WriteLine();
                     if (isdebug && !radial.GradientTransform.IsIdentity)
                     {
-                        var m = radial.GradientTransform * Matrix3x2.CreateScale(r) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
+                        var m = radial.GradientTransform * Matrix3x2.CreateScale(scale) * Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(left, baseline);
                         var cxy = Vector2.Transform(radial.Cxy, m);
                         var fxy = Vector2.Transform(radial.Fxy, m);
                         writer.Write($"""            <!-- """);
