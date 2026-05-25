@@ -256,7 +256,7 @@ public static class SectionBinder
         return details;
     }
 
-    public static IEnumerable<SectionInfo> SkipWhileOrPageFirst(this IEnumerable<SectionInfo> self, Func<SectionInfo, bool> f)
+    public static IEnumerable<SectionInfo> SkipWhileOrPageFirst(this SectionInfo[] self, Func<SectionInfo, bool> f)
     {
         var found = false;
         foreach (var x in self)
@@ -269,7 +269,7 @@ public static class SectionBinder
         }
     }
 
-    public static IEnumerable<SectionInfo> SkipWhileOrEveryPage(this IEnumerable<SectionInfo> self, Func<SectionInfo, bool> f)
+    public static IEnumerable<SectionInfo> SkipWhileOrEveryPage(this SectionInfo[] self, Func<SectionInfo, bool> f)
     {
         var found = false;
         foreach (var x in self)
@@ -282,12 +282,8 @@ public static class SectionBinder
         }
     }
 
-    public static IEnumerable<SectionInfo> FooterSort(this IEnumerable<SectionInfo> self)
-    {
-        var footer = self.ToArray();
-        return footer
-            .Where(x => !x.Section.Cast<IFooterSection>().IsFooter)
-            .Reverse()
-            .Concat(footer.Where(x => x.Section.Cast<IFooterSection>().IsFooter));
-    }
+    public static IEnumerable<SectionInfo> FooterSort(this SectionInfo[] self) => self
+        .Where(x => !x.Section.Cast<IFooterSection>().IsFooter)
+        .Reverse()
+        .Concat(self.Where(x => x.Section.Cast<IFooterSection>().IsFooter));
 }
