@@ -37,7 +37,7 @@ public partial class Contents
     {
         var bottom = top + height;
         var right = left + width;
-        var line = linewidth ?? height / 20;
+        var line = linewidth ?? (height / 20);
 
         if (style.HasFlag(TextStyles.Border))
         {

@@ -1,6 +1,5 @@
 ﻿using Mina.Extension;
 using OpenType;
-using Svg.Outline;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.ExtGState;
 using PicoPDF.Pdf.Font;
@@ -10,6 +9,7 @@ using PicoPDF.Pdf.Shading;
 using PicoPDF.Pdf.SoftMasks;
 using PicoPDF.Pdf.XObject.Form;
 using PicoPDF.Pdf.XObject.Group;
+using Svg.Outline;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,7 +24,7 @@ public partial class Contents
     public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(string text, double basey, double left, double size, Type0Font font, Document document, IColor? color = null)
     {
         var opentype_font = font.EmbeddedFont ?? font.Font;
-        var r = (1f / opentype_font.FontHeader.UnitsPerEm) * size;
+        var r = 1f / opentype_font.FontHeader.UnitsPerEm * size;
         foreach (var c in text.ToUtf32CharArray())
         {
             var gid = opentype_font.CharToGID(c);
@@ -69,8 +69,8 @@ public partial class Contents
                                         var cp = bezier.ControlPoint[0];
                                         opes.Add(new DrawBezierCurvePath
                                         {
-                                            ControlPoint1 = (new PointValue(left + (((cp.X + cp.X + bezier.Start.X) / 3.0f) * r)), new PointValue(basey - (((cp.Y + cp.Y + bezier.Start.Y) / 3.0f) * r))),
-                                            ControlPoint2 = (new PointValue(left + (((cp.X + cp.X + bezier.End.X) / 3.0f) * r)), new PointValue(basey - (((cp.Y + cp.Y + bezier.End.Y) / 3.0f) * r))),
+                                            ControlPoint1 = (new PointValue(left + ((cp.X + cp.X + bezier.Start.X) / 3.0f * r)), new PointValue(basey - ((cp.Y + cp.Y + bezier.Start.Y) / 3.0f * r))),
+                                            ControlPoint2 = (new PointValue(left + ((cp.X + cp.X + bezier.End.X) / 3.0f * r)), new PointValue(basey - ((cp.Y + cp.Y + bezier.End.Y) / 3.0f * r))),
                                             End = (new PointValue(left + (bezier.End.X * r)), new PointValue(basey - (bezier.End.Y * r))),
                                         });
                                         break;
@@ -133,7 +133,7 @@ public partial class Contents
                             var height = Math.Max(Math.Abs(maxy), Math.Abs(miny)) * 2;
                             var g = CreateTransparencyFormXObject(minx - width, miny - height, maxx + width, maxy + height, shading);
                             var gstream = g.GetWriteStream(false);
-                            (new DrawPathShading { Shading = shading }).OperationWrite(0, 0, gstream, new());
+                            new DrawPathShading { Shading = shading }.OperationWrite(0, 0, gstream, new());
                             gstream.Flush();
                             opes.Add(new DrawPathExtGState { ExtGState = CreateTransparencyGraphicsStateParameter(document, g) });
                         }
@@ -165,7 +165,7 @@ public partial class Contents
                             var maxr = Math.Max(radial.Fr, radial.R);
                             var g = CreateTransparencyFormXObject(minx - maxr, miny - maxr, maxx + maxr, maxy + maxr, shading);
                             var gstream = g.GetWriteStream(false);
-                            (new DrawPathShading { Shading = shading }).OperationWrite(0, 0, gstream, new());
+                            new DrawPathShading { Shading = shading }.OperationWrite(0, 0, gstream, new());
                             gstream.Flush();
                             opes.Add(new DrawPathExtGState { ExtGState = CreateTransparencyGraphicsStateParameter(document, g) });
                         }
@@ -290,8 +290,8 @@ public partial class Contents
                 N = 1,
             };
             bounds[i] = offset0 / 100.0f;
-            encode[i * 2 + 2] = 0.0f;
-            encode[i * 2 + 3] = 1.0f;
+            encode[(i * 2) + 2] = 0.0f;
+            encode[(i * 2) + 3] = 1.0f;
         }
         return new StitchingFunction
         {
