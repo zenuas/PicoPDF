@@ -109,7 +109,7 @@ public static class FontExporter
         }
         else
         {
-            font.Glyphs.Each((_, i) => stream.WriteOffset32((uint)(glyph_index[i])));
+            font.Glyphs.Each((_, i) => stream.WriteOffset32((uint)glyph_index[i]));
             stream.WriteOffset32((uint)lastglyph);
         }
         tables["loca"].Length = (uint)(stream.Position - loca_start);

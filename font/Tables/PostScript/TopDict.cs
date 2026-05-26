@@ -323,13 +323,13 @@ public class TopDict
     }
 
     public static byte[] DictDataNumberToBytes(int number) =>
-        number is >= -107 and <= 107 ? ([(byte)(number + 139)])
-        : number is >= 108 and <= 1131 ? ([(byte)((((number - 108) >> 8) & 0xFF) + 247), (byte)(number - 108)])
-        : number is >= -1131 and <= -108 ? ([(byte)(((-(number + 108) >> 8) & 0xFF) + 251), (byte)-(number + 108)])
-        : number is >= -32768 and <= 32767 ? ([28, (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)])
+        number is >= -107 and <= 107 ? [(byte)(number + 139)]
+        : number is >= 108 and <= 1131 ? [(byte)((((number - 108) >> 8) & 0xFF) + 247), (byte)(number - 108)]
+        : number is >= -1131 and <= -108 ? [(byte)(((-(number + 108) >> 8) & 0xFF) + 251), (byte)-(number + 108)]
+        : number is >= -32768 and <= 32767 ? [28, (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)]
         : DictDataNumberTo5Bytes(number);
 
-    public static byte[] DictDataNumberTo5Bytes(int number) => ([29, (byte)((number >> 24) & 0xFF), (byte)((number >> 16) & 0xFF), (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)]);
+    public static byte[] DictDataNumberTo5Bytes(int number) => [29, (byte)((number >> 24) & 0xFF), (byte)((number >> 16) & 0xFF), (byte)((number >> 8) & 0xFF), (byte)(number & 0xFF)];
 
     public static void WriteCharsets(Stream stream, Charsets charsets)
     {
