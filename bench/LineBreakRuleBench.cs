@@ -34,7 +34,6 @@ public class LineBreakRuleBench
     [Benchmark]
     public void ArrayBreakRule()
     {
-        var rule = new GenericLineBreakRule();
         var chars = new int[] { '!', ',', 'ゝ', '｝' };
         var consumer = new Consumer();
 

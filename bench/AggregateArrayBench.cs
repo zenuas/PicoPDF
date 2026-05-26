@@ -204,7 +204,7 @@ public class AggregateArrayBench
         var hierarchy = Sections1
             .Aggregate(
                 new List<(int BreakCount, string Section, int Depth, string BreakKey)>(),
-                (acc, x) => [.. acc, ((BreakCount: acc.LastOrDefault().BreakCount + (x.BreakKey != "" ? 1 : 0), x.Section, x.Depth, x.BreakKey))]);
+                (acc, x) => [.. acc, (BreakCount: acc.LastOrDefault().BreakCount + (x.BreakKey != "" ? 1 : 0), x.Section, x.Depth, x.BreakKey)]);
 
         Consumer.Consume(hierarchy);
     }
@@ -215,7 +215,7 @@ public class AggregateArrayBench
         var hierarchy = Sections5
             .Aggregate(
                 new List<(int BreakCount, string Section, int Depth, string BreakKey)>(),
-                (acc, x) => [.. acc, ((BreakCount: acc.LastOrDefault().BreakCount + (x.BreakKey != "" ? 1 : 0), x.Section, x.Depth, x.BreakKey))]);
+                (acc, x) => [.. acc, (BreakCount: acc.LastOrDefault().BreakCount + (x.BreakKey != "" ? 1 : 0), x.Section, x.Depth, x.BreakKey)]);
 
         Consumer.Consume(hierarchy);
     }
@@ -226,7 +226,7 @@ public class AggregateArrayBench
         var hierarchy = Sections10
             .Aggregate(
                 new List<(int BreakCount, string Section, int Depth, string BreakKey)>(),
-                (acc, x) => [.. acc, ((BreakCount: acc.LastOrDefault().BreakCount + (x.BreakKey != "" ? 1 : 0), x.Section, x.Depth, x.BreakKey))]);
+                (acc, x) => [.. acc, (BreakCount: acc.LastOrDefault().BreakCount + (x.BreakKey != "" ? 1 : 0), x.Section, x.Depth, x.BreakKey)]);
 
         Consumer.Consume(hierarchy);
     }
