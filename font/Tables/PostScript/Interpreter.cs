@@ -55,7 +55,7 @@ public static class Interpreter
                 switch (ope)
                 {
                     case CharstringCommandCodes.Shortint:
-                        stack.Push((short)(charstring[++i] << 8 | charstring[++i]));
+                        stack.Push((short)((charstring[++i] << 8) | charstring[++i]));
                         f(ope, stack, frame);
                         break;
 
@@ -534,8 +534,8 @@ public static class Interpreter
             var n = (int)number;
 
             return n is >= -107 and <= 107 ? [(byte)(n + 139)] :
-                n is >= 108 and <= 1131 ? [(byte)((n - 108) / 256 + 247), (byte)(n - 108)] :
-                n is <= -108 and >= -1131 ? [(byte)((-n - 108) / 256 + 251), (byte)(-n - 108)] :
+                n is >= 108 and <= 1131 ? [(byte)(((n - 108) / 256) + 247), (byte)(n - 108)] :
+                n is <= -108 and >= -1131 ? [(byte)(((-n - 108) / 256) + 251), (byte)(-n - 108)] :
                 [(byte)CharstringCommandCodes.Shortint, (byte)(n >> 8), (byte)(n & 0xFF)];
         }
         else
@@ -553,9 +553,9 @@ public static class Interpreter
 
     public static float CharstringNumber(Span<byte> charstring) =>
         charstring.Length == 1 && charstring[0] is >= 32 and <= 246 ? charstring[0] - 139 :
-        charstring.Length == 2 && charstring[0] is >= 247 and <= 250 ? (charstring[0] - 247) * 256 + charstring[1] + 108 :
+        charstring.Length == 2 && charstring[0] is >= 247 and <= 250 ? ((charstring[0] - 247) * 256) + charstring[1] + 108 :
         charstring.Length == 2 && charstring[0] is >= 251 and <= 254 ? -((charstring[0] - 251) * 256) - charstring[1] - 108 :
-        charstring.Length == 5 && charstring[0] == 255 ? ((charstring[1] << 24 | charstring[2] << 16 | charstring[3] << 8 | charstring[4]) / 65536f) :
+        charstring.Length == 5 && charstring[0] == 255 ? (((charstring[1] << 24) | (charstring[2] << 16) | (charstring[3] << 8) | charstring[4]) / 65536f) :
         0;
 
     public static int NextNumberBytes(byte c) =>
