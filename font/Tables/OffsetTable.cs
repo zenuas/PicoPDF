@@ -28,4 +28,8 @@ public class OffsetTable : IExportable
         stream.WriteUShortByBigEndian(EntrySelector);
         stream.WriteUShortByBigEndian(RangeShift);
     }
+
+    public bool ContainTrueType() => SfntVersion == 0x00010000 || SfntVersion == 0x74727565;
+
+    public bool ContainCFF() => SfntVersion == 0x4F54544F;
 }
