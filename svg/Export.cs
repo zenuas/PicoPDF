@@ -52,7 +52,7 @@ public static class Export
         )
     {
         var layer_d = new StringBuilder();
-        var colo = Utility.GetSurfaces(outlines).Where(x => x.ColorLayer is { }).Select(x => x.ColorLayer!);
+        var colo = SvgUtility.GetSurfaces(outlines).Where(x => x.ColorLayer is { }).Select(x => x.ColorLayer!);
 
         var isfirst = true;
         foreach (var outline in outlines)

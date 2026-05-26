@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace Svg;
 
-public static class Utility
+public static class SvgUtility
 {
     public static IEnumerable<Surface> GetSurfaces(IEnumerable<IOutline> outlines)
     {
