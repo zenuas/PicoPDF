@@ -63,7 +63,7 @@ public class CffCharStrings : FontRegisterCommand
                         break;
 
                     case CharstringCommandCodes.Width:
-                        frame.Width ??= stack.Count == 0 ? private_dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + private_dict?.NominalWidthX ?? 0;
+                        frame.Width ??= stack.Count == 0 ? private_dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + (private_dict?.NominalWidthX ?? 0);
                         Console.WriteLine($"width : {frame.Width}");
                         break;
 

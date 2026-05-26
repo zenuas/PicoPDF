@@ -187,7 +187,7 @@ public class CompactFontFormat : IExportable
                     break;
 
                 case CharstringCommandCodes.Width:
-                    frame.Width ??= stack.Count == 0 ? private_dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + private_dict?.NominalWidthX ?? 0;
+                    frame.Width ??= stack.Count == 0 ? private_dict?.DefaultWidthX ?? 0 : (int)stack.Pop() + (private_dict?.NominalWidthX ?? 0);
                     break;
 
                 default:
