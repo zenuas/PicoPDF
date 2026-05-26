@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Svg;
 
-public static class Export
+public static class SvgExport
 {
     public static void OutputBegin(TextWriter writer, float width, float height, string format) => writer.WriteLine($"""<svg width="{width.ToString(format)}" height="{height.ToString(format)}" xmlns="http://www.w3.org/2000/svg">""");
 

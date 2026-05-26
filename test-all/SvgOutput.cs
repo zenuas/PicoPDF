@@ -60,9 +60,9 @@ public class SvgOutput : FontRegisterCommand
             max_width = Math.Max(width, max_width);
         }
         writer.Flush();
-        Svg.Export.OutputBegin(Output, max_width, top, PointFormat);
+        SvgExport.OutputBegin(Output, max_width, top, PointFormat);
         Output.Write(Encoding.UTF8.GetString(mem.ToArray()));
-        Svg.Export.OutputEnd(Output);
+        SvgExport.OutputEnd(Output);
     }
 
     public (float Width, float Height) OutputChar(IOpenTypeFont font, TextWriter writer, float top, (int Char, uint GID)[] cids, string unique_id)
@@ -79,12 +79,12 @@ public class SvgOutput : FontRegisterCommand
         var left = 0f;
         var baseline = top + (ymax * r);
 
-        Svg.Export.OutputDefs(writer, r, left, baseline, gradient_layers, unique_id, Debug, PointFormat);
+        SvgExport.OutputDefs(writer, r, left, baseline, gradient_layers, unique_id, Debug, PointFormat);
         for (var i = 0; i < cids.Length; i++)
         {
             writer.WriteLine();
             writer.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
-            Svg.Export.OutputPath(writer, outliness[i], r, left, baseline, gradient_layers, unique_id, Stroke, Fill, JointPoint, PointFormat);
+            SvgExport.OutputPath(writer, outliness[i], r, left, baseline, gradient_layers, unique_id, Stroke, Fill, JointPoint, PointFormat);
             left += font.GetAdvanceWidth(cids[i].GID) * r;
         }
         if (Debug)
