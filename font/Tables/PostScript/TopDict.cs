@@ -167,7 +167,7 @@ public class TopDict
             _ => throw new(),
         })
         .Join()
-        .To(double.Parse);
+        .To(x => double.Parse(x, CultureInfo.InvariantCulture));
 
     public static IEnumerable<byte> DoubleToPackedBCD(double d) => d.ToString(CultureInfo.InvariantCulture)
         .Replace("E-", "e")

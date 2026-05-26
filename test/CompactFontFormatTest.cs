@@ -3,7 +3,9 @@ using OpenType.Extension;
 using OpenType.Tables.PostScript;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using Xunit;
 
 namespace PicoPDF.Test;
@@ -79,6 +81,16 @@ public class CompactFontFormatTest
     [Fact]
     public void PackedBCDToDoubleTest()
     {
+        Assert.Equal(TopDict.PackedBCDToDouble([0x00]), 0);
+        Assert.Equal(TopDict.PackedBCDToDouble([0x00, 0x0a, 0x01, 0x04, 0x00, 0x05, 0x04, 0x01, 0x0c, 0x03]), 0.140541e-3);
+        Assert.Equal(TopDict.PackedBCDToDouble([0x00, 0x0a, 0x01, 0x04, 0x00, 0x05, 0x04, 0x01, 0x0b, 0x03]), 0.140541e3);
+    }
+
+    [Fact]
+    public void PackedBCDToDoubleCultureTest()
+    {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("fr-FR");
+
         Assert.Equal(TopDict.PackedBCDToDouble([0x00]), 0);
         Assert.Equal(TopDict.PackedBCDToDouble([0x00, 0x0a, 0x01, 0x04, 0x00, 0x05, 0x04, 0x01, 0x0c, 0x03]), 0.140541e-3);
         Assert.Equal(TopDict.PackedBCDToDouble([0x00, 0x0a, 0x01, 0x04, 0x00, 0x05, 0x04, 0x01, 0x0b, 0x03]), 0.140541e3);
