@@ -76,174 +76,158 @@ public static class JsonLoader
         var posx = (int)json["X"]!.AsValue();
         var posy = (int)json["Y"]!.AsValue();
         var name = json["Name"]?.ToString() ?? "";
-        switch (json["Type"]!.ToString())
+        return json["Type"]!.ToString() switch
         {
-            case "TextElement":
-                {
-                    return new TextElement()
-                    {
-                        X = posx,
-                        Y = posy,
-                        Name = name,
-                        Text = json["Text"]!.ToString(),
-                        Font = ToFontPathArray(json["Font"]),
-                        Size = (int)json["Size"]!.AsValue(),
-                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
-                        Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
-                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
-                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
-                    };
-                }
-
-            case "BindElement":
-                {
-                    return new BindElement()
-                    {
-                        X = posx,
-                        Y = posy,
-                        Name = name,
-                        Bind = json["Bind"]!.ToString(),
-                        Format = json["Format"]?.ToString() ?? "",
-                        Font = ToFontPathArray(json["Font"]),
-                        Size = (int)json["Size"]!.AsValue(),
-                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
-                        Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
-                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
-                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
-                        Culture = json["Culture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
-                    };
-                }
-
-            case "SummaryElement":
-                {
-                    var sumtype = json["SummaryType"] is { } sum ? Enum.Parse<SummaryTypes>(sum.ToString()) : SummaryTypes.Summary;
-                    var summethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethods>(method.ToString()) : (sumtype == SummaryTypes.PageCount ? SummaryMethods.Page : SummaryMethods.Group);
-                    if (json["BreakKey"] is not null && summethod is not (SummaryMethods.Group or SummaryMethods.GroupIncremental)) throw new($"when SummaryElement is SummaryMethod={summethod}, BreakKey is invalid");
-                    return new SummaryElement()
-                    {
-                        X = posx,
-                        Y = posy,
-                        Name = name,
-                        Bind = json["Bind"]?.ToString() ?? "",
-                        Format = json["Format"]?.ToString() ?? "",
-                        Font = ToFontPathArray(json["Font"]),
-                        Size = (int)json["Size"]!.AsValue(),
-                        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
-                        Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
-                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
-                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
-                        SummaryType = sumtype,
-                        SummaryMethod = summethod,
-                        BreakKey = json["BreakKey"]?.ToString() ?? "",
-                        Culture = json["Culture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
-                    };
-                }
-
-            case "LineElement":
-                {
-                    return new LineElement()
-                    {
-                        X = posx,
-                        Y = posy,
-                        Name = name,
-                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
-                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
-                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
-                    };
-                }
-
-            case "CrossSectionLineElement":
-                {
-                    return new CrossSectionLineElement()
-                    {
-                        X = posx,
-                        Y = posy,
-                        Name = name,
-                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
-                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
-                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
-                    };
-                }
-
-            case "RectangleElement":
-                {
-                    return new RectangleElement()
-                    {
-                        X = posx,
-                        Y = posy,
-                        Name = name,
-                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
-                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
-                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
-                    };
-                }
-
-            case "CrossSectionRectangleElement":
-                {
-                    return new CrossSectionRectangleElement()
-                    {
-                        X = posx,
-                        Y = posy,
-                        Name = name,
-                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
-                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-                        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
-                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
-                    };
-                }
-
-            case "FillRectangleElement":
-                {
-                    return new FillRectangleElement()
-                    {
-                        X = posx,
-                        Y = posy,
-                        Name = name,
-                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
-                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-                        LineColor = ColorTranslator.FromHtml(json["LineColor"]!.ToString()),
-                        FillColor = ColorTranslator.FromHtml(json["FillColor"]!.ToString()),
-                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
-                    };
-                }
-
-            case "CrossSectionFillRectangleElement":
-                {
-                    return new CrossSectionFillRectangleElement()
-                    {
-                        X = posx,
-                        Y = posy,
-                        Name = name,
-                        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
-                        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-                        LineColor = ColorTranslator.FromHtml(json["LineColor"]!.ToString()),
-                        FillColor = ColorTranslator.FromHtml(json["FillColor"]!.ToString()),
-                        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
-                    };
-                }
-
-            case "ImageElement":
-                {
-                    return new ImageElement()
-                    {
-                        X = posx,
-                        Y = posy,
-                        Name = name,
-                        Path = json["Path"]?.ToString() ?? "",
-                        Bind = json["Bind"]?.ToString() ?? "",
-                        ZoomWidth = json["ZoomWidth"]?.AsValue() is { } zoomwidth ? (double)zoomwidth : 1.0,
-                        ZoomHeight = json["ZoomHeight"]?.AsValue() is { } zoomheight ? (double)zoomheight : 1.0,
-                    };
-                }
-        }
-        throw new();
+            "TextElement" => LoadTextElement(posx, posy, name, json),
+            "BindElement" => LoadBindElement(posx, posy, name, json),
+            "SummaryElement" => LoadSummaryElement(posx, posy, name, json),
+            "LineElement" => LoadLineElement(posx, posy, name, json),
+            "CrossSectionLineElement" => LoadCrossSectionLineElement(posx, posy, name, json),
+            "RectangleElement" => LoadRectangleElement(posx, posy, name, json),
+            "CrossSectionRectangleElement" => LoadCrossSectionRectangleElement(posx, posy, name, json),
+            "FillRectangleElement" => LoadFillRectangleElement(posx, posy, name, json),
+            "CrossSectionFillRectangleElement" => LoadCrossSectionFillRectangleElement(posx, posy, name, json),
+            "ImageElement" => LoadImageElement(posx, posy, name, json),
+            _ => throw new(),
+        };
     }
+
+    public static TextElement LoadTextElement(int posx, int posy, string name, JsonNode json) => new()
+    {
+        X = posx,
+        Y = posy,
+        Name = name,
+        Text = json["Text"]!.ToString(),
+        Font = ToFontPathArray(json["Font"]),
+        Size = (int)json["Size"]!.AsValue(),
+        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
+        Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
+        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+    };
+
+    public static BindElement LoadBindElement(int posx, int posy, string name, JsonNode json) => new()
+    {
+        X = posx,
+        Y = posy,
+        Name = name,
+        Bind = json["Bind"]!.ToString(),
+        Format = json["Format"]?.ToString() ?? "",
+        Font = ToFontPathArray(json["Font"]),
+        Size = (int)json["Size"]!.AsValue(),
+        Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
+        Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
+        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        Culture = json["Culture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
+    };
+
+    public static SummaryElement LoadSummaryElement(int posx, int posy, string name, JsonNode json)
+    {
+        var sumtype = json["SummaryType"] is { } sum ? Enum.Parse<SummaryTypes>(sum.ToString()) : SummaryTypes.Summary;
+        var summethod = json["SummaryMethod"] is { } method ? Enum.Parse<SummaryMethods>(method.ToString()) : (sumtype == SummaryTypes.PageCount ? SummaryMethods.Page : SummaryMethods.Group);
+        if (json["BreakKey"] is not null && summethod is not (SummaryMethods.Group or SummaryMethods.GroupIncremental)) throw new($"when SummaryElement is SummaryMethod={summethod}, BreakKey is invalid");
+        return new SummaryElement()
+        {
+            X = posx,
+            Y = posy,
+            Name = name,
+            Bind = json["Bind"]?.ToString() ?? "",
+            Format = json["Format"]?.ToString() ?? "",
+            Font = ToFontPathArray(json["Font"]),
+            Size = (int)json["Size"]!.AsValue(),
+            Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
+            Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
+            Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+            Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+            Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+            SummaryType = sumtype,
+            SummaryMethod = summethod,
+            BreakKey = json["BreakKey"]?.ToString() ?? "",
+            Culture = json["Culture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
+        };
+    }
+
+    public static LineElement LoadLineElement(int posx, int posy, string name, JsonNode json) => new()
+    {
+        X = posx,
+        Y = posy,
+        Name = name,
+        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
+    };
+
+    public static CrossSectionLineElement LoadCrossSectionLineElement(int posx, int posy, string name, JsonNode json) => new()
+    {
+        X = posx,
+        Y = posy,
+        Name = name,
+        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
+    };
+
+    public static RectangleElement LoadRectangleElement(int posx, int posy, string name, JsonNode json) => new()
+    {
+        X = posx,
+        Y = posy,
+        Name = name,
+        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
+    };
+
+    public static CrossSectionRectangleElement LoadCrossSectionRectangleElement(int posx, int posy, string name, JsonNode json) => new()
+    {
+        X = posx,
+        Y = posy,
+        Name = name,
+        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
+    };
+
+    public static CrossSectionFillRectangleElement LoadCrossSectionFillRectangleElement(int posx, int posy, string name, JsonNode json) => new()
+    {
+        X = posx,
+        Y = posy,
+        Name = name,
+        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+        LineColor = ColorTranslator.FromHtml(json["LineColor"]!.ToString()),
+        FillColor = ColorTranslator.FromHtml(json["FillColor"]!.ToString()),
+        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
+    };
+
+    public static ImageElement LoadImageElement(int posx, int posy, string name, JsonNode json) => new()
+    {
+        X = posx,
+        Y = posy,
+        Name = name,
+        Path = json["Path"]?.ToString() ?? "",
+        Bind = json["Bind"]?.ToString() ?? "",
+        ZoomWidth = json["ZoomWidth"]?.AsValue() is { } zoomwidth ? (double)zoomwidth : 1.0,
+        ZoomHeight = json["ZoomHeight"]?.AsValue() is { } zoomheight ? (double)zoomheight : 1.0,
+    };
+
+    public static FillRectangleElement LoadFillRectangleElement(int posx, int posy, string name, JsonNode json) => new()
+    {
+        X = posx,
+        Y = posy,
+        Name = name,
+        Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
+        Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
+        LineColor = ColorTranslator.FromHtml(json["LineColor"]!.ToString()),
+        FillColor = ColorTranslator.FromHtml(json["FillColor"]!.ToString()),
+        LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
+    };
 
     public static FontPath[] ToFontPathArray(JsonNode? node) =>
         node is JsonValue v ? [new() { Path = (string)v! }] :
