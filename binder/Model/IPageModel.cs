@@ -4,5 +4,5 @@ public interface IPageModel<TPage, TSection>
     where TPage : IPageModel<TPage, TSection>
     where TSection : ISectionModel<TSection>
 {
-    public abstract static TPage CreatePageModel(int width, int height, TSection[] models);
+    public static abstract TPage CreatePageModel(int width, int height, TSection[] models);
 }

@@ -15,5 +15,5 @@ public interface ISectionModel<TSection>
     public bool IsVisible { get; init; }
 
     public void UpdatePosition();
-    public abstract static TSection CreateSectionModel<T>(IPageSection<TSection> page, ISection section, T data, BindSummaryMapper<T, TSection> bind, int break_count, int? depth);
+    public static abstract TSection CreateSectionModel<T>(IPageSection<TSection> page, ISection section, T data, BindSummaryMapper<T, TSection> bind, int break_count, int? depth);
 }

@@ -7,7 +7,7 @@ namespace Binder;
 
 public class NullMapper<T> : IReadOnlyDictionary<string, Func<T, object>>
 {
-    public readonly static NullMapper<T> Instance = new();
+    public static readonly NullMapper<T> Instance = new();
 
     public Func<T, object> this[string key] => _ => null!;
     public IEnumerable<string> Keys => [];
