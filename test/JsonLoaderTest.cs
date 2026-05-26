@@ -1,0 +1,99 @@
+﻿using PicoPDF.Loader;
+using PicoPDF.Loader.Elements;
+using PicoPDF.Loader.Sections;
+using System;
+using System.Drawing;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Xunit;
+using XFontPath = PicoPDF.Loader.Sections.FontPath;
+
+namespace PicoPDF.Test;
+
+public class JsonLoaderTest
+{
+    public static JsonDocumentOptions Option { get; } = new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip };
+
+    [Fact]
+    public void LoadElementError()
+    {
+        Assert.Equal(Assert.Throws<NullReferenceException>(() => _ = JsonLoader.LoadElement(JsonNode.Parse("""{ }""", null, Option)!)).Message, "Element 'X' was not found.");
+        Assert.Equal(Assert.Throws<NullReferenceException>(() => _ = JsonLoader.LoadElement(JsonNode.Parse("""{"X": 10}""", null, Option)!)).Message, "Element 'Y' was not found.");
+        Assert.Equal(Assert.Throws<NullReferenceException>(() => _ = JsonLoader.LoadElement(JsonNode.Parse("""{"Y": 20}""", null, Option)!)).Message, "Element 'X' was not found.");
+        Assert.Equal(Assert.Throws<NullReferenceException>(() => _ = JsonLoader.LoadElement(JsonNode.Parse("""{"Type": "None"}""", null, Option)!)).Message, "Element 'X' was not found.");
+        _ = Assert.Throws<Exception>(() => _ = JsonLoader.LoadElement(JsonNode.Parse("""{"Type": "None", "X": 10, "Y": 20}""", null, Option)!));
+    }
+
+    [Fact]
+    public void ToFontPath()
+    {
+        var f1 = JsonLoader.ToFontPath(JsonNode.Parse(""" "Arial" """, null, Option)!);
+        Assert.Equal(f1.Path, "Arial");
+        Assert.Equal(f1.Embed, FontEmbeds.PossibleEmbed);
+
+        var f2 = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Times New Roman"}""", null, Option)!);
+        Assert.Equal(f2.Path, "Times New Roman");
+        Assert.Equal(f2.Embed, FontEmbeds.PossibleEmbed);
+
+        var f3 = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Courier New", "Embed": "NotEmbed"}""", null, Option)!);
+        Assert.Equal(f3.Path, "Courier New");
+        Assert.Equal(f3.Embed, FontEmbeds.NotEmbed);
+
+        _ = Assert.Throws<ArgumentException>(() => _ = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Arial", "Embed": "None"}""", null, Option)!));
+        Assert.Equal(Assert.Throws<NullReferenceException>(() => _ = JsonLoader.ToFontPath(JsonNode.Parse("""{"Embed": "NotEmbed"}""", null, Option)!)).Message, "Element 'Path' was not found.");
+    }
+
+    [Fact]
+    public void LoadTextElement()
+    {
+        var e1 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!", "Size": 30}""", null, Option)!);
+        Assert.Equal(e1.X, 10);
+        Assert.Equal(e1.Y, 20);
+        Assert.Equal("Hello, World!", e1.Text);
+        Assert.Equal(e1.Size, 30);
+
+        var e2 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!2", "Size": 31, "Font": ["Arial"]}""", null, Option)!);
+        Assert.Equal("Hello, World!2", e2.Text);
+        Assert.Equal(e2.Size, 31);
+        Assert.Equivalent(e2.Font, new XFontPath[] { new() { Path = "Arial", Embed = FontEmbeds.PossibleEmbed } });
+
+        var e3 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!3", "Size": 32, "Font": ["Arial", { "Path": "Times New Roman", "Embed": "NotEmbed" }]}""", null, Option)!);
+        Assert.Equal("Hello, World!3", e3.Text);
+        Assert.Equal(e3.Size, 32);
+        Assert.Equivalent(e3.Font, new XFontPath[] { new() { Path = "Arial", Embed = FontEmbeds.PossibleEmbed }, new() { Path = "Times New Roman", Embed = FontEmbeds.NotEmbed } });
+
+        var e4 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!4", "Size": 33, "Alignment": "End"}""", null, Option)!);
+        Assert.Equal("Hello, World!4", e4.Text);
+        Assert.Equal(e4.Size, 33);
+        Assert.Equal(e4.Alignment, TextAlignments.End);
+
+        var e5 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!5", "Size": 34, "Style": "Underline, Stroke"}""", null, Option)!);
+        Assert.Equal("Hello, World!5", e5.Text);
+        Assert.Equal(e5.Size, 34);
+        Assert.Equal(e5.Style, TextStyles.Underline | TextStyles.Stroke);
+
+        var e6 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!6", "Size": 35, "Width": 100}""", null, Option)!);
+        Assert.Equal("Hello, World!6", e6.Text);
+        Assert.Equal(e6.Size, 35);
+        Assert.Equal(e6.Width, 100);
+
+        var e7 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!7", "Size": 36, "Height": 200}""", null, Option)!);
+        Assert.Equal("Hello, World!7", e7.Text);
+        Assert.Equal(e7.Size, 36);
+        Assert.Equal(e7.Height, 200);
+
+        var e8 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!8", "Size": 37, "Color": "Red"}""", null, Option)!);
+        Assert.Equal("Hello, World!8", e8.Text);
+        Assert.Equal(e8.Size, 37);
+        Assert.True(e8.Color is { });
+        Assert.Equal(e8.Color, Color.Red);
+
+        var e9 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!9", "Size": 38, "Color": "#010203"}""", null, Option)!);
+        Assert.Equal("Hello, World!9", e9.Text);
+        Assert.Equal(e9.Size, 38);
+        Assert.True(e9.Color is { });
+        Assert.Equal(e9.Color.Value.R, 1);
+        Assert.Equal(e9.Color.Value.G, 2);
+        Assert.Equal(e9.Color.Value.B, 3);
+    }
+}

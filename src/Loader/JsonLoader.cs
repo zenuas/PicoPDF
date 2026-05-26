@@ -16,6 +16,8 @@ namespace PicoPDF.Loader;
 
 public static class JsonLoader
 {
+    public static JsonNode ToNode(this JsonNode self, string name) => self[name] ?? throw new NullReferenceException($"Element '{name}' was not found.");
+
     public static PageSection CreatePageFromJsonFile(string path, PdfEventOption option) => CreatePageFromJson(File.ReadAllText(path), option);
 
     public static PageSection CreatePageFromJson(string json, PdfEventOption option) => CreatePageFromJson(JsonNode.Parse(json, null, new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip })!, option);
@@ -27,7 +29,7 @@ public static class JsonLoader
 
         var size = LoadPageSize(json["Size"]);
         var padding = LoadAllSides(json["Padding"]);
-        var sections = json["Sections"]!
+        var sections = json.ToNode("Sections")
             .AsArray()
             .Select(x => LoadSubSection(x!, size.Width - padding.Left - padding.Right))
             .ToDictionary(x => x.Name, x => x);
@@ -39,7 +41,7 @@ public static class JsonLoader
             DefaultFont = fonts,
             Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
             Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
-            SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
+            SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json.ToNode("Detail").ToString()].Cast<ISubSection>(),
             Padding = padding,
             DefaultCulture = json["DefaultCulture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : CultureInfo.InvariantCulture,
             EventOption = option,
@@ -51,17 +53,17 @@ public static class JsonLoader
         BreakKey = json["BreakKey"]?.ToString() ?? "",
         Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
         Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
-        SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json["Detail"]!.ToString()].Cast<ISubSection>(),
+        SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json.ToNode("Detail").ToString()].Cast<ISubSection>(),
     };
 
     public static ISection LoadSubSection(JsonNode json, int width)
     {
-        var name = json["Name"]!.ToString();
-        var height = (int)json["Height"]!.AsValue();
-        var elements = json["Elements"]!.AsArray().Select(x => LoadElement(x!)).ToArray();
+        var name = json.ToNode("Name").ToString();
+        var height = (int)json.ToNode("Height").AsValue();
+        var elements = json.ToNode("Elements").AsArray().Select(x => LoadElement(x!)).ToArray();
         var viewmode = json["ViewMode"] is { } v ? Enum.Parse<ViewModes>(v.ToString()) : ViewModes.Every;
         var style = json["Style"]?.AsValue() is { } st ? Enum.Parse<SectionStyles>(st.ToString()) : SectionStyles.None;
-        return json["Type"]!.ToString() switch
+        return json.ToNode("Type").ToString() switch
         {
             "HeaderSection" => new HeaderSection() { Name = name, Height = height, Width = width, Elements = elements, ViewMode = viewmode, Style = style },
             "DetailSection" => new DetailSection() { Name = name, Height = height, Width = width, Elements = elements, ViewMode = viewmode, Style = style },
@@ -73,10 +75,10 @@ public static class JsonLoader
 
     public static IElement LoadElement(JsonNode json)
     {
-        var posx = (int)json["X"]!.AsValue();
-        var posy = (int)json["Y"]!.AsValue();
+        var posx = (int)json.ToNode("X").AsValue();
+        var posy = (int)json.ToNode("Y").AsValue();
         var name = json["Name"]?.ToString() ?? "";
-        return json["Type"]!.ToString() switch
+        return json.ToNode("Type").ToString() switch
         {
             "TextElement" => LoadTextElement(posx, posy, name, json),
             "BindElement" => LoadBindElement(posx, posy, name, json),
@@ -97,9 +99,9 @@ public static class JsonLoader
         X = posx,
         Y = posy,
         Name = name,
-        Text = json["Text"]!.ToString(),
+        Text = json.ToNode("Text").ToString(),
         Font = ToFontPathArray(json["Font"]),
-        Size = (int)json["Size"]!.AsValue(),
+        Size = (int)json.ToNode("Size").AsValue(),
         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
         Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
@@ -112,10 +114,10 @@ public static class JsonLoader
         X = posx,
         Y = posy,
         Name = name,
-        Bind = json["Bind"]!.ToString(),
+        Bind = json.ToNode("Bind").ToString(),
         Format = json["Format"]?.ToString() ?? "",
         Font = ToFontPathArray(json["Font"]),
-        Size = (int)json["Size"]!.AsValue(),
+        Size = (int)json.ToNode("Size").AsValue(),
         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
         Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
@@ -137,7 +139,7 @@ public static class JsonLoader
             Bind = json["Bind"]?.ToString() ?? "",
             Format = json["Format"]?.ToString() ?? "",
             Font = ToFontPathArray(json["Font"]),
-            Size = (int)json["Size"]!.AsValue(),
+            Size = (int)json.ToNode("Size").AsValue(),
             Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
             Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
             Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
@@ -201,8 +203,8 @@ public static class JsonLoader
         Name = name,
         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-        LineColor = ColorTranslator.FromHtml(json["LineColor"]!.ToString()),
-        FillColor = ColorTranslator.FromHtml(json["FillColor"]!.ToString()),
+        LineColor = ColorTranslator.FromHtml(json.ToNode("LineColor").ToString()),
+        FillColor = ColorTranslator.FromHtml(json.ToNode("FillColor").ToString()),
         LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
     };
 
@@ -224,8 +226,8 @@ public static class JsonLoader
         Name = name,
         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-        LineColor = ColorTranslator.FromHtml(json["LineColor"]!.ToString()),
-        FillColor = ColorTranslator.FromHtml(json["FillColor"]!.ToString()),
+        LineColor = ColorTranslator.FromHtml(json.ToNode("LineColor").ToString()),
+        FillColor = ColorTranslator.FromHtml(json.ToNode("FillColor").ToString()),
         LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
     };
 
@@ -238,7 +240,7 @@ public static class JsonLoader
         node is JsonValue v ? new() { Path = (string)v! } :
         new()
         {
-            Path = node["Path"]?.ToString() ?? "",
+            Path = node.ToNode("Path").ToString(),
             Embed = node["Embed"] is { } embed ? Enum.Parse<FontEmbeds>(embed.ToString()) : FontEmbeds.PossibleEmbed,
         };
 
@@ -252,7 +254,7 @@ public static class JsonLoader
                 case 2: return new((int)xs[0]!, (int)xs[1]!);
             }
         }
-        else if (node is JsonNode n) return new((int)n["Width"]!, (int)n["Height"]!);
+        else if (node is JsonNode n) return new((int)n.ToNode("Width"), (int)n.ToNode("Height"));
         return new(PageSizes.A4);
     }
 
@@ -269,7 +271,7 @@ public static class JsonLoader
                 case 4: return new((int)xs[0]!, (int)xs[2]!, (int)xs[3]!, (int)xs[1]!);
             }
         }
-        else if (node is JsonNode n) return new((int)n["Top"]!, (int)n["Bottom"]!, (int)n["Left"]!, (int)n["Right"]!);
+        else if (node is JsonNode n) return new((int)n.ToNode("Top"), (int)n.ToNode("Bottom"), (int)n.ToNode("Left"), (int)n.ToNode("Right"));
         return new(0, 0, 0, 0);
     }
 }
