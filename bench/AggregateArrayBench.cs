@@ -43,6 +43,48 @@ public class AggregateArrayBench
         ];
 
     [Benchmark]
+    public void Array1()
+    {
+        var break_count = 0;
+        var hierarchy = new (int BreakCount, string Section, int Depth, string BreakKey)[Sections1.Length];
+        for (var i = 0; i < Sections1.Length; i++)
+        {
+            var x = Sections1[i];
+            hierarchy[i] = (BreakCount: x.BreakKey != "" ? ++break_count : break_count, x.Section, x.Depth, x.BreakKey);
+        }
+
+        Consumer.Consume(hierarchy);
+    }
+
+    [Benchmark]
+    public void Array5()
+    {
+        var break_count = 0;
+        var hierarchy = new (int BreakCount, string Section, int Depth, string BreakKey)[Sections5.Length];
+        for (var i = 0; i < Sections5.Length; i++)
+        {
+            var x = Sections5[i];
+            hierarchy[i] = (BreakCount: x.BreakKey != "" ? ++break_count : break_count, x.Section, x.Depth, x.BreakKey);
+        }
+
+        Consumer.Consume(hierarchy);
+    }
+
+    [Benchmark]
+    public void Array10()
+    {
+        var break_count = 0;
+        var hierarchy = new (int BreakCount, string Section, int Depth, string BreakKey)[Sections10.Length];
+        for (var i = 0; i < Sections10.Length; i++)
+        {
+            var x = Sections10[i];
+            hierarchy[i] = (BreakCount: x.BreakKey != "" ? ++break_count : break_count, x.Section, x.Depth, x.BreakKey);
+        }
+
+        Consumer.Consume(hierarchy);
+    }
+
+    [Benchmark]
     public void SelectToArray1()
     {
         var break_count = 0;
