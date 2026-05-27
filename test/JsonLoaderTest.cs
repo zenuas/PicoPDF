@@ -44,6 +44,30 @@ public class JsonLoaderTest
     }
 
     [Fact]
+    public void ToFontPathArray()
+    {
+        var f0 = JsonLoader.ToFontPathArray(JsonNode.Parse("""null""", null, Option)!);
+        Assert.Equal(f0.Length, 0);
+
+        var f1 = JsonLoader.ToFontPathArray(JsonNode.Parse(""" "Arial" """, null, Option)!);
+        Assert.Equal(f1.Length, 1);
+        Assert.Equal(f1[0].Path, "Arial");
+        Assert.Equal(f1[0].Embed, FontEmbeds.PossibleEmbed);
+
+        var f2 = JsonLoader.ToFontPathArray(JsonNode.Parse("""[{"Path": "Times New Roman"}]""", null, Option)!);
+        Assert.Equal(f2.Length, 1);
+        Assert.Equal(f2[0].Path, "Times New Roman");
+        Assert.Equal(f2[0].Embed, FontEmbeds.PossibleEmbed);
+
+        var f3 = JsonLoader.ToFontPathArray(JsonNode.Parse("""[{"Path": "Courier New", "Embed": "NotEmbed"}, {"Path": "Arial"}]""", null, Option)!);
+        Assert.Equal(f3.Length, 2);
+        Assert.Equal(f3[0].Path, "Courier New");
+        Assert.Equal(f3[0].Embed, FontEmbeds.NotEmbed);
+        Assert.Equal(f3[1].Path, "Arial");
+        Assert.Equal(f3[1].Embed, FontEmbeds.PossibleEmbed);
+    }
+
+    [Fact]
     public void LoadTextElement()
     {
         var e1 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!", "Size": 30}""", null, Option)!);
