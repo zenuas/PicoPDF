@@ -68,6 +68,26 @@ public class JsonLoaderTest
     }
 
     [Fact]
+    public void LoadPageSize()
+    {
+        var s1 = JsonLoader.LoadPageSize(JsonNode.Parse("""null""", null, Option)!);
+        Assert.Equal(s1.Width, 595);
+        Assert.Equal(s1.Height, 842);
+
+        var s2 = JsonLoader.LoadPageSize(JsonNode.Parse(""" "B4" """, null, Option)!);
+        Assert.Equal(s2.Width, 709);
+        Assert.Equal(s2.Height, 1001);
+
+        var s3 = JsonLoader.LoadPageSize(JsonNode.Parse(""" [100, 200] """, null, Option)!);
+        Assert.Equal(s3.Width, 100);
+        Assert.Equal(s3.Height, 200);
+
+        var s4 = JsonLoader.LoadPageSize(JsonNode.Parse(""" {"Width": 300, "Height": 400} """, null, Option)!);
+        Assert.Equal(s4.Width, 300);
+        Assert.Equal(s4.Height, 400);
+    }
+
+    [Fact]
     public void LoadTextElement()
     {
         var e1 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!", "Size": 30}""", null, Option)!);
