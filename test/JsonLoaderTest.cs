@@ -88,6 +88,52 @@ public class JsonLoaderTest
     }
 
     [Fact]
+    public void LoadAllSides()
+    {
+        var s1 = JsonLoader.LoadAllSides(JsonNode.Parse("""null""", null, Option)!);
+        Assert.Equal(s1.Left, 0);
+        Assert.Equal(s1.Top, 0);
+        Assert.Equal(s1.Right, 0);
+        Assert.Equal(s1.Bottom, 0);
+
+        var s2 = JsonLoader.LoadAllSides(JsonNode.Parse("""10""", null, Option)!);
+        Assert.Equal(s2.Left, 10);
+        Assert.Equal(s2.Top, 10);
+        Assert.Equal(s2.Right, 10);
+        Assert.Equal(s2.Bottom, 10);
+
+        var s3 = JsonLoader.LoadAllSides(JsonNode.Parse("""[10]""", null, Option)!);
+        Assert.Equal(s3.Left, 10);
+        Assert.Equal(s3.Top, 10);
+        Assert.Equal(s3.Right, 10);
+        Assert.Equal(s3.Bottom, 10);
+
+        var s4 = JsonLoader.LoadAllSides(JsonNode.Parse("""[10, 20]""", null, Option)!);
+        Assert.Equal(s4.Left, 20);
+        Assert.Equal(s4.Top, 10);
+        Assert.Equal(s4.Right, 20);
+        Assert.Equal(s4.Bottom, 10);
+
+        var s5 = JsonLoader.LoadAllSides(JsonNode.Parse("""[10, 20, 30]""", null, Option)!);
+        Assert.Equal(s5.Left, 20);
+        Assert.Equal(s5.Top, 10);
+        Assert.Equal(s5.Right, 20);
+        Assert.Equal(s5.Bottom, 30);
+
+        var s6 = JsonLoader.LoadAllSides(JsonNode.Parse("""[10, 20, 30, 40]""", null, Option)!);
+        Assert.Equal(s6.Left, 40);
+        Assert.Equal(s6.Top, 10);
+        Assert.Equal(s6.Right, 20);
+        Assert.Equal(s6.Bottom, 30);
+
+        var s7 = JsonLoader.LoadAllSides(JsonNode.Parse("""{"Left": 10, "Top": 20, "Right": 30, "Bottom": 40}""", null, Option)!);
+        Assert.Equal(s7.Left, 10);
+        Assert.Equal(s7.Top, 20);
+        Assert.Equal(s7.Right, 30);
+        Assert.Equal(s7.Bottom, 40);
+    }
+
+    [Fact]
     public void LoadTextElement()
     {
         var e1 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!", "Size": 30}""", null, Option)!);
