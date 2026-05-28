@@ -3,6 +3,7 @@ using Mina.Extension;
 using OpenType;
 using PicoPDF.Pdf.Extension;
 using Svg;
+using Svg.Extension;
 using Svg.Outline;
 using System;
 using System.Collections.Generic;
@@ -72,9 +73,9 @@ public class SvgOutput : FontRegisterCommand
         var ascent = font.HorizontalHeader.Ascender;
         var descent = font.HorizontalHeader.Descender;
 
-        var surfaces = SvgUtility.GetSurfaces(outliness.Flatten()).ToArray();
+        var surfaces = outliness.Flatten().GetSurfaces().ToArray();
         var gradient_layers = GetGradientLayers(surfaces);
-        var (_, _, ymax, ymin) = SvgUtility.GetSurfaceSize(surfaces);
+        var (_, _, ymax, ymin) = surfaces.GetSurfaceSize();
         var r = 1f / font.FontHeader.UnitsPerEm * Point;
         var left = 0f;
         var baseline = top + (ymax * r);

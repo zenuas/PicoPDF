@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace Svg;
+namespace Svg.Extension;
 
-public static class SvgUtility
+public static class Enumerables
 {
-    public static IEnumerable<Surface> GetSurfaces(IEnumerable<IOutline> outlines)
+    public static IEnumerable<Surface> GetSurfaces(this IEnumerable<IOutline> outlines)
     {
         foreach (var outline in outlines)
         {
@@ -20,17 +20,17 @@ public static class SvgUtility
                     break;
 
                 case Layer layer:
-                    foreach (var x in GetSurfaces(layer.Surfaces)) yield return x;
+                    foreach (var x in layer.Surfaces.GetSurfaces()) yield return x;
                     break;
             }
         }
     }
 
-    public static (float Width, float Left, float YMax, float YMin) GetSurfaceSize(IEnumerable<Surface> surfaces) => GetEdgesSize(surfaces.Select(x => x.Edges).Flatten());
+    public static (float Width, float Left, float YMax, float YMin) GetSurfaceSize(this IEnumerable<Surface> surfaces) => surfaces.Select(x => x.Edges).Flatten().GetEdgesSize();
 
-    public static (float Width, float Left, float YMax, float YMin) GetEdgesSize(IEnumerable<IEdge> edges)
+    public static (float Width, float Left, float YMax, float YMin) GetEdgesSize(this IEnumerable<IEdge> edges)
     {
-        var points = GetPoints(edges);
+        var points = edges.GetPoints();
         if (points.IsEmpty()) return (0, 0, 0, 0);
 
         var first = points.First();
@@ -48,7 +48,7 @@ public static class SvgUtility
         return (xmax - xmin, xmin, ymax, ymin);
     }
 
-    public static IEnumerable<Vector2> GetPoints(IEnumerable<IEdge> edges)
+    public static IEnumerable<Vector2> GetPoints(this IEnumerable<IEdge> edges)
     {
         foreach (var edge in edges)
         {
