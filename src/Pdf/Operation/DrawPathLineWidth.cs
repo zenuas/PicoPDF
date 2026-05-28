@@ -11,6 +11,6 @@ public class DrawPathLineWidth : IPathOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"{LineWidth.ToPoint().ToPointString(option.PointFormat)} w\n");
+        writer.Write($"{LineWidth.ToPointString(option.PointFormat)} w\n");
     }
 }

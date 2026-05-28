@@ -21,7 +21,7 @@ public class RadialShading : PdfObject, IShading
         RelatedObjects.Add(Function.Cast<PdfObject>());
         _ = Elements.TryAdd("ShadingType", (int)ShadingType);
         _ = Elements.TryAdd("ColorSpace", ColorSpace);
-        _ = Elements.TryAdd("Coords", $"[{Coords.X0.ToPoint().ToPointString(option.PointFormat)} {Coords.Y0.ToPoint().ToPointString(option.PointFormat)} {Coords.R0.ToPoint().ToPointString(option.PointFormat)} {Coords.X1.ToPoint().ToPointString(option.PointFormat)} {Coords.Y1.ToPoint().ToPointString(option.PointFormat)} {Coords.R1.ToPoint().ToPointString(option.PointFormat)}]");
+        _ = Elements.TryAdd("Coords", $"[{Coords.X0.ToPointString(option.PointFormat)} {Coords.Y0.ToPointString(option.PointFormat)} {Coords.R0.ToPointString(option.PointFormat)} {Coords.X1.ToPointString(option.PointFormat)} {Coords.Y1.ToPointString(option.PointFormat)} {Coords.R1.ToPointString(option.PointFormat)}]");
         _ = Elements.TryAdd("Domain", $"[{Domain.T0.ToPointString(option.PointFormat)} {Domain.T1.ToPointString(option.PointFormat)}]");
         _ = Elements.TryAdd("Function", new ElementIndirectObject { References = Function.Cast<PdfObject>() });
         _ = Elements.TryAdd("Extend", $"[{Extend.B0.ToString().ToLower()} {Extend.B1.ToString().ToLower()}]");
