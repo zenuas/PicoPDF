@@ -24,21 +24,21 @@ public partial class Contents
     public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(string text, double basey, double left, double size, Type0Font font, Document document, IColor? color = null)
     {
         var opentype_font = font.EmbeddedFont ?? font.Font;
-        var r = 1f / opentype_font.FontHeader.UnitsPerEm * size;
+        var scale = 1f / opentype_font.FontHeader.UnitsPerEm * size;
         foreach (var c in text.ToUtf32CharArray())
         {
             var gid = opentype_font.CharToGID(c);
             var outlines = opentype_font.GIDToOutline(gid, true);
 
-            foreach (var x in CreateDrawPathOnBaselineOperation(outlines, c, r, basey, left, size, font, document, color))
+            foreach (var x in CreateDrawPathOnBaselineOperation(outlines, c, scale, basey, left, size, font, document, color))
             {
                 yield return x;
             }
-            left += opentype_font.GetAdvanceWidth(gid) * r;
+            left += opentype_font.GetAdvanceWidth(gid) * scale;
         }
     }
 
-    public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(IOutline[] outlines, int c, double r, double basey, double left, double size, Type0Font font, Document document, IColor? color)
+    public static IEnumerable<DrawPathOperations> CreateDrawPathOnBaselineOperation(IOutline[] outlines, int c, double scale, double basey, double left, double size, Type0Font font, Document document, IColor? color)
     {
         var opes = new List<IPathOperation>();
         foreach (var outline in outlines)
@@ -52,7 +52,7 @@ public partial class Contents
                 case Surface surface:
                     {
                         var start = surface.Edges.First().Start;
-                        opes.Add(new DrawMovePath { Start = (new PointValue(left + (start.X * r)), new PointValue(basey - (start.Y * r))) });
+                        opes.Add(new DrawMovePath { Start = (new PointValue(left + (start.X * scale)), new PointValue(basey - (start.Y * scale))) });
                         foreach (var edge in surface.Edges)
                         {
                             switch (edge)
@@ -60,7 +60,7 @@ public partial class Contents
                                 case Line line:
                                     opes.Add(new DrawLinePath
                                     {
-                                        End = (new PointValue(left + (line.End.X * r)), new PointValue(basey - (line.End.Y * r))),
+                                        End = (new PointValue(left + (line.End.X * scale)), new PointValue(basey - (line.End.Y * scale))),
                                     });
                                     break;
 
@@ -69,9 +69,9 @@ public partial class Contents
                                         var cp = bezier.ControlPoint[0];
                                         opes.Add(new DrawBezierCurvePath
                                         {
-                                            ControlPoint1 = (new PointValue(left + ((cp.X + cp.X + bezier.Start.X) / 3.0f * r)), new PointValue(basey - ((cp.Y + cp.Y + bezier.Start.Y) / 3.0f * r))),
-                                            ControlPoint2 = (new PointValue(left + ((cp.X + cp.X + bezier.End.X) / 3.0f * r)), new PointValue(basey - ((cp.Y + cp.Y + bezier.End.Y) / 3.0f * r))),
-                                            End = (new PointValue(left + (bezier.End.X * r)), new PointValue(basey - (bezier.End.Y * r))),
+                                            ControlPoint1 = (new PointValue(left + ((cp.X + cp.X + bezier.Start.X) / 3.0f * scale)), new PointValue(basey - ((cp.Y + cp.Y + bezier.Start.Y) / 3.0f * scale))),
+                                            ControlPoint2 = (new PointValue(left + ((cp.X + cp.X + bezier.End.X) / 3.0f * scale)), new PointValue(basey - ((cp.Y + cp.Y + bezier.End.Y) / 3.0f * scale))),
+                                            End = (new PointValue(left + (bezier.End.X * scale)), new PointValue(basey - (bezier.End.Y * scale))),
                                         });
                                         break;
                                     }
@@ -82,9 +82,9 @@ public partial class Contents
                                         var cp2 = bezier.ControlPoint[1];
                                         opes.Add(new DrawBezierCurvePath
                                         {
-                                            ControlPoint1 = (new PointValue(left + (cp1.X * r)), new PointValue(basey - (cp1.Y * r))),
-                                            ControlPoint2 = (new PointValue(left + (cp2.X * r)), new PointValue(basey - (cp2.Y * r))),
-                                            End = (new PointValue(left + (bezier.End.X * r)), new PointValue(basey - (bezier.End.Y * r))),
+                                            ControlPoint1 = (new PointValue(left + (cp1.X * scale)), new PointValue(basey - (cp1.Y * scale))),
+                                            ControlPoint2 = (new PointValue(left + (cp2.X * scale)), new PointValue(basey - (cp2.Y * scale))),
+                                            End = (new PointValue(left + (bezier.End.X * scale)), new PointValue(basey - (bezier.End.Y * scale))),
                                         });
                                         break;
                                     }
@@ -94,7 +94,7 @@ public partial class Contents
                     }
 
                 case Layer layer:
-                    foreach (var x in CreateDrawPathOnBaselineOperation(layer.Surfaces, c, r, basey, left, size, font, document, color))
+                    foreach (var x in CreateDrawPathOnBaselineOperation(layer.Surfaces, c, scale, basey, left, size, font, document, color))
                     {
                         yield return x;
                     }
@@ -117,7 +117,7 @@ public partial class Contents
                         {
                             Transform =
                                 linear.GradientTransform *
-                                Matrix3x2.CreateScale((float)r) *
+                                Matrix3x2.CreateScale((float)scale) *
                                 Matrix3x2.CreateScale(1, -1) *
                                 Matrix3x2.CreateTranslation((float)left, (float)basey),
                         });
@@ -150,7 +150,7 @@ public partial class Contents
                         {
                             Transform =
                                 radial.GradientTransform *
-                                Matrix3x2.CreateScale((float)r) *
+                                Matrix3x2.CreateScale((float)scale) *
                                 Matrix3x2.CreateScale(1, -1) *
                                 Matrix3x2.CreateTranslation((float)left, (float)basey),
                         });

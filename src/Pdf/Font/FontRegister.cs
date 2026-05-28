@@ -57,9 +57,9 @@ public class FontRegister : IFontRegister
             }
             name = GetFontFilePath(path);
         }
-        var r = Fonts[name];
-        var font = FontLoader.LoadComplete(r.Value);
-        r.Value = font;
+        var prop = Fonts[name];
+        var font = FontLoader.LoadComplete(prop.Value);
+        prop.Value = font;
         return font;
     }
 
@@ -83,11 +83,11 @@ public class FontRegister : IFontRegister
         var name = GetFontFilePath(font.Path);
         if (Fonts.ContainsKey(name)) return false;
 
-        var r = new PropertyGetSet<IOpenTypeHeader>() { Value = font };
-        Fonts.Add(name, r);
+        var prop = new PropertyGetSet<IOpenTypeHeader>() { Value = font };
+        Fonts.Add(name, prop);
         font.Name.NameRecords
             .Where(x => x.NameRecord.NameID == NameIDs.FullFontName)
-            .Each(x => Fonts.TryAdd(x.Name, r));
+            .Each(x => Fonts.TryAdd(x.Name, prop));
         return true;
     }
 

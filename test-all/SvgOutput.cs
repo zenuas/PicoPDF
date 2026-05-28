@@ -76,24 +76,24 @@ public class SvgOutput : FontRegisterCommand
         var surfaces = outliness.Flatten().GetSurfaces().ToArray();
         var gradient_layers = GetGradientLayers(surfaces);
         var (_, _, ymax, ymin) = surfaces.GetSurfaceSize();
-        var r = 1f / font.FontHeader.UnitsPerEm * Point;
+        var scale = 1f / font.FontHeader.UnitsPerEm * Point;
         var left = 0f;
-        var baseline = top + (ymax * r);
+        var baseline = top + (ymax * scale);
 
-        SvgExport.OutputDefs(writer, r, left, baseline, gradient_layers, unique_id, Debug, PointFormat);
+        SvgExport.OutputDefs(writer, scale, left, baseline, gradient_layers, unique_id, Debug, PointFormat);
         for (var i = 0; i < cids.Length; i++)
         {
             writer.WriteLine();
             writer.WriteLine($"    <!-- {char.ConvertFromUtf32(cids[i].Char)} -->");
-            SvgExport.OutputPath(writer, outliness[i], r, left, baseline, gradient_layers, unique_id, Stroke, Fill, JointPoint, PointFormat);
-            left += font.GetAdvanceWidth(cids[i].GID) * r;
+            SvgExport.OutputPath(writer, outliness[i], scale, left, baseline, gradient_layers, unique_id, Stroke, Fill, JointPoint, PointFormat);
+            left += font.GetAdvanceWidth(cids[i].GID) * scale;
         }
         if (Debug)
         {
             writer.WriteLine($"    <!-- baseline -->");
-            writer.WriteLine($"""    <line x1="0" y1="{baseline.ToPointString(PointFormat)}" x2="{(total_width * r).ToPointString(PointFormat)}" y2="{baseline.ToPointString(PointFormat)}" stroke="red" />""");
+            writer.WriteLine($"""    <line x1="0" y1="{baseline.ToPointString(PointFormat)}" x2="{(total_width * scale).ToPointString(PointFormat)}" y2="{baseline.ToPointString(PointFormat)}" stroke="red" />""");
         }
-        return (total_width * r, Math.Max(ascent - descent, ymax - ymin) * r);
+        return (total_width * scale, Math.Max(ascent - descent, ymax - ymin) * scale);
     }
 
     public static Dictionary<IColorLayer, int> GetGradientLayers(Surface[] surfaces)
