@@ -11,6 +11,6 @@ public class DrawMovePath : IPathOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"{Format.PointToString(Start, height, option.PointFormat)} m\n");
+        writer.Write($"{Start.PointToString(height, option.PointFormat)} m\n");
     }
 }

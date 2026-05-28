@@ -13,6 +13,6 @@ public class DrawBezierCurvePath : IPathOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"{Format.PointToString(ControlPoint1, height, option.PointFormat)} {Format.PointToString(ControlPoint2, height, option.PointFormat)} {Format.PointToString(End, height, option.PointFormat)} c\n");
+        writer.Write($"{ControlPoint1.PointToString(height, option.PointFormat)} {ControlPoint2.PointToString(height, option.PointFormat)} {End.PointToString(height, option.PointFormat)} c\n");
     }
 }
