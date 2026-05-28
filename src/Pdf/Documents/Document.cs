@@ -44,6 +44,7 @@ public class Document
         }
     };
     public PdfObject? Info { get; set; }
+    public PdfObject? Encrypt { get; set; }
     public required IFontRegister FontRegister { get; init; }
     public Func<string, FontEmbeds, Type0Font> GetFont { get; init; }
     public Func<ImageModel, IImageXObject> GetImage { get; init; }
@@ -267,6 +268,42 @@ public class Document
         if (mod_date is { }) Info.Elements.Add("ModDate", mod_date);
         if (trapped is { }) Info.Elements.Add("Trapped", trapped);
         return Info;
+    }
+
+    public PdfObject AddEncrypt(
+            CFM cfm,
+            UserAccessPermissions permissions
+        )
+    {
+        if (Encrypt is { }) _ = PdfObjects.Remove(Encrypt);
+        PdfObjects.Add(Encrypt = new());
+        Encrypt.Elements.Add("Filter", "/Standard");
+        switch (cfm)
+        {
+            case CFM.None:
+                Encrypt.Elements.Add("StdCF", $"<< /CFM /{cfm} >>");
+                break;
+
+            case CFM.AESV2:
+                Encrypt.Elements.Add("V", 4);
+                Encrypt.Elements.Add("StdCF", $"<< /CFM /{cfm} /AuthEvent /DocOpen /Length 128 >>");
+                Encrypt.Elements.Add("Length", 128);
+                Encrypt.Elements.Add("StmF", "/StdCF");
+                Encrypt.Elements.Add("StrF", "/StdCF");
+                break;
+
+            case CFM.AESV3:
+                Encrypt.Elements.Add("V", 5);
+                Encrypt.Elements.Add("StdCF", $"<< /CFM /{cfm} /AuthEvent /DocOpen >>");
+                Encrypt.Elements.Add("StmF", "/StdCF");
+                Encrypt.Elements.Add("StrF", "/StdCF");
+                break;
+
+            default:
+                throw new();
+        }
+        Encrypt.Elements.Add("P", (int)permissions);
+        return Encrypt;
     }
 
     public void Save(string path, PdfExportOption? option = null)
