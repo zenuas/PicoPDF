@@ -21,7 +21,7 @@ public class FormXObject : PdfObject, IXObject
 
         _ = Elements.TryAdd("Type", "/XObject");
         _ = Elements.TryAdd("Subtype", "/Form");
-        _ = Elements.TryAdd("BBox", $"[{BBox.Left.ToPointString(option.PointFormat)} {BBox.Bottom.ToPointString(option.PointFormat)} {BBox.Right.ToPointString(option.PointFormat)} {BBox.Top.ToPointString(option.PointFormat)}]");
+        _ = Elements.TryAdd("BBox", $"[{new[] { BBox.Left, BBox.Bottom, BBox.Right, BBox.Top }.ToPointString(option.PointFormat)}]");
 
         if (ResourcesShading.Length > 0)
         {

@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -21,6 +22,9 @@ public static class Format
     public static string ToPointString(this (IPoint X, IPoint Y) self, int height, string format) => ToPointString(self, (double)height, format);
     public static string ToPointString(this (IPoint X, IPoint Y) self, double height, string format) => $"{self.X.ToPointString(format)} {(height - self.Y.ToPoint()).ToPointString(format)}";
 
+    public static string ToPointString(this IEnumerable<IPoint> self, string format) => self.Select(x => x.ToPointString(format)).Join(" ");
+    public static string ToPointString(this IEnumerable<float> self, string format) => self.Select(x => x.ToPointString(format)).Join(" ");
+    public static string ToPointString(this IEnumerable<double> self, string format) => self.Select(x => x.ToPointString(format)).Join(" ");
     public static string ToPointString(this IPoint self, string format) => ToPointString(self.ToPoint(), format);
     public static string ToPointString(this float self, string format) => ToPointString((double)self, format);
     public static string ToPointString(this double self, string format) =>
