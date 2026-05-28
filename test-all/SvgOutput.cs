@@ -90,7 +90,7 @@ public class SvgOutput : FontRegisterCommand
         if (Debug)
         {
             writer.WriteLine($"    <!-- baseline -->");
-            writer.WriteLine($"""    <line x1="0" y1="{baseline.PointToString(PointFormat)}" x2="{(total_width * r).PointToString(PointFormat)}" y2="{baseline.PointToString(PointFormat)}" stroke="red" />""");
+            writer.WriteLine($"""    <line x1="0" y1="{baseline.ToPointString(PointFormat)}" x2="{(total_width * r).ToPointString(PointFormat)}" y2="{baseline.ToPointString(PointFormat)}" stroke="red" />""");
         }
         return (total_width * r, Math.Max(ascent - descent, ymax - ymin) * r);
     }

@@ -18,10 +18,10 @@ public static class Format
 
     public static DeviceRGB ToDeviceRGB(this Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
 
-    public static string PointToString(this (IPoint X, IPoint Y) point, int height, string format) => $"{PointToString(point.X.ToPoint(), format)} {PointToString(height - point.Y.ToPoint(), format)}";
+    public static string ToPointString(this (IPoint X, IPoint Y) point, int height, string format) => $"{ToPointString(point.X.ToPoint(), format)} {ToPointString(height - point.Y.ToPoint(), format)}";
 
-    public static string PointToString(this float point, string format) => PointToString((double)point, format);
-    public static string PointToString(this double point, string format) =>
+    public static string ToPointString(this float point, string format) => ToPointString((double)point, format);
+    public static string ToPointString(this double point, string format) =>
         format == "F%" ? point.ToString("F7", CultureInfo.InvariantCulture).TrimEnd('0').TrimEnd('.') :
             point <= long.MaxValue &&
             point >= long.MinValue &&

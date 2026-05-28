@@ -11,6 +11,6 @@ public class DrawLinePath : IPathOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"{End.PointToString(height, option.PointFormat)} l\n");
+        writer.Write($"{End.ToPointString(height, option.PointFormat)} l\n");
     }
 }

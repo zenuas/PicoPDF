@@ -18,8 +18,8 @@ public class DrawRectangle : IOperation
     {
         writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
-        writer.Write($"{LineWidth.ToPoint().PointToString(option.PointFormat)} w\n");
-        writer.Write($"{X.ToPoint().PointToString(option.PointFormat)} {(height - Y.ToPoint()).PointToString(option.PointFormat)} {Width.ToPoint().PointToString(option.PointFormat)} {(-Height.ToPoint()).PointToString(option.PointFormat)} re S\n");
+        writer.Write($"{LineWidth.ToPoint().ToPointString(option.PointFormat)} w\n");
+        writer.Write($"{X.ToPoint().ToPointString(option.PointFormat)} {(height - Y.ToPoint()).ToPointString(option.PointFormat)} {Width.ToPoint().ToPointString(option.PointFormat)} {(-Height.ToPoint()).ToPointString(option.PointFormat)} re S\n");
         writer.Write("Q\n");
     }
 }

@@ -20,8 +20,8 @@ public class DrawFillRectangle : IOperation
         writer.Write("q\n");
         if (LineColor is { } cf) writer.Write($"{cf.CreateColor(true)}\n");
         if (FillColor is { } cb) writer.Write($"{cb.CreateColor(false)}\n");
-        writer.Write($"{LineWidth.ToPoint().PointToString(option.PointFormat)} w\n");
-        writer.Write($"{X.ToPoint().PointToString(option.PointFormat)} {(height - Y.ToPoint()).PointToString(option.PointFormat)} {Width.ToPoint().PointToString(option.PointFormat)} {(-Height.ToPoint()).PointToString(option.PointFormat)} re B\n");
+        writer.Write($"{LineWidth.ToPoint().ToPointString(option.PointFormat)} w\n");
+        writer.Write($"{X.ToPoint().ToPointString(option.PointFormat)} {(height - Y.ToPoint()).ToPointString(option.PointFormat)} {Width.ToPoint().ToPointString(option.PointFormat)} {(-Height.ToPoint()).ToPointString(option.PointFormat)} re B\n");
         writer.Write("Q\n");
     }
 }

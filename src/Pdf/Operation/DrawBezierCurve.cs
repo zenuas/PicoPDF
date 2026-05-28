@@ -18,8 +18,8 @@ public class DrawBezierCurve : IOperation
     {
         writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
-        writer.Write($"{LineWidth.ToPoint().PointToString(option.PointFormat)} w\n");
-        writer.Write($"{Start.PointToString(height, option.PointFormat)} m {ControlPoint1.PointToString(height, option.PointFormat)} {ControlPoint2.PointToString(height, option.PointFormat)} {End.PointToString(height, option.PointFormat)} c S\n");
+        writer.Write($"{LineWidth.ToPoint().ToPointString(option.PointFormat)} w\n");
+        writer.Write($"{Start.ToPointString(height, option.PointFormat)} m {ControlPoint1.ToPointString(height, option.PointFormat)} {ControlPoint2.ToPointString(height, option.PointFormat)} {End.ToPointString(height, option.PointFormat)} c S\n");
         writer.Write("Q\n");
     }
 }
