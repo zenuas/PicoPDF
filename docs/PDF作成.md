@@ -4,11 +4,11 @@ PDFの仕様はAdobeが開発し、現在はISOで標準化されている。
 フォーマットの仕様はAdobeの仕様を参照すること。
 ここでは最低限のPDF作成方法について解説する。
 
-[https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf)
-[https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf)
+[https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf){:target="_blank"}
+[https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf){:target="_blank"}
 
-[https://pdfa.org/resource/iso-32000-1/](https://pdfa.org/resource/iso-32000-1/)
-[https://pdfa.org/resource/iso-32000-2/](https://pdfa.org/resource/iso-32000-2/)
+[https://pdfa.org/resource/iso-32000-1/](https://pdfa.org/resource/iso-32000-1/){:target="_blank"}
+[https://pdfa.org/resource/iso-32000-2/](https://pdfa.org/resource/iso-32000-2/){:target="_blank"}
 
 ## PicoPDFのバージョン
 
