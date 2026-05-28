@@ -21,7 +21,7 @@ public class DrawFillRectangle : IOperation
         if (LineColor is { } cf) writer.Write($"{cf.CreateColor(true)}\n");
         if (FillColor is { } cb) writer.Write($"{cb.CreateColor(false)}\n");
         writer.Write($"{LineWidth.ToPointString(option.PointFormat)} w\n");
-        writer.Write($"{X.ToPointString(option.PointFormat)} {(height - Y.ToPoint()).ToPointString(option.PointFormat)} {Width.ToPointString(option.PointFormat)} {(-Height.ToPoint()).ToPointString(option.PointFormat)} re B\n");
+        writer.Write($"{(X, Y).ToPointString(height, option.PointFormat)} {Width.ToPointString(option.PointFormat)} {(-Height.ToPoint()).ToPointString(option.PointFormat)} re B\n");
         writer.Write("Q\n");
     }
 }

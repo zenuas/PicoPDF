@@ -24,7 +24,7 @@ public class DrawString : IOperation
             writer.Write($"  {c.CreateColor(false)}\n");
         }
         writer.Write($"  /{Font.Name} {FontSize.ToPointString(option.PointFormat)} Tf\n");
-        writer.Write($"  {X.ToPointString(option.PointFormat)} {(height - Y.ToPoint()).ToPointString(option.PointFormat)} Td\n");
+        writer.Write($"  {(X, Y).ToPointString(height, option.PointFormat)} Td\n");
         writer.Write($"  {Font.CreateTextShowingOperator(Text)}");
         if (option.Debug) writer.Write($" % {Text.ReplaceLineEndings("")}");
         writer.Write("\n");
