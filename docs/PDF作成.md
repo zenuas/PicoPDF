@@ -7,6 +7,9 @@ PDFの仕様はAdobeが開発し、現在はISOで標準化されている。
 [https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf)
 [https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf)
 
+[https://pdfa.org/resource/iso-32000-1/](https://pdfa.org/resource/iso-32000-1/)
+[https://pdfa.org/resource/iso-32000-2/](https://pdfa.org/resource/iso-32000-2/)
+
 ## PicoPDFのバージョン
 
 PicoPDFではVersion 1.7を想定する。
