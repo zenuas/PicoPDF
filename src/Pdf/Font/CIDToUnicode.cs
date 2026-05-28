@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType;
+using PicoPDF.Pdf.Extension;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ public class CIDToUnicode : PdfObject
         var bfchar = Chars
             .Order()
             .Select(x => (Char: x, String: char.ConvertFromUtf32(x)))
-            .Select(x => $"        <{Font.CharToGID(x.Char):x4}> {PdfUtility.ToHexString(x.String, Encoding.BigEndianUnicode)}{(option.Debug ? $" %{x.String}" : "")}")
+            .Select(x => $"        <{Font.CharToGID(x.Char):x4}> {Format.ToHexString(x.String, Encoding.BigEndianUnicode)}{(option.Debug ? $" %{x.String}" : "")}")
             .Join("\n");
 
         var writer = GetWriteStream(option.CMapStreamDeflate);

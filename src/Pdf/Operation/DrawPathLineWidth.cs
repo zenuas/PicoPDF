@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.Extension;
 using System.IO;
 
 namespace PicoPDF.Pdf.Operation;
@@ -10,6 +11,6 @@ public class DrawPathLineWidth : IPathOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"{PdfUtility.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
+        writer.Write($"{Format.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
     }
 }

@@ -1,11 +1,15 @@
-﻿using Image;
+﻿using Binder;
+using Image;
 using Image.Png;
 using Mina.Extension;
 using Mina.Text;
 using OpenType;
+using PicoPDF.Loader;
 using PicoPDF.Loader.Sections;
+using PicoPDF.Model;
 using PicoPDF.Model.Elements;
 using PicoPDF.Pdf.Elements;
+using PicoPDF.Pdf.Extension;
 using PicoPDF.Pdf.ExtGState;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.Shading;
@@ -53,6 +57,18 @@ public class Document
 
         GetFont = CreateFontCache();
         GetImage = CreateImageCache();
+    }
+
+    public static Document CreateDocument<T>(string json, IEnumerable<T> datas, Dictionary<string, Func<T, object>>? mapper = null, PdfEventOption? option = null) => CreateDocument(json, (section) => SectionBinder.Bind<T, PageModel, SectionModel>(section, datas, mapper), option ?? new());
+    public static Document CreateDocument(string json, DataTable table, PdfEventOption? option = null) => CreateDocument(json, (section) => SectionBinder.Bind<PageModel, SectionModel>(section, table), option ?? new());
+    public static Document CreateDocument(string json, DataView view, PdfEventOption? option = null) => CreateDocument(json, (section) => SectionBinder.Bind<PageModel, SectionModel>(section, view), option ?? new());
+
+    public static Document CreateDocument(string json, Func<PageSection, PageModel[]> pages, PdfEventOption option)
+    {
+        var opt = option ?? new();
+        var document = new Document { FontRegister = opt.CreateFontRegister() };
+        ModelMapping.Mapping(document, pages(JsonLoader.CreatePageFromJsonFile(json, opt)), opt);
+        return document;
     }
 
     public Func<string, FontEmbeds, Type0Font> CreateFontCache()
@@ -241,12 +257,12 @@ public class Document
     {
         if (Info is { }) _ = PdfObjects.Remove(Info);
         PdfObjects.Add(Info = new());
-        if (title is { }) Info.Elements.Add("Title", PdfUtility.ToEscapeString(title, UTF16WithBOM.UTF16_BEWithBOM));
-        if (author is { }) Info.Elements.Add("Author", PdfUtility.ToEscapeString(author, UTF16WithBOM.UTF16_BEWithBOM));
-        if (subject is { }) Info.Elements.Add("Subject", PdfUtility.ToEscapeString(subject, UTF16WithBOM.UTF16_BEWithBOM));
-        if (keywords is { }) Info.Elements.Add("Keywords", PdfUtility.ToEscapeString(keywords, UTF16WithBOM.UTF16_BEWithBOM));
-        if (creator is { }) Info.Elements.Add("Creator", PdfUtility.ToEscapeString(creator, UTF16WithBOM.UTF16_BEWithBOM));
-        if (producer is { }) Info.Elements.Add("Producer", PdfUtility.ToEscapeString(producer, UTF16WithBOM.UTF16_BEWithBOM));
+        if (title is { }) Info.Elements.Add("Title", Format.ToEscapeString(title, UTF16WithBOM.UTF16_BEWithBOM));
+        if (author is { }) Info.Elements.Add("Author", Format.ToEscapeString(author, UTF16WithBOM.UTF16_BEWithBOM));
+        if (subject is { }) Info.Elements.Add("Subject", Format.ToEscapeString(subject, UTF16WithBOM.UTF16_BEWithBOM));
+        if (keywords is { }) Info.Elements.Add("Keywords", Format.ToEscapeString(keywords, UTF16WithBOM.UTF16_BEWithBOM));
+        if (creator is { }) Info.Elements.Add("Creator", Format.ToEscapeString(creator, UTF16WithBOM.UTF16_BEWithBOM));
+        if (producer is { }) Info.Elements.Add("Producer", Format.ToEscapeString(producer, UTF16WithBOM.UTF16_BEWithBOM));
         if (creation_date is { }) Info.Elements.Add("CreationDate", creation_date);
         if (mod_date is { }) Info.Elements.Add("ModDate", mod_date);
         if (trapped is { }) Info.Elements.Add("Trapped", trapped);

@@ -5,6 +5,7 @@ using PicoPDF.Model.Elements;
 using PicoPDF.Pdf;
 using PicoPDF.Pdf.Documents;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.Extension;
 using PicoPDF.Pdf.Operation;
 using System.Linq;
 

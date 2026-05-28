@@ -1,0 +1,29 @@
+﻿using Mina.Extension;
+using PicoPDF.Pdf.Drawing;
+using System;
+using System.Drawing;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+
+namespace PicoPDF.Pdf.Extension;
+
+public static class Format
+{
+    public static readonly char[][] EscapeChars = [['('], [')'], ['\\']];
+
+    public static string ToEscapeString(string s, Encoding encoding) => s.All(char.IsAscii) ? $"({s.ReplaceBeforeInsert(EscapeChars, ['\\']).ToStringByChars()})" : ToHexString(s, encoding);
+
+    public static string ToHexString(string s, Encoding encoding) => $"<{Convert.ToHexStringLower(encoding.GetBytes(s))}>";
+
+    public static DeviceRGB ToDeviceRGB(this Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
+
+
+    public static string PointToString((IPoint X, IPoint Y) point, int height, string format) => $"{PointToString(point.X.ToPoint(), format)} {PointToString(height - point.Y.ToPoint(), format)}";
+
+    public static string PointToString(double point, string format) =>
+        format == "F%" ? point.ToString("F7", CultureInfo.InvariantCulture).TrimEnd('0').TrimEnd('.') :
+            point <= long.MaxValue &&
+            point >= long.MinValue &&
+            point % 1d == 0d ? ((long)point).ToString() : point.ToString(format, CultureInfo.InvariantCulture);
+}

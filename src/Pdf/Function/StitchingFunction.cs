@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Elements;
+using PicoPDF.Pdf.Extension;
 using System.Linq;
 
 namespace PicoPDF.Pdf.Function;
@@ -16,9 +17,9 @@ public class StitchingFunction : PdfObject, IFunction
     {
         Functions.OfType<PdfObject>().Each(RelatedObjects.Add);
         _ = Elements.TryAdd("FunctionType", (int)FunctionType);
-        _ = Elements.TryAdd("Domain", $"[{Domain.Select(x => PdfUtility.PointToString(x, option.PointFormat)).Join(" ")}]");
+        _ = Elements.TryAdd("Domain", $"[{Domain.Select(x => Format.PointToString(x, option.PointFormat)).Join(" ")}]");
         _ = Elements.TryAdd("Functions", new ElementArray<ElementIndirectObject>(Functions.OfType<PdfObject>().Select(x => new ElementIndirectObject { References = x })));
-        _ = Elements.TryAdd("Bounds", $"[{Bounds.Select(x => PdfUtility.PointToString(x, option.PointFormat)).Join(" ")}]");
-        _ = Elements.TryAdd("Encode", $"[{Encode.Select(x => PdfUtility.PointToString(x, option.PointFormat)).Join(" ")}]");
+        _ = Elements.TryAdd("Bounds", $"[{Bounds.Select(x => Format.PointToString(x, option.PointFormat)).Join(" ")}]");
+        _ = Elements.TryAdd("Encode", $"[{Encode.Select(x => Format.PointToString(x, option.PointFormat)).Join(" ")}]");
     }
 }

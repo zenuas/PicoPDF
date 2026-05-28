@@ -2,6 +2,7 @@
 using OpenType;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf.Elements;
+using PicoPDF.Pdf.Extension;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -70,7 +71,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
                 .Order()
                 .Select(x => (Char: x, GID: font.CharToGID(x), Width: font.MeasureGID(font.CharToGID(x)) * 1000))
                 .Where(x => x.GID != 0 && (FontDictionary.DW is not { } dw || x.Width != dw))
-                .Select(x => new ElementString { Value = $"{x.GID}[{PdfUtility.PointToString(x.Width, option.PointFormat)}]{(option.Debug ? $" %{char.ConvertFromUtf32(x.Char)}" : "")}\n" })
+                .Select(x => new ElementString { Value = $"{x.GID}[{Format.PointToString(x.Width, option.PointFormat)}]{(option.Debug ? $" %{char.ConvertFromUtf32(x.Char)}" : "")}\n" })
             );
     }
 

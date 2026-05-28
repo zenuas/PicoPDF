@@ -1,7 +1,7 @@
 ﻿using Mina.Command;
 using Mina.Extension;
 using OpenType;
-using PicoPDF.Pdf;
+using PicoPDF.Pdf.Extension;
 using Svg;
 using Svg.Outline;
 using System;
@@ -90,7 +90,7 @@ public class SvgOutput : FontRegisterCommand
         if (Debug)
         {
             writer.WriteLine($"    <!-- baseline -->");
-            writer.WriteLine($"""    <line x1="0" y1="{PdfUtility.PointToString(baseline, PointFormat)}" x2="{PdfUtility.PointToString(total_width * r, PointFormat)}" y2="{PdfUtility.PointToString(baseline, PointFormat)}" stroke="red" />""");
+            writer.WriteLine($"""    <line x1="0" y1="{Format.PointToString(baseline, PointFormat)}" x2="{Format.PointToString(total_width * r, PointFormat)}" y2="{Format.PointToString(baseline, PointFormat)}" stroke="red" />""");
         }
         return (total_width * r, Math.Max(ascent - descent, ymax - ymin) * r);
     }

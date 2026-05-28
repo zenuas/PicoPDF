@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.Extension;
 using PicoPDF.Pdf.Font;
 using System.IO;
 
@@ -22,8 +23,8 @@ public class DrawString : IOperation
             writer.Write("  q\n");
             writer.Write($"  {c.CreateColor(false)}\n");
         }
-        writer.Write($"  /{Font.Name} {PdfUtility.PointToString(FontSize, option.PointFormat)} Tf\n");
-        writer.Write($"  {PdfUtility.PointToString(X.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(height - Y.ToPoint(), option.PointFormat)} Td\n");
+        writer.Write($"  /{Font.Name} {Format.PointToString(FontSize, option.PointFormat)} Tf\n");
+        writer.Write($"  {Format.PointToString(X.ToPoint(), option.PointFormat)} {Format.PointToString(height - Y.ToPoint(), option.PointFormat)} Td\n");
         writer.Write($"  {Font.CreateTextShowingOperator(Text)}");
         if (option.Debug) writer.Write($" % {Text.ReplaceLineEndings("")}");
         writer.Write("\n");

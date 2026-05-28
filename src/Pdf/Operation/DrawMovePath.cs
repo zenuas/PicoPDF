@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.Extension;
 using System.IO;
 
 namespace PicoPDF.Pdf.Operation;
@@ -10,6 +11,6 @@ public class DrawMovePath : IPathOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"{PdfUtility.PointToString(Start, height, option.PointFormat)} m\n");
+        writer.Write($"{Format.PointToString(Start, height, option.PointFormat)} m\n");
     }
 }

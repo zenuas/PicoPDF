@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.Extension;
 using System.IO;
 
 namespace PicoPDF.Pdf.Operation;
@@ -12,6 +13,6 @@ public class DrawBezierCurvePath : IPathOperation
 
     public void OperationWrite(int width, int height, Stream writer, PdfExportOption option)
     {
-        writer.Write($"{PdfUtility.PointToString(ControlPoint1, height, option.PointFormat)} {PdfUtility.PointToString(ControlPoint2, height, option.PointFormat)} {PdfUtility.PointToString(End, height, option.PointFormat)} c\n");
+        writer.Write($"{Format.PointToString(ControlPoint1, height, option.PointFormat)} {Format.PointToString(ControlPoint2, height, option.PointFormat)} {Format.PointToString(End, height, option.PointFormat)} c\n");
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.Extension;
 using System.IO;
 
 namespace PicoPDF.Pdf.Operation;
@@ -17,8 +18,8 @@ public class DrawRectangle : IOperation
     {
         writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
-        writer.Write($"{PdfUtility.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
-        writer.Write($"{PdfUtility.PointToString(X.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(height - Y.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(Width.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(-Height.ToPoint(), option.PointFormat)} re S\n");
+        writer.Write($"{Format.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
+        writer.Write($"{Format.PointToString(X.ToPoint(), option.PointFormat)} {Format.PointToString(height - Y.ToPoint(), option.PointFormat)} {Format.PointToString(Width.ToPoint(), option.PointFormat)} {Format.PointToString(-Height.ToPoint(), option.PointFormat)} re S\n");
         writer.Write("Q\n");
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.Extension;
 using PicoPDF.Pdf.XObject.Image;
 using System.IO;
 
@@ -19,7 +20,7 @@ public class DrawImage : IOperation
         var imageheight = Image.Height * ZoomHeight;
 
         writer.Write("q\n");
-        writer.Write($"{PdfUtility.PointToString(imagewidth, option.PointFormat)} 0 0 {PdfUtility.PointToString(imageheight, option.PointFormat)} {PdfUtility.PointToString(X.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(height - imageheight - Y.ToPoint(), option.PointFormat)} cm\n");
+        writer.Write($"{Format.PointToString(imagewidth, option.PointFormat)} 0 0 {Format.PointToString(imageheight, option.PointFormat)} {Format.PointToString(X.ToPoint(), option.PointFormat)} {Format.PointToString(height - imageheight - Y.ToPoint(), option.PointFormat)} cm\n");
         writer.Write($"/{Image.Name} Do\n");
         writer.Write("Q\n");
     }

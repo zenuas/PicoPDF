@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using PicoPDF.Pdf.Extension;
 using System.Linq;
 
 namespace PicoPDF.Pdf.Function;
@@ -14,9 +15,9 @@ public class ExponentialInterpolationFunction : PdfObject, IFunction
     public override void DoExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("FunctionType", (int)FunctionType);
-        _ = Elements.TryAdd("Domain", $"[{Domain.Select(x => PdfUtility.PointToString(x, option.PointFormat)).Join(" ")}]");
-        _ = Elements.TryAdd("C0", $"[{C0.Select(x => PdfUtility.PointToString(x, option.PointFormat)).Join(" ")}]");
-        _ = Elements.TryAdd("C1", $"[{C1.Select(x => PdfUtility.PointToString(x, option.PointFormat)).Join(" ")}]");
+        _ = Elements.TryAdd("Domain", $"[{Domain.Select(x => Format.PointToString(x, option.PointFormat)).Join(" ")}]");
+        _ = Elements.TryAdd("C0", $"[{C0.Select(x => Format.PointToString(x, option.PointFormat)).Join(" ")}]");
+        _ = Elements.TryAdd("C1", $"[{C1.Select(x => Format.PointToString(x, option.PointFormat)).Join(" ")}]");
         _ = Elements.TryAdd("N", N);
     }
 }

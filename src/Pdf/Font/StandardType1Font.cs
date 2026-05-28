@@ -1,5 +1,6 @@
 ﻿
 using Mina.Extension;
+using PicoPDF.Pdf.Extension;
 using System.Text;
 
 namespace PicoPDF.Pdf.Font;
@@ -16,5 +17,5 @@ public class StandardType1Font : PdfObject, IFont
         _ = Elements.TryAdd("BaseFont", $"/{Font.GetAttributeOrDefault<FontNameAttribute>()!.Name}");
     }
 
-    public string CreateTextShowingOperator(string s) => $"{PdfUtility.ToEscapeString(s, Encoding.ASCII)} Tj";
+    public string CreateTextShowingOperator(string s) => $"{Format.ToEscapeString(s, Encoding.ASCII)} Tj";
 }

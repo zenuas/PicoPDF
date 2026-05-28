@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.Extension;
 using System.IO;
 using System.Linq;
 
@@ -15,8 +16,8 @@ public class DrawLine : IOperation
     {
         writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
-        writer.Write($"{PdfUtility.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
-        writer.Write($"{PdfUtility.PointToString(Points.First(), height, option.PointFormat)} m {Points.Skip(1).Select(x => PdfUtility.PointToString(x, height, option.PointFormat)).Join(" l ")} l S\n");
+        writer.Write($"{Format.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
+        writer.Write($"{Format.PointToString(Points.First(), height, option.PointFormat)} m {Points.Skip(1).Select(x => Format.PointToString(x, height, option.PointFormat)).Join(" l ")} l S\n");
         writer.Write("Q\n");
     }
 }

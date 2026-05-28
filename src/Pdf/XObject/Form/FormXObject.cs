@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Elements;
+using PicoPDF.Pdf.Extension;
 using PicoPDF.Pdf.Shading;
 using PicoPDF.Pdf.XObject.Group;
 using System.Linq;
@@ -20,7 +21,7 @@ public class FormXObject : PdfObject, IXObject
 
         _ = Elements.TryAdd("Type", "/XObject");
         _ = Elements.TryAdd("Subtype", "/Form");
-        _ = Elements.TryAdd("BBox", $"[{PdfUtility.PointToString(BBox.Left.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(BBox.Bottom.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(BBox.Right.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(BBox.Top.ToPoint(), option.PointFormat)}]");
+        _ = Elements.TryAdd("BBox", $"[{Format.PointToString(BBox.Left.ToPoint(), option.PointFormat)} {Format.PointToString(BBox.Bottom.ToPoint(), option.PointFormat)} {Format.PointToString(BBox.Right.ToPoint(), option.PointFormat)} {Format.PointToString(BBox.Top.ToPoint(), option.PointFormat)}]");
 
         if (ResourcesShading.Length > 0)
         {

@@ -1,4 +1,6 @@
-﻿namespace PicoPDF.Pdf.Font;
+﻿using PicoPDF.Pdf.Extension;
+
+namespace PicoPDF.Pdf.Font;
 
 public class Type1Font : PdfObject, IFont
 {
@@ -23,5 +25,5 @@ public class Type1Font : PdfObject, IFont
         _ = Elements.TryAdd("Widths", Widths);
     }
 
-    public string CreateTextShowingOperator(string s) => $"{PdfUtility.ToEscapeString(s, System.Text.Encoding.ASCII)} Tj";
+    public string CreateTextShowingOperator(string s) => $"{Format.ToEscapeString(s, System.Text.Encoding.ASCII)} Tj";
 }

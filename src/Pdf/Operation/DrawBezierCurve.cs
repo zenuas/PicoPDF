@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.Extension;
 using System.IO;
 
 namespace PicoPDF.Pdf.Operation;
@@ -17,8 +18,8 @@ public class DrawBezierCurve : IOperation
     {
         writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
-        writer.Write($"{LineWidth.ToPoint()} w\n");
-        writer.Write($"{PdfUtility.PointToString(Start, height, option.PointFormat)} m {PdfUtility.PointToString(ControlPoint1, height, option.PointFormat)} {PdfUtility.PointToString(ControlPoint2, height, option.PointFormat)} {PdfUtility.PointToString(End, height, option.PointFormat)} c S\n");
+        writer.Write($"{Format.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
+        writer.Write($"{Format.PointToString(Start, height, option.PointFormat)} m {Format.PointToString(ControlPoint1, height, option.PointFormat)} {Format.PointToString(ControlPoint2, height, option.PointFormat)} {Format.PointToString(End, height, option.PointFormat)} c S\n");
         writer.Write("Q\n");
     }
 }

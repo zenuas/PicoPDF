@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using PicoPDF.Pdf.Drawing;
 using PicoPDF.Pdf.Elements;
+using PicoPDF.Pdf.Extension;
 using PicoPDF.Pdf.Function;
 
 namespace PicoPDF.Pdf.Shading;
@@ -20,8 +21,8 @@ public class AxialShading : PdfObject, IShading
         RelatedObjects.Add(Function.Cast<PdfObject>());
         _ = Elements.TryAdd("ShadingType", (int)ShadingType);
         _ = Elements.TryAdd("ColorSpace", ColorSpace);
-        _ = Elements.TryAdd("Coords", $"[{PdfUtility.PointToString(Coords.X0.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(Coords.Y0.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(Coords.X1.ToPoint(), option.PointFormat)} {PdfUtility.PointToString(Coords.Y1.ToPoint(), option.PointFormat)}]");
-        _ = Elements.TryAdd("Domain", $"[{PdfUtility.PointToString(Domain.T0, option.PointFormat)} {PdfUtility.PointToString(Domain.T1, option.PointFormat)}]");
+        _ = Elements.TryAdd("Coords", $"[{Format.PointToString(Coords.X0.ToPoint(), option.PointFormat)} {Format.PointToString(Coords.Y0.ToPoint(), option.PointFormat)} {Format.PointToString(Coords.X1.ToPoint(), option.PointFormat)} {Format.PointToString(Coords.Y1.ToPoint(), option.PointFormat)}]");
+        _ = Elements.TryAdd("Domain", $"[{Format.PointToString(Domain.T0, option.PointFormat)} {Format.PointToString(Domain.T1, option.PointFormat)}]");
         _ = Elements.TryAdd("Function", new ElementIndirectObject { References = Function.Cast<PdfObject>() });
         _ = Elements.TryAdd("Extend", $"[{Extend.B0.ToString().ToLower()} {Extend.B1.ToString().ToLower()}]");
     }

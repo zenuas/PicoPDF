@@ -1,6 +1,6 @@
 ﻿using Mina.Extension;
-using OpenType;
 using PicoPDF.Pdf.Drawing;
+using PicoPDF.Pdf.Extension;
 using PicoPDF.Pdf.ExtGState;
 using PicoPDF.Pdf.Font;
 using PicoPDF.Pdf.Function;
@@ -174,7 +174,7 @@ public partial class Contents
                     }
 
                 case SolidColorLayer solid_color:
-                    opes.Add(new DrawAnyOperator { Operator = PdfUtility.ToDeviceRGB(solid_color.Color).CreateColor(false) });
+                    opes.Add(new DrawAnyOperator { Operator = Format.ToDeviceRGB(solid_color.Color).CreateColor(false) });
                     opes.Add(new DrawAnyOperator { Operator = "f*" });
                     break;
 
