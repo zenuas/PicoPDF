@@ -45,6 +45,15 @@ public static class PdfExport
         {
             stream.Write("xref\n");
             stream.Write($"0 {xref.Count + 1}\n");
+            // Each entry is exactly 20 bytes long, including the end-of-line marker.
+            //   nnnnnnnnnn ggggg n eol
+            //   nnnnnnnnnn ggggg f eol
+            // where
+            //   nnnnnnnnnn is a 10-digit byte offset
+            //   ggggg is a 5-digit generation number
+            //   n is a literal keyword identifying this as an in-use entry
+            //   f is a literal keyword identifying this as a free entry
+            //   eol is a 2-character end-of-line sequence
             stream.Write("0000000000 65535 f\r\n");
             xref.Each(x => stream.Write($"{x:0000000000} 00000 n\r\n"));
             stream.Write("\n");
