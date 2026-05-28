@@ -124,7 +124,7 @@ public class CIDFont : PdfObject, IFont
         _ = Elements.TryAdd("DescendantFonts", new ElementArray<ElementIndirectObject>(FontDictionary));
     }
 
-    public string CreateTextShowingOperator(string s) => $"[{SplitWidth(s, Widths).Select(x => $"{Format.ToHexString(x.Text, TextEncoding)}{x.Width}").Join(" ")}] TJ";
+    public string CreateTextShowingOperator(string s) => $"[{SplitWidth(s, Widths).Select(x => $"{x.Text.ToHexString(TextEncoding)}{x.Width}").Join(" ")}] TJ";
 
     public static IEnumerable<(string Text, int Width)> SplitWidth(string text, IReadOnlyDictionary<char, int> widths)
     {

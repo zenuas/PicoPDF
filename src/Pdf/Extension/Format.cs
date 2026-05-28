@@ -12,9 +12,9 @@ public static class Format
 {
     public static readonly char[][] EscapeChars = [['('], [')'], ['\\']];
 
-    public static string ToEscapeString(this string s, Encoding encoding) => s.All(char.IsAscii) ? $"({s.ReplaceBeforeInsert(EscapeChars, ['\\']).ToStringByChars()})" : ToHexString(s, encoding);
+    public static string ToEscapeString(this string s, Encoding encoding) => s.All(char.IsAscii) ? $"({s.ReplaceBeforeInsert(EscapeChars, ['\\']).ToStringByChars()})" : s.ToHexString(encoding);
 
-    public static string ToHexString(string s, Encoding encoding) => $"<{Convert.ToHexStringLower(encoding.GetBytes(s))}>";
+    public static string ToHexString(this string s, Encoding encoding) => $"<{Convert.ToHexStringLower(encoding.GetBytes(s))}>";
 
     public static DeviceRGB ToDeviceRGB(this Color color) => new((double)color.R / 255, (double)color.G / 255, (double)color.B / 255);
 
