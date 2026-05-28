@@ -174,7 +174,7 @@ public partial class Contents
                     }
 
                 case SolidColorLayer solid_color:
-                    opes.Add(new DrawAnyOperator { Operator = Format.ToDeviceRGB(solid_color.Color).CreateColor(false) });
+                    opes.Add(new DrawAnyOperator { Operator = solid_color.Color.ToDeviceRGB().CreateColor(false) });
                     opes.Add(new DrawAnyOperator { Operator = "f*" });
                     break;
 
