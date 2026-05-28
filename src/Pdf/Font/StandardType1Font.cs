@@ -17,5 +17,5 @@ public class StandardType1Font : PdfObject, IFont
         _ = Elements.TryAdd("BaseFont", $"/{Font.GetAttributeOrDefault<FontNameAttribute>()!.Name}");
     }
 
-    public string CreateTextShowingOperator(string s) => $"{Format.ToEscapeString(s, Encoding.ASCII)} Tj";
+    public string CreateTextShowingOperator(string s) => $"{s.ToEscapeString(Encoding.ASCII)} Tj";
 }

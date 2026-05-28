@@ -25,5 +25,5 @@ public class Type1Font : PdfObject, IFont
         _ = Elements.TryAdd("Widths", Widths);
     }
 
-    public string CreateTextShowingOperator(string s) => $"{Format.ToEscapeString(s, System.Text.Encoding.ASCII)} Tj";
+    public string CreateTextShowingOperator(string s) => $"{s.ToEscapeString(System.Text.Encoding.ASCII)} Tj";
 }

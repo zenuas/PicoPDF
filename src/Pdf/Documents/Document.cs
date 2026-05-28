@@ -257,12 +257,12 @@ public class Document
     {
         if (Info is { }) _ = PdfObjects.Remove(Info);
         PdfObjects.Add(Info = new());
-        if (title is { }) Info.Elements.Add("Title", Format.ToEscapeString(title, UTF16WithBOM.UTF16_BEWithBOM));
-        if (author is { }) Info.Elements.Add("Author", Format.ToEscapeString(author, UTF16WithBOM.UTF16_BEWithBOM));
-        if (subject is { }) Info.Elements.Add("Subject", Format.ToEscapeString(subject, UTF16WithBOM.UTF16_BEWithBOM));
-        if (keywords is { }) Info.Elements.Add("Keywords", Format.ToEscapeString(keywords, UTF16WithBOM.UTF16_BEWithBOM));
-        if (creator is { }) Info.Elements.Add("Creator", Format.ToEscapeString(creator, UTF16WithBOM.UTF16_BEWithBOM));
-        if (producer is { }) Info.Elements.Add("Producer", Format.ToEscapeString(producer, UTF16WithBOM.UTF16_BEWithBOM));
+        if (title is { }) Info.Elements.Add("Title", title.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
+        if (author is { }) Info.Elements.Add("Author", author.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
+        if (subject is { }) Info.Elements.Add("Subject", subject.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
+        if (keywords is { }) Info.Elements.Add("Keywords", keywords.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
+        if (creator is { }) Info.Elements.Add("Creator", creator.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
+        if (producer is { }) Info.Elements.Add("Producer", producer.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
         if (creation_date is { }) Info.Elements.Add("CreationDate", creation_date);
         if (mod_date is { }) Info.Elements.Add("ModDate", mod_date);
         if (trapped is { }) Info.Elements.Add("Trapped", trapped);
