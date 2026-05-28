@@ -19,8 +19,8 @@ public class GraphicsStateParameter : PdfObject, IGraphicsStateParameter
 
         _ = Elements.TryAdd("Type", "/ExtGState");
         if (SMask is { } smask) _ = Elements.TryAdd("SMask", new ElementIndirectObject { References = smask });
-        if (CA is { } ca1) _ = Elements.TryAdd("CA", Format.PointToString((double)ca1, option.PointFormat));
-        if (Ca is { } ca2) _ = Elements.TryAdd("ca", Format.PointToString((double)ca2, option.PointFormat));
+        if (CA is { } ca1) _ = Elements.TryAdd("CA", ca1.PointToString(option.PointFormat));
+        if (Ca is { } ca2) _ = Elements.TryAdd("ca", ca2.PointToString(option.PointFormat));
         if (AIS is { } ais) _ = Elements.TryAdd("AIS", ais.ToString().ToLower());
     }
 }

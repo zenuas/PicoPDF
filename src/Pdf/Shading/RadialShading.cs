@@ -21,8 +21,8 @@ public class RadialShading : PdfObject, IShading
         RelatedObjects.Add(Function.Cast<PdfObject>());
         _ = Elements.TryAdd("ShadingType", (int)ShadingType);
         _ = Elements.TryAdd("ColorSpace", ColorSpace);
-        _ = Elements.TryAdd("Coords", $"[{Format.PointToString(Coords.X0.ToPoint(), option.PointFormat)} {Format.PointToString(Coords.Y0.ToPoint(), option.PointFormat)} {Format.PointToString(Coords.R0.ToPoint(), option.PointFormat)} {Format.PointToString(Coords.X1.ToPoint(), option.PointFormat)} {Format.PointToString(Coords.Y1.ToPoint(), option.PointFormat)} {Format.PointToString(Coords.R1.ToPoint(), option.PointFormat)}]");
-        _ = Elements.TryAdd("Domain", $"[{Format.PointToString(Domain.T0, option.PointFormat)} {Format.PointToString(Domain.T1, option.PointFormat)}]");
+        _ = Elements.TryAdd("Coords", $"[{Coords.X0.ToPoint().PointToString(option.PointFormat)} {Coords.Y0.ToPoint().PointToString(option.PointFormat)} {Coords.R0.ToPoint().PointToString(option.PointFormat)} {Coords.X1.ToPoint().PointToString(option.PointFormat)} {Coords.Y1.ToPoint().PointToString(option.PointFormat)} {Coords.R1.ToPoint().PointToString(option.PointFormat)}]");
+        _ = Elements.TryAdd("Domain", $"[{Domain.T0.PointToString(option.PointFormat)} {Domain.T1.PointToString(option.PointFormat)}]");
         _ = Elements.TryAdd("Function", new ElementIndirectObject { References = Function.Cast<PdfObject>() });
         _ = Elements.TryAdd("Extend", $"[{Extend.B0.ToString().ToLower()} {Extend.B1.ToString().ToLower()}]");
     }

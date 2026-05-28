@@ -16,7 +16,7 @@ public class DrawLine : IOperation
     {
         writer.Write("q\n");
         if (Color is { } c) writer.Write($"{c.CreateColor(true)}\n");
-        writer.Write($"{Format.PointToString(LineWidth.ToPoint(), option.PointFormat)} w\n");
+        writer.Write($"{LineWidth.ToPoint().PointToString(option.PointFormat)} w\n");
         writer.Write($"{Points.First().PointToString(height, option.PointFormat)} m {Points.Skip(1).Select(x => x.PointToString(height, option.PointFormat)).Join(" l ")} l S\n");
         writer.Write("Q\n");
     }

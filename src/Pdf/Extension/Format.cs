@@ -20,7 +20,8 @@ public static class Format
 
     public static string PointToString(this (IPoint X, IPoint Y) point, int height, string format) => $"{PointToString(point.X.ToPoint(), format)} {PointToString(height - point.Y.ToPoint(), format)}";
 
-    public static string PointToString(double point, string format) =>
+    public static string PointToString(this float point, string format) => PointToString((double)point, format);
+    public static string PointToString(this double point, string format) =>
         format == "F%" ? point.ToString("F7", CultureInfo.InvariantCulture).TrimEnd('0').TrimEnd('.') :
             point <= long.MaxValue &&
             point >= long.MinValue &&
