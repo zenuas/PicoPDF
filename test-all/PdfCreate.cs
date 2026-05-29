@@ -141,7 +141,7 @@ public class PdfCreate : FontRegisterCommand
                 var document = Document.CreateDocument(json, table, event_opt);
                 if (IsInfoAdd)
                 {
-                    _ = document.AddInfo(
+                    document.AddInfo(
                         title: fname,
                         producer: "PicoPDF",
                         creation_date: DateTime.Now,

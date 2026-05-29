@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PicoPDF.Pdf.Documents;
+namespace PicoPDF.Pdf.Documents.Security;
 
 [Flags]
 public enum UserAccessPermissions

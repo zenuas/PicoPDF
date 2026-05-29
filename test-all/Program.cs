@@ -5,6 +5,7 @@ var (command, xargs) = CommandLine.Run<ICommand>([
         ("", typeof(PdfCreate)),
         ("create", typeof(PdfCreate)),
         ("manual", typeof(ManualCreate)),
+        ("encrypt", typeof(EncryptCreate)),
         ("manual-args", typeof(ManualArgsCreate)),
         ("deflate", typeof(Deflate)),
         ("cmap", typeof(CMapList)),
