@@ -86,19 +86,19 @@ public class ArcfourTest
     [Fact]
     public void EncryptDecrypt()
     {
-        var init_key_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
+        var init_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
         var decrypted_data = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05 };
         var encrypted_data = new byte[] { 0xb3, 0x3b, 0x60, 0x01, 0xf5 };
 
         var data = decrypted_data.ToArray();
-        var (x1, y1) = Arcfour.Encrypt([.. init_key_state], data);
+        var (x1, y1) = Arcfour.Encrypt([.. init_state], data);
 
         Assert.Equal(x1, 5);
         Assert.Equal(y1, 62);
         Assert.Equal(data, encrypted_data);
         Assert.NotEqual(data, decrypted_data);
 
-        var (x2, y2) = Arcfour.Encrypt([.. init_key_state], data);
+        var (x2, y2) = Arcfour.Encrypt([.. init_state], data);
         Assert.Equal(x2, 5);
         Assert.Equal(y2, 62);
         Assert.Equal(data, decrypted_data);
@@ -108,10 +108,10 @@ public class ArcfourTest
     [Fact]
     public void EncryptOverride()
     {
-        var init_key_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
+        var init_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
 
         var data = new byte[] { 0xff, 0x01, 0x02, 0x03, 0x04, 0x05 };
-        var (x, y) = Arcfour.Encrypt([.. init_key_state], data.AsSpan(1, 5));
+        var (x, y) = Arcfour.Encrypt([.. init_state], data.AsSpan(1, 5));
 
         Assert.Equal(x, 5);
         Assert.Equal(y, 62);
@@ -121,12 +121,12 @@ public class ArcfourTest
     [Fact]
     public void EncryptNoneOverride()
     {
-        var init_key_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
+        var init_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
         var decrypted_data = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05 };
         var encrypted_data = new byte[] { 0xb3, 0x3b, 0x60, 0x01, 0xf5 };
 
         var data = new byte[5];
-        var (x, y) = Arcfour.Encrypt([.. init_key_state], decrypted_data, data);
+        var (x, y) = Arcfour.Encrypt([.. init_state], decrypted_data, data);
 
         Assert.Equal(x, 5);
         Assert.Equal(y, 62);
@@ -137,18 +137,18 @@ public class ArcfourTest
     [Fact]
     public void EncryptSpanStream()
     {
-        var init_key_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
+        var init_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
 
-        var key_state = init_key_state.ToArray();
+        var state = init_state.ToArray();
         var data = new byte[] { 0xff, 0x01, 0x02, 0x03, 0x04, 0x05 };
         var outdata = new byte[8];
-        var (x1, y1) = Arcfour.Encrypt(key_state, data.AsSpan(1, 2), outdata.AsSpan(2));
+        var (x1, y1) = Arcfour.Encrypt(state, data.AsSpan(1, 2), outdata.AsSpan(2));
 
         Assert.Equal(x1, 2);
         Assert.Equal(y1, 11);
         Assert.Equal(outdata, new byte[] { 0x00, 0x00, 0xb3, 0x3b, 0x00, 0x00, 0x00, 0x00 });
 
-        var (x2, y2) = Arcfour.Encrypt(key_state, data.AsSpan(3, 3), outdata.AsSpan(4), x1, y1);
+        var (x2, y2) = Arcfour.Encrypt(state, data.AsSpan(3, 3), outdata.AsSpan(4), x1, y1);
 
         Assert.Equal(x2, 5);
         Assert.Equal(y2, 62);
