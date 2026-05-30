@@ -1,4 +1,5 @@
 ﻿using PicoPDF.Pdf.Documents.Security;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -45,7 +46,7 @@ public class ArcfourTest
                 0xfb, 0xe2, 0xcc, 0xc5, 0xc1, 0x09, 0xba, 0x58,
             });
 
-        Assert.Equal(Arcfour.InitializeKey([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06], 1, 5),
+        Assert.Equal(Arcfour.InitializeKey(new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 }.AsSpan(1, 5)),
             new byte[] {
                 0x01, 0x03, 0x08, 0xc9, 0x15, 0x1b, 0x23, 0x43,
                 0xf2, 0x91, 0xcf, 0x59, 0x5c, 0x6d, 0x1f, 0x90,
@@ -103,13 +104,14 @@ public class ArcfourTest
         Assert.Equal(data, decrypted_data);
         Assert.NotEqual(data, encrypted_data);
     }
+
     [Fact]
     public void EncryptOverride()
     {
         var init_key_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
 
         var data = new byte[] { 0xff, 0x01, 0x02, 0x03, 0x04, 0x05 };
-        var (x, y) = Arcfour.Encrypt([.. init_key_state], data, 1, 5, 0, 0);
+        var (x, y) = Arcfour.Encrypt([.. init_key_state], data.AsSpan(1, 5));
 
         Assert.Equal(x, 5);
         Assert.Equal(y, 62);
@@ -133,35 +135,20 @@ public class ArcfourTest
     }
 
     [Fact]
-    public void EncryptOffsetLength()
-    {
-        var init_key_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
-
-        var key_state5 = init_key_state.ToArray();
-        var data = new byte[] { 0xff, 0x01, 0x02, 0x03, 0x04, 0x05, 0xff };
-        var outdata = new byte[5];
-        var (x, y) = Arcfour.Encrypt(key_state5, data, 1, 5, outdata);
-
-        Assert.Equal(x, 5);
-        Assert.Equal(y, 62);
-        Assert.Equal(outdata, new byte[] { 0xb3, 0x3b, 0x60, 0x01, 0xf5 });
-    }
-
-    [Fact]
-    public void EncryptStream()
+    public void EncryptSpanStream()
     {
         var init_key_state = Arcfour.InitializeKey([0x01, 0x02, 0x03, 0x04, 0x05]);
 
         var key_state = init_key_state.ToArray();
         var data = new byte[] { 0xff, 0x01, 0x02, 0x03, 0x04, 0x05 };
         var outdata = new byte[8];
-        var (x1, y1) = Arcfour.Encrypt(key_state, data, 1, 2, outdata, 2);
+        var (x1, y1) = Arcfour.Encrypt(key_state, data.AsSpan(1, 2), outdata.AsSpan(2));
 
         Assert.Equal(x1, 2);
         Assert.Equal(y1, 11);
         Assert.Equal(outdata, new byte[] { 0x00, 0x00, 0xb3, 0x3b, 0x00, 0x00, 0x00, 0x00 });
 
-        var (x2, y2) = Arcfour.Encrypt(key_state, data, 3, 3, outdata, 4, x1, y1);
+        var (x2, y2) = Arcfour.Encrypt(key_state, data.AsSpan(3, 3), outdata.AsSpan(4), x1, y1);
 
         Assert.Equal(x2, 5);
         Assert.Equal(y2, 62);
