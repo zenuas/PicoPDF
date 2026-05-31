@@ -7,14 +7,13 @@ public static class Arcfour
     public static byte[] InitializeKey(Span<byte> key)
     {
         var state = new byte[256];
-        for (var i = 0; i < 256; i++) state[i] = (byte)i;
+        for (var i = 0; i < state.Length; i++) state[i] = (byte)i;
 
-        for (int i = 0, prev = 0; i < 256; i++)
+        for (int i = 0, prev = 0; i < state.Length; i++)
         {
             prev = (key[i % key.Length] + state[i] + prev) & 0xFF;
             (state[i], state[prev]) = (state[prev], state[i]);
         }
-
         return state;
     }
 
