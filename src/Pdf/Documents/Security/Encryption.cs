@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers.Binary;
 using System.Linq;
 using System.Security.Cryptography;
 
@@ -12,23 +11,19 @@ public static class Encryption
         0x2E, 0x2E, 0x00, 0xB6, 0xD0, 0x68, 0x3E, 0x80, 0x2F, 0x0C, 0xA9, 0xFE, 0x64, 0x53, 0x69, 0x7A,
     ];
 
-    public static byte[] CreatePassword_Revision4(byte[] password, byte[] owner, int permissions, byte[] file_id, int size)
+    public static byte[] ComputeOwnerPassword_Revision3(byte[] user_password, byte[] owner_password, int size)
     {
-        Span<byte> permissions_buffer = stackalloc byte[4];
-        BinaryPrimitives.WriteInt32LittleEndian(permissions_buffer, permissions);
+        var hash = MD5.HashData([.. owner_password.Concat(PasswordPadding_Revision4).Take(32)]);
+        for (var i = 0; i < 50; i++) hash = MD5.HashData(hash[0..size]);
 
-        var hash = MD5.HashData([
-                .. password.Concat(PasswordPadding_Revision4).Take(32),
-                .. owner,
-                .. permissions_buffer,
-                ..file_id,
-                0xFF, 0xFF, 0xFF, 0xFF,
-            ]);
-        for (var i = 0; i < 50; i++)
+        var owner_key = user_password.Concat(PasswordPadding_Revision4).Take(32).ToArray();
+        Span<byte> key = stackalloc byte[size];
+        for (var i = 0; i < 20; i++)
         {
-            hash = MD5.HashData(hash[0..size]);
+            for (var j = 0; j < size; j++) key[j] = (byte)(hash[j] ^ i);
+            _ = Arcfour.Encrypt(Arcfour.InitializeKey(key), owner_key);
         }
-        return hash[0..size];
+        return owner_key;
     }
 
     public static byte[] CreatePassword_Revision6()

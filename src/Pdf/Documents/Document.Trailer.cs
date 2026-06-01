@@ -38,7 +38,8 @@ public partial class Document
 
     public void AddEncrypt(
             CFM cfm,
-            string password,
+            string user_password,
+            string owner_password,
             UserAccessPermissions permissions
         )
     {
@@ -68,7 +69,11 @@ public partial class Document
                 Encrypt.Elements.Add("CF", $"<< /StdCF << /CFM /{cfm} /AuthEvent /DocOpen /Length 128 >> >>");
                 Encrypt.Elements.Add("Length", 128);
                 Encrypt.Elements.Add("R", 4);
-                Encrypt.Elements.Add("O", Encryption.CreatePassword_Revision4(Encoding.UTF8.GetBytes(password), [], p, [], 128 / 8).ToHexString());
+                Encrypt.Elements.Add("O", Encryption.ComputeOwnerPassword_Revision3(
+                        Encoding.UTF8.GetBytes(user_password),
+                        Encoding.UTF8.GetBytes(owner_password),
+                        128 / 8
+                    ).ToHexString());
                 break;
 
             case CFM.AESV3:
