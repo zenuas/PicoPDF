@@ -1,6 +1,6 @@
 ﻿namespace OpenType.Extension;
 
-public struct Fixed
+public readonly struct Fixed
 {
     public required int Value { get; init; }
     public float FloatValue => Value / 65536F;
