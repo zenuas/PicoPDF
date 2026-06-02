@@ -94,7 +94,7 @@ public partial class Document
                     o,
                     permissions,
                     id,
-                    false
+                    true
                 );
                 Encrypt.Elements.Add("O", o.ToHexString());
                 Encrypt.Elements.Add("U", Encryption.ComputeUserPassword_Revision2(id, encryption_key).ToHexString());

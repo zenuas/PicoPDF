@@ -61,6 +61,6 @@ public static class Encryption
             for (var j = 0; j < encryption_key.Length; j++) key[j] = (byte)(encryption_key[j] ^ i);
             _ = Arcfour.Encrypt(Arcfour.InitializeKey(key), user_key);
         }
-        return user_key;
+        return [.. user_key, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
     }
 }
