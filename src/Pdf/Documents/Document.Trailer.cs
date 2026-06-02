@@ -10,6 +10,17 @@ public partial class Document
 {
     public PdfObject? Info { get; set; }
     public PdfObject? Encrypt { get; set; }
+    public (byte[] CreateID, byte[] UpdateID)? DocumentID { get; set; }
+
+
+    public static byte[] GenerateID() => Guid.NewGuid().ToByteArray();
+
+    public (byte[] CreateID, byte[] UpdateID)? GetDocumentID()
+    {
+        if (DocumentID is { }) return DocumentID;
+        var create_id = GenerateID();
+        return DocumentID = (create_id, create_id);
+    }
 
     public void AddInfo(
             string? title = null,
@@ -47,6 +58,7 @@ public partial class Document
         //if (cfm == CFM.None) return;
 
         var p = (int)(permissions | UserAccessPermissions.Default);
+        var id = GetDocumentID()!.Value.UpdateID;
         PdfObjects.Add(Encrypt = new());
         Encrypt.Elements.Add("Filter", "/Standard");
         Encrypt.Elements.Add("P", p);
@@ -73,6 +85,9 @@ public partial class Document
                         Encoding.UTF8.GetBytes(user_password),
                         Encoding.UTF8.GetBytes(owner_password),
                         128 / 8
+                    ).ToHexString());
+                Encrypt.Elements.Add("U", Encryption.ComputeUserPassword_Revision2(
+                        id
                     ).ToHexString());
                 break;
 

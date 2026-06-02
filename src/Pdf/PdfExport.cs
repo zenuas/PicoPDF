@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Pdf.Documents;
+using PicoPDF.Pdf.Extension;
 using PicoPDF.Pdf.Font;
 using System.Collections.Generic;
 using System.IO;
@@ -65,6 +66,7 @@ public static class PdfExport
         stream.Write($"  /Root {document.Catalog.IndirectIndex} 0 R\n");
         if (document.Info is { }) stream.Write($"  /Info {document.Info.IndirectIndex} 0 R\n");
         if (document.Encrypt is { }) stream.Write($"  /Encrypt {document.Encrypt.IndirectIndex} 0 R\n");
+        if (document.DocumentID is { } id) stream.Write($"  /ID [{id.CreateID.ToHexString()} {id.UpdateID.ToHexString()}]\n");
         stream.Write(">>\n");
         if (option.OutputCrossReferenceTable)
         {

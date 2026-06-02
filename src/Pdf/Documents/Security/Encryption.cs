@@ -27,4 +27,9 @@ public static class Encryption
         }
         return owner_key;
     }
+
+    public static byte[] ComputeUserPassword_Revision2(byte[] id)
+    {
+        return [];
+    }
 }
