@@ -19,16 +19,22 @@ public static class Encryption
             UserAccessPermissions permissions,
             byte[]? document_id,
             bool metadata_encrypted
-        ) => MD5.HashData([
+        )
+    {
+        var p = (uint)(UserAccessPermissions.Default | permissions);
+        var hash = MD5.HashData([
                 ..PadOrTruncatePassword32Bytes(user_password),
                 ..PadOrTruncatePassword32Bytes(owner_password),
-                (byte)permissions,
-                (byte)(((uint)permissions) >> 8),
-                (byte)(((uint)permissions) >> 16),
-                (byte)(((uint)permissions) >> 24),
+                (byte)p,
+                (byte)(p >> 8),
+                (byte)(p >> 16),
+                (byte)(p >> 24),
                 ..document_id ?? [],
                 ..metadata_encrypted ? (byte[])[] : [0xFF, 0xFF, 0xFF, 0xFF],
             ]);
+        for (var i = 0; i < 50; i++) hash = MD5.HashData(hash);
+        return hash;
+    }
 
     public static byte[] ComputeOwnerPassword_Revision3(byte[] user_password, byte[] owner_password, int size)
     {

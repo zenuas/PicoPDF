@@ -84,22 +84,20 @@ public partial class Document
                 Encrypt.Elements.Add("R", 4);
                 var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
                 var owner_password_bytes = Encoding.UTF8.GetBytes(owner_password);
-                var encryption_key = Encryption.ComputeEncryptionKey_Revision4(
+                var o = Encryption.ComputeOwnerPassword_Revision3(
                     user_password_bytes,
                     owner_password_bytes,
+                    16
+                );
+                var encryption_key = Encryption.ComputeEncryptionKey_Revision4(
+                    user_password_bytes,
+                    o,
                     permissions,
                     id,
                     false
                 );
-                Encrypt.Elements.Add("O", Encryption.ComputeOwnerPassword_Revision3(
-                        user_password_bytes,
-                        owner_password_bytes,
-                        128 / 8
-                    ).ToHexString());
-                Encrypt.Elements.Add("U", Encryption.ComputeUserPassword_Revision2(
-                        id,
-                        encryption_key
-                    ).ToHexString());
+                Encrypt.Elements.Add("O", o.ToHexString());
+                Encrypt.Elements.Add("U", Encryption.ComputeUserPassword_Revision2(id, encryption_key).ToHexString());
                 break;
 
             case CFM.AESV3:
