@@ -15,11 +15,12 @@ public partial class Document
 
     public static byte[] GenerateID() => Guid.NewGuid().ToByteArray();
 
-    public (byte[] CreateID, byte[] UpdateID)? GetDocumentID()
+    public (byte[] CreateID, byte[] UpdateID) GetDocumentID()
     {
-        if (DocumentID is { }) return DocumentID;
+        if (DocumentID is { } d) return d;
         var create_id = GenerateID();
-        return DocumentID = (create_id, create_id);
+        DocumentID = (create_id, create_id);
+        return ((byte[] CreateID, byte[] UpdateID))DocumentID;
     }
 
     public void AddInfo(
@@ -57,11 +58,11 @@ public partial class Document
         if (Encrypt is { }) _ = PdfObjects.Remove(Encrypt);
         //if (cfm == CFM.None) return;
 
-        var p = (int)(permissions | UserAccessPermissions.Default);
-        var id = GetDocumentID()!.Value.UpdateID;
+        var p = permissions | UserAccessPermissions.Default;
+        var id = GetDocumentID().CreateID;
         PdfObjects.Add(Encrypt = new());
         Encrypt.Elements.Add("Filter", "/Standard");
-        Encrypt.Elements.Add("P", p);
+        Encrypt.Elements.Add("P", (int)p);
         switch (cfm)
         {
             case CFM.None when Version >= 20:
@@ -81,13 +82,23 @@ public partial class Document
                 Encrypt.Elements.Add("CF", $"<< /StdCF << /CFM /{cfm} /AuthEvent /DocOpen /Length 128 >> >>");
                 Encrypt.Elements.Add("Length", 128);
                 Encrypt.Elements.Add("R", 4);
+                var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
+                var owner_password_bytes = Encoding.UTF8.GetBytes(owner_password);
+                var encryption_key = Encryption.ComputeEncryptionKey_Revision4(
+                    user_password_bytes,
+                    owner_password_bytes,
+                    permissions,
+                    id,
+                    false
+                );
                 Encrypt.Elements.Add("O", Encryption.ComputeOwnerPassword_Revision3(
-                        Encoding.UTF8.GetBytes(user_password),
-                        Encoding.UTF8.GetBytes(owner_password),
+                        user_password_bytes,
+                        owner_password_bytes,
                         128 / 8
                     ).ToHexString());
                 Encrypt.Elements.Add("U", Encryption.ComputeUserPassword_Revision2(
-                        id
+                        id,
+                        encryption_key
                     ).ToHexString());
                 break;
 

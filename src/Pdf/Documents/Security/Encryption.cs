@@ -13,6 +13,23 @@ public static class Encryption
 
     public static byte[] PadOrTruncatePassword32Bytes(byte[] password) => [.. password.Concat(PasswordPaddingBytes).Take(32)];
 
+    public static byte[] ComputeEncryptionKey_Revision4(
+            byte[] user_password,
+            byte[] owner_password,
+            UserAccessPermissions permissions,
+            byte[]? document_id,
+            bool metadata_encrypted
+        ) => MD5.HashData([
+                ..PadOrTruncatePassword32Bytes(user_password),
+                ..PadOrTruncatePassword32Bytes(owner_password),
+                (byte)permissions,
+                (byte)(((uint)permissions) >> 8),
+                (byte)(((uint)permissions) >> 16),
+                (byte)(((uint)permissions) >> 24),
+                ..document_id ?? [],
+                ..metadata_encrypted ? (byte[])[] : [0xFF, 0xFF, 0xFF, 0xFF],
+            ]);
+
     public static byte[] ComputeOwnerPassword_Revision3(byte[] user_password, byte[] owner_password, int size)
     {
         var hash = MD5.HashData(PadOrTruncatePassword32Bytes(owner_password));
@@ -28,8 +45,16 @@ public static class Encryption
         return owner_key;
     }
 
-    public static byte[] ComputeUserPassword_Revision2(byte[] id)
+    public static byte[] ComputeUserPassword_Revision2(byte[] document_id, byte[] encryption_key)
     {
-        return [];
+        var user_key = MD5.HashData([.. PasswordPaddingBytes, .. document_id]);
+
+        Span<byte> key = stackalloc byte[encryption_key.Length];
+        for (var i = 0; i < 20; i++)
+        {
+            for (var j = 0; j < encryption_key.Length; j++) key[j] = (byte)(encryption_key[j] ^ i);
+            _ = Arcfour.Encrypt(Arcfour.InitializeKey(key), user_key);
+        }
+        return user_key;
     }
 }
