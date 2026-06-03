@@ -1,5 +1,6 @@
 ﻿using Mina.Text;
 using PicoPDF.Pdf.Documents.Security;
+using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Extension;
 using System;
 using System.Text;
@@ -37,12 +38,12 @@ public partial class Document
     {
         if (Info is { }) _ = PdfObjects.Remove(Info);
         PdfObjects.Add(Info = new());
-        if (title is { }) Info.Elements.Add("Title", title.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
-        if (author is { }) Info.Elements.Add("Author", author.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
-        if (subject is { }) Info.Elements.Add("Subject", subject.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
-        if (keywords is { }) Info.Elements.Add("Keywords", keywords.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
-        if (creator is { }) Info.Elements.Add("Creator", creator.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
-        if (producer is { }) Info.Elements.Add("Producer", producer.ToEscapeString(UTF16WithBOM.UTF16_BEWithBOM));
+        if (title is { }) Info.Elements.Add("Title", new ElementString { Value = title, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
+        if (author is { }) Info.Elements.Add("Author", new ElementString { Value = author, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
+        if (subject is { }) Info.Elements.Add("Subject", new ElementString { Value = subject, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
+        if (keywords is { }) Info.Elements.Add("Keywords", new ElementString { Value = keywords, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
+        if (creator is { }) Info.Elements.Add("Creator", new ElementString { Value = creator, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
+        if (producer is { }) Info.Elements.Add("Producer", new ElementString { Value = producer, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
         if (creation_date is { }) Info.Elements.Add("CreationDate", creation_date);
         if (mod_date is { }) Info.Elements.Add("ModDate", mod_date);
         if (trapped is { }) Info.Elements.Add("Trapped", trapped);
@@ -89,10 +90,10 @@ public partial class Document
                 ["Filter"] = "/Standard",
                 ["P"] = (int)(permissions | UserAccessPermissions.Default),
                 ["V"] = version,
-                ["CF"] = "<< /StdCF << /CFM /None /AuthEvent /DocOpen >> >>",
+                ["CF"] = new ElementLiteral() { Value = "<< /StdCF << /CFM /None /AuthEvent /DocOpen >> >>" },
                 ["R"] = revision,
-                ["O"] = o.ToHexString(),
-                ["U"] = Encryption.ComputeUserPassword_Revision2(document_id, encryption_key).ToHexString(),
+                ["O"] = new ElementLiteral() { Value = o.ToHexString() },
+                ["U"] = new ElementLiteral() { Value = Encryption.ComputeUserPassword_Revision2(document_id, encryption_key).ToHexString() },
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
                 ["EFF"] = "/StdCF",
@@ -123,10 +124,10 @@ public partial class Document
                 ["Filter"] = "/Standard",
                 ["P"] = (int)(permissions | UserAccessPermissions.Default),
                 ["V"] = 4,
-                ["CF"] = "<< /StdCF << /CFM /AESV2 /AuthEvent /DocOpen /Length 128 >> >>",
+                ["CF"] = new ElementLiteral() { Value = "<< /StdCF << /CFM /AESV2 /AuthEvent /DocOpen /Length 128 >> >>" },
                 ["R"] = 4,
-                ["O"] = o.ToHexString(),
-                ["U"] = Encryption.ComputeUserPassword_Revision2(document_id, encryption_key).ToHexString(),
+                ["O"] = new ElementLiteral() { Value = o.ToHexString() },
+                ["U"] = new ElementLiteral() { Value = Encryption.ComputeUserPassword_Revision2(document_id, encryption_key).ToHexString() },
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
                 ["EFF"] = "/StdCF",
@@ -143,7 +144,7 @@ public partial class Document
                 ["Filter"] = "/Standard",
                 ["P"] = (int)(permissions | UserAccessPermissions.Default),
                 ["V"] = 5,
-                ["CF"] = "<< /StdCF << /CFM /AESV3 /AuthEvent /DocOpen >> >>",
+                ["CF"] = new ElementLiteral() { Value = "<< /StdCF << /CFM /AESV3 /AuthEvent /DocOpen >> >>" },
                 ["R"] = 6,
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",

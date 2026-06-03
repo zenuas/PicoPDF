@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using PicoPDF.Pdf.Elements;
+using System.IO;
 
 namespace PicoPDF.Pdf.XObject.Image;
 
@@ -23,6 +24,6 @@ public class JpegXObject : PdfObject, IImageXObject
         writer.Write(datas);
         writer.Flush();
 
-        Elements["Filter"] = option.JpegStreamDeflate ? "[ /FlateDecode /DCTDecode ]" : "/DCTDecode";
+        Elements["Filter"] = new ElementLiteral() { Value = option.JpegStreamDeflate ? "[ /FlateDecode /DCTDecode ]" : "/DCTDecode" };
     }
 }

@@ -34,8 +34,8 @@ public partial class Document
             {
                 Dictionary =
                 {
-                    ["Registry"] = $"({cidsysinfo.Registry})",
-                    ["Ordering"] = $"({cidsysinfo.Ordering})",
+                    ["Registry"] = cidsysinfo.Registry,
+                    ["Ordering"] = cidsysinfo.Ordering,
                     ["Supplement"] = cidsysinfo.Supplement,
                 }
             },
@@ -79,8 +79,8 @@ public partial class Document
             {
                 Dictionary =
                 {
-                    ["Registry"] = $"({cidsysinfo.Registry})",
-                    ["Ordering"] = $"({cidsysinfo.Ordering})",
+                    ["Registry"] = cidsysinfo.Registry,
+                    ["Ordering"] = cidsysinfo.Ordering,
                     ["Supplement"] = cidsysinfo.Supplement,
                 }
             },
