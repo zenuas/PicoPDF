@@ -56,31 +56,50 @@ public partial class Document
         )
     {
         if (Encrypt is { }) _ = PdfObjects.Remove(Encrypt);
-        //if (cfm == CFM.None) return;
-
         PdfObjects.Add(Encrypt = cfm switch
         {
-            CFM.None when Version >= 20 => CreateStandardEncryptionNone(5, 6, permissions),
-            CFM.None => CreateStandardEncryptionNone(4, 4, permissions),
+            CFM.None when Version >= 20 => CreateStandardEncryptionNone(5, 6, permissions, GetDocumentID().CreateID),
+            CFM.None => CreateStandardEncryptionNone(4, 4, permissions, GetDocumentID().CreateID),
             CFM.AESV2 => CreateStandardEncryptionAes128(user_password, owner_password, permissions, GetDocumentID().CreateID),
             CFM.AESV3 => CreateStandardEncryptionAes256(permissions),
             _ => throw new()
         });
     }
 
-    public static PdfObject CreateStandardEncryptionNone(int version, int revision, UserAccessPermissions permissions) => new()
+    public static PdfObject CreateStandardEncryptionNone(int version, int revision, UserAccessPermissions permissions, byte[] document_id)
     {
-        Elements = {
-            ["Filter"] = "/Standard",
-            ["P"] = (int)(permissions | UserAccessPermissions.Default),
-            ["V"] = version,
-            ["CF"] = "<< /StdCF << /CFM /None /AuthEvent /DocOpen >> >>",
-            ["R"] = revision,
-            ["StmF"] = "/StdCF",
-            ["StrF"] = "/StdCF",
-            ["EFF"] = "/StdCF"
-        }
-    };
+        var user_password_bytes = Encoding.UTF8.GetBytes([]);
+        var owner_password_bytes = Encoding.UTF8.GetBytes([]);
+        var o = Encryption.ComputeOwnerPassword_Revision3(
+            user_password_bytes,
+            owner_password_bytes,
+            16
+        );
+        var encryption_key = Encryption.ComputeEncryptionKey_Revision4(
+            user_password_bytes,
+            o,
+            permissions,
+            document_id,
+            true
+        );
+        return new()
+        {
+            Elements =
+            {
+                ["Filter"] = "/Standard",
+                ["P"] = (int)(permissions | UserAccessPermissions.Default),
+                ["V"] = version,
+                ["CF"] = "<< /StdCF << /CFM /None /AuthEvent /DocOpen >> >>",
+                ["Length"] = 128,
+                ["R"] = revision,
+                ["O"] = o.ToHexString(),
+                ["U"] = Encryption.ComputeUserPassword_Revision2(document_id, encryption_key).ToHexString(),
+                ["StmF"] = "/StdCF",
+                ["StrF"] = "/StdCF",
+                ["EFF"] = "/StdCF",
+            }
+        };
+    }
 
     public static PdfObject CreateStandardEncryptionAes128(string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id)
     {
@@ -112,7 +131,7 @@ public partial class Document
                 ["U"] = Encryption.ComputeUserPassword_Revision2(document_id, encryption_key).ToHexString(),
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
-                ["EFF"] = "/StdCF"
+                ["EFF"] = "/StdCF",
             }
         };
     }
@@ -130,7 +149,7 @@ public partial class Document
                 ["R"] = 6,
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
-                ["EFF"] = "/StdCF"
+                ["EFF"] = "/StdCF",
             }
         };
     }
