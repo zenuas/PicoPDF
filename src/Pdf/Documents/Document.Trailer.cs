@@ -1,5 +1,4 @@
-﻿using Mina.Text;
-using PicoPDF.Pdf.Documents.Security;
+﻿using PicoPDF.Pdf.Documents.Security;
 using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Extension;
 using System;
@@ -38,12 +37,12 @@ public partial class Document
     {
         if (Info is { }) _ = PdfObjects.Remove(Info);
         PdfObjects.Add(Info = new());
-        if (title is { }) Info.Elements.Add("Title", new ElementString { Value = title, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
-        if (author is { }) Info.Elements.Add("Author", new ElementString { Value = author, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
-        if (subject is { }) Info.Elements.Add("Subject", new ElementString { Value = subject, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
-        if (keywords is { }) Info.Elements.Add("Keywords", new ElementString { Value = keywords, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
-        if (creator is { }) Info.Elements.Add("Creator", new ElementString { Value = creator, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
-        if (producer is { }) Info.Elements.Add("Producer", new ElementString { Value = producer, Encoding = UTF16WithBOM.UTF16_BEWithBOM });
+        if (title is { }) Info.Elements.Add("Title", new ElementString { Value = title });
+        if (author is { }) Info.Elements.Add("Author", new ElementString { Value = author });
+        if (subject is { }) Info.Elements.Add("Subject", new ElementString { Value = subject });
+        if (keywords is { }) Info.Elements.Add("Keywords", new ElementString { Value = keywords });
+        if (creator is { }) Info.Elements.Add("Creator", new ElementString { Value = creator });
+        if (producer is { }) Info.Elements.Add("Producer", new ElementString { Value = producer });
         if (creation_date is { }) Info.Elements.Add("CreationDate", creation_date);
         if (mod_date is { }) Info.Elements.Add("ModDate", mod_date);
         if (trapped is { }) Info.Elements.Add("Trapped", trapped);
