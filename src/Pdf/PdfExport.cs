@@ -23,23 +23,25 @@ public static class PdfExport
                 (font.FontEmbed == FontEmbeds.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
         }
         var xref = new List<long>();
-        GetAllReferences(document, option).Where(x => x is not Type0Font font || font.Chars.Count > 0).Each((x, i) =>
-        {
-            xref.Add(stream.Position);
-            stream.Write($"{x.IndirectIndex} 0 obj\n");
-            stream.Write("<<\n");
-            var input = x.Stream;
-            if (input is { }) x.Elements["Length"] = input.Length;
-            x.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString()}\n"));
-            stream.Write(">>\n");
-            if (input is { })
+        GetAllReferences(document, option)
+            .Where(x => x is not Type0Font font || font.Chars.Count > 0)
+            .Each((pdfobj, i) =>
             {
-                stream.Write("stream\n");
-                stream.Write(input.ToArray());
-                stream.Write("\nendstream\n");
-            }
-            stream.Write("endobj\n\n");
-        });
+                xref.Add(stream.Position);
+                stream.Write($"{pdfobj.IndirectIndex} 0 obj\n");
+                stream.Write("<<\n");
+                var input = pdfobj.Stream;
+                if (input is { }) pdfobj.Elements["Length"] = input.Length;
+                pdfobj.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString(pdfobj.IndirectIndex, 0, document.StringHandler)}\n"));
+                stream.Write(">>\n");
+                if (input is { })
+                {
+                    stream.Write("stream\n");
+                    stream.Write(input.ToArray());
+                    stream.Write("\nendstream\n");
+                }
+                stream.Write("endobj\n\n");
+            });
 
         var startxref = stream.Position;
         if (option.OutputCrossReferenceTable)

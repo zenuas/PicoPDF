@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PicoPDF.Pdf.Documents.Security;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,7 +7,7 @@ namespace PicoPDF.Pdf.Elements;
 
 public abstract class ElementValue
 {
-    public abstract string ToElementString();
+    public abstract string ToElementString(int object_number, int generation_number, ISecurityHandler? handler);
 
     public static ElementValue AutoStringLiteralOrString(string s) => s.StartsWith('/') ? new ElementLiteral() { Value = s } : new ElementString() { Value = s };
 

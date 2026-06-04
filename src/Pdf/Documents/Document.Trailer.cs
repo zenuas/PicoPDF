@@ -10,6 +10,9 @@ public partial class Document
 {
     public PdfObject? Info { get; set; }
     public PdfObject? Encrypt { get; set; }
+    public ISecurityHandler? StreamHandler { get; set; } = null;
+    public ISecurityHandler? StringHandler { get; set; } = null;
+    public ISecurityHandler? EmbeddedFileStreamsHandler { get; set; } = null;
     public (byte[] CreateID, byte[] UpdateID)? DocumentID { get; set; }
 
 
@@ -55,18 +58,39 @@ public partial class Document
             UserAccessPermissions permissions
         )
     {
+        StreamHandler = StringHandler = EmbeddedFileStreamsHandler = null;
         if (Encrypt is { }) _ = PdfObjects.Remove(Encrypt);
-        PdfObjects.Add(Encrypt = cfm switch
+
+        PdfObject encrypt;
+        switch (cfm)
         {
-            CFM.None when Version >= 20 => CreateStandardEncryptionNone(5, 6, permissions, GetDocumentID().CreateID),
-            CFM.None => CreateStandardEncryptionNone(4, 4, permissions, GetDocumentID().CreateID),
-            CFM.AESV2 => CreateStandardEncryptionAes128(user_password, owner_password, permissions, GetDocumentID().CreateID),
-            CFM.AESV3 => CreateStandardEncryptionAes256(permissions),
-            _ => throw new()
-        });
+            case CFM.None when Version >= 20:
+                (encrypt, _) = CreateStandardEncryptionNone(5, 6, permissions, GetDocumentID().CreateID);
+                StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new IdentityHandler();
+                break;
+
+            case CFM.None:
+                (encrypt, _) = CreateStandardEncryptionNone(4, 4, permissions, GetDocumentID().CreateID);
+                StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new IdentityHandler();
+                break;
+
+            case CFM.AESV2:
+                (encrypt, var encryption_key) = CreateStandardEncryptionAes128(user_password, owner_password, permissions, GetDocumentID().CreateID);
+                StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new Aes128Handler() { Key = encryption_key };
+                break;
+
+            case CFM.AESV3:
+                (encrypt, _) = CreateStandardEncryptionAes256(permissions);
+                //StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new Aes256Handler();
+                break;
+
+            default:
+                throw new();
+        }
+        PdfObjects.Add(Encrypt = encrypt);
     }
 
-    public static PdfObject CreateStandardEncryptionNone(int version, int revision, UserAccessPermissions permissions, byte[] document_id)
+    public static (PdfObject Encrypt, byte[] EncryptionKey) CreateStandardEncryptionNone(int version, int revision, UserAccessPermissions permissions, byte[] document_id)
     {
         var user_password_bytes = Encoding.UTF8.GetBytes([]);
         var owner_password_bytes = Encoding.UTF8.GetBytes([]);
@@ -82,7 +106,7 @@ public partial class Document
             document_id,
             true
         );
-        return new()
+        return (new()
         {
             Elements =
             {
@@ -97,10 +121,10 @@ public partial class Document
                 ["StrF"] = "/StdCF",
                 ["EFF"] = "/StdCF",
             }
-        };
+        }, encryption_key);
     }
 
-    public static PdfObject CreateStandardEncryptionAes128(string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id)
+    public static (PdfObject Encrypt, byte[] EncryptionKey) CreateStandardEncryptionAes128(string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id)
     {
         var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
         var owner_password_bytes = Encoding.UTF8.GetBytes(owner_password);
@@ -116,7 +140,7 @@ public partial class Document
             document_id,
             true
         );
-        return new()
+        return (new()
         {
             Elements =
             {
@@ -131,12 +155,12 @@ public partial class Document
                 ["StrF"] = "/StdCF",
                 ["EFF"] = "/StdCF",
             }
-        };
+        }, encryption_key);
     }
 
-    public static PdfObject CreateStandardEncryptionAes256(UserAccessPermissions permissions)
+    public static (PdfObject Encrypt, byte[] EncryptionKey) CreateStandardEncryptionAes256(UserAccessPermissions permissions)
     {
-        return new()
+        return (new()
         {
             Elements =
             {
@@ -149,6 +173,6 @@ public partial class Document
                 ["StrF"] = "/StdCF",
                 ["EFF"] = "/StdCF",
             }
-        };
+        }, []);
     }
 }

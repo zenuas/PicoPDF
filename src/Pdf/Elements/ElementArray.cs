@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using PicoPDF.Pdf.Documents.Security;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,5 +13,5 @@ public class ElementArray<T> : ElementValue where T : ElementValue
 
     public ElementArray(IEnumerable<T> xs) => Array.AddRange(xs);
 
-    public override string ToElementString() => $"[ {Array.Select(x => x.ToElementString()).Join(" ")} ]";
+    public override string ToElementString(int object_number, int generation_number, ISecurityHandler? handler) => $"[ {Array.Select(x => x.ToElementString(object_number, generation_number, handler)).Join(" ")} ]";
 }

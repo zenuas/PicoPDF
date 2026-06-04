@@ -1,4 +1,7 @@
-﻿using System;
+﻿using PicoPDF.Pdf.Documents.Security;
+using PicoPDF.Pdf.Extension;
+using System;
+using System.Text;
 
 namespace PicoPDF.Pdf.Elements;
 
@@ -6,22 +9,29 @@ public class ElementDate : ElementValue
 {
     public required DateTime Value { get; set; }
 
-    public override string ToElementString()
+    public override string ToElementString(int object_number, int generation_number, ISecurityHandler? handler)
     {
+        string d;
         switch (Value.Kind)
         {
             case DateTimeKind.Utc:
-                return $"(D:{Value:yyyyMMddHHmmss}+00'00')";
+                d = $"D:{Value:yyyyMMddHHmmss}+00'00'";
+                break;
 
             case DateTimeKind.Local:
                 var offset = TimeZoneInfo.Local.GetUtcOffset(Value);
                 var sign = offset >= TimeSpan.Zero ? "+" : "-";
-                return $"(D:{Value:yyyyMMddHHmmss}{sign}{offset:hh\\'mm\\'})";
+                d = $"D:{Value:yyyyMMddHHmmss}{sign}{offset:hh\\'mm\\'}";
+                break;
 
             case DateTimeKind.Unspecified:
-                return $"(D:{Value:yyyyMMddHHmmss})";
+                d = $"D:{Value:yyyyMMddHHmmss}";
+                break;
+
+            default:
+                throw new();
         }
-        throw new();
+        return handler is { } ? d.ToEncryptString(Encoding.ASCII, object_number, generation_number, handler) : $"({d})";
     }
 
     public static implicit operator ElementDate(DateTime x) => new() { Value = x };
