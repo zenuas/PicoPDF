@@ -11,16 +11,11 @@ public class Aes128EncryptFilter : IFilter
     public MemoryStream MemoryStream { get; init; } = new();
     public CryptoStream? CryptoStream { get; set; }
 
-    public void Init()
-    {
-        CryptoStream ??= new CryptoStream(MemoryStream, Encryptor, CryptoStreamMode.Write);
-    }
-
     public byte[] Filter(ReadOnlySpan<byte> data)
     {
-        if (CryptoStream is null) Init();
+        CryptoStream ??= new CryptoStream(MemoryStream, Encryptor, CryptoStreamMode.Write);
 
-        if (data.Length > 0) CryptoStream!.Write(data);
+        if (data.Length > 0) CryptoStream.Write(data);
         return [];
     }
 
