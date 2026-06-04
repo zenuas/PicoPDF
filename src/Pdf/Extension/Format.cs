@@ -17,9 +17,9 @@ public static class Format
     public static string ToEscapeString(this string self, Encoding encoding) => self.All(char.IsAscii) ? $"({self.ReplaceBeforeInsert(EscapeChars, ['\\']).ToStringByChars()})" : self.ToHexString(encoding);
     public static string ToEncryptString(this string self, Encoding encoding, int object_number, int generation_number, ISecurityHandler handler)
     {
-        var s = encoding.GetBytes(self);
+        var bytes = encoding.GetBytes(self);
         using var encryptor = handler.CreateEncrypter(object_number, generation_number);
-        return encryptor.Filter(s).ToHexString();
+        return encryptor.FilterFinal(bytes).ToHexString();
     }
 
     public static string ToHexString(this string self, Encoding encoding) => ToHexString(encoding.GetBytes(self));

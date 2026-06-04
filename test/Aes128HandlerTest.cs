@@ -1,4 +1,5 @@
 ﻿using PicoPDF.Pdf.Documents.Security;
+using System;
 using Xunit;
 
 namespace PicoPDF.Test;
@@ -21,17 +22,26 @@ public class Aes128HandlerTest
         using var decrypter1 = handler.CreateDecrypter(5, 0);
 
         var null_text = new byte[] { };
-        var cipher_text1 = encrypter1.Filter(null_text);
-        Assert.Equal(cipher_text1.Length, 16);
-        var plain_text1 = decrypter1.Filter(cipher_text1);
+        var cipher_text1 = encrypter1.FilterFinal(null_text);
+        Assert.Equal(cipher_text1.Length, 32);
+        var plain_text1 = decrypter1.FilterFinal(cipher_text1);
         Assert.Equal(plain_text1, null_text);
 
         using var encrypter2 = handler.CreateEncrypter(5, 0);
         using var decrypter2 = handler.CreateDecrypter(5, 0);
 
         var short_text = new byte[] { 0x48, 0x65, 0x6c, 0x24, 0x97 };
-        var cipher_text2 = encrypter2.Filter(short_text);
-        var plain_text2 = decrypter2.Filter(cipher_text2);
+        var cipher_text2 = encrypter2.FilterFinal(short_text);
+        var plain_text2 = decrypter2.FilterFinal(cipher_text2);
         Assert.Equal(plain_text2, short_text);
+
+        using var encrypter3 = handler.CreateEncrypter(5, 0);
+        using var decrypter3 = handler.CreateDecrypter(5, 0);
+
+        var long_text = new byte[] { 0x48, 0x65, 0x6c, 0x24, 0x97, 0x04, 0xf1, 0xeb, 0x17, 0x22, 0x88, 0xc9, 0x9d, 0x90, 0x45, 0x39, 0x4a, 0x07, 0x4c };
+        _ = encrypter3.Filter(long_text.AsSpan(0, 16));
+        var cipher_text3 = encrypter3.FilterFinal(long_text.AsSpan(16));
+        var plain_text3 = decrypter3.FilterFinal(cipher_text3);
+        Assert.Equal(plain_text3, long_text);
     }
 }
