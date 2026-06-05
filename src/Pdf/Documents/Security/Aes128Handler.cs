@@ -53,14 +53,12 @@ public class Aes128Handler : ISecurityHandler
     {
         using var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
         aes.GenerateIV();
-
-        using var filter = new Aes128EncryptFilter { Encryptor = aes.CreateEncryptor(), IV = aes.IV };
-        return filter.FilterFinal(bytes);
+        return [.. aes.IV, .. aes.EncryptCbc(bytes, aes.IV)];
     };
 
     public Func<ReadOnlySpan<byte>, byte[]> CreateDecrypterFunction(int object_number, int generation_number) => bytes =>
     {
-        using var filter = new Aes128DecryptFilter { Cipher = InitializeWithoutGenerateIV(Key, object_number, generation_number) };
-        return filter.FilterFinal(bytes);
+        using var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
+        return aes.DecryptCbc(bytes[16..], bytes[0..16]);
     };
 }
