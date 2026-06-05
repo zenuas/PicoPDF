@@ -46,10 +46,10 @@ public class Aes128DecryptFilter : IFilter
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         Cipher.Dispose();
         Decryptor?.Dispose();
         CryptoStream?.Dispose();
         MemoryStream.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

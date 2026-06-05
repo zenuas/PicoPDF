@@ -32,9 +32,9 @@ public class Aes128EncryptFilter : IFilter
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         Encryptor.Dispose();
         CryptoStream?.Dispose();
         MemoryStream.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
