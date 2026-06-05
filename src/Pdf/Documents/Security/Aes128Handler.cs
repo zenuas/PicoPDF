@@ -54,7 +54,7 @@ public class Aes128Handler : ISecurityHandler
         var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
         return new ConverterBinder()
         {
-            Convert = (bytes) =>
+            Convert = bytes =>
             {
                 aes.GenerateIV();
                 return [.. aes.IV, .. aes.EncryptCbc(bytes, aes.IV)];
@@ -68,10 +68,7 @@ public class Aes128Handler : ISecurityHandler
         var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
         return new ConverterBinder()
         {
-            Convert = (bytes) =>
-            {
-                return aes.DecryptCbc(bytes[16..], bytes[0..16]);
-            },
+            Convert = bytes => aes.DecryptCbc(bytes[16..], bytes[0..16]),
             Dispose = () => aes.Dispose(),
         };
     }
