@@ -13,7 +13,11 @@ public class Aes128EncryptFilter : IFilter
 
     public byte[] Filter(ReadOnlySpan<byte> data)
     {
-        CryptoStream ??= new CryptoStream(MemoryStream, Encryptor, CryptoStreamMode.Write);
+        if (CryptoStream is null)
+        {
+            MemoryStream.Write(IV);
+            CryptoStream = new CryptoStream(MemoryStream, Encryptor, CryptoStreamMode.Write);
+        }
 
         if (data.Length > 0) CryptoStream.Write(data);
         return [];
@@ -23,7 +27,7 @@ public class Aes128EncryptFilter : IFilter
     {
         _ = Filter(data);
         CryptoStream!.FlushFinalBlock();
-        return [.. IV, .. MemoryStream.ToArray()];
+        return MemoryStream.ToArray();
     }
 
     public void Dispose()
