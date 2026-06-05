@@ -32,7 +32,8 @@ public static class PdfExport
                 stream.Write("<<\n");
                 var input = pdfobj.Stream;
                 if (input is { }) pdfobj.Elements["Length"] = input.Length;
-                pdfobj.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString(pdfobj.IndirectIndex, 0, document.StringHandler)}\n"));
+                using var converter = document.StringHandler?.CreateEncrypterConverter(pdfobj.IndirectIndex, 0);
+                pdfobj.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString(converter)}\n"));
                 stream.Write(">>\n");
                 if (input is { })
                 {

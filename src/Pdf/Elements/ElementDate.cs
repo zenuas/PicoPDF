@@ -9,7 +9,7 @@ public class ElementDate : ElementValue
 {
     public required DateTime Value { get; set; }
 
-    public override string ToElementString(int object_number, int generation_number, ISecurityHandler? handler)
+    public override string ToElementString(IConverter? converter)
     {
         string d;
         switch (Value.Kind)
@@ -31,7 +31,7 @@ public class ElementDate : ElementValue
             default:
                 throw new();
         }
-        return handler is { } ? d.ToEncryptString(Encoding.ASCII, object_number, generation_number, handler) : $"({d})";
+        return converter is { } ? d.ToEncryptString(Encoding.ASCII, converter) : $"({d})";
     }
 
     public static implicit operator ElementDate(DateTime x) => new() { Value = x };

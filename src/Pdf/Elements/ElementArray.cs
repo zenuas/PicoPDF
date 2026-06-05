@@ -13,5 +13,5 @@ public class ElementArray<T> : ElementValue where T : ElementValue
 
     public ElementArray(IEnumerable<T> xs) => Array.AddRange(xs);
 
-    public override string ToElementString(int object_number, int generation_number, ISecurityHandler? handler) => $"[ {Array.Select(x => x.ToElementString(object_number, generation_number, handler)).Join(" ")} ]";
+    public override string ToElementString(IConverter? converter) => $"[ {Array.Select(x => x.ToElementString(converter)).Join(" ")} ]";
 }

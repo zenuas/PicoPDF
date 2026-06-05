@@ -15,7 +15,7 @@ public static class Format
     public static readonly char[][] EscapeChars = [['('], [')'], ['\\']];
 
     public static string ToEscapeString(this string self, Encoding encoding) => self.All(char.IsAscii) ? $"({self.ReplaceBeforeInsert(EscapeChars, ['\\']).ToStringByChars()})" : self.ToHexString(encoding);
-    public static string ToEncryptString(this string self, Encoding encoding, int object_number, int generation_number, ISecurityHandler handler) => handler.CreateEncrypterFunction(object_number, generation_number)(encoding.GetBytes(self)).ToHexString();
+    public static string ToEncryptString(this string self, Encoding encoding, IConverter converter) => converter.Convert(encoding.GetBytes(self)).ToHexString();
 
     public static string ToHexString(this string self, Encoding encoding) => ToHexString(encoding.GetBytes(self));
     public static string ToHexString(this byte[] self) => $"<{Convert.ToHexStringLower(self)}>";

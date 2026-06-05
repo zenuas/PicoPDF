@@ -49,16 +49,30 @@ public class Aes128Handler : ISecurityHandler
         return new Aes128DecryptFilter { Cipher = InitializeWithoutGenerateIV(Key, object_number, generation_number) };
     }
 
-    public Func<ReadOnlySpan<byte>, byte[]> CreateEncrypterFunction(int object_number, int generation_number) => bytes =>
+    public IConverter CreateEncrypterConverter(int object_number, int generation_number)
     {
-        using var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
-        aes.GenerateIV();
-        return [.. aes.IV, .. aes.EncryptCbc(bytes, aes.IV)];
-    };
+        var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
+        return new ConverterBinder()
+        {
+            Convert = (bytes) =>
+            {
+                aes.GenerateIV();
+                return [.. aes.IV, .. aes.EncryptCbc(bytes, aes.IV)];
+            },
+            Dispose = () => aes.Dispose(),
+        };
+    }
 
-    public Func<ReadOnlySpan<byte>, byte[]> CreateDecrypterFunction(int object_number, int generation_number) => bytes =>
+    public IConverter CreateDecrypterConverter(int object_number, int generation_number)
     {
-        using var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
-        return aes.DecryptCbc(bytes[16..], bytes[0..16]);
-    };
+        var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
+        return new ConverterBinder()
+        {
+            Convert = (bytes) =>
+            {
+                return aes.DecryptCbc(bytes[16..], bytes[0..16]);
+            },
+            Dispose = () => aes.Dispose(),
+        };
+    }
 }
