@@ -1,11 +1,13 @@
-﻿namespace PicoPDF.Pdf.Documents.Security;
+﻿using System.IO.Pipelines;
+
+namespace PicoPDF.Pdf.Documents.Security;
 
 public interface ISecurityHandler
 {
     public byte[] Key { get; init; }
 
-    public IFilter CreateEncrypter(int object_number, int generation_number);
-    public IFilter CreateDecrypter(int object_number, int generation_number);
+    public (PipeWriter Input, PipeReader Output) CreateEncrypterPipe(int object_number, int generation_number);
+    public (PipeWriter Input, PipeReader Output) CreateDecrypterPipe(int object_number, int generation_number);
 
     public IConverter CreateEncrypterConverter(int object_number, int generation_number);
     public IConverter CreateDecrypterConverter(int object_number, int generation_number);

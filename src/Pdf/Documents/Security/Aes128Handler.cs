@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Buffers;
+using System.IO.Pipelines;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace PicoPDF.Pdf.Documents.Security;
 
@@ -36,17 +39,95 @@ public class Aes128Handler : ISecurityHandler
         return aes;
     }
 
-    public IFilter CreateEncrypter(int object_number, int generation_number)
+    public (PipeWriter Input, PipeReader Output) CreateEncrypterPipe(int object_number, int generation_number)
     {
-        using var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
-        aes.GenerateIV();
+        var input = new Pipe();
+        var output = new Pipe();
 
-        return new Aes128EncryptFilter { Encryptor = aes.CreateEncryptor(), IV = aes.IV };
+        _ = Task.Run(async () =>
+        {
+            using var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
+            aes.GenerateIV();
+
+            var iv_buffer = output.Writer.GetMemory(16);
+            aes.IV.CopyTo(iv_buffer);
+            output.Writer.Advance(16);
+            var iv_result = await output.Writer.FlushAsync();
+            if (iv_result.IsCanceled) throw new OperationCanceledException();
+            if (iv_result.IsCompleted) throw new InvalidOperationException();
+
+            using var reader = input.Reader.AsStream(leaveOpen: true);
+            using var encryptor = aes.CreateEncryptor();
+            using var crypto = new CryptoStream(reader, encryptor, CryptoStreamMode.Read);
+            try
+            {
+                while (true)
+                {
+                    var buffer = output.Writer.GetMemory(4096);
+                    var readed = await crypto.ReadAsync(buffer);
+                    if (readed == 0) break;
+
+                    output.Writer.Advance(readed);
+                    var result = await output.Writer.FlushAsync();
+                    if (result.IsCanceled) throw new OperationCanceledException();
+                    if (result.IsCompleted) break;
+                }
+                await output.Writer.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                await input.Reader.CompleteAsync(ex);
+                await output.Writer.CompleteAsync(ex);
+            }
+            finally
+            {
+                await input.Reader.CompleteAsync();
+            }
+        });
+        return (input.Writer, output.Reader);
     }
 
-    public IFilter CreateDecrypter(int object_number, int generation_number)
+    public (PipeWriter Input, PipeReader Output) CreateDecrypterPipe(int object_number, int generation_number)
     {
-        return new Aes128DecryptFilter { Cipher = InitializeWithoutGenerateIV(Key, object_number, generation_number) };
+        var input = new Pipe();
+        var output = new Pipe();
+
+        _ = Task.Run(async () =>
+        {
+            using var aes = InitializeWithoutGenerateIV(Key, object_number, generation_number);
+            var iv_result = await input.Reader.ReadAtLeastAsync(16);
+            aes.IV = iv_result.Buffer.Slice(0, 16).ToArray();
+            input.Reader.AdvanceTo(iv_result.Buffer.GetPosition(16));
+
+            using var reader = input.Reader.AsStream(leaveOpen: true);
+            using var decryptor = aes.CreateDecryptor();
+            using var crypto = new CryptoStream(reader, decryptor, CryptoStreamMode.Read);
+            try
+            {
+                while (true)
+                {
+                    var buffer = output.Writer.GetMemory(4096);
+                    var readed = await crypto.ReadAsync(buffer);
+                    if (readed == 0) break;
+
+                    output.Writer.Advance(readed);
+                    var result = await output.Writer.FlushAsync();
+                    if (result.IsCanceled) throw new OperationCanceledException();
+                    if (result.IsCompleted) break;
+                }
+                await output.Writer.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                await input.Reader.CompleteAsync(ex);
+                await output.Writer.CompleteAsync(ex);
+            }
+            finally
+            {
+                await input.Reader.CompleteAsync();
+            }
+        });
+        return (input.Writer, output.Reader);
     }
 
     public IConverter CreateEncrypterConverter(int object_number, int generation_number)
