@@ -1,0 +1,13 @@
+{
+	"Size": {"Width": 300, "Height": 400},
+	"Orientation": "Vertical",
+	"DefaultFont": "Noto Sans JP Regular",
+	"Padding": {"Top": 10, "Bottom": 20, "Left": 30, "Right": 40},
+	
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+	],
+}
