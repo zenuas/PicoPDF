@@ -1,6 +1,5 @@
 ﻿using Binder.Data;
 using PicoPDF.Model;
-using PicoPDF.Pdf;
 using System.Globalization;
 
 namespace PicoPDF.Loader.Sections;

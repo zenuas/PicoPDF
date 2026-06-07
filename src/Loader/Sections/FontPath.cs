@@ -1,4 +1,6 @@
-﻿namespace PicoPDF.Loader.Sections;
+﻿using Pdf.Documents;
+
+namespace PicoPDF.Loader.Sections;
 
 public class FontPath
 {

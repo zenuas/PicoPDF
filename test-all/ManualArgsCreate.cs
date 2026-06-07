@@ -1,7 +1,6 @@
 ﻿using Mina.Command;
-using PicoPDF.Loader.Elements;
+using Pdf.Documents;
 using PicoPDF.Loader.Sections;
-using PicoPDF.Pdf.Documents;
 
 namespace PicoPDF.TestAll;
 

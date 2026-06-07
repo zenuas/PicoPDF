@@ -1,7 +1,7 @@
 ﻿using PicoPDF.Loader.Elements;
 using PicoPDF.Loader.Sections;
-using PicoPDF.Pdf.Documents;
-using PicoPDF.Pdf.Font;
+using Pdf.Documents;
+using Pdf.Font;
 using System.Text;
 
 namespace PicoPDF.TestAll;

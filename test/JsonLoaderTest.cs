@@ -1,6 +1,5 @@
-﻿using PicoPDF.Loader;
-using PicoPDF.Loader.Elements;
-using PicoPDF.Loader.Sections;
+﻿using Pdf.Documents;
+using PicoPDF.Loader;
 using System;
 using System.Drawing;
 using System.Text.Json;

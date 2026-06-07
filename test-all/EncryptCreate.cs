@@ -1,6 +1,6 @@
 ﻿using PicoPDF.Loader.Sections;
-using PicoPDF.Pdf.Documents;
-using PicoPDF.Pdf.Documents.Security;
+using Pdf.Documents;
+using Pdf.Documents.Security;
 using System;
 
 namespace PicoPDF.TestAll;

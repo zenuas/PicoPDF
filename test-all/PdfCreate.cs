@@ -1,12 +1,12 @@
 ﻿using Mina.Command;
 using Mina.Extension;
+using Pdf;
+using Pdf.Documents;
+using Pdf.Extension;
+using Pdf.Operation;
 using PicoPDF.Loader.Elements;
 using PicoPDF.Model;
 using PicoPDF.Model.Elements;
-using PicoPDF.Pdf;
-using PicoPDF.Pdf.Documents;
-using PicoPDF.Pdf.Extension;
-using PicoPDF.Pdf.Operation;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -138,7 +138,7 @@ public class PdfCreate : FontRegisterCommand
 
             tasks.Add(Task.Run(() =>
             {
-                var document = Document.CreateDocument(json, table, event_opt);
+                var document = PdfFactory.CreateDocument(json, table, event_opt);
                 if (IsInfoAdd)
                 {
                     document.AddInfo(

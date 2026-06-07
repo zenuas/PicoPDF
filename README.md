@@ -19,7 +19,7 @@ PicoPDFは知っている最小のSI接頭語にちなんで名付けた。
 ```cs
 var datas = new Data[] { ... };
 
-PicoPDF.Pdf.Documents.Document.CreateDocument("example.json", datas).Save("example.pdf");
+PicoPDF.PdfFactory.CreateDocument("example.json", datas).Save("example.pdf");
 ```
 
 ## Json definition file

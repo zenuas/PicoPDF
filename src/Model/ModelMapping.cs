@@ -1,12 +1,11 @@
 ﻿using Binder.Data;
 using Mina.Extension;
+using Pdf.Documents;
+using Pdf.Drawing;
+using Pdf.Extension;
+using Pdf.Operation;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Model.Elements;
-using PicoPDF.Pdf;
-using PicoPDF.Pdf.Documents;
-using PicoPDF.Pdf.Drawing;
-using PicoPDF.Pdf.Extension;
-using PicoPDF.Pdf.Operation;
 using System.Linq;
 
 namespace PicoPDF.Model;
@@ -69,7 +68,7 @@ public static class ModelMapping
                 return Contents.CreateDrawFillRectangleOperation(posx, posy, x.Width, x.Height, x.LineColor.ToDeviceRGB(), x.FillColor.ToDeviceRGB(), x.LineWidth);
 
             case ImageModel x:
-                return Contents.CreateDrawImageOperation(posx, posy, page.Document.GetImage(x), x.ZoomWidth, x.ZoomHeight);
+                return Contents.CreateDrawImageOperation(posx, posy, page.Document.GetImage(x.Path), x.ZoomWidth, x.ZoomHeight);
         }
         throw new();
     }

@@ -1,6 +1,5 @@
-﻿using PicoPDF.Loader.Elements;
-using PicoPDF.Pdf.Documents;
-using PicoPDF.Pdf.Operation;
+﻿using Pdf.Documents;
+using Pdf.Operation;
 using System.Linq;
 using Xunit;
 

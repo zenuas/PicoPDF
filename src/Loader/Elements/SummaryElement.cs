@@ -1,4 +1,5 @@
 ﻿using Binder.Data;
+using Pdf.Documents;
 using PicoPDF.Loader.Sections;
 using System.Drawing;
 using System.Globalization;

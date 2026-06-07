@@ -1,4 +1,4 @@
-﻿using PicoPDF.Pdf.Documents.Security;
+﻿using Pdf.Documents.Security;
 using System;
 using System.Text;
 using Xunit;

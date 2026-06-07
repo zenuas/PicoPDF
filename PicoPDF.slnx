@@ -3,6 +3,7 @@
   <Project Path="binder/Binder.csproj" />
   <Project Path="font/OpenType.csproj" />
   <Project Path="image/Image.csproj" />
+  <Project Path="pdf/Pdf.csproj" />
   <Project Path="src/PicoPDF.csproj" />
   <Project Path="svg/Svg.csproj" />
   <Project Path="test-all/PicoPDF.TestAll.csproj" />
