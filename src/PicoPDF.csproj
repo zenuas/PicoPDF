@@ -13,8 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\binder\Binder.csproj" />
-    <ProjectReference Include="..\font\OpenType.csproj" />
-    <ProjectReference Include="..\image\Image.csproj" />
     <ProjectReference Include="..\pdf\Pdf.csproj" />
   </ItemGroup>
 

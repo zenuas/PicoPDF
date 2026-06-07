@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\font\OpenType.csproj" />
     <ProjectReference Include="..\src\PicoPDF.csproj" />
   </ItemGroup>
 
