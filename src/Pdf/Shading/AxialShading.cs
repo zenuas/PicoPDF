@@ -21,9 +21,9 @@ public class AxialShading : PdfObject, IShading
         RelatedObjects.Add(Function.Cast<PdfObject>());
         _ = Elements.TryAdd("ShadingType", (int)ShadingType);
         _ = Elements.TryAdd("ColorSpace", ColorSpace);
-        _ = Elements.TryAdd("Coords", new ElementLiteral() { Value = $"[{(new[] { Coords.X0, Coords.Y0, Coords.X1, Coords.Y1 }).ToPointString(option.PointFormat)}]" });
-        _ = Elements.TryAdd("Domain", new ElementLiteral() { Value = $"[{Domain.T0.ToPointString(option.PointFormat)} {Domain.T1.ToPointString(option.PointFormat)}]" });
+        _ = Elements.TryAdd("Coords", $"[{(new[] { Coords.X0, Coords.Y0, Coords.X1, Coords.Y1 }).ToPointString(option.PointFormat)}]");
+        _ = Elements.TryAdd("Domain", $"[{Domain.T0.ToPointString(option.PointFormat)} {Domain.T1.ToPointString(option.PointFormat)}]");
         _ = Elements.TryAdd("Function", new ElementIndirectObject { References = Function.Cast<PdfObject>() });
-        _ = Elements.TryAdd("Extend", new ElementLiteral() { Value = $"[{Extend.B0.ToString().ToLower()} {Extend.B1.ToString().ToLower()}]" });
+        _ = Elements.TryAdd("Extend", $"[{Extend.B0.ToString().ToLower()} {Extend.B1.ToString().ToLower()}]");
     }
 }

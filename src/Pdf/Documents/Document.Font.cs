@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using OpenType;
 using PicoPDF.Loader.Sections;
+using PicoPDF.Pdf.Elements;
 using PicoPDF.Pdf.Font;
 using System;
 using System.Linq;
@@ -34,8 +35,8 @@ public partial class Document
             {
                 Dictionary =
                 {
-                    ["Registry"] = cidsysinfo.Registry,
-                    ["Ordering"] = cidsysinfo.Ordering,
+                    ["Registry"] = new ElementString { Value = cidsysinfo.Registry },
+                    ["Ordering"] = new ElementString { Value = cidsysinfo.Ordering },
                     ["Supplement"] = cidsysinfo.Supplement,
                 }
             },
@@ -79,8 +80,8 @@ public partial class Document
             {
                 Dictionary =
                 {
-                    ["Registry"] = cidsysinfo.Registry,
-                    ["Ordering"] = cidsysinfo.Ordering,
+                    ["Registry"] = new ElementString { Value = cidsysinfo.Registry },
+                    ["Ordering"] = new ElementString { Value = cidsysinfo.Ordering },
                     ["Supplement"] = cidsysinfo.Supplement,
                 }
             },

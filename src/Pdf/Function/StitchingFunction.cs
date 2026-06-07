@@ -17,9 +17,9 @@ public class StitchingFunction : PdfObject, IFunction
     {
         Functions.OfType<PdfObject>().Each(RelatedObjects.Add);
         _ = Elements.TryAdd("FunctionType", (int)FunctionType);
-        _ = Elements.TryAdd("Domain", new ElementLiteral() { Value = $"[{Domain.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]" });
+        _ = Elements.TryAdd("Domain", $"[{Domain.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]");
         _ = Elements.TryAdd("Functions", new ElementArray<ElementIndirectObject>(Functions.OfType<PdfObject>().Select(x => new ElementIndirectObject { References = x })));
-        _ = Elements.TryAdd("Bounds", new ElementLiteral() { Value = $"[{Bounds.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]" });
-        _ = Elements.TryAdd("Encode", new ElementLiteral() { Value = $"[{Encode.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]" });
+        _ = Elements.TryAdd("Bounds", $"[{Bounds.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]");
+        _ = Elements.TryAdd("Encode", $"[{Encode.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]");
     }
 }
