@@ -23,6 +23,6 @@ public class JpegXObject : PdfObject, IImageXObject
         writer.Write(datas);
         writer.Flush();
 
-        Elements["Filter"] = $"[{(option.JpegStreamDeflate ? "/FlateDecode /DCTDecode" : "/DCTDecode")}]";
+        Elements["Filter"] = option.JpegStreamDeflate ? "[ /FlateDecode /DCTDecode ]" : "[ /DCTDecode ]";
     }
 }
