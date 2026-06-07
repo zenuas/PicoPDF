@@ -18,6 +18,8 @@ public static class PdfExport
     public static void Export(Document document, Stream stream, PdfExportOption option)
     {
         stream.Write($"%PDF-{document.Version / 10}.{document.Version % 10}\n");
+        // If a PDF file contains binary data, as most do, it is recommended that the header line be immediately followed by a comment line containing at least four binary characters—that is, characters whose codes are 128 or greater.
+        // This ensures proper behavior of file transfer applications that inspect data near the beginning of a file to determine whether to treat the file's contents as text or as binary.
         stream.Write("%\U0001F363\n\n"u8);
 
         foreach (var font in document.PdfObjects.OfType<Type0Font>())
