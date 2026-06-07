@@ -13,7 +13,7 @@ public static class Encryption
 
     public static byte[] PadOrTruncatePassword32Bytes(byte[] password) => [.. password.Concat(PasswordPaddingBytes).Take(32)];
 
-    public static byte[] ComputeEncryptionKey_Revision4(
+    public static byte[] ComputeEncryptionKey_Algorithm3_2(
             byte[] user_password,
             byte[] owner_password,
             UserAccessPermissions permissions,
@@ -23,20 +23,20 @@ public static class Encryption
     {
         var p = (uint)(UserAccessPermissions.Default | permissions);
         var hash = MD5.HashData([
-                ..PadOrTruncatePassword32Bytes(user_password),
-                ..PadOrTruncatePassword32Bytes(owner_password),
+                .. PadOrTruncatePassword32Bytes(user_password),
+                .. PadOrTruncatePassword32Bytes(owner_password),
                 (byte)p,
                 (byte)(p >> 8),
                 (byte)(p >> 16),
                 (byte)(p >> 24),
-                ..document_id ?? [],
-                ..metadata_encrypted ? (byte[])[] : [0xFF, 0xFF, 0xFF, 0xFF],
+                .. document_id ?? [],
+                .. metadata_encrypted ? (byte[])[] : [0xFF, 0xFF, 0xFF, 0xFF],
             ]);
         for (var i = 0; i < 50; i++) hash = MD5.HashData(hash);
         return hash;
     }
 
-    public static byte[] ComputeOwnerPassword_Revision3(byte[] user_password, byte[] owner_password, int size)
+    public static byte[] ComputeOwnerPassword_Algorithm3_3(byte[] user_password, byte[] owner_password, int size)
     {
         var hash = MD5.HashData(PadOrTruncatePassword32Bytes(owner_password));
         for (var i = 0; i < 50; i++) hash = MD5.HashData(hash[0..size]);
@@ -51,7 +51,7 @@ public static class Encryption
         return owner_key;
     }
 
-    public static byte[] ComputeUserPassword_Revision2(byte[] document_id, byte[] encryption_key)
+    public static byte[] ComputeUserPassword_Algorithm3_5(byte[] document_id, byte[] encryption_key)
     {
         var user_key = MD5.HashData([.. PasswordPaddingBytes, .. document_id]);
 

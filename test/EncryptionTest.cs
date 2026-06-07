@@ -44,9 +44,9 @@ public class EncryptionTest
     }
 
     [Fact]
-    public void ComputeEncryptionKey_Revision4()
+    public void ComputeEncryptionKey_Algorithm3_2()
     {
-        Assert.Equal(Encryption.ComputeEncryptionKey_Revision4(
+        Assert.Equal(Encryption.ComputeEncryptionKey_Algorithm3_2(
                 [],
                 [],
                 UserAccessPermissions.Default,
@@ -57,7 +57,7 @@ public class EncryptionTest
                 0x27, 0x68, 0x7f, 0x4d, 0xc9, 0xe5, 0xb0, 0xce, 0x34, 0x9b, 0xd0, 0x06, 0xcf, 0x37, 0x80, 0xcb,
             ]);
 
-        Assert.Equal(Encryption.ComputeEncryptionKey_Revision4(
+        Assert.Equal(Encryption.ComputeEncryptionKey_Algorithm3_2(
                 [],
                 [],
                 UserAccessPermissions.Default,
@@ -68,12 +68,12 @@ public class EncryptionTest
                 0x55, 0xf5, 0x02, 0x78, 0x3e, 0xca, 0xbe, 0xd3, 0x29, 0xa6, 0x5e, 0xec, 0xbf, 0xb8, 0xe8, 0xaa,
             ]);
 
-        var owner_password = Encryption.ComputeOwnerPassword_Revision3(
+        var owner_password = Encryption.ComputeOwnerPassword_Algorithm3_3(
             Encoding.UTF8.GetBytes("xyz987"),
             Encoding.UTF8.GetBytes("abc123"),
             16
         );
-        Assert.Equal(Encryption.ComputeEncryptionKey_Revision4(
+        Assert.Equal(Encryption.ComputeEncryptionKey_Algorithm3_2(
                 Encoding.UTF8.GetBytes("xyz987"),
                 owner_password,
                 UserAccessPermissions.AllowPrint | UserAccessPermissions.AllowPrintFaithfulDigitalCopy,
@@ -91,9 +91,9 @@ public class EncryptionTest
     }
 
     [Fact]
-    public void ComputeOwnerPassword_Revision3()
+    public void ComputeOwnerPassword_Algorithm3_3()
     {
-        Assert.Equal(Encryption.ComputeOwnerPassword_Revision3(
+        Assert.Equal(Encryption.ComputeOwnerPassword_Algorithm3_3(
                 [],
                 [],
                 16
@@ -103,7 +103,7 @@ public class EncryptionTest
                 0xA4, 0xF3, 0x35, 0x3F, 0xB0, 0x34, 0x8B, 0x53, 0x68, 0x93, 0xE3, 0xB1, 0xDB, 0x5C, 0x57, 0x9B,
             ]);
 
-        Assert.Equal(Encryption.ComputeOwnerPassword_Revision3(
+        Assert.Equal(Encryption.ComputeOwnerPassword_Algorithm3_3(
                 Encoding.UTF8.GetBytes("xyz987"),
                 Encoding.UTF8.GetBytes("abc123"),
                 16
@@ -115,16 +115,16 @@ public class EncryptionTest
     }
 
     [Fact]
-    public void ComputeUserPassword_Revision2()
+    public void ComputeUserPassword_Algorithm3_5()
     {
-        _ = Assert.Throws<DivideByZeroException>(() => Encryption.ComputeUserPassword_Revision2([], []));
+        _ = Assert.Throws<DivideByZeroException>(() => Encryption.ComputeUserPassword_Algorithm3_5([], []));
 
         Assert.Equal(
-            Encryption.ComputeUserPassword_Revision2([], [0x00]),
+            Encryption.ComputeUserPassword_Algorithm3_5([], [0x00]),
             [0x48, 0x91, 0x23, 0xab, 0x0b, 0x2a, 0x0e, 0x7b, 0x86, 0x09, 0xb6, 0x4d, 0xe3, 0x6a, 0x39, 0x9a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
         );
 
-        var owner_password = Encryption.ComputeOwnerPassword_Revision3(
+        var owner_password = Encryption.ComputeOwnerPassword_Algorithm3_3(
             Encoding.UTF8.GetBytes("xyz987"),
             Encoding.UTF8.GetBytes("abc123"),
             16
@@ -135,7 +135,7 @@ public class EncryptionTest
             0x02, 0xa7, 0x77, 0x43, 0xd9, 0x0f, 0xf4, 0x45, 0x9a, 0x86, 0xf6, 0x67, 0xab, 0x3f, 0x1e, 0xe4,
             0xb4, 0x08, 0x07, 0x61, 0x22, 0xb4, 0x71, 0xe5, 0xad, 0x27, 0xa7, 0x09, 0x8f, 0xc1, 0x53, 0x05,
         };
-        var encryption_key = Encryption.ComputeEncryptionKey_Revision4(
+        var encryption_key = Encryption.ComputeEncryptionKey_Algorithm3_2(
                 Encoding.UTF8.GetBytes("xyz987"),
                 owner_password,
                 UserAccessPermissions.AllowPrint | UserAccessPermissions.AllowPrintFaithfulDigitalCopy,
@@ -143,7 +143,7 @@ public class EncryptionTest
                 true
             );
         Assert.Equal(
-            Encryption.ComputeUserPassword_Revision2(document_id, encryption_key),
+            Encryption.ComputeUserPassword_Algorithm3_5(document_id, encryption_key),
             [0xf2, 0x7d, 0x74, 0x21, 0xf7, 0x89, 0x3f, 0xaa, 0xcb, 0x38, 0xac, 0xc1, 0xf0, 0xb5, 0x6b, 0x3c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
         );
     }

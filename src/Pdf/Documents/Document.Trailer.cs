@@ -94,12 +94,12 @@ public partial class Document
     {
         var user_password_bytes = Encoding.UTF8.GetBytes([]);
         var owner_password_bytes = Encoding.UTF8.GetBytes([]);
-        var o = Encryption.ComputeOwnerPassword_Revision3(
+        var o = Encryption.ComputeOwnerPassword_Algorithm3_3(
             user_password_bytes,
             owner_password_bytes,
             16
         );
-        var encryption_key = Encryption.ComputeEncryptionKey_Revision4(
+        var encryption_key = Encryption.ComputeEncryptionKey_Algorithm3_2(
             user_password_bytes,
             o,
             permissions,
@@ -116,7 +116,7 @@ public partial class Document
                 ["CF"] = new ElementLiteral() { Value = "<< /StdCF << /CFM /None /AuthEvent /DocOpen >> >>" },
                 ["R"] = revision,
                 ["O"] = new ElementLiteral() { Value = o.ToHexString() },
-                ["U"] = new ElementLiteral() { Value = Encryption.ComputeUserPassword_Revision2(document_id, encryption_key).ToHexString() },
+                ["U"] = new ElementLiteral() { Value = Encryption.ComputeUserPassword_Algorithm3_5(document_id, encryption_key).ToHexString() },
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
                 ["EFF"] = "/StdCF",
@@ -128,12 +128,12 @@ public partial class Document
     {
         var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
         var owner_password_bytes = Encoding.UTF8.GetBytes(owner_password);
-        var o = Encryption.ComputeOwnerPassword_Revision3(
+        var o = Encryption.ComputeOwnerPassword_Algorithm3_3(
             user_password_bytes,
             owner_password_bytes,
             16
         );
-        var encryption_key = Encryption.ComputeEncryptionKey_Revision4(
+        var encryption_key = Encryption.ComputeEncryptionKey_Algorithm3_2(
             user_password_bytes,
             o,
             permissions,
@@ -150,7 +150,7 @@ public partial class Document
                 ["CF"] = new ElementLiteral() { Value = "<< /StdCF << /CFM /AESV2 /AuthEvent /DocOpen /Length 128 >> >>" },
                 ["R"] = 4,
                 ["O"] = new ElementLiteral() { Value = o.ToHexString() },
-                ["U"] = new ElementLiteral() { Value = Encryption.ComputeUserPassword_Revision2(document_id, encryption_key).ToHexString() },
+                ["U"] = new ElementLiteral() { Value = Encryption.ComputeUserPassword_Algorithm3_5(document_id, encryption_key).ToHexString() },
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
                 ["EFF"] = "/StdCF",
