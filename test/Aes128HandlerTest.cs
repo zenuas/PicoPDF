@@ -11,7 +11,7 @@ namespace PicoPDF.Test;
 public class Aes128HandlerTest
 {
     [Fact]
-    public void ComputeEncryptionKey_Revision4()
+    public void InitializeWithoutGenerateIV()
     {
         using var aes = Aes128Handler.InitializeWithoutGenerateIV(
             [0x08, 0xe2, 0x08, 0x4d, 0xb2, 0x49, 0xdc, 0x76, 0x13, 0x0f, 0xad, 0x44, 0x13, 0x08, 0xc8, 0xd9], 5, 0);
