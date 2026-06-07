@@ -50,6 +50,8 @@
 
 :sample
 	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile -- %* create --work-directory docs/sample --register-user-font docs/sample --debug false --contents-deflate true --cmap-deflate true
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile -- %* font-export --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.ttf abc
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile -- %* font-export --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.otf abc
 	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile -- %* manual-args --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.pdf TTF-subset
 	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile -- %* manual-args --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.pdf CFF-subset
 	@exit /b %ERRORLEVEL%
