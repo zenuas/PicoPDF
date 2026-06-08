@@ -74,6 +74,7 @@ public class Aes128HandlerTest
         var plain_text3 = await PipeReadAsync(decrypter3.Output);
         Assert.Equal(plain_text3, long_text);
     }
+
     [Fact]
     public void DecryptFunctionTest()
     {
