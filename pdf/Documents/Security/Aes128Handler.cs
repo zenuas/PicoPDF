@@ -163,7 +163,7 @@ public class Aes128Handler : ISecurityHandler
 
     public static IEnumerable<byte> PadOrTruncatePassword32Bytes(ReadOnlySpan<byte> password) => ((byte[])[.. password, .. PasswordPaddingBytes]).Take(32);
 
-    public static byte[] ComputeEncryptionKey_Algorithm3_2(
+    public static byte[] ComputeEncryptionKey_Algorithm2(
             ReadOnlySpan<byte> user_password,
             ReadOnlySpan<byte> owner_password,
             UserAccessPermissions permissions,
@@ -186,7 +186,7 @@ public class Aes128Handler : ISecurityHandler
         return hash;
     }
 
-    public static byte[] ComputeOwnerPassword_Algorithm3_3(ReadOnlySpan<byte> user_password, ReadOnlySpan<byte> owner_password, int size)
+    public static byte[] ComputeOwnerPassword_Algorithm3(ReadOnlySpan<byte> user_password, ReadOnlySpan<byte> owner_password, int size)
     {
         var hash = MD5.HashData([.. PadOrTruncatePassword32Bytes(owner_password)]);
         for (var i = 0; i < 50; i++) hash = MD5.HashData(hash[0..size]);
@@ -201,7 +201,7 @@ public class Aes128Handler : ISecurityHandler
         return owner_key;
     }
 
-    public static byte[] ComputeUserPassword_Algorithm3_5(ReadOnlySpan<byte> document_id, ReadOnlySpan<byte> encryption_key)
+    public static byte[] ComputeUserPassword_Algorithm5(ReadOnlySpan<byte> document_id, ReadOnlySpan<byte> encryption_key)
     {
         var user_key = MD5.HashData([.. PasswordPaddingBytes, .. document_id]);
 
