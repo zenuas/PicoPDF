@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Linq;
 using System.Security.Cryptography;
@@ -160,11 +161,11 @@ public class Aes128Handler : ISecurityHandler
         };
     }
 
-    public static byte[] PadOrTruncatePassword32Bytes(byte[] password) => [.. password.Concat(PasswordPaddingBytes).Take(32)];
+    public static IEnumerable<byte> PadOrTruncatePassword32Bytes(Span<byte> password) => ((byte[])[.. password, .. PasswordPaddingBytes]).Take(32);
 
     public static byte[] ComputeEncryptionKey_Algorithm3_2(
-            byte[] user_password,
-            byte[] owner_password,
+            Span<byte> user_password,
+            Span<byte> owner_password,
             UserAccessPermissions permissions,
             byte[]? document_id,
             bool metadata_encrypted
@@ -185,12 +186,12 @@ public class Aes128Handler : ISecurityHandler
         return hash;
     }
 
-    public static byte[] ComputeOwnerPassword_Algorithm3_3(byte[] user_password, byte[] owner_password, int size)
+    public static byte[] ComputeOwnerPassword_Algorithm3_3(Span<byte> user_password, Span<byte> owner_password, int size)
     {
-        var hash = MD5.HashData(PadOrTruncatePassword32Bytes(owner_password));
+        var hash = MD5.HashData([.. PadOrTruncatePassword32Bytes(owner_password)]);
         for (var i = 0; i < 50; i++) hash = MD5.HashData(hash[0..size]);
 
-        var owner_key = PadOrTruncatePassword32Bytes(user_password);
+        var owner_key = PadOrTruncatePassword32Bytes(user_password).ToArray();
         Span<byte> key = stackalloc byte[size];
         for (var i = 0; i < 20; i++)
         {
@@ -200,7 +201,7 @@ public class Aes128Handler : ISecurityHandler
         return owner_key;
     }
 
-    public static byte[] ComputeUserPassword_Algorithm3_5(byte[] document_id, byte[] encryption_key)
+    public static byte[] ComputeUserPassword_Algorithm3_5(Span<byte> document_id, Span<byte> encryption_key)
     {
         var user_key = MD5.HashData([.. PasswordPaddingBytes, .. document_id]);
 
