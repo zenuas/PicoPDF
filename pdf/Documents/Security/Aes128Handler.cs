@@ -21,7 +21,7 @@ public class Aes128Handler : ISecurityHandler
     // (This addition is done for backward compatibility and is not intended to provide additional security.)
     public static readonly byte[] ExtendEncryptionKey = [0x73, 0x41, 0x6C, 0x54];
 
-    public static Aes InitializeWithoutGenerateIV(byte[] key, int object_number, int generation_number)
+    public static Aes InitializeWithoutGenerateIV(ReadOnlySpan<byte> key, int object_number, int generation_number)
     {
         // Treating the object number and generation number as binary integers,
         // extend the original n-byte encryption key to n + 5 bytes by appending the low-order 3 bytes of the object number and the low-order 2 bytes of the generation number in that order, low-order byte first.
@@ -161,11 +161,11 @@ public class Aes128Handler : ISecurityHandler
         };
     }
 
-    public static IEnumerable<byte> PadOrTruncatePassword32Bytes(Span<byte> password) => ((byte[])[.. password, .. PasswordPaddingBytes]).Take(32);
+    public static IEnumerable<byte> PadOrTruncatePassword32Bytes(ReadOnlySpan<byte> password) => ((byte[])[.. password, .. PasswordPaddingBytes]).Take(32);
 
     public static byte[] ComputeEncryptionKey_Algorithm3_2(
-            Span<byte> user_password,
-            Span<byte> owner_password,
+            ReadOnlySpan<byte> user_password,
+            ReadOnlySpan<byte> owner_password,
             UserAccessPermissions permissions,
             byte[]? document_id,
             bool metadata_encrypted
@@ -186,7 +186,7 @@ public class Aes128Handler : ISecurityHandler
         return hash;
     }
 
-    public static byte[] ComputeOwnerPassword_Algorithm3_3(Span<byte> user_password, Span<byte> owner_password, int size)
+    public static byte[] ComputeOwnerPassword_Algorithm3_3(ReadOnlySpan<byte> user_password, ReadOnlySpan<byte> owner_password, int size)
     {
         var hash = MD5.HashData([.. PadOrTruncatePassword32Bytes(owner_password)]);
         for (var i = 0; i < 50; i++) hash = MD5.HashData(hash[0..size]);
@@ -201,7 +201,7 @@ public class Aes128Handler : ISecurityHandler
         return owner_key;
     }
 
-    public static byte[] ComputeUserPassword_Algorithm3_5(Span<byte> document_id, Span<byte> encryption_key)
+    public static byte[] ComputeUserPassword_Algorithm3_5(ReadOnlySpan<byte> document_id, ReadOnlySpan<byte> encryption_key)
     {
         var user_key = MD5.HashData([.. PasswordPaddingBytes, .. document_id]);
 
