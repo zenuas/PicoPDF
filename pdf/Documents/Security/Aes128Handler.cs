@@ -26,7 +26,8 @@ public class Aes128Handler : ISecurityHandler
         // Treating the object number and generation number as binary integers,
         // extend the original n-byte encryption key to n + 5 bytes by appending the low-order 3 bytes of the object number and the low-order 2 bytes of the generation number in that order, low-order byte first.
         // (n is 5 unless the value of V in the encryption dictionary is greater than 1, in which case n is the value of Length divided by 8.)
-        var hash = MD5.HashData([
+        Span<byte> hash = stackalloc byte[16];
+        _ = MD5.HashData([
                 .. key,
                 (byte)object_number,
                 (byte)(object_number >> 8),
@@ -34,13 +35,13 @@ public class Aes128Handler : ISecurityHandler
                 (byte)generation_number,
                 (byte)(generation_number >> 8),
                 .. ExtendEncryptionKey,
-            ]);
+            ], hash);
 
         // Use the first (n + 5) bytes, up to a maximum of 16, of the output from the MD5 hash as the key for the RC4 or AES symmetric key algorithms, along with the string or stream data to be encrypted.
         // If using the AES algorithm, the Cipher Block Chaining (CBC) mode, which requires an initialization vector, is used.
         // The block size parameter is set to 16 bytes, and the initialization vector is a 16-byte random number that is stored as the first 16 bytes of the encrypted stream or string.
         var aes = Aes.Create();
-        aes.Key = hash[0..Math.Min(key.Length + 5, 16)];
+        aes.Key = hash[0..Math.Min(key.Length + 5, 16)].ToArray();
         aes.Mode = CipherMode.CBC;
         aes.BlockSize = 16 * 8;
         return aes;
@@ -203,7 +204,8 @@ public class Aes128Handler : ISecurityHandler
 
     public static byte[] ComputeUserPassword_Algorithm5(ReadOnlySpan<byte> document_id, ReadOnlySpan<byte> encryption_key)
     {
-        var user_key = MD5.HashData([.. PasswordPaddingBytes, .. document_id]);
+        Span<byte> user_key = stackalloc byte[16];
+        _ = MD5.HashData([.. PasswordPaddingBytes, .. document_id], user_key);
 
         Span<byte> key = stackalloc byte[encryption_key.Length];
         for (var i = 0; i < 20; i++)
