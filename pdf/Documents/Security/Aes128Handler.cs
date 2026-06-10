@@ -41,7 +41,7 @@ public class Aes128Handler : ISecurityHandler
         // If using the AES algorithm, the Cipher Block Chaining (CBC) mode, which requires an initialization vector, is used.
         // The block size parameter is set to 16 bytes, and the initialization vector is a 16-byte random number that is stored as the first 16 bytes of the encrypted stream or string.
         var aes = Aes.Create();
-        aes.Key = hash[0..Math.Min(key.Length + 5, 16)].ToArray();
+        aes.SetKey(hash[0..Math.Min(key.Length + 5, 16)]);
         aes.Mode = CipherMode.CBC;
         aes.BlockSize = 16 * 8;
         return aes;

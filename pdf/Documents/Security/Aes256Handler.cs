@@ -30,7 +30,7 @@ public class Aes256Handler : ISecurityHandler
             user_key?.CopyTo(k1[(input.Length + k.Length)..]);
             for (var j = 1; j < 64; j++) k1[..k1_length].CopyTo(k1[(k1_length * j)..]);
 
-            aes.Key = k[..16].ToArray();
+            aes.SetKey(k[..16]);
             var e_length = aes.EncryptCbc(k1[..(k1_length * 64)], k[16..32], e, PaddingMode.None);
 
             UInt128 evalue = 0;
