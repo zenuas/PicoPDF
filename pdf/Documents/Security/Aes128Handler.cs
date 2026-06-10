@@ -171,8 +171,11 @@ public class Aes128Handler : ISecurityHandler
 
     public static void PadOrTruncatePassword32Bytes(ReadOnlySpan<byte> password, Span<byte> desitination)
     {
-        password[..Math.Min(password.Length, desitination.Length)].CopyTo(desitination);
-        if (password.Length < PasswordPaddingBytes.Length) PasswordPaddingBytes[..(PasswordPaddingBytes.Length - password.Length)].CopyTo(desitination[password.Length..]);
+        for (var i = 0; i < Math.Min(password.Length, desitination.Length); i++) desitination[i] = password[i];
+        if (password.Length < PasswordPaddingBytes.Length)
+        {
+            for (int i = password.Length, j = 0; i < desitination.Length; i++, j++) desitination[i] = PasswordPaddingBytes[j];
+        }
     }
 
     public static byte[] ComputeEncryptionKey_Algorithm2(
