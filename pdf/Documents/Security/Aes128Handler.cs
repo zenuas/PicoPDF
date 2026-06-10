@@ -162,7 +162,18 @@ public class Aes128Handler : ISecurityHandler
         };
     }
 
-    public static IEnumerable<byte> PadOrTruncatePassword32Bytes(ReadOnlySpan<byte> password) => ((byte[])[.. password, .. PasswordPaddingBytes]).Take(32);
+    public static byte[] PadOrTruncatePassword32Bytes(ReadOnlySpan<byte> password)
+    {
+        var output = new byte[PasswordPaddingBytes.Length];
+        PadOrTruncatePassword32Bytes(password, output);
+        return output;
+    }
+
+    public static void PadOrTruncatePassword32Bytes(ReadOnlySpan<byte> password, Span<byte> desitination)
+    {
+        password[..Math.Min(password.Length, desitination.Length)].CopyTo(desitination);
+        if (password.Length < PasswordPaddingBytes.Length) PasswordPaddingBytes[..(PasswordPaddingBytes.Length - password.Length)].CopyTo(desitination[password.Length..]);
+    }
 
     public static byte[] ComputeEncryptionKey_Algorithm2(
             ReadOnlySpan<byte> user_password,
@@ -172,10 +183,15 @@ public class Aes128Handler : ISecurityHandler
             bool metadata_encrypted
         )
     {
+        Span<byte> user_span = stackalloc byte[32];
+        Span<byte> owner_span = stackalloc byte[32];
+        PadOrTruncatePassword32Bytes(user_password, user_span);
+        PadOrTruncatePassword32Bytes(owner_password, owner_span);
+
         var p = (uint)(UserAccessPermissions.Default | permissions);
         var hash = MD5.HashData([
-                .. PadOrTruncatePassword32Bytes(user_password),
-                .. PadOrTruncatePassword32Bytes(owner_password),
+                .. user_span,
+                .. owner_span,
                 (byte)p,
                 (byte)(p >> 8),
                 (byte)(p >> 16),
@@ -189,7 +205,9 @@ public class Aes128Handler : ISecurityHandler
 
     public static byte[] ComputeOwnerPassword_Algorithm3(ReadOnlySpan<byte> user_password, ReadOnlySpan<byte> owner_password, int size)
     {
-        var hash = MD5.HashData([.. PadOrTruncatePassword32Bytes(owner_password)]);
+        Span<byte> hash = stackalloc byte[32];
+        PadOrTruncatePassword32Bytes(owner_password, hash);
+        _ = MD5.HashData(hash, hash);
         for (var i = 0; i < 50; i++) hash = MD5.HashData(hash[0..size]);
 
         var owner_key = PadOrTruncatePassword32Bytes(user_password).ToArray();
