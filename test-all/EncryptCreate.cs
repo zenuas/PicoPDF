@@ -1,6 +1,6 @@
-﻿using PicoPDF.Loader.Sections;
-using Pdf.Documents;
+﻿using Pdf.Documents;
 using Pdf.Documents.Security;
+using PicoPDF.Loader.Sections;
 using System;
 
 namespace PicoPDF.TestAll;
@@ -18,7 +18,7 @@ public class EncryptCreate : FontRegisterCommand
         page1.Contents.Operations.Add(Contents.CreateDrawText(page1.Document, "TrueType Font! あア亜 𠮷野家", 100, 180, 12, [ttf1]));
         document1.AddInfo("Titleあいう", creation_date: new DateTime(2000, 1, 2, 3, 4, 5));
         document1.AddEncrypt(CFM.None, "xyz987", "abc123", UserAccessPermissions.Default);
-        document1.Save("test-case/encrypt-none-create.pdf");
+        document1.Save("test-case/encrypt-none-create.pdf", new() { ContentsStreamDeflate = false });
 
         var document2 = new Document() { Version = 17, FontRegister = fontreg };
         var page2 = document2.NewPage(width, height);
@@ -41,6 +41,6 @@ public class EncryptCreate : FontRegisterCommand
         var ttf4 = document4.AddFont("true1", fontreg.LoadComplete("Meiryo Bold"));
         page4.Contents.Operations.Add(Contents.CreateDrawText(page4.Document, "TrueType Font! あア亜 𠮷野家", 100, 180, 12, [ttf4]));
         document4.AddInfo("Titleあいう", creation_date: new DateTime(2000, 1, 2, 3, 4, 5));
-        document4.Save("test-case/encrypt-noencrypt-create.pdf");
+        document4.Save("test-case/encrypt-noencrypt-create.pdf", new() { ContentsStreamDeflate = false });
     }
 }
