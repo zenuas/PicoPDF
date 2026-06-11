@@ -213,7 +213,7 @@ public class Aes128Handler : ISecurityHandler
         _ = MD5.HashData(hash, hash);
         for (var i = 0; i < 50; i++) hash = MD5.HashData(hash[0..size]);
 
-        var owner_key = PadOrTruncatePassword32Bytes(user_password).ToArray();
+        var owner_key = PadOrTruncatePassword32Bytes(user_password);
         Span<byte> key = stackalloc byte[size];
         for (var i = 0; i < 20; i++)
         {
