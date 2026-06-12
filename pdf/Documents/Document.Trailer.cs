@@ -75,14 +75,18 @@ public partial class Document
                 break;
 
             case CFM.AESV2:
-                (encrypt, var encryption_key) = CreateStandardEncryptionAes128(user_password, owner_password, permissions, GetDocumentID().CreateID);
-                StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new Aes128Handler() { Key = encryption_key };
-                break;
+                {
+                    (encrypt, var encryption_key) = CreateStandardEncryptionAes128(user_password, owner_password, permissions, GetDocumentID().CreateID);
+                    StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new Aes128Handler() { Key = encryption_key };
+                    break;
+                }
 
             case CFM.AESV3:
-                (encrypt, _) = CreateStandardEncryptionAes256(permissions);
-                //StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new Aes256Handler();
-                break;
+                {
+                    (encrypt, var encryption_key) = CreateStandardEncryptionAes256(user_password, owner_password, permissions, GetDocumentID().CreateID);
+                    StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new Aes256Handler() { Key = encryption_key };
+                    break;
+                }
 
             default:
                 throw new();
@@ -158,8 +162,24 @@ public partial class Document
         }, encryption_key);
     }
 
-    public static (PdfObject Encrypt, byte[] EncryptionKey) CreateStandardEncryptionAes256(UserAccessPermissions permissions)
+    public static (PdfObject Encrypt, byte[] EncryptionKey) CreateStandardEncryptionAes256(string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id)
     {
+        // Truncate the UTF-8 representation to 127 bytes if it is longer than 127 bytes.
+        var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
+        var owner_password_bytes = Encoding.UTF8.GetBytes(owner_password);
+
+        var file_encryption_key = Aes256Handler.CreateFileEncryptionKey();
+        Span<byte> u_key = stackalloc byte[48];
+        Span<byte> ue_key = stackalloc byte[32];
+        Aes256Handler.ComputeUserPassword_Algorithm8(user_password_bytes.Length > 127 ? user_password_bytes[..127] : user_password_bytes, file_encryption_key, u_key, ue_key);
+
+        Span<byte> o_key = stackalloc byte[48];
+        Span<byte> oe_key = stackalloc byte[32];
+        Aes256Handler.ComputeOwnerPassword_Algorithm9(owner_password_bytes.Length > 127 ? owner_password_bytes[..127] : owner_password_bytes, file_encryption_key, u_key, o_key, oe_key);
+
+        Span<byte> perms = stackalloc byte[16];
+        Aes256Handler.ComputePerms_Algorithm10(permissions, true, file_encryption_key, perms);
+
         return (new()
         {
             Elements =
@@ -169,10 +189,15 @@ public partial class Document
                 ["V"] = 5,
                 ["CF"] = "<< /StdCF << /CFM /AESV3 /AuthEvent /DocOpen >> >>",
                 ["R"] = 6,
+                ["O"] = o_key.ToHexString(),
+                ["U"] = u_key.ToHexString(),
+                ["OE"] = oe_key.ToHexString(),
+                ["UE"] = ue_key.ToHexString(),
+                ["Perms"] = perms.ToHexString(),
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
                 ["EFF"] = "/StdCF",
             }
-        }, []);
+        }, file_encryption_key);
     }
 }

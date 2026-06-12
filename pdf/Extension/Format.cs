@@ -19,6 +19,7 @@ public static class Format
 
     public static string ToHexString(this string self, Encoding encoding) => ToHexString(encoding.GetBytes(self));
     public static string ToHexString(this byte[] self) => $"<{Convert.ToHexStringLower(self)}>";
+    public static string ToHexString(this ReadOnlySpan<byte> self) => $"<{Convert.ToHexStringLower(self)}>";
 
     public static DeviceRGB ToDeviceRGB(this Color self) => new((double)self.R / 255, (double)self.G / 255, (double)self.B / 255);
 
