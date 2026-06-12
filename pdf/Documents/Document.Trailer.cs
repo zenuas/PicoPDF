@@ -83,7 +83,7 @@ public partial class Document
 
             case CFM.AESV3:
                 {
-                    (encrypt, var encryption_key) = CreateStandardEncryptionAes256(user_password, owner_password, permissions, GetDocumentID().CreateID);
+                    (encrypt, var encryption_key) = CreateStandardEncryptionAes256(user_password, owner_password, permissions);
                     StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new Aes256Handler() { Key = encryption_key };
                     break;
                 }
@@ -162,7 +162,7 @@ public partial class Document
         }, encryption_key);
     }
 
-    public static (PdfObject Encrypt, byte[] EncryptionKey) CreateStandardEncryptionAes256(string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id)
+    public static (PdfObject Encrypt, byte[] EncryptionKey) CreateStandardEncryptionAes256(string user_password, string owner_password, UserAccessPermissions permissions)
     {
         // Truncate the UTF-8 representation to 127 bytes if it is longer than 127 bytes.
         var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
