@@ -19,7 +19,8 @@ public class AllocationBench
         {
             // Consumer.Consume cannot be called in the stack version.
             // The heap version also discards the return value.
-            _ = Aes128Handler.PadOrTruncatePassword32Bytes(user_password);
+            var bytes = new byte[32];
+            Aes128Handler.PadOrTruncatePassword32Bytes(user_password, bytes);
             // Consumer.Consume(result);
         }
     }
@@ -28,10 +29,12 @@ public class AllocationBench
     public void Heap_Algorithm3()
     {
         var user_password = Encoding.UTF8.GetBytes("xyz987");
-        var owner_password = Aes128Handler.ComputeOwnerPassword_Algorithm3(
+        Span<byte> owner_password = stackalloc byte[32];
+        Aes128Handler.ComputeOwnerPassword_Algorithm3(
             user_password,
             Encoding.UTF8.GetBytes("abc123"),
-            16
+            16,
+            owner_password
         );
         for (var loop = 0; loop < 1_000; loop++)
         {
@@ -59,9 +62,13 @@ public class AllocationBench
         )
     {
         var p = (uint)(UserAccessPermissions.Default | permissions);
+        var u = new byte[32];
+        var o = new byte[32];
+        Aes128Handler.PadOrTruncatePassword32Bytes(user_password, u);
+        Aes128Handler.PadOrTruncatePassword32Bytes(owner_password, o);
         var hash = MD5.HashData([
-                .. Aes128Handler.PadOrTruncatePassword32Bytes(user_password),
-                .. Aes128Handler.PadOrTruncatePassword32Bytes(owner_password),
+                .. u,
+                .. o,
                 (byte)p,
                 (byte)(p >> 8),
                 (byte)(p >> 16),
@@ -89,10 +96,12 @@ public class AllocationBench
     public void Stack_Algorithm3()
     {
         var user_password = Encoding.UTF8.GetBytes("xyz987");
-        var owner_password = Aes128Handler.ComputeOwnerPassword_Algorithm3(
+        Span<byte> owner_password = stackalloc byte[32];
+        Aes128Handler.ComputeOwnerPassword_Algorithm3(
             user_password,
             Encoding.UTF8.GetBytes("abc123"),
-            16
+            16,
+            owner_password
         );
         for (var loop = 0; loop < 1_000; loop++)
         {

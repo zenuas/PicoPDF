@@ -162,13 +162,6 @@ public class Aes128Handler : ISecurityHandler
         };
     }
 
-    public static byte[] PadOrTruncatePassword32Bytes(ReadOnlySpan<byte> password)
-    {
-        var output = new byte[PasswordPaddingBytes.Length];
-        PadOrTruncatePassword32Bytes(password, output);
-        return output;
-    }
-
     public static void PadOrTruncatePassword32Bytes(ReadOnlySpan<byte> password, Span<byte> desitination)
     {
         for (var i = 0; i < Math.Min(password.Length, desitination.Length); i++) desitination[i] = password[i];
@@ -206,21 +199,20 @@ public class Aes128Handler : ISecurityHandler
         return hash;
     }
 
-    public static byte[] ComputeOwnerPassword_Algorithm3(ReadOnlySpan<byte> user_password, ReadOnlySpan<byte> owner_password, int size)
+    public static void ComputeOwnerPassword_Algorithm3(ReadOnlySpan<byte> user_password, ReadOnlySpan<byte> owner_password, int size, Span<byte> desitination)
     {
         Span<byte> hash = stackalloc byte[32];
         PadOrTruncatePassword32Bytes(owner_password, hash);
         _ = MD5.HashData(hash, hash);
         for (var i = 0; i < 50; i++) hash = MD5.HashData(hash[0..size]);
 
-        var owner_key = PadOrTruncatePassword32Bytes(user_password);
+        PadOrTruncatePassword32Bytes(user_password, desitination);
         Span<byte> key = stackalloc byte[size];
         for (var i = 0; i < 20; i++)
         {
             for (var j = 0; j < size; j++) key[j] = (byte)(hash[j] ^ i);
-            _ = Arcfour.Encrypt(Arcfour.InitializeKey(key), owner_key);
+            _ = Arcfour.Encrypt(Arcfour.InitializeKey(key), desitination);
         }
-        return owner_key;
     }
 
     public static byte[] ComputeUserPassword_Algorithm5(ReadOnlySpan<byte> document_id, ReadOnlySpan<byte> encryption_key)

@@ -98,14 +98,16 @@ public partial class Document
     {
         var user_password_bytes = Encoding.UTF8.GetBytes([]);
         var owner_password_bytes = Encoding.UTF8.GetBytes([]);
-        var o = Aes128Handler.ComputeOwnerPassword_Algorithm3(
+        Span<byte> o_key = stackalloc byte[32];
+        Aes128Handler.ComputeOwnerPassword_Algorithm3(
             user_password_bytes,
             owner_password_bytes,
-            16
+            16,
+            o_key
         );
         var encryption_key = Aes128Handler.ComputeEncryptionKey_Algorithm2(
             user_password_bytes,
-            o,
+            o_key,
             permissions,
             document_id,
             true
@@ -119,7 +121,7 @@ public partial class Document
                 ["V"] = version,
                 ["CF"] = "<< /StdCF << /CFM /None /AuthEvent /DocOpen >> >>",
                 ["R"] = revision,
-                ["O"] = o.ToHexString(),
+                ["O"] = o_key.ToHexString(),
                 ["U"] = Aes128Handler.ComputeUserPassword_Algorithm5(document_id, encryption_key).ToHexString(),
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
@@ -131,14 +133,16 @@ public partial class Document
     {
         var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
         var owner_password_bytes = Encoding.UTF8.GetBytes(owner_password);
-        var o = Aes128Handler.ComputeOwnerPassword_Algorithm3(
+        Span<byte> o_key = stackalloc byte[32];
+        Aes128Handler.ComputeOwnerPassword_Algorithm3(
             user_password_bytes,
             owner_password_bytes,
-            16
+            16,
+            o_key
         );
         var encryption_key = Aes128Handler.ComputeEncryptionKey_Algorithm2(
             user_password_bytes,
-            o,
+            o_key,
             permissions,
             document_id,
             true
@@ -152,7 +156,7 @@ public partial class Document
                 ["V"] = 4,
                 ["CF"] = "<< /StdCF << /CFM /AESV2 /AuthEvent /DocOpen /Length 128 >> >>",
                 ["R"] = 4,
-                ["O"] = o.ToHexString(),
+                ["O"] = o_key.ToHexString(),
                 ["U"] = Aes128Handler.ComputeUserPassword_Algorithm5(document_id, encryption_key).ToHexString(),
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
