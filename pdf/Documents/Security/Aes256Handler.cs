@@ -165,38 +165,54 @@ public class Aes256Handler : ISecurityHandler
 
     public static void ComputingHash_Algorithm2B(ReadOnlySpan<byte> input, ReadOnlySpan<byte> salt, ReadOnlySpan<byte> user_key, Span<byte> desitination)
     {
+        // Take the SHA-256 hash of the original input to the algorithm and name the resulting 32 bytes, K.
+        // Perform the following steps (a)-(d) 64 times:
         Span<byte> k = stackalloc byte[512 / 8];
         var k_length = SHA256.HashData([.. input, .. salt, .. user_key], k);
 
         using var aes = Aes.Create();
 
-        var k0_max_length = input.Length + (512 / 8) + user_key.Length;
+        var k0_max_length = input.Length + k.Length + user_key.Length;
         Span<byte> k1 = stackalloc byte[k0_max_length * 64];
         Span<byte> e = stackalloc byte[k0_max_length * 64];
         for (var i = 0; ;)
         {
+            // a) Make a new string, K1, consisting of 64 repetitions of the sequence: input password, K, the 48-byte user key.
             var k1_length = input.Length + k_length + user_key.Length;
 
             input.CopyTo(k1);
             k[..k_length].CopyTo(k1[input.Length..]);
+            // The 48 byte user key is only used when checking the owner password or creating the owner key.
+            // If checking the user password or creating the user key, K1 is the concatenation of the input password and K.
             if (user_key.Length > 0) user_key.CopyTo(k1[(input.Length + k_length)..]);
             for (var j = 1; j < 64; j++) k1[..k1_length].CopyTo(k1[(k1_length * j)..]);
 
+            // b) Encrypt K1 with the AES-128 (CBC, no padding) algorithm, using the first 16 bytes of K as the key and the second 16 bytes of K as the initialization vector.
+            // The result of this encryption is E.
             aes.SetKey(k[..16]);
             var e_length = aes.EncryptCbc(k1[..(k1_length * 64)], k[16..32], e, PaddingMode.None);
 
+            // c) Taking the first 16 bytes of E as an unsigned big-endian integer, compute the remainder, modulo 3.
+            // If the result is 0, the next hash used is SHA-256,
+            // if the result is 1, the next hash used is SHA-384,
+            // if the result is 2, the next hash used is SHA-512.
             UInt128 evalue = 0;
             for (var j = 0; j < 16; j++) evalue = (evalue << 8) | e[j];
             k_length = (int)(evalue % 3) switch
             {
+                // d) Using the hash algorithm determined in step c, take the hash of E.
+                // The result is a new value of K, which will be 32, 48, or 64 bytes in length.
                 0 => SHA256.HashData(e[..e_length], k),
                 1 => SHA384.HashData(e[..e_length], k),
                 2 => SHA512.HashData(e[..e_length], k),
                 _ => throw new(),
             };
 
+            // e) Look at the very last byte of E.
+            // If the value of that byte (taken as an unsigned integer) is greater than the round number - 32, repeat steps (a-d) again.
             if (++i > 63 && e[e_length - 1] <= i - 32) break;
         }
+        // f) Repeat from steps (a-e) until the value of the last byte is ≤ (round number) - 32.
         k[..32].CopyTo(desitination);
     }
 
