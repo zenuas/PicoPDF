@@ -151,6 +151,9 @@ public class Aes128Handler : ISecurityHandler
 
     public static void SetEncryptionKey_Algorithm1(ReadOnlySpan<byte> key, int object_number, int generation_number, Aes aes)
     {
+        // If using the AES algorithm, the Cipher Block Chaining (CBC) mode, which requires an initialization vector, is used.
+        // The block size parameter is set to 16 bytes, and the initialization vector is a 16-byte random number that is stored as the first 16 bytes of the encrypted stream or string.
+        aes.BlockSize = 16 * 8;
         Span<byte> bytes = stackalloc byte[Math.Min(key.Length + 5, 16)];
         SetEncryptionKey_Algorithm1(key, object_number, generation_number, bytes);
         aes.SetKey(bytes);
@@ -173,8 +176,6 @@ public class Aes128Handler : ISecurityHandler
             ], hash);
 
         // Use the first (n + 5) bytes, up to a maximum of 16, of the output from the MD5 hash as the key for the RC4 or AES symmetric key algorithms, along with the string or stream data to be encrypted.
-        // If using the AES algorithm, the Cipher Block Chaining (CBC) mode, which requires an initialization vector, is used.
-        // The block size parameter is set to 16 bytes, and the initialization vector is a 16-byte random number that is stored as the first 16 bytes of the encrypted stream or string.
         hash[0..Math.Min(key.Length + 5, 16)].CopyTo(desitination);
     }
 
