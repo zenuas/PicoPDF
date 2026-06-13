@@ -10,22 +10,6 @@ public class Aes256Handler : ISecurityHandler
 {
     public required byte[] Key { get; init; }
 
-    public static Aes InitializeWithoutGenerateIV(ReadOnlySpan<byte> key)
-    {
-        var aes = Aes.Create();
-        try
-        {
-            aes.SetKey(key);
-            aes.Mode = CipherMode.CBC;
-            return aes;
-        }
-        catch
-        {
-            aes.Dispose();
-            throw;
-        }
-    }
-
     public (PipeWriter Input, PipeReader Output) CreateEncrypterPipe(int object_number, int generation_number)
     {
         var input = new Pipe();
@@ -33,7 +17,9 @@ public class Aes256Handler : ISecurityHandler
 
         _ = Task.Run(async () =>
         {
-            using var aes = InitializeWithoutGenerateIV(Key);
+            using var aes = Aes.Create();
+            aes.SetKey(Key);
+            aes.Mode = CipherMode.CBC;
             aes.GenerateIV();
 
             var iv_buffer = output.Writer.GetMemory(16);
@@ -81,7 +67,9 @@ public class Aes256Handler : ISecurityHandler
 
         _ = Task.Run(async () =>
         {
-            using var aes = InitializeWithoutGenerateIV(Key);
+            using var aes = Aes.Create();
+            aes.SetKey(Key);
+            aes.Mode = CipherMode.CBC;
             var iv_result = await input.Reader.ReadAtLeastAsync(16);
             aes.IV = iv_result.Buffer.Slice(0, 16).ToArray();
             input.Reader.AdvanceTo(iv_result.Buffer.GetPosition(16));
@@ -119,7 +107,9 @@ public class Aes256Handler : ISecurityHandler
 
     public IConverter CreateEncrypterConverter(int object_number, int generation_number)
     {
-        var aes = InitializeWithoutGenerateIV(Key);
+        var aes = Aes.Create();
+        aes.SetKey(Key);
+        aes.Mode = CipherMode.CBC;
         try
         {
             return new ConverterBinder()
@@ -141,7 +131,9 @@ public class Aes256Handler : ISecurityHandler
 
     public IConverter CreateDecrypterConverter(int object_number, int generation_number)
     {
-        var aes = InitializeWithoutGenerateIV(Key);
+        var aes = Aes.Create();
+        aes.SetKey(Key);
+        aes.Mode = CipherMode.CBC;
         try
         {
             return new ConverterBinder()
