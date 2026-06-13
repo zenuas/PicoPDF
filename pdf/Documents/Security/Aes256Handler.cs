@@ -12,14 +12,18 @@ public class Aes256Handler : ISecurityHandler
 
     public static Aes InitializeWithoutGenerateIV(ReadOnlySpan<byte> key)
     {
-        // Use the 32-byte file encryption key for the AES-256 symmetric key algorithm, along with the string or stream data to be encrypted.
-        // Use the AES algorithm in Cipher Block Chaining (CBC) mode, which requires an initialization vector. 
-        // The block size parameter is set to 16 bytes, and the initialization vector is a 16-byte random number that is stored as the first 16 bytes of the encrypted stream or string.
-        // The output is the encrypted data to be stored in the PDF file.
         var aes = Aes.Create();
-        aes.SetKey(key);
-        aes.Mode = CipherMode.CBC;
-        return aes;
+        try
+        {
+            aes.SetKey(key);
+            aes.Mode = CipherMode.CBC;
+            return aes;
+        }
+        catch
+        {
+            aes.Dispose();
+            throw;
+        }
     }
 
     public (PipeWriter Input, PipeReader Output) CreateEncrypterPipe(int object_number, int generation_number)
@@ -116,25 +120,41 @@ public class Aes256Handler : ISecurityHandler
     public IConverter CreateEncrypterConverter(int object_number, int generation_number)
     {
         var aes = InitializeWithoutGenerateIV(Key);
-        return new ConverterBinder()
+        try
         {
-            Convert = bytes =>
+            return new ConverterBinder()
             {
-                aes.GenerateIV();
-                return [.. aes.IV, .. aes.EncryptCbc(bytes, aes.IV)];
-            },
-            Dispose = () => aes.Dispose(),
-        };
+                Convert = bytes =>
+                {
+                    aes.GenerateIV();
+                    return [.. aes.IV, .. aes.EncryptCbc(bytes, aes.IV)];
+                },
+                Dispose = () => aes.Dispose(),
+            };
+        }
+        catch
+        {
+            aes.Dispose();
+            throw;
+        }
     }
 
     public IConverter CreateDecrypterConverter(int object_number, int generation_number)
     {
         var aes = InitializeWithoutGenerateIV(Key);
-        return new ConverterBinder()
+        try
         {
-            Convert = bytes => aes.DecryptCbc(bytes[16..], bytes[0..16]),
-            Dispose = () => aes.Dispose(),
-        };
+            return new ConverterBinder()
+            {
+                Convert = bytes => aes.DecryptCbc(bytes[16..], bytes[0..16]),
+                Dispose = () => aes.Dispose(),
+            };
+        }
+        catch
+        {
+            aes.Dispose();
+            throw;
+        }
     }
 
     public static byte[] CreateFileEncryptionKey() => RandomNumberGenerator.GetBytes(32);
