@@ -145,7 +145,7 @@ public class Aes256Handler : ISecurityHandler
         Span<byte> k = stackalloc byte[512 / 8];
         var k_length = SHA256.HashData([.. input, .. salt, .. user_key], k);
 
-        var aes = Aes.Create();
+        using var aes = Aes.Create();
         aes.Mode = CipherMode.CBC;
         aes.Padding = PaddingMode.None;
         aes.BlockSize = 16 * 8;
@@ -195,7 +195,7 @@ public class Aes256Handler : ISecurityHandler
 
         // Compute the 32-byte hash using algorithm 2.B with an input string consisting of the UTF-8 password concatenated with the User Key Salt.
         // Using this hash as the key, encrypt the file encryption key using AES-256 in CBC mode with no padding and an initialization vector of zero. The resulting 32-byte string is stored as the UE key.
-        var aes = Aes.Create();
+        using var aes = Aes.Create();
         aes.Mode = CipherMode.CBC;
         aes.Padding = PaddingMode.None;
         aes.BlockSize = 16 * 8;
@@ -223,7 +223,7 @@ public class Aes256Handler : ISecurityHandler
         // Compute the 32-byte hash using 7.6.4.3.4, "Algorithm 2.B: Computing a hash (revision 6 and later)" with an input string consisting of the UTF-8 password concatenated with the Owner Key Salt and then concatenated with the 48-byte U string as generated in 7.6.4.4.7, "Algorithm 8: Computing the encryption dictionary’s U (user password) and UE (user encryption) values (Security handlers of revision 6)".
         // Using this hash as the key, encrypt the file encryption key using AES-256 in CBC mode with no padding and an initialization vector of zero.
         // The resulting 32-byte string is stored as the OE key.
-        var aes = Aes.Create();
+        using var aes = Aes.Create();
         aes.Mode = CipherMode.CBC;
         aes.Padding = PaddingMode.None;
         aes.BlockSize = 16 * 8;
@@ -263,7 +263,7 @@ public class Aes256Handler : ISecurityHandler
 
         // Encrypt the 16-byte block using AES-256 in ECB mode, using the file encryption key as the key.
         // The result (16 bytes) is stored as the Perms string, and checked for validity when the file is opened.
-        var aes = Aes.Create();
+        using var aes = Aes.Create();
         aes.Mode = CipherMode.ECB;
         aes.Padding = PaddingMode.None;
         aes.BlockSize = 16 * 8;
