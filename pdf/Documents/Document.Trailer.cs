@@ -66,25 +66,25 @@ public partial class Document
         {
             case CFM.None when Version >= 20:
                 (encrypt, _) = CreateStandardEncryptionNone(5, 6, permissions, GetDocumentID().CreateID);
-                StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new IdentityHandler();
+                StreamHandler = StringHandler = new IdentityHandler();
                 break;
 
             case CFM.None:
                 (encrypt, _) = CreateStandardEncryptionNone(4, 4, permissions, GetDocumentID().CreateID);
-                StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new IdentityHandler();
+                StreamHandler = StringHandler = new IdentityHandler();
                 break;
 
             case CFM.AESV2:
                 {
                     (encrypt, var encryption_key) = CreateStandardEncryptionAes128(user_password, owner_password, permissions, GetDocumentID().CreateID);
-                    StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new Aes128Handler() { Key = encryption_key };
+                    StreamHandler = StringHandler = new Aes128Handler() { Key = encryption_key };
                     break;
                 }
 
             case CFM.AESV3:
                 {
                     (encrypt, var encryption_key) = CreateStandardEncryptionAes256(user_password, owner_password, permissions);
-                    StreamHandler = StringHandler = EmbeddedFileStreamsHandler = new Aes256Handler() { Key = encryption_key };
+                    StreamHandler = StringHandler = new Aes256Handler() { Key = encryption_key };
                     break;
                 }
 
@@ -123,7 +123,6 @@ public partial class Document
                 ["U"] = Aes128Handler.ComputeUserPassword_Algorithm5(document_id, encryption_key).ToHexString(),
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
-                ["EFF"] = "/StdCF",
             }
         }, encryption_key);
     }
@@ -157,7 +156,6 @@ public partial class Document
                 ["U"] = Aes128Handler.ComputeUserPassword_Algorithm5(document_id, encryption_key).ToHexString(),
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
-                ["EFF"] = "/StdCF",
             }
         }, encryption_key);
     }
@@ -196,7 +194,6 @@ public partial class Document
                 ["Perms"] = perms.ToHexString(),
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
-                ["EFF"] = "/StdCF",
             }
         }, file_encryption_key);
     }
