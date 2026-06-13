@@ -108,10 +108,10 @@ public class Aes256Handler : ISecurityHandler
     public IConverter CreateEncrypterConverter(int object_number, int generation_number)
     {
         var aes = Aes.Create();
-        aes.SetKey(Key);
-        aes.Mode = CipherMode.CBC;
         try
         {
+            aes.SetKey(Key);
+            aes.Mode = CipherMode.CBC;
             return new ConverterBinder()
             {
                 Convert = bytes =>
@@ -132,10 +132,10 @@ public class Aes256Handler : ISecurityHandler
     public IConverter CreateDecrypterConverter(int object_number, int generation_number)
     {
         var aes = Aes.Create();
-        aes.SetKey(Key);
-        aes.Mode = CipherMode.CBC;
         try
         {
+            aes.SetKey(Key);
+            aes.Mode = CipherMode.CBC;
             return new ConverterBinder()
             {
                 Convert = bytes => aes.DecryptCbc(bytes[16..], bytes[0..16]),

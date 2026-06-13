@@ -117,27 +117,43 @@ public class Aes128Handler : ISecurityHandler
     public IConverter CreateEncrypterConverter(int object_number, int generation_number)
     {
         var aes = Aes.Create();
-        SetEncryptionKey_Algorithm1(Key, object_number, generation_number, aes);
-        return new ConverterBinder()
+        try
         {
-            Convert = bytes =>
+            SetEncryptionKey_Algorithm1(Key, object_number, generation_number, aes);
+            return new ConverterBinder()
             {
-                aes.GenerateIV();
-                return [.. aes.IV, .. aes.EncryptCbc(bytes, aes.IV)];
-            },
-            Dispose = () => aes.Dispose(),
-        };
+                Convert = bytes =>
+                {
+                    aes.GenerateIV();
+                    return [.. aes.IV, .. aes.EncryptCbc(bytes, aes.IV)];
+                },
+                Dispose = () => aes.Dispose(),
+            };
+        }
+        catch
+        {
+            aes.Dispose();
+            throw;
+        }
     }
 
     public IConverter CreateDecrypterConverter(int object_number, int generation_number)
     {
         var aes = Aes.Create();
-        SetEncryptionKey_Algorithm1(Key, object_number, generation_number, aes);
-        return new ConverterBinder()
+        try
         {
-            Convert = bytes => aes.DecryptCbc(bytes[16..], bytes[0..16]),
-            Dispose = () => aes.Dispose(),
-        };
+            SetEncryptionKey_Algorithm1(Key, object_number, generation_number, aes);
+            return new ConverterBinder()
+            {
+                Convert = bytes => aes.DecryptCbc(bytes[16..], bytes[0..16]),
+                Dispose = () => aes.Dispose(),
+            };
+        }
+        catch
+        {
+            aes.Dispose();
+            throw;
+        }
     }
 
     public static void PadOrTruncatePassword32Bytes(ReadOnlySpan<byte> password, Span<byte> desitination)
