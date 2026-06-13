@@ -19,7 +19,6 @@ public class Aes256Handler : ISecurityHandler
         var aes = Aes.Create();
         aes.SetKey(key);
         aes.Mode = CipherMode.CBC;
-        aes.BlockSize = 16 * 8;
         return aes;
     }
 
@@ -146,9 +145,6 @@ public class Aes256Handler : ISecurityHandler
         var k_length = SHA256.HashData([.. input, .. salt, .. user_key], k);
 
         using var aes = Aes.Create();
-        aes.Mode = CipherMode.CBC;
-        aes.Padding = PaddingMode.None;
-        aes.BlockSize = 16 * 8;
 
         var k0_max_length = input.Length + (512 / 8) + user_key.Length;
         Span<byte> k1 = stackalloc byte[k0_max_length * 64];
@@ -196,9 +192,6 @@ public class Aes256Handler : ISecurityHandler
         // Compute the 32-byte hash using algorithm 2.B with an input string consisting of the UTF-8 password concatenated with the User Key Salt.
         // Using this hash as the key, encrypt the file encryption key using AES-256 in CBC mode with no padding and an initialization vector of zero. The resulting 32-byte string is stored as the UE key.
         using var aes = Aes.Create();
-        aes.Mode = CipherMode.CBC;
-        aes.Padding = PaddingMode.None;
-        aes.BlockSize = 16 * 8;
 
         Span<byte> user_key_salt_hash = stackalloc byte[32];
         ComputingHash_Algorithm2B(user_password, user_validation_salt_and_key_salt.AsSpan(8), [], user_key_salt_hash);
@@ -224,9 +217,6 @@ public class Aes256Handler : ISecurityHandler
         // Using this hash as the key, encrypt the file encryption key using AES-256 in CBC mode with no padding and an initialization vector of zero.
         // The resulting 32-byte string is stored as the OE key.
         using var aes = Aes.Create();
-        aes.Mode = CipherMode.CBC;
-        aes.Padding = PaddingMode.None;
-        aes.BlockSize = 16 * 8;
 
         Span<byte> owner_key_salt_hash = stackalloc byte[32];
         ComputingHash_Algorithm2B(owner_password, owner_validation_salt_and_key_salt.AsSpan(8), u_key, owner_key_salt_hash);
@@ -264,9 +254,6 @@ public class Aes256Handler : ISecurityHandler
         // Encrypt the 16-byte block using AES-256 in ECB mode, using the file encryption key as the key.
         // The result (16 bytes) is stored as the Perms string, and checked for validity when the file is opened.
         using var aes = Aes.Create();
-        aes.Mode = CipherMode.ECB;
-        aes.Padding = PaddingMode.None;
-        aes.BlockSize = 16 * 8;
         aes.SetKey(file_encryption_key);
         _ = aes.EncryptEcb(text, perms, PaddingMode.None);
     }

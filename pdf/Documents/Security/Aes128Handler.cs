@@ -43,7 +43,6 @@ public class Aes128Handler : ISecurityHandler
         var aes = Aes.Create();
         aes.SetKey(hash[0..Math.Min(key.Length + 5, 16)]);
         aes.Mode = CipherMode.CBC;
-        aes.BlockSize = 16 * 8;
         return aes;
     }
 
