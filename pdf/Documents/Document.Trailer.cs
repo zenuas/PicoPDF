@@ -198,6 +198,7 @@ public partial class Document
                 ["Perms"] = perms.ToHexString(),
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
+                ["Length"] = 256, // NOTE (2020) The Length key was corrected to be required and the descriptive text updated.
             }
         }, file_encryption_key);
     }
