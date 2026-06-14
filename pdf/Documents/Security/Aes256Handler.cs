@@ -264,7 +264,7 @@ public class Aes256Handler : ISecurityHandler
     {
         // Extend the permissions (contents of the P integer) to 64 bits by setting the upper 32 bits to all 1’s.
         Span<byte> text = stackalloc byte[16];
-        var p = (uint)(permissions | UserAccessPermissions.Default);
+        var p = (uint)(permissions | UserAccessPermissions.Default_PDF20);
 
         text[0] = (byte)p;
         text[1] = (byte)(p >> 8);

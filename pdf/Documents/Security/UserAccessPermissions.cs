@@ -15,4 +15,5 @@ public enum UserAccessPermissions
     AllowPrintFaithfulDigitalCopy = 1 << 11,
 
     Default = unchecked((int)0b_11111111_11111111_11110000_11000000),
+    Default_PDF20 = unchecked((int)0b_11111111_11111111_11110010_11000000),
 }

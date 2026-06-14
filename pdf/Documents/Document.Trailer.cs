@@ -187,7 +187,7 @@ public partial class Document
             Elements =
             {
                 ["Filter"] = "/Standard",
-                ["P"] = (int)(permissions | UserAccessPermissions.Default),
+                ["P"] = (int)(permissions | UserAccessPermissions.Default_PDF20),
                 ["V"] = 5,
                 ["CF"] = "<< /StdCF << /CFM /AESV3 /AuthEvent /DocOpen >> >>",
                 ["R"] = 6,
