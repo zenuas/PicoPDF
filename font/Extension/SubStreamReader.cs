@@ -31,7 +31,7 @@ public class SubStreamReader : Stream
         var max = StartOffset + LimitLength;
         if (pos >= max) return 0;
 
-        return BaseStream.Read(buffer, offset, pos + count >= max ? (int)(max - pos) : count);
+        return BaseStream.Read(buffer, offset, pos + count > max ? (int)(max - pos) : count);
     }
 
     public override long Seek(long offset, SeekOrigin origin)

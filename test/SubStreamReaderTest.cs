@@ -81,6 +81,13 @@ public class SubStreamReaderTest
         _ = Assert.Throws<IOException>(() => mem.Seek(-6, SeekOrigin.End));
 
         _ = Assert.Throws<ArgumentException>(() => mem.Seek(0, (SeekOrigin)3));
+
+        for (var i = 0; i <= 7; i++)
+        {
+            mem.Position = 0;
+            var readed5 = mem.Read(bytes, 0, i);
+            Assert.Equal(readed5, i <= 5 ? i : 5);
+        }
     }
 
     [Fact]
@@ -132,5 +139,12 @@ public class SubStreamReaderTest
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(-6, SeekOrigin.End));
 
         _ = Assert.Throws<ArgumentException>(() => mem.Seek(0, (SeekOrigin)3));
+
+        for (var i = 0; i <= 7; i++)
+        {
+            mem.Position = 1;
+            var readed5 = mem.Read(bytes, 0, i);
+            Assert.Equal(readed5, i <= 3 ? i : 3);
+        }
     }
 }
