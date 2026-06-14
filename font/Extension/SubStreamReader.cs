@@ -34,16 +34,13 @@ public class SubStreamReader : Stream
         return BaseStream.Read(buffer, offset, pos + count > max ? (int)(max - pos) : count);
     }
 
-    public override long Seek(long offset, SeekOrigin origin)
+    public override long Seek(long offset, SeekOrigin origin) => Position = offset + origin switch
     {
-        return Position = offset + origin switch
-        {
-            SeekOrigin.Begin => StartOffset,
-            SeekOrigin.Current => Position,
-            SeekOrigin.End => StartOffset + LimitLength,
-            _ => throw new ArgumentException("Invalid seek origin.", nameof(origin)),
-        };
-    }
+        SeekOrigin.Begin => StartOffset,
+        SeekOrigin.Current => Position,
+        SeekOrigin.End => StartOffset + LimitLength,
+        _ => throw new ArgumentException("Invalid seek origin.", nameof(origin)),
+    };
 
     public override void Flush() => throw new NotSupportedException();
 
