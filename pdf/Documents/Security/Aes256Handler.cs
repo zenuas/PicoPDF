@@ -170,7 +170,7 @@ public class Aes256Handler : ISecurityHandler
         var k0_max_length = input.Length + k.Length + user_key.Length;
         Span<byte> k1 = stackalloc byte[k0_max_length * 64];
         Span<byte> e = stackalloc byte[k0_max_length * 64];
-        for (var i = 0; ;)
+        for (var i = 1; ; i++)
         {
             // a) Make a new string, K1, consisting of 64 repetitions of the sequence: input password, K, the 48-byte user key.
             var k1_length = input.Length + k_length + user_key.Length;
@@ -205,7 +205,7 @@ public class Aes256Handler : ISecurityHandler
 
             // e) Look at the very last byte of E.
             // If the value of that byte (taken as an unsigned integer) is greater than the round number - 32, repeat steps (a-d) again.
-            if (++i > 63 && e[e_length - 1] <= i - 32) break;
+            if (i > 63 && e[e_length - 1] <= i - 32) break;
         }
         // f) Repeat from steps (a-e) until the value of the last byte is ≤ (round number) - 32.
         k[..32].CopyTo(desitination);
