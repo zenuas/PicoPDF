@@ -54,6 +54,7 @@
 	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %* font-export --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.otf abc
 	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %* manual-args --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.pdf TTF-subset
 	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %* manual-args --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.pdf CFF-subset
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %* encrypt --work-directory docs/sample
 	@exit /b %ERRORLEVEL%
 
 :bench

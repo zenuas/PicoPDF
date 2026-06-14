@@ -1,0 +1,62 @@
+%PDF-1.7
+%🍣
+
+1 0 obj
+<<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+  /Type /Pages
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+
+3 0 obj
+<<
+  /Type /Page
+  /Contents 4 0 R
+  /Parent 2 0 R
+  /MediaBox [ 0 0 842 595 ]
+  /Resources << /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ] >>
+>>
+endobj
+
+4 0 obj
+<<
+  /Length 0
+>>
+stream
+
+endstream
+endobj
+
+5 0 obj
+<<
+  /Title (Title)
+  /CreationDate (D:20000102030405)
+>>
+endobj
+
+xref
+0 6
+0000000000 65535 f
+0000000016 00000 n
+0000000070 00000 n
+0000000136 00000 n
+0000000301 00000 n
+0000000353 00000 n
+
+trailer
+<<
+  /Size 6
+  /Root 1 0 R
+  /Info 5 0 R
+>>
+startxref
+427
+%%EOF
