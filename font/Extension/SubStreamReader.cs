@@ -43,7 +43,7 @@ public class SubStreamReader : Stream
             SeekOrigin.Begin => StartOffset,
             SeekOrigin.Current => Position,
             SeekOrigin.End => StartOffset + LimitLength,
-            _ => throw new ArgumentException(nameof(origin)),
+            _ => throw new ArgumentException("Invalid seek origin.", nameof(origin)),
         };
     }
 
