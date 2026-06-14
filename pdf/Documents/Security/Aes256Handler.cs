@@ -17,13 +17,9 @@ public class Aes256Handler : ISecurityHandler
 
         _ = Task.Run(async () =>
         {
-            // Use the AES algorithm in Cipher Block Chaining (CBC) mode, which requires an initialization vector.
-            // The block size parameter is set to 16 bytes, and the initialization vector is a 16-byte random number that is stored as the first 16 bytes of the encrypted stream or string.
             using var aes = Aes.Create();
-            aes.BlockSize = 16 * 8;
-            aes.Mode = CipherMode.CBC;
-            aes.SetKey(Key);
             aes.GenerateIV();
+            SetEncryptionKey_Algorithm1A(Key, aes);
 
             var iv_buffer = output.Writer.GetMemory(16);
             aes.IV.CopyTo(iv_buffer);
@@ -70,12 +66,8 @@ public class Aes256Handler : ISecurityHandler
 
         _ = Task.Run(async () =>
         {
-            // Use the AES algorithm in Cipher Block Chaining (CBC) mode, which requires an initialization vector.
-            // The block size parameter is set to 16 bytes, and the initialization vector is a 16-byte random number that is stored as the first 16 bytes of the encrypted stream or string.
             using var aes = Aes.Create();
-            aes.BlockSize = 16 * 8;
-            aes.Mode = CipherMode.CBC;
-            aes.SetKey(Key);
+            SetEncryptionKey_Algorithm1A(Key, aes);
             var iv_result = await input.Reader.ReadAtLeastAsync(16);
             aes.IV = iv_result.Buffer.Slice(0, 16).ToArray();
             input.Reader.AdvanceTo(iv_result.Buffer.GetPosition(16));
@@ -113,13 +105,10 @@ public class Aes256Handler : ISecurityHandler
 
     public IConverter CreateEncrypterConverter(int object_number, int generation_number)
     {
-        // Use the AES algorithm in Cipher Block Chaining (CBC) mode, which requires an initialization vector.
-        // The block size parameter is set to 16 bytes, and the initialization vector is a 16-byte random number that is stored as the first 16 bytes of the encrypted stream or string.
         var aes = Aes.Create();
         try
         {
-            aes.BlockSize = 16 * 8;
-            aes.SetKey(Key);
+            SetEncryptionKey_Algorithm1A(Key, aes);
             return new ConverterBinder()
             {
                 Convert = bytes =>
@@ -139,13 +128,10 @@ public class Aes256Handler : ISecurityHandler
 
     public IConverter CreateDecrypterConverter(int object_number, int generation_number)
     {
-        // Use the AES algorithm in Cipher Block Chaining (CBC) mode, which requires an initialization vector.
-        // The block size parameter is set to 16 bytes, and the initialization vector is a 16-byte random number that is stored as the first 16 bytes of the encrypted stream or string.
         var aes = Aes.Create();
         try
         {
-            aes.BlockSize = 16 * 8;
-            aes.SetKey(Key);
+            SetEncryptionKey_Algorithm1A(Key, aes);
             return new ConverterBinder()
             {
                 Convert = bytes => aes.DecryptCbc(bytes[16..], bytes[0..16]),
@@ -162,6 +148,15 @@ public class Aes256Handler : ISecurityHandler
     public static byte[] CreateFileEncryptionKey() =>
         // Use the 32-byte file encryption key for the AES-256 symmetric key algorithm, along with the string or stream data to be encrypted.
         RandomNumberGenerator.GetBytes(32);
+
+    public static void SetEncryptionKey_Algorithm1A(ReadOnlySpan<byte> key, Aes aes)
+    {
+        // Use the AES algorithm in Cipher Block Chaining (CBC) mode, which requires an initialization vector.
+        // The block size parameter is set to 16 bytes, and the initialization vector is a 16-byte random number that is stored as the first 16 bytes of the encrypted stream or string.
+        aes.BlockSize = 16 * 8;
+        aes.Mode = CipherMode.CBC;
+        aes.SetKey(key);
+    }
 
     public static void ComputingHash_Algorithm2B(ReadOnlySpan<byte> input, ReadOnlySpan<byte> salt, ReadOnlySpan<byte> user_key, Span<byte> desitination)
     {
