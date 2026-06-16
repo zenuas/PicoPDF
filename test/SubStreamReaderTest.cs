@@ -114,9 +114,9 @@ public class SubStreamReaderTest
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Position = 6);
 
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(-1, SeekOrigin.Begin));
-        Assert.Equal(mem.Seek(0, SeekOrigin.Begin), 1);
-        Assert.Equal(mem.Seek(1, SeekOrigin.Begin), 2);
-        Assert.Equal(mem.Seek(3, SeekOrigin.Begin), 4);
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(0, SeekOrigin.Begin));
+        Assert.Equal(mem.Seek(1, SeekOrigin.Begin), 1);
+        Assert.Equal(mem.Seek(3, SeekOrigin.Begin), 3);
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(5, SeekOrigin.Begin));
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(6, SeekOrigin.Begin));
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(7, SeekOrigin.Begin));
@@ -129,12 +129,12 @@ public class SubStreamReaderTest
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(5, SeekOrigin.Current));
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(6, SeekOrigin.Current));
 
-        Assert.Equal(mem.Seek(0, SeekOrigin.End), 4);
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(0, SeekOrigin.End));
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(1, SeekOrigin.End));
-        Assert.Equal(mem.Seek(-1, SeekOrigin.End), 3);
-        Assert.Equal(mem.Seek(-2, SeekOrigin.End), 2);
-        Assert.Equal(mem.Seek(-3, SeekOrigin.End), 1);
-        _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(-4, SeekOrigin.End));
+        Assert.Equal(mem.Seek(-1, SeekOrigin.End), 4);
+        Assert.Equal(mem.Seek(-2, SeekOrigin.End), 3);
+        Assert.Equal(mem.Seek(-3, SeekOrigin.End), 2);
+        Assert.Equal(mem.Seek(-4, SeekOrigin.End), 1);
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(-5, SeekOrigin.End));
         _ = Assert.Throws<ArgumentOutOfRangeException>(() => mem.Seek(-6, SeekOrigin.End));
 

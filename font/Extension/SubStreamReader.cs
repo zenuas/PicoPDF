@@ -36,9 +36,9 @@ public class SubStreamReader : Stream
 
     public override long Seek(long offset, SeekOrigin origin) => Position = offset + origin switch
     {
-        SeekOrigin.Begin => StartOffset,
+        SeekOrigin.Begin => 0,
         SeekOrigin.Current => Position,
-        SeekOrigin.End => StartOffset + LimitLength,
+        SeekOrigin.End => BaseStream.Length,
         _ => throw new ArgumentException("Invalid seek origin.", nameof(origin)),
     };
 
