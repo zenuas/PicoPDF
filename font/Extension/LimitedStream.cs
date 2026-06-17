@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Extension;
 
-public class SubStreamReader : Stream
+public class LimitedStream : Stream
 {
     public required Stream BaseStream { protected get; init; }
     public required long StartOffset { get; init; }

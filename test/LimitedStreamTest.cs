@@ -5,7 +5,7 @@ using Xunit;
 
 namespace PicoPDF.Test;
 
-public class SubStreamReaderTest
+public class LimitedStreamTest
 {
     public static Stream Init(int length)
     {
@@ -18,9 +18,9 @@ public class SubStreamReaderTest
     public static Stream InitLimit(int length, int start, int limit_length)
     {
         var mem = Init(length);
-        var sub = new SubStreamReader { BaseStream = mem, StartOffset = start, LimitLength = limit_length };
-        sub.Position = start;
-        return sub;
+        var limited = new LimitedStream { BaseStream = mem, StartOffset = start, LimitLength = limit_length };
+        limited.Position = start;
+        return limited;
     }
 
     [Fact]

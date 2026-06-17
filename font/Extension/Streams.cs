@@ -50,5 +50,5 @@ public static class Streams
         source[2] = (byte)(value & 0xFF);
     }
 
-    public static SubStreamReader GetSubStreamReader(this Stream self, long start, long limiit_length) => new() { BaseStream = self.SeekTo(start, SeekOrigin.Begin), StartOffset = start, LimitLength = limiit_length };
+    public static LimitedStream GetLimitedStream(this Stream self, long start, long limiit_length) => new() { BaseStream = self.SeekTo(start, SeekOrigin.Begin), StartOffset = start, LimitLength = limiit_length };
 }

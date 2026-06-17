@@ -237,5 +237,5 @@ public static class FontLoader
 
     public static T? ReadTableRecord<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f) => ReadTableRecord(font.TableRecords, name, stream, f);
 
-    public static T? ReadTableRecord<T>(IReadOnlyDictionary<string, TableRecord> tables, string name, Stream stream, Func<Stream, T> f) => !tables.TryGetValue(name, out var record) ? default : f(stream.GetSubStreamReader(record.Offset, record.Length));
+    public static T? ReadTableRecord<T>(IReadOnlyDictionary<string, TableRecord> tables, string name, Stream stream, Func<Stream, T> f) => !tables.TryGetValue(name, out var record) ? default : f(stream.GetLimitedStream(record.Offset, record.Length));
 }
