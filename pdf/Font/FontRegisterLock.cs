@@ -5,8 +5,8 @@ namespace Pdf.Font;
 
 public class FontRegisterLock : IFontRegister
 {
-    private readonly FontRegister FontRegister = new();
-    private readonly Lock LockObject = new();
+    protected readonly FontRegister FontRegister = new();
+    protected readonly Lock LockObject = new();
 
     public void RegisterDirectory(LoadOption? opt = null, params string[] paths)
     {

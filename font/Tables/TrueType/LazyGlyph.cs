@@ -17,8 +17,8 @@ public class LazyGlyph : IReadOnlyList<IGlyph>, IDisposable
     public required long GlyphTableOffset { get; init; }
     public required short IndexToLocFormat { get; init; }
     public Dictionary<uint, IGlyph> GlyphCache { get; init; } = [];
-    public bool Disposed { get; private set; } = false;
-    private readonly Lock LockObject = new();
+    public bool Disposed { get; protected set; } = false;
+    protected readonly Lock LockObject = new();
 
     public IGlyph GlyphLoad(uint gid)
     {

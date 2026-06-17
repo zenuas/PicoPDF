@@ -33,7 +33,7 @@ public class TrueTypeFont : IOpenTypeFont, IDisposable
     public required ScalableVectorGraphicsTable? ScalableVectorGraphics { get; init; }
 
     public required Action? DisposeAction { get; init; }
-    public bool Disposed { get; private set; } = false;
+    public bool Disposed { get; protected set; } = false;
 
     public void Dispose()
     {
