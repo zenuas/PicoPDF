@@ -31,7 +31,7 @@ public static class PdfExport
         var all_refs = GetAllReferencesExport(document, option);
         var noglyphfont_refs = all_refs
             .Where(x => x is Type0Font font && font.Chars.Count == 0)
-            .Select(GetAllReferences)
+            .Select(TraverseReferences)
             .Flatten()
             .ToHashSet();
         var export_refs = all_refs
@@ -140,17 +140,16 @@ public static class PdfExport
         return [.. refs];
     }
 
-    public static PdfObject[] GetAllReferences(PdfObject pdfobj)
+    public static IEnumerable<PdfObject> TraverseReferences(PdfObject pdfobj)
     {
-        var refs = new List<PdfObject>();
+        yield return pdfobj;
 
-        void refsadd(PdfObject x)
+        foreach (var x in pdfobj.RelatedObjects)
         {
-            refs.Add(x);
-            x.RelatedObjects.Each(refsadd);
+            foreach (var y in TraverseReferences(x))
+            {
+                yield return y;
+            }
         }
-        refsadd(pdfobj);
-
-        return [.. refs];
     }
 }
