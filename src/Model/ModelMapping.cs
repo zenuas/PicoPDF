@@ -53,23 +53,14 @@ public static class ModelMapping
     {
         double posx = model.X + left;
         double posy = model.Y + top;
-        switch (model)
+        return model switch
         {
-            case ITextModel x:
-                return Contents.CreateDrawText(page.Document, x.Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB());
-
-            case ILineModel x:
-                return Contents.CreateDrawLinesOperation([(posx, posy), (posx + x.Width, posy + x.Height)], x.Color?.ToDeviceRGB(), x.LineWidth);
-
-            case IRectangleModel x:
-                return Contents.CreateDrawRectangleOperation(posx, posy, x.Width, x.Height, x.Color?.ToDeviceRGB(), x.LineWidth);
-
-            case IFillRectangleModel x:
-                return Contents.CreateDrawFillRectangleOperation(posx, posy, x.Width, x.Height, x.LineColor.ToDeviceRGB(), x.FillColor.ToDeviceRGB(), x.LineWidth);
-
-            case ImageModel x:
-                return Contents.CreateDrawImageOperation(posx, posy, page.Document.GetImage(x.Path), x.ZoomWidth, x.ZoomHeight);
-        }
-        throw new();
+            ITextModel x => Contents.CreateDrawText(page.Document, x.Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()),
+            ILineModel x => Contents.CreateDrawLinesOperation([(posx, posy), (posx + x.Width, posy + x.Height)], x.Color?.ToDeviceRGB(), x.LineWidth),
+            IRectangleModel x => Contents.CreateDrawRectangleOperation(posx, posy, x.Width, x.Height, x.Color?.ToDeviceRGB(), x.LineWidth),
+            IFillRectangleModel x => Contents.CreateDrawFillRectangleOperation(posx, posy, x.Width, x.Height, x.LineColor.ToDeviceRGB(), x.FillColor.ToDeviceRGB(), x.LineWidth),
+            ImageModel x => Contents.CreateDrawImageOperation(posx, posy, page.Document.GetImage(x.Path), x.ZoomWidth, x.ZoomHeight),
+            _ => throw new(),
+        };
     }
 }
