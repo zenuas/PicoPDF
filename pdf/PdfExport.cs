@@ -125,20 +125,11 @@ public static class PdfExport
         return writer;
     }
 
-    public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option)
-    {
-        var refs = new List<PdfObject>();
-
-        void refsadd(PdfObject x)
-        {
-            x.DoExport(option);
-            refs.Add(x);
-            x.RelatedObjects.Each(refsadd);
-        }
-        document.PdfObjects.Each(refsadd);
-
-        return [.. refs];
-    }
+    public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option) => document.PdfObjects
+        .Select(TraverseReferences)
+        .Flatten()
+        .Select(x => { x.DoExport(option); return x; })
+        .ToArray();
 
     public static IEnumerable<PdfObject> TraverseReferences(PdfObject pdfobj)
     {
