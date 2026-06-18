@@ -27,32 +27,42 @@ public static class PdfExport
                 (font.FontEmbed == FontEmbeds.ForceEmbed ||
                 (font.FontEmbed == FontEmbeds.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
         }
+
+        var all_refs = GetAllReferencesExport(document, option);
+        var noglyphfont_refs = all_refs
+            .Where(x => x is Type0Font font && font.Chars.Count == 0)
+            .Select(GetAllReferences)
+            .Flatten()
+            .ToHashSet();
+        var export_refs = all_refs
+            .Where(x => !noglyphfont_refs.Contains(x))
+            .ToArray();
+        export_refs.Each((x, i) => x.IndirectIndex = i + 1);
+
         var xref = new List<long>();
-        GetAllReferences(document, option)
-            .Where(x => x is not Type0Font font || font.Chars.Count > 0)
-            .Each((pdfobj, i) =>
+        export_refs.Each(pdfobj =>
+        {
+            xref.Add(stream.Position);
+            stream.Write($"{pdfobj.IndirectIndex} 0 obj\n");
+            stream.Write("<<\n");
+            var input = pdfobj.Stream;
+            if (input is { })
             {
-                xref.Add(stream.Position);
-                stream.Write($"{pdfobj.IndirectIndex} 0 obj\n");
-                stream.Write("<<\n");
-                var input = pdfobj.Stream;
-                if (input is { })
-                {
-                    var stream_pipe = document.StreamHandler?.CreateEncrypterPipe(pdfobj.IndirectIndex, 0);
-                    if (stream_pipe is { } p) input = EncryptStream(input, p.Input, p.Output).GetAwaiter().GetResult();
-                    pdfobj.Elements["Length"] = input.Length;
-                }
-                using var converter = document.StringHandler?.CreateEncrypterConverter(pdfobj.IndirectIndex, 0);
-                pdfobj.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString(converter)}\n"));
-                stream.Write(">>\n");
-                if (input is { })
-                {
-                    stream.Write("stream\n");
-                    stream.Write(input.ToArray());
-                    stream.Write("\nendstream\n");
-                }
-                stream.Write("endobj\n\n");
-            });
+                var stream_pipe = document.StreamHandler?.CreateEncrypterPipe(pdfobj.IndirectIndex, 0);
+                if (stream_pipe is { } p) input = EncryptStream(input, p.Input, p.Output).GetAwaiter().GetResult();
+                pdfobj.Elements["Length"] = input.Length;
+            }
+            using var converter = document.StringHandler?.CreateEncrypterConverter(pdfobj.IndirectIndex, 0);
+            pdfobj.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString(converter)}\n"));
+            stream.Write(">>\n");
+            if (input is { })
+            {
+                stream.Write("stream\n");
+                stream.Write(input.ToArray());
+                stream.Write("\nendstream\n");
+            }
+            stream.Write("endobj\n\n");
+        });
 
         var startxref = stream.Position;
         if (option.OutputCrossReferenceTable)
@@ -115,18 +125,31 @@ public static class PdfExport
         return writer;
     }
 
-    public static PdfObject[] GetAllReferences(Document document, PdfExportOption option)
+    public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option)
     {
         var refs = new List<PdfObject>();
 
         void refsadd(PdfObject x)
         {
-            x.IndirectIndex = refs.Count + 1;
             x.DoExport(option);
             refs.Add(x);
             x.RelatedObjects.Each(refsadd);
         }
         document.PdfObjects.Each(refsadd);
+
+        return [.. refs];
+    }
+
+    public static PdfObject[] GetAllReferences(PdfObject pdfobj)
+    {
+        var refs = new List<PdfObject>();
+
+        void refsadd(PdfObject x)
+        {
+            refs.Add(x);
+            x.RelatedObjects.Each(refsadd);
+        }
+        refsadd(pdfobj);
 
         return [.. refs];
     }
