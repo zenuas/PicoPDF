@@ -65,12 +65,12 @@ public partial class Document
         switch (cfm)
         {
             case CFM.None when Version >= 20:
-                (encrypt, _) = CreateStandardEncryptionNone(5, 6, permissions, GetDocumentID().CreateID);
+                encrypt = CreateStandardEncryptionNone_V5(user_password, owner_password, permissions);
                 StreamHandler = StringHandler = new IdentityHandler();
                 break;
 
             case CFM.None:
-                (encrypt, _) = CreateStandardEncryptionNone(4, 4, permissions, GetDocumentID().CreateID);
+                encrypt = CreateStandardEncryptionNone_V4(user_password, owner_password, permissions, GetDocumentID().CreateID);
                 StreamHandler = StringHandler = new IdentityHandler();
                 break;
 
@@ -94,10 +94,10 @@ public partial class Document
         PdfObjects.Add(Encrypt = encrypt);
     }
 
-    public static (PdfObject Encrypt, byte[] EncryptionKey) CreateStandardEncryptionNone(int version, int revision, UserAccessPermissions permissions, byte[] document_id)
+    public static PdfObject CreateStandardEncryptionNone_V4(string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id)
     {
-        var user_password_bytes = Encoding.UTF8.GetBytes([]);
-        var owner_password_bytes = Encoding.UTF8.GetBytes([]);
+        var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
+        var owner_password_bytes = Encoding.UTF8.GetBytes(owner_password);
         Span<byte> o_key = stackalloc byte[32];
         Aes128Handler.ComputeOwnerPassword_Algorithm3(
             user_password_bytes,
@@ -112,21 +112,60 @@ public partial class Document
             document_id,
             true
         );
-        return (new()
+        return new()
         {
             Elements =
             {
                 ["Filter"] = "/Standard",
                 ["P"] = (int)(permissions | UserAccessPermissions.Default),
-                ["V"] = version,
-                ["CF"] = "<< /StdCF << /CFM /None /AuthEvent /DocOpen >> >>",
-                ["R"] = revision,
+                ["V"] = 4,
+                ["CF"] = "<< /StdCF << /CFM /None /AuthEvent /DocOpen /Length 128 >> >>",
+                ["R"] = 4,
                 ["O"] = o_key.ToHexString(),
                 ["U"] = Aes128Handler.ComputeUserPassword_Algorithm5(document_id, encryption_key).ToHexString(),
                 ["StmF"] = "/StdCF",
                 ["StrF"] = "/StdCF",
             }
-        }, encryption_key);
+        };
+    }
+
+    public static PdfObject CreateStandardEncryptionNone_V5(string user_password, string owner_password, UserAccessPermissions permissions)
+    {
+        // Truncate the UTF-8 representation to 127 bytes if it is longer than 127 bytes.
+        var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
+        var owner_password_bytes = Encoding.UTF8.GetBytes(owner_password);
+
+        var file_encryption_key = Aes256Handler.CreateFileEncryptionKey();
+        Span<byte> u_key = stackalloc byte[48];
+        Span<byte> ue_key = stackalloc byte[32];
+        Aes256Handler.ComputeUserPassword_Algorithm8(user_password_bytes.Length > 127 ? user_password_bytes[..127] : user_password_bytes, file_encryption_key, u_key, ue_key);
+
+        Span<byte> o_key = stackalloc byte[48];
+        Span<byte> oe_key = stackalloc byte[32];
+        Aes256Handler.ComputeOwnerPassword_Algorithm9(owner_password_bytes.Length > 127 ? owner_password_bytes[..127] : owner_password_bytes, file_encryption_key, u_key, o_key, oe_key);
+
+        Span<byte> perms = stackalloc byte[16];
+        Aes256Handler.ComputePerms_Algorithm10(permissions, true, file_encryption_key, perms);
+
+        return new()
+        {
+            Elements =
+            {
+                ["Filter"] = "/Standard",
+                ["P"] = (int)(permissions | UserAccessPermissions.Default_PDF20),
+                ["V"] = 5,
+                ["CF"] = "<< /StdCF << /CFM /None /AuthEvent /DocOpen >> >>",
+                ["R"] = 6,
+                ["O"] = o_key.ToHexString(),
+                ["U"] = u_key.ToHexString(),
+                ["OE"] = oe_key.ToHexString(),
+                ["UE"] = ue_key.ToHexString(),
+                ["Perms"] = perms.ToHexString(),
+                ["StmF"] = "/StdCF",
+                ["StrF"] = "/StdCF",
+                ["Length"] = 256, // NOTE (2020) The Length key was corrected to be required and the descriptive text updated.
+            }
+        };
     }
 
     public static (PdfObject Encrypt, byte[] EncryptionKey) CreateStandardEncryptionAes128(string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id)

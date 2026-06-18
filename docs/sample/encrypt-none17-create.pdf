@@ -1,0 +1,83 @@
+%PDF-1.7
+%🍣
+
+1 0 obj
+<<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+  /Type /Pages
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+
+3 0 obj
+<<
+  /Type /Page
+  /Contents 4 0 R
+  /Parent 2 0 R
+  /MediaBox [ 0 0 842 595 ]
+  /Resources << /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ] >>
+>>
+endobj
+
+4 0 obj
+<<
+  /Length 30
+>>
+stream
+q
+10 w
+50 520 m 100 470 l S
+Q
+
+endstream
+endobj
+
+5 0 obj
+<<
+  /Title <feff005400690074006c0065>
+  /CreationDate <443a3230303030313032303330343035>
+>>
+endobj
+
+6 0 obj
+<<
+  /Filter /Standard
+  /P -3904
+  /V 4
+  /CF << /StdCF << /CFM /None /AuthEvent /DocOpen /Length 128 >> >>
+  /R 4
+  /O <c5cf7d06120958aa5128672ca0d149cf8e1f0c7ac2ce8a312a7e7885e7e71cd2>
+  /U <4b019db23a992dfb77d94f82bac450b600000000000000000000000000000000>
+  /StmF /StdCF
+  /StrF /StdCF
+>>
+endobj
+
+xref
+0 7
+0000000000 65535 f
+0000000016 00000 n
+0000000070 00000 n
+0000000136 00000 n
+0000000301 00000 n
+0000000384 00000 n
+0000000493 00000 n
+
+trailer
+<<
+  /Size 7
+  /Root 1 0 R
+  /Info 5 0 R
+  /Encrypt 6 0 R
+  /ID [<bf5bfe8d4aef31468053071c401d34d1> <bf5bfe8d4aef31468053071c401d34d1>]
+>>
+startxref
+802
+%%EOF
