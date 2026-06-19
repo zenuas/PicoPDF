@@ -59,7 +59,7 @@ public static class ModelMapping
             ILineModel x => Contents.CreateDrawLinesOperation([(posx, posy), (posx + x.Width, posy + x.Height)], x.Color?.ToDeviceRGB(), x.LineWidth),
             IRectangleModel x => Contents.CreateDrawRectangleOperation(posx, posy, x.Width, x.Height, x.Color?.ToDeviceRGB(), x.LineWidth),
             IFillRectangleModel x => Contents.CreateDrawFillRectangleOperation(posx, posy, x.Width, x.Height, x.LineColor.ToDeviceRGB(), x.FillColor.ToDeviceRGB(), x.LineWidth),
-            ImageModel x => Contents.CreateDrawImageOperation(posx, posy, page.Document.GetImage(x.Path), x.ZoomWidth, x.ZoomHeight),
+            ImageModel x => DrawImage.Create(posx, posy, page.Document.GetImage(x.Path), x.ZoomWidth, x.ZoomHeight),
             _ => throw new(),
         };
     }

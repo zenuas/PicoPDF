@@ -24,4 +24,21 @@ public class DrawImage : IOperation
         writer.Write($"/{Image.Name} Do\n");
         writer.Write("Q\n");
     }
+
+    public static DrawImage Create(double x, double y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0) => Create(
+        new PointValue(x),
+        new PointValue(y),
+        image,
+        zoomwidth,
+        zoomheight
+    );
+
+    public static DrawImage Create(IPoint x, IPoint y, IImageXObject image, double zoomwidth = 1.0, double zoomheight = 1.0) => new()
+    {
+        X = x,
+        Y = y,
+        Image = image,
+        ZoomWidth = zoomwidth,
+        ZoomHeight = zoomheight,
+    };
 }
