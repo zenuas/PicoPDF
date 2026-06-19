@@ -55,7 +55,7 @@ public static class ModelMapping
         double posy = model.Y + top;
         return model switch
         {
-            ITextModel x => Contents.CreateDrawText(page.Document, x.Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()),
+            ITextModel x => DrawString.Create(page.Document, x.Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()),
             ILineModel x => DrawLine.Create([(posx, posy), (posx + x.Width, posy + x.Height)], x.Color?.ToDeviceRGB(), x.LineWidth),
             IRectangleModel x => DrawRectangle.Create(posx, posy, x.Width, x.Height, x.Color?.ToDeviceRGB(), x.LineWidth),
             IFillRectangleModel x => DrawFillRectangle.Create(posx, posy, x.Width, x.Height, x.LineColor.ToDeviceRGB(), x.FillColor.ToDeviceRGB(), x.LineWidth),

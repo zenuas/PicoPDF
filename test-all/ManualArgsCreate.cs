@@ -1,5 +1,6 @@
 ﻿using Mina.Command;
 using Pdf.Documents;
+using Pdf.Operation;
 using PicoPDF.Loader.Sections;
 
 namespace PicoPDF.TestAll;
@@ -34,7 +35,7 @@ public class ManualArgsCreate : FontRegisterCommand
         foreach (var arg in args)
         {
             var page = document.NewPage(width, height);
-            page.Contents.Operations.Add(Contents.CreateDrawText(page.Document, arg, Left, Top, Point, [font], width - Left, style: TextStyles.MultiLine));
+            page.Contents.Operations.Add(DrawString.Create(page.Document, arg, Left, Top, Point, [font], width - Left, style: TextStyles.MultiLine));
         }
 
         document.Save(Output, new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });

@@ -79,7 +79,7 @@ public class PdfCreate : FontRegisterCommand
                         .OfType<TextModel>()
                         .Where(x => x.Style.HasFlag(TextStyles.MultiLine) && !x.Style.HasFlag(TextStyles.Clipping));
                     var maxheight = multilines
-                        .Select(x => x.Y + Contents.CreateDrawText(dummy_document, x.Text, x.X, x.Y, x.Size, [.. x.Font.Select(f => dummy_document.GetFont(f.Path, f.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()).Cast<DrawOperations>().Height.ToPoint())
+                        .Select(x => x.Y + DrawString.Create(dummy_document, x.Text, x.X, x.Y, x.Size, [.. x.Font.Select(f => dummy_document.GetFont(f.Path, f.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()).Cast<DrawOperations>().Height.ToPoint())
                         .Max();
                     if (maxheight > section_model.Height) return section_model with { Height = (int)maxheight };
                 }
@@ -97,7 +97,7 @@ public class PdfCreate : FontRegisterCommand
                 {
                     double posx = model.X + left;
                     double posy = model.Y + top;
-                    return Contents.CreateDrawText(page.Document, model.Cast<ITextModel>().Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
+                    return DrawString.Create(page.Document, model.Cast<ITextModel>().Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
                 }
                 else
                 {

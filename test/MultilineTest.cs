@@ -5,6 +5,7 @@ using OpenType.Tables;
 using Pdf.Documents;
 using Pdf.Documents.BreakRule;
 using Pdf.Font;
+using Pdf.Operation;
 using Svg.Outline;
 using System;
 using System.Collections.Generic;
@@ -65,7 +66,7 @@ public class MultilineTest
     public static readonly Type0Font[] Fonts = [Type0FontMock.Create()];
 
     public static string[] GetText(string line, double size, double width, ILineBreakRule? linebreak_rule = null) => [..
-            Contents.GetTextFont(line, Fonts, size, width, linebreak_rule ?? new NoneLineBreakRule())
+            DrawString.GetTextFont(line, Fonts, size, width, linebreak_rule ?? new NoneLineBreakRule())
             .Select(x => x.Select(y => y.Text).Join(""))
         ];
 
