@@ -339,6 +339,11 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
+Directory.Build.props
+Directory.Build.targets
+Directory.Build.rsp
+Directory.Solution.props
+Directory.Solution.targets
 .*/
 @*/
 @*
