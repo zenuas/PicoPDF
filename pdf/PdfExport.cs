@@ -128,7 +128,7 @@ public static class PdfExport
     public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option) => document.PdfObjects
         .Select(TraverseReferences)
         .Flatten()
-        .Select(x => { x.DoExport(option); return x; })
+        .DoEach(x => x.DoExport(option))
         .ToArray();
 
     public static IEnumerable<PdfObject> TraverseReferences(PdfObject pdfobj)
