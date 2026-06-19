@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType;
+using Pdf.Documents.BreakRule;
 using Pdf.Drawing;
 using Pdf.Font;
 using Pdf.Operation;

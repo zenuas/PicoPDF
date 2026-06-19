@@ -2,8 +2,8 @@
 using Mina.Reflection;
 using OpenType;
 using OpenType.Tables;
-using PicoPDF.Loader.Sections;
 using Pdf.Documents;
+using Pdf.Documents.BreakRule;
 using Pdf.Font;
 using Svg.Outline;
 using System;

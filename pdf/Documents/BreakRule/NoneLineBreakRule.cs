@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Pdf.Documents;
+namespace Pdf.Documents.BreakRule;
 
 public class NoneLineBreakRule : ILineBreakRule
 {

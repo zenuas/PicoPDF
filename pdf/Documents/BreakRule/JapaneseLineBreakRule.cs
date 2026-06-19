@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Pdf.Documents;
+namespace Pdf.Documents.BreakRule;
 
 // JIS X 4051
 public class JapaneseLineBreakRule : ILineBreakRule

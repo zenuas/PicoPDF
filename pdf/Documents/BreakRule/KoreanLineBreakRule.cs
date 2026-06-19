@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Pdf.Documents;
+namespace Pdf.Documents.BreakRule;
 
 // https://en.wikipedia.org/wiki/Line_breaking_rules_in_East_Asian_languages
 public class KoreanLineBreakRule : ILineBreakRule
