@@ -2,6 +2,7 @@
 using Mina.Extension;
 using Pdf;
 using Pdf.Documents;
+using Pdf.Documents.BreakRule;
 using Pdf.Extension;
 using Pdf.Operation;
 using PicoPDF.Loader.Elements;

@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
+using Pdf.Documents.BreakRule;
 using System.Linq;
 
 namespace PicoPDF.Benchmark;
