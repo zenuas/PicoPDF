@@ -1,11 +1,11 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Binder;
 using Mina.Extension;
+using Pdf.Documents;
+using Pdf.Font;
 using PicoPDF.Loader;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Model;
-using Pdf.Documents;
-using Pdf.Font;
 using System;
 using System.Collections.Generic;
 using System.Data;
