@@ -22,4 +22,23 @@ public class DrawRectangle : IOperation
         writer.Write($"{(X, Y).ToPointString(height, option.PointFormat)} {Width.ToPointString(option.PointFormat)} {(-Height.ToPoint()).ToPointString(option.PointFormat)} re S\n");
         writer.Write("Q\n");
     }
+
+    public static DrawRectangle Create(double x, double y, double width, double height, IColor? color = null, double? linewidth = null) => Create(
+            new PointValue(x),
+            new PointValue(y),
+            new PointValue(width),
+            new PointValue(height),
+            color,
+            linewidth is { } lw ? new PointValue(lw) : null
+        );
+
+    public static DrawRectangle Create(IPoint x, IPoint y, IPoint width, IPoint height, IColor? color = null, IPoint? linewidth = null) => new()
+    {
+        X = x,
+        Y = y,
+        Width = width,
+        Height = height,
+        Color = color,
+        LineWidth = linewidth ?? new PointValue(1),
+    };
 }

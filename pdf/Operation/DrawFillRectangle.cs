@@ -24,4 +24,25 @@ public class DrawFillRectangle : IOperation
         writer.Write($"{(X, Y).ToPointString(height, option.PointFormat)} {Width.ToPointString(option.PointFormat)} {(-Height.ToPoint()).ToPointString(option.PointFormat)} re B\n");
         writer.Write("Q\n");
     }
+
+    public static DrawFillRectangle Create(double x, double y, double width, double height, IColor? line = null, IColor? fill = null, double? linewidth = null) => Create(
+            new PointValue(x),
+            new PointValue(y),
+            new PointValue(width),
+            new PointValue(height),
+            line,
+            fill,
+            linewidth is { } lw ? new PointValue(lw) : null
+        );
+
+    public static DrawFillRectangle Create(IPoint x, IPoint y, IPoint width, IPoint height, IColor? line = null, IColor? fill = null, IPoint? linewidth = null) => new()
+    {
+        X = x,
+        Y = y,
+        Width = width,
+        Height = height,
+        LineColor = line,
+        FillColor = fill,
+        LineWidth = linewidth ?? new PointValue(1),
+    };
 }

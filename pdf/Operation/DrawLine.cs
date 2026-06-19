@@ -4,6 +4,7 @@ using Pdf.Extension;
 using System.IO;
 using System.Linq;
 
+
 namespace Pdf.Operation;
 
 public class DrawLine : IOperation
@@ -20,4 +21,17 @@ public class DrawLine : IOperation
         writer.Write($"{Points.First().ToPointString(height, option.PointFormat)} m {Points.Skip(1).Select(x => x.ToPointString(height, option.PointFormat)).Join(" l ")} l S\n");
         writer.Write("Q\n");
     }
+
+    public static DrawLine Create((double X, double Y)[] points, IColor? color = null, double? linewidth = null) => Create(
+            [.. points.Select(x => (new PointValue(x.X), new PointValue(x.Y)))],
+            color,
+            linewidth is { } lw ? new PointValue(lw) : null
+        );
+
+    public static DrawLine Create((IPoint X, IPoint Y)[] points, IColor? color = null, IPoint? linewidth = null) => new()
+    {
+        Points = points,
+        Color = color,
+        LineWidth = linewidth ?? new PointValue(1),
+    };
 }
