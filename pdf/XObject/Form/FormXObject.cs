@@ -35,4 +35,16 @@ public class FormXObject : PdfObject, IXObject
         }
         if (Group is { }) _ = Elements.TryAdd("Group", new ElementIndirectObject() { References = Group });
     }
+
+    public static FormXObject CreateTransparency(float left, float bottom, float right, float top, IShading shading) => new()
+    {
+        BBox = (new PointValue(left), new PointValue(bottom), new PointValue(right), new PointValue(top)),
+        ResourcesShading = [shading],
+        Group = new GroupXObject
+        {
+            S = "/Transparency",
+            I = true,
+            CS = "/DeviceGray",
+        },
+    };
 }
