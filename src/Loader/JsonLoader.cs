@@ -263,13 +263,14 @@ public static class JsonLoader
         if (node is JsonValue v) return new((int)v, (int)v, (int)v, (int)v);
         else if (node is JsonArray xs)
         {
-            switch (xs.Count)
+            return xs.Count switch
             {
-                case 1: return new((int)xs[0]!, (int)xs[0]!, (int)xs[0]!, (int)xs[0]!);
-                case 2: return new((int)xs[0]!, (int)xs[0]!, (int)xs[1]!, (int)xs[1]!);
-                case 3: return new((int)xs[0]!, (int)xs[2]!, (int)xs[1]!, (int)xs[1]!);
-                case 4: return new((int)xs[0]!, (int)xs[2]!, (int)xs[3]!, (int)xs[1]!);
-            }
+                0 => new(0, 0, 0, 0),
+                1 => new((int)xs[0]!, (int)xs[0]!, (int)xs[0]!, (int)xs[0]!),
+                2 => new((int)xs[0]!, (int)xs[0]!, (int)xs[1]!, (int)xs[1]!),
+                3 => new((int)xs[0]!, (int)xs[2]!, (int)xs[1]!, (int)xs[1]!),
+                _ => new((int)xs[0]!, (int)xs[2]!, (int)xs[3]!, (int)xs[1]!),
+            };
         }
         else if (node is JsonNode n) return new((int)n.ToNode("Top"), (int)n.ToNode("Bottom"), (int)n.ToNode("Left"), (int)n.ToNode("Right"));
         return new(0, 0, 0, 0);

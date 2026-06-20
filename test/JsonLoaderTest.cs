@@ -130,6 +130,18 @@ public class JsonLoaderTest
         Assert.Equal(s7.Top, 20);
         Assert.Equal(s7.Right, 30);
         Assert.Equal(s7.Bottom, 40);
+
+        var s8 = JsonLoader.LoadAllSides(JsonNode.Parse("""[]""", null, Option)!);
+        Assert.Equal(s8.Left, 0);
+        Assert.Equal(s8.Top, 0);
+        Assert.Equal(s8.Right, 0);
+        Assert.Equal(s8.Bottom, 0);
+
+        var s9 = JsonLoader.LoadAllSides(JsonNode.Parse("""[10, 20, 30, 40, 50]""", null, Option)!);
+        Assert.Equal(s9.Left, 40);
+        Assert.Equal(s9.Top, 10);
+        Assert.Equal(s9.Right, 20);
+        Assert.Equal(s9.Bottom, 30);
     }
 
     [Fact]
