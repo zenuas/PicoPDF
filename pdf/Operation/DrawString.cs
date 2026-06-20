@@ -82,13 +82,13 @@ public class DrawString : IOperation
             };
 
             opes.AddRange(CreateMultilineText(textfonts, basey, text_left, text_size, style.HasFlag(TextStyles.Stroke), document, color));
-            if ((style & TextStyles.TextStyleMask) > 0) opes.AddRange(Contents.CreateDrawTextStyleOperations(style, linetop, text_left, basey, text_width, text_height, color));
+            if ((style & TextStyles.TextStyleMask) > 0) opes.AddRange(DrawOperations.CreateTextStyle(style, linetop, text_left, basey, text_width, text_height, color));
             linetop += text_height;
             prev_linegap = allbox.LineGap * text_size;
             max_width = Math.Max(max_width, text_width);
             max_height = Math.Max(max_height, text_height);
         }
-        if ((style & TextStyles.BorderStyleMask) > 0) opes.AddRange(Contents.CreateDrawBorderStyleOperations(style, top, left, width > 0 ? width : max_width, height > 0 ? height : linetop - top, max_height / 20, color));
+        if ((style & TextStyles.BorderStyleMask) > 0) opes.AddRange(DrawOperations.CreateBorderStyle(style, top, left, width > 0 ? width : max_width, height > 0 ? height : linetop - top, max_height / 20, color));
 
         return !style.HasFlag(TextStyles.Clipping) ?
             new DrawOperations

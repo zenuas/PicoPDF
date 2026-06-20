@@ -18,7 +18,7 @@ public class ManualCreate : FontRegisterCommand
 
         var cid = document.AddFont("CID", "HeiseiMin", CMaps.UniJIS_UCS2_H, Encoding.BigEndianUnicode);
         page.Contents.Operations.Add(DrawString.Create("CID Font! あア亜", 100, 100, 12, cid));
-        page.Contents.Operations.AddRange(Contents.CreateDrawTextStyleOperations(TextStyles.Underline, 100, 100, 100, 50, 12));
+        page.Contents.Operations.AddRange(DrawOperations.CreateTextStyle(TextStyles.Underline, 100, 100, 100, 50, 12));
 
         var stdtype1 = document.AddFont("STDTYPE1", StandardType1Fonts.HelveticaBold);
         page.Contents.Operations.Add(DrawString.Create("Standard Type1 Font!", 120, 100, 12, stdtype1));

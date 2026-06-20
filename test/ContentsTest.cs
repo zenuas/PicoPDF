@@ -16,7 +16,7 @@ public class ContentsTest
         var bottom = top + height;
         var right = left + width;
 
-        return [.. Contents.CreateDrawBorderStyleOperations(style, top, left, width, height)
+        return [.. DrawOperations.CreateBorderStyle(style, top, left, width, height)
                 .OfType<DrawLine>()
                 .Select(line => line.Points.Select(pt => ((int)pt.X.ToPoint(), (int)pt.Y.ToPoint())).ToArray())
             ];
