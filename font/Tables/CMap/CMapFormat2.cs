@@ -53,6 +53,4 @@ public class CMapFormat2 : ICMapFormat
             return (uint)(gid == 0 ? 0 : (gid + sub.IdDelta) & 0xFFFF);
         };
     }
-
-    public Func<uint, int?> CreateGIDToChar() => _ => null;
 }

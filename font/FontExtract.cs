@@ -247,12 +247,6 @@ public static class FontExtract
         return c => dict.TryGetValue(c, out var gid) ? gid : 0;
     }
 
-    public static Func<uint, int?> CreateGIDToChar((int Char, uint GID)[] char_gids)
-    {
-        var dict = char_gids.ToDictionary(x => x.GID, x => x.Char);
-        return gid => dict.TryGetValue(gid, out var c) ? c : null;
-    }
-
     public static CMapTable CreateCMapTable(FontExtractOption opt, (int Char, uint GID)[] char_gids)
     {
         var records = opt.OutputCMap
