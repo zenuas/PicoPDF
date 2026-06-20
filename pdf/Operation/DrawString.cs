@@ -117,7 +117,7 @@ public class DrawString : IOperation
             var box = MeasureStringBox(font.Font, text);
             if (stroke || font.FontEmbed == FontEmbeds.Stroke)
             {
-                foreach (var op in DrawPathOperations.Create(text, basey, start, size, font, document, color)) yield return op;
+                foreach (var op in DrawPathOperations.CreateStringToPath(text, basey, start, size, font, document, color)) yield return op;
             }
             else
             {

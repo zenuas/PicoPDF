@@ -29,7 +29,7 @@ public class DrawPathOperations : IOperation, IHavePathOperations
         writer.Write("Q\n");
     }
 
-    public static IEnumerable<DrawPathOperations> Create(string text, double basey, double left, double size, Type0Font font, Document document, IColor? color = null)
+    public static IEnumerable<DrawPathOperations> CreateStringToPath(string text, double basey, double left, double size, Type0Font font, Document document, IColor? color = null)
     {
         var opentype_font = font.EmbeddedFont ?? font.Font;
         var scale = 1f / opentype_font.FontHeader.UnitsPerEm * size;
@@ -38,7 +38,7 @@ public class DrawPathOperations : IOperation, IHavePathOperations
             var gid = opentype_font.CharToGID(c);
             var outlines = opentype_font.GIDToOutline(gid, true);
 
-            foreach (var x in Create(outlines, c, scale, basey, left, size, font, document, color))
+            foreach (var x in CreateOutlineToPath(outlines, c, scale, basey, left, size, font, document, color))
             {
                 yield return x;
             }
@@ -46,7 +46,7 @@ public class DrawPathOperations : IOperation, IHavePathOperations
         }
     }
 
-    public static IEnumerable<DrawPathOperations> Create(IOutline[] outlines, int c, double scale, double basey, double left, double size, Type0Font font, Document document, IColor? color)
+    public static IEnumerable<DrawPathOperations> CreateOutlineToPath(IOutline[] outlines, int c, double scale, double basey, double left, double size, Type0Font font, Document document, IColor? color)
     {
         var opes = new List<IPathOperation>();
         foreach (var outline in outlines)
@@ -102,7 +102,7 @@ public class DrawPathOperations : IOperation, IHavePathOperations
                     }
 
                 case Layer layer:
-                    foreach (var x in Create(layer.Surfaces, c, scale, basey, left, size, font, document, color))
+                    foreach (var x in CreateOutlineToPath(layer.Surfaces, c, scale, basey, left, size, font, document, color))
                     {
                         yield return x;
                     }
