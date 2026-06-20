@@ -41,6 +41,7 @@ public class CMapTable : IExportable
             (ushort)CMapFormats.Format0 => CMapFormat0.ReadFrom(stream),
             (ushort)CMapFormats.Format2 => CMapFormat2.ReadFrom(stream),
             (ushort)CMapFormats.Format4 => CMapFormat4.ReadFrom(stream),
+            (ushort)CMapFormats.Format6 => CMapFormat6.ReadFrom(stream),
             (ushort)CMapFormats.Format12 => CMapFormat12.ReadFrom(stream),
             (ushort)CMapFormats.Format13 => CMapFormat13.ReadFrom(stream),
             (ushort)CMapFormats.Format14 => CMapFormat14.ReadFrom(stream),
