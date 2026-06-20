@@ -307,13 +307,12 @@ public class TopDict
                 else
                 {
                     xs.Add(30);
-                    xs.AddRange(DoubleToPackedBCD(vs[i].ToDouble())
+                    xs.AddRange([.. DoubleToPackedBCD(vs[i].ToDouble())
                             .Concat((byte)0x0f)
                             .Concat((byte)0x0f)
                             .Chunk(2)
                             .Where(x => x.Length == 2)
-                            .Select(x => (byte)((x[0] << 4) + x[1]))
-                            .ToArray()
+                            .Select(x => (byte)((x[0] << 4) + x[1]))]
                         );
                 }
             }

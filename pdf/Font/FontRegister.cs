@@ -63,10 +63,9 @@ public class FontRegister : IFontRegister
         return font;
     }
 
-    public (string Name, IOpenTypeHeader Font)[] GetFonts(bool include_alternative_font = false) => Fonts
+    public (string Name, IOpenTypeHeader Font)[] GetFonts(bool include_alternative_font = false) => [.. Fonts
         .Where(x => include_alternative_font || x.Key == GetFontFilePath(x.Value.Value.Path))
-        .Select(x => (x.Key, x.Value.Value))
-        .ToArray();
+        .Select(x => (x.Key, x.Value.Value))];
 
     public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
 
