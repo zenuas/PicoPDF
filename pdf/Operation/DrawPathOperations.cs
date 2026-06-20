@@ -131,7 +131,7 @@ public class DrawPathOperations : IOperation, IHavePathOperations
                         });
                         if (linear.StopColors.Any(x => x.StopColor.A < 255))
                         {
-                            var shading = AxialShading.Create(document, linear, ColorToAlpha, "/DeviceGray");
+                            var shading = document.AddShading(AxialShading.Create($"sh{document.PdfObjects.Count}", linear, ColorToAlpha, "/DeviceGray"));
                             // Set a sufficiently large enough for the BBox.
                             var minx = Math.Min(linear.XY1.X, linear.XY2.X);
                             var miny = Math.Min(linear.XY1.Y, linear.XY2.Y);
@@ -143,9 +143,9 @@ public class DrawPathOperations : IOperation, IHavePathOperations
                             var gstream = g.GetWriteStream(false);
                             new DrawPathShading { Shading = shading }.OperationWrite(0, 0, gstream, new());
                             gstream.Flush();
-                            opes.Add(new DrawPathExtGState { ExtGState = GraphicsStateParameter.CreateTransparency(document, g) });
+                            opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(GraphicsStateParameter.CreateTransparency($"gs{document.PdfObjects.Count}", g)) });
                         }
-                        opes.Add(new DrawPathShading { Shading = AxialShading.Create(document, linear, ColorToRGB, "/DeviceRGB") });
+                        opes.Add(new DrawPathShading { Shading = document.AddShading(AxialShading.Create($"sh{document.PdfObjects.Count}", linear, ColorToRGB, "/DeviceRGB")) });
                         break;
                     }
 
@@ -164,7 +164,7 @@ public class DrawPathOperations : IOperation, IHavePathOperations
                         });
                         if (radial.StopColors.Any(x => x.StopColor.A < 255))
                         {
-                            var shading = RadialShading.Create(document, radial, ColorToAlpha, "/DeviceGray");
+                            var shading = document.AddShading(RadialShading.Create($"sh{document.PdfObjects.Count}", radial, ColorToAlpha, "/DeviceGray"));
                             // Set a sufficiently large enough for the BBox.
                             var minx = Math.Min(radial.Fxy.X, radial.Cxy.X);
                             var miny = Math.Min(radial.Fxy.Y, radial.Cxy.Y);
@@ -175,9 +175,9 @@ public class DrawPathOperations : IOperation, IHavePathOperations
                             var gstream = g.GetWriteStream(false);
                             new DrawPathShading { Shading = shading }.OperationWrite(0, 0, gstream, new());
                             gstream.Flush();
-                            opes.Add(new DrawPathExtGState { ExtGState = GraphicsStateParameter.CreateTransparency(document, g) });
+                            opes.Add(new DrawPathExtGState { ExtGState = document.AddGraphicsStateParameter(GraphicsStateParameter.CreateTransparency($"gs{document.PdfObjects.Count}", g)) });
                         }
-                        opes.Add(new DrawPathShading { Shading = RadialShading.Create(document, radial, ColorToRGB, "/DeviceRGB") });
+                        opes.Add(new DrawPathShading { Shading = document.AddShading(RadialShading.Create($"sh{document.PdfObjects.Count}", radial, ColorToRGB, "/DeviceRGB")) });
                         break;
                     }
 

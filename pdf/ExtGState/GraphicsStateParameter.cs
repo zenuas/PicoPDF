@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using Pdf.Documents;
 using Pdf.Elements;
 using Pdf.Extension;
 using Pdf.SoftMasks;
@@ -26,17 +25,12 @@ public class GraphicsStateParameter : PdfObject, IGraphicsStateParameter
         if (AIS is { } ais) _ = Elements.TryAdd("AIS", ais.ToString().ToLower());
     }
 
-    public static GraphicsStateParameter CreateTransparency(Document document, FormXObject g)
+    public static GraphicsStateParameter CreateTransparency(string name, FormXObject g) => new()
     {
-        var gstate = new GraphicsStateParameter
-        {
-            Name = $"gs{document.PdfObjects.Count}",
-            SMask = new SoftMask { S = MaskMethods.Luminosity, G = g },
-            Ca = 1.0f,
-            CA = 1.0f,
-            AIS = false,
-        };
-        _ = document.AddGraphicsStateParameter(gstate);
-        return gstate;
-    }
+        Name = name,
+        SMask = new SoftMask { S = MaskMethods.Luminosity, G = g },
+        Ca = 1.0f,
+        CA = 1.0f,
+        AIS = false,
+    };
 }

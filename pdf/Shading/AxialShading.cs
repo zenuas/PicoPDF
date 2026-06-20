@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using Pdf.Documents;
 using Pdf.Drawing;
 using Pdf.Elements;
 using Pdf.Extension;
@@ -31,22 +30,17 @@ public class AxialShading : PdfObject, IShading
         _ = Elements.TryAdd("Extend", $"[{Extend.B0.ToString().ToLower()} {Extend.B1.ToString().ToLower()}]");
     }
 
-    public static AxialShading Create(Document document, LinearGradientLayer linear, Func<Color, float[]> f, string color_space)
+    public static AxialShading Create(string name, LinearGradientLayer linear, Func<Color, float[]> f, string color_space) => new()
     {
-        var shading = new AxialShading
-        {
-            Name = $"sh{document.PdfObjects.Count}",
-            ColorSpace = color_space,
-            Coords = (
-                    new PointValue(linear.XY1.X),
-                    new PointValue(linear.XY1.Y),
-                    new PointValue(linear.XY2.X),
-                    new PointValue(linear.XY2.Y)
-                ),
-            Function = StitchingFunction.FromStopColors(linear.StopColors, f),
-            Extend = (true, true),
-        };
-        _ = document.AddShading(shading);
-        return shading;
-    }
+        Name = name,
+        ColorSpace = color_space,
+        Coords = (
+                new PointValue(linear.XY1.X),
+                new PointValue(linear.XY1.Y),
+                new PointValue(linear.XY2.X),
+                new PointValue(linear.XY2.Y)
+            ),
+        Function = StitchingFunction.FromStopColors(linear.StopColors, f),
+        Extend = (true, true),
+    };
 }

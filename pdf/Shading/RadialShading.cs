@@ -1,5 +1,4 @@
 ﻿using Mina.Extension;
-using Pdf.Documents;
 using Pdf.Drawing;
 using Pdf.Elements;
 using Pdf.Extension;
@@ -31,24 +30,19 @@ public class RadialShading : PdfObject, IShading
         _ = Elements.TryAdd("Extend", $"[{Extend.B0.ToString().ToLower()} {Extend.B1.ToString().ToLower()}]");
     }
 
-    public static RadialShading Create(Document document, RadialGradientLayer radial, Func<Color, float[]> f, string color_space)
+    public static RadialShading Create(string name, RadialGradientLayer radial, Func<Color, float[]> f, string color_space) => new()
     {
-        var shading = new RadialShading
-        {
-            Name = $"sh{document.PdfObjects.Count}",
-            ColorSpace = color_space,
-            Coords = (
-                    new PointValue(radial.Fxy.X),
-                    new PointValue(radial.Fxy.Y),
-                    new PointValue(radial.Fr),
-                    new PointValue(radial.Cxy.X),
-                    new PointValue(radial.Cxy.Y),
-                    new PointValue(radial.R)
-                ),
-            Function = StitchingFunction.FromStopColors(radial.StopColors, f),
-            Extend = (true, true),
-        };
-        _ = document.AddShading(shading);
-        return shading;
-    }
+        Name = name,
+        ColorSpace = color_space,
+        Coords = (
+                new PointValue(radial.Fxy.X),
+                new PointValue(radial.Fxy.Y),
+                new PointValue(radial.Fr),
+                new PointValue(radial.Cxy.X),
+                new PointValue(radial.Cxy.Y),
+                new PointValue(radial.R)
+            ),
+        Function = StitchingFunction.FromStopColors(radial.StopColors, f),
+        Extend = (true, true),
+    };
 }
