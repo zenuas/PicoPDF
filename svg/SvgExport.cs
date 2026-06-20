@@ -1,5 +1,4 @@
-﻿using Svg.Extension;
-using Svg.Outline;
+﻿using Svg.Outline;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -53,8 +52,6 @@ public static class SvgExport
         )
     {
         var layer_d = new StringBuilder();
-        var colo = outlines.GetSurfaces().Where(x => x.ColorLayer is { }).Select(x => x.ColorLayer!);
-
         var isfirst = true;
         foreach (var outline in outlines)
         {
