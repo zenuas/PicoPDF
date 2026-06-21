@@ -27,22 +27,17 @@ public class CMapFormat14 : ICMapFormat
         };
     }
 
-    public static CMapFormat14 CreateFormat((int Char, uint GID)[] char_gids)
-    {
-        return new()
-        {
-            Format = (ushort)CMapFormats.Format14,
-            Length = 0,
-            NumberOfVariationSelectorRecords = 0,
-            VariationSelector = [],
-        };
-    }
-
     public void WriteTo(Stream stream)
     {
         stream.WriteUShortByBigEndian(Format);
         stream.WriteUIntByBigEndian(Length);
         stream.WriteUIntByBigEndian(NumberOfVariationSelectorRecords);
+        foreach (var x in VariationSelector)
+        {
+            stream.Write3BytesByBigEndian(x.VariationSelector);
+            stream.WriteOffset32(x.DefaultUVSOffset);
+            stream.WriteOffset32(x.NonDefaultUVSOffset);
+        }
     }
 
     public Func<int, uint> CreateCharToGID()

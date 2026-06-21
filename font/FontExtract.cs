@@ -271,7 +271,6 @@ public static class FontExtract
         CMapFormats.Format4 => char_gids.Where(x => x.Char <= 0xFFFF).To(x => x.IsEmpty() ? null : (ICMapFormat)CMapFormat4.CreateFormat([.. x.Select(x => (char.ConvertFromUtf32(x.Char).First(), (ushort)x.GID))])),
         CMapFormats.Format12 => CMapFormat12.CreateFormat(char_gids),
         CMapFormats.Format13 => CMapFormat13.CreateFormat(char_gids),
-        CMapFormats.Format14 => CMapFormat14.CreateFormat(char_gids),
         _ => null,
     };
 
