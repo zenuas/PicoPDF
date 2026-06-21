@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace OpenType.Tables.CMap;
 
-public class CMapFormat8 : ICMapFormat
+public class CMapFormat8 : ICMapFormat, ICharToGID
 {
     public required ushort Format { get; init; }
     public required ushort Reserved { get; init; }

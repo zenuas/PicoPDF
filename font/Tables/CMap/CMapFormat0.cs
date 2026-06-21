@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OpenType.Tables.CMap;
 
-public class CMapFormat0 : ICMapFormat, IExportable
+public class CMapFormat0 : ICMapFormat, ICharToGID, IExportable
 {
     public required ushort Format { get; init; }
     public required ushort Length { get; init; }

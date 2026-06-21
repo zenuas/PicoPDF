@@ -1,6 +1,5 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
-using System;
 using System.IO;
 using System.Linq;
 
@@ -38,10 +37,5 @@ public class CMapFormat14 : ICMapFormat, IExportable
             stream.WriteOffset32(x.DefaultUVSOffset);
             stream.WriteOffset32(x.NonDefaultUVSOffset);
         }
-    }
-
-    public Func<int, uint> CreateCharToGID()
-    {
-        return _ => 0;
     }
 }

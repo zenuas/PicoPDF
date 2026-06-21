@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace OpenType.Tables.CMap;
 
-public class CMapFormat2 : ICMapFormat
+public class CMapFormat2 : ICMapFormat, ICharToGID
 {
     public required ushort Format { get; init; }
     public required ushort Length { get; init; }

@@ -101,7 +101,6 @@ public static class FontLoader
             IndexToLocFormat = head.IndexToLocFormat,
         };
 
-        var current_cmap = GetCurrentCMapFormat(cmap);
         TrueTypeFont newfont = null!;
         newfont = new()
         {
@@ -118,7 +117,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = current_cmap.CreateCharToGID(),
+            CharToGID = GetCurrentCharToGID(cmap).CreateCharToGID(),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyf[(int)gid].ToOutline(glyf),
             Glyphs = glyf,
             ColorBitmapData = cbdt,
@@ -153,7 +152,6 @@ public static class FontLoader
         var svg = ReadTableRecord(font, "SVG ", stream, ScalableVectorGraphicsTable.ReadFrom);
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
-        var current_cmap = GetCurrentCMapFormat(cmap);
         PostScriptFont newfont = null!;
         newfont = new()
         {
@@ -170,7 +168,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = current_cmap.CreateCharToGID(),
+            CharToGID = GetCurrentCharToGID(cmap).CreateCharToGID(),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
             ColorBitmapData = cbdt,
@@ -202,7 +200,6 @@ public static class FontLoader
         var svg = ReadTableRecord(font, "SVG ", stream, ScalableVectorGraphicsTable.ReadFrom);
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
-        var current_cmap = GetCurrentCMapFormat(cmap);
         return new()
         {
             PostScriptName = font.PostScriptName,
@@ -218,7 +215,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = current_cmap.CreateCharToGID(),
+            CharToGID = GetCurrentCharToGID(cmap).CreateCharToGID(),
             GIDToOutline = (_, _) => [],
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
@@ -229,10 +226,10 @@ public static class FontLoader
         };
     }
 
-    public static ICMapFormat GetCurrentCMapFormat(CMapTable cmap) =>
-        (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat12>().FirstOrDefault() ??
-        (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat4>().FirstOrDefault() ??
-        (ICMapFormat?)cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault() ??
+    public static ICharToGID GetCurrentCharToGID(CMapTable cmap) =>
+        (ICharToGID?)cmap.EncodingRecords.Values.OfType<CMapFormat12>().FirstOrDefault() ??
+        (ICharToGID?)cmap.EncodingRecords.Values.OfType<CMapFormat4>().FirstOrDefault() ??
+        (ICharToGID?)cmap.EncodingRecords.Values.OfType<CMapFormat0>().FirstOrDefault() ??
         cmap.EncodingRecords.Values.OfType<CMapFormat13>().First();
 
     public static T? ReadTableRecord<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f) => ReadTableRecord(font.TableRecords, name, stream, f);
