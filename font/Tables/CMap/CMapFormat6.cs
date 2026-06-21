@@ -32,7 +32,5 @@ public class CMapFormat6 : ICMapFormat
         };
     }
 
-    public void WriteTo(Stream stream) => throw new NotImplementedException();
-
     public Func<int, uint> CreateCharToGID() => (c) => c < FirstCode || c >= FirstCode + EntryCount ? 0 : (uint)GlyphIdArray[c - FirstCode];
 }

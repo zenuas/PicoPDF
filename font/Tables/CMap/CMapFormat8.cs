@@ -36,8 +36,6 @@ public class CMapFormat8 : ICMapFormat
         };
     }
 
-    public void WriteTo(Stream stream) => throw new NotImplementedException();
-
     public static readonly ComparerBinder<(uint StartCharCode, uint EndCharCode, uint StartGlyphID)> RangeComparer = new() { Compare = (a, b) => a.EndCharCode < b.StartCharCode ? -1 : a.StartCharCode > b.EndCharCode ? 1 : 0 };
 
     public Func<int, uint> CreateCharToGID()

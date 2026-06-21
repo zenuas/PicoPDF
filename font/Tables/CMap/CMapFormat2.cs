@@ -34,8 +34,6 @@ public class CMapFormat2 : ICMapFormat
         };
     }
 
-    public void WriteTo(Stream stream) => throw new NotImplementedException();
-
     public Func<int, uint> CreateCharToGID()
     {
         return (c) =>

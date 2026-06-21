@@ -68,11 +68,12 @@ public class CMapTable : IExportable
         var cmap_offset_cache = new Dictionary<ICMapFormat, long>();
 
         export_cmap_keys
-            .Select(x => (Key: x, Value: EncodingRecords[x]!))
+            .Where(x => EncodingRecords[x] is IExportable)
+            .Select(x => (Key: x, Value: EncodingRecords[x]))
             .Each(x =>
             {
                 var offset = cmap_offset_cache.TryGetValue(x.Value, out var cache_offset) ? cache_offset : cmapformat.Position + cmap_offset;
-                if (!cmap_offset_cache.ContainsKey(x.Value)) x.Value.WriteTo(cmapformat);
+                if (!cmap_offset_cache.ContainsKey(x.Value)) x.Value.Cast<IExportable>().WriteTo(cmapformat);
                 cmap_offset_cache[x.Value] = offset;
 
                 stream.WriteUShortByBigEndian(x.Key.PlatformID);

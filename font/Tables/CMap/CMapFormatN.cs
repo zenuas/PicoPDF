@@ -1,13 +1,10 @@
 ﻿using System;
-using System.IO;
 
 namespace OpenType.Tables.CMap;
 
 public class CMapFormatN : ICMapFormat
 {
     public required ushort Format { get; init; }
-
-    public void WriteTo(Stream stream) { }
 
     public Func<int, uint> CreateCharToGID() => _ => 0;
 }
