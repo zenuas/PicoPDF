@@ -11,7 +11,7 @@ using System.Text;
 
 namespace OpenType.Tables.PostScript;
 
-public class CompactFontFormat : IExportable
+public record class CompactFontFormat : IExportable
 {
     public required byte Major { get; init; }
     public required byte Minor { get; init; }

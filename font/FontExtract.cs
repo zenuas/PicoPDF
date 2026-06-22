@@ -84,15 +84,9 @@ public static class FontExtract
             FontDictSelect = [.. Lists.Repeat<byte>(0).Take(num_of_glyph + 1)],
         };
 
-        var cff = new CompactFontFormat
+        var cff = font.CompactFontFormat with
         {
-            Major = font.CompactFontFormat.Major,
-            Minor = font.CompactFontFormat.Minor,
-            HeaderSize = font.CompactFontFormat.HeaderSize,
-            OffsetSize = font.CompactFontFormat.OffsetSize,
-            Names = font.CompactFontFormat.Names,
             TopDict = top_dict,
-            Strings = font.CompactFontFormat.Strings,
             GlobalSubroutines = [],
         };
 
