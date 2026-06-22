@@ -79,7 +79,6 @@ public static class FontExtract
                 Format = 0,
                 Glyph = [.. Lists.RangeTo(1, num_of_glyph).Select(x => (ushort)x)],
             },
-            PrivateDict = font.CompactFontFormat.TopDict.PrivateDict,
             FontDictArray = [new TopDict { Dict = [] }],
             FontDictSelect = [.. Lists.Repeat<byte>(0).Take(num_of_glyph + 1)],
         };
