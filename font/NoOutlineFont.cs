@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace OpenType;
 
-public class NoOutlineFont : IOpenTypeFont
+public record class NoOutlineFont : IOpenTypeFont
 {
     public required string PostScriptName { get; init; }
     public required IFontPath Path { get; init; }

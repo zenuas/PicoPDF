@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace OpenType;
 
-public class PostScriptFont : IOpenTypeFont
+public record class PostScriptFont : IOpenTypeFont
 {
     public required string PostScriptName { get; init; }
     public required IFontPath Path { get; init; }

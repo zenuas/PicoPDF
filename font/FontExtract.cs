@@ -37,33 +37,20 @@ public static class FontExtract
             .ToArray();
 
         TrueTypeFont newfont = null!;
-        newfont = new()
+        return newfont = font with
         {
-            PostScriptName = font.PostScriptName,
-            Path = font.Path,
-            Position = font.Position,
-            TableRecords = font.TableRecords,
-            Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
-            FontHeader = font.FontHeader,
             MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
-            PostScript = font.PostScript,
-            OS2 = font.OS2,
             HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
-            HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
+            HorizontalMetrics = new() { Metrics = [font.HorizontalMetrics.Metrics[0], .. Lists.RangeTo(1, num_of_glyph).Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])], LeftSideBearing = [] },
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyphs[gid].ToOutline(glyphs),
             Glyphs = glyphs,
-            ColorBitmapData = null,
-            ColorBitmapLocation = null,
             Color = colr,
             ColorPalette = cpal,
-            StandardBitmapGraphics = null,
-            ScalableVectorGraphics = null,
             DisposeAction = null,
         };
-        return newfont;
     }
 
     public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
@@ -110,32 +97,19 @@ public static class FontExtract
         };
 
         PostScriptFont newfont = null!;
-        newfont = new()
+        return newfont = font with
         {
-            PostScriptName = font.PostScriptName,
-            Path = font.Path,
-            Position = font.Position,
-            TableRecords = font.TableRecords,
-            Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
-            FontHeader = font.FontHeader,
             MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
-            PostScript = font.PostScript,
-            OS2 = font.OS2,
             HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
-            HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
+            HorizontalMetrics = new() { Metrics = [font.HorizontalMetrics.Metrics[0], .. Lists.RangeTo(1, num_of_glyph).Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])], LeftSideBearing = [] },
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
-            ColorBitmapData = null,
-            ColorBitmapLocation = null,
             Color = colr,
             ColorPalette = cpal,
-            StandardBitmapGraphics = null,
-            ScalableVectorGraphics = null,
         };
-        return newfont;
     }
 
     public static NoOutlineFont Extract(NoOutlineFont font, FontExtractOption opt)
@@ -146,29 +120,17 @@ public static class FontExtract
         var num_of_glyph = (int)gid_hmtx.Keys.Max();
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
-        return new()
+        return font with
         {
-            PostScriptName = font.PostScriptName,
-            Path = font.Path,
-            Position = font.Position,
-            TableRecords = font.TableRecords,
-            Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
-            FontHeader = font.FontHeader,
             MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
-            PostScript = font.PostScript,
-            OS2 = font.OS2,
             HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
-            HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_hmtx.GetOrDefault(x)),
+            HorizontalMetrics = new() { Metrics = [font.HorizontalMetrics.Metrics[0], .. Lists.RangeTo(1, num_of_glyph).Select(x => gid_hmtx.GetOrDefault((uint)x) ?? font.HorizontalMetrics.Metrics[0])], LeftSideBearing = [] },
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             GIDToOutline = (_, _) => [],
-            ColorBitmapData = null,
-            ColorBitmapLocation = null,
             Color = colr,
             ColorPalette = cpal,
-            StandardBitmapGraphics = null,
-            ScalableVectorGraphics = null,
         };
     }
 
@@ -193,12 +155,6 @@ public static class FontExtract
 
         return new() { Format = 0, Count = (ushort)names.Length, StringOffset = 0, NameRecords = names };
     }
-
-    public static HorizontalMetricsTable CreateHorizontalMetricsTable(int num_of_glyph, HorizontalMetrics notdef, Func<uint, HorizontalMetrics?> f) => new()
-    {
-        Metrics = [notdef, .. Lists.RangeTo(1, num_of_glyph).Select(x => f((uint)x) ?? notdef)],
-        LeftSideBearing = [],
-    };
 
     public static Func<int, uint> CreateCharToGID((int Char, uint GID)[] char_gids)
     {
