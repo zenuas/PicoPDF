@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables.PostScript;
 
-public class PrivateDict
+public record class PrivateDict
 {
     public required Dictionary<PrivateDictOperators, IntOrDouble[]> Dict { get; init; }
     public byte[][] LocalSubroutines { get; init; } = [];

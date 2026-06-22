@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace OpenType.Tables.PostScript;
 
-public class TopDict
+public record class TopDict
 {
     public required Dictionary<TopDictOperators, IntOrDouble[]> Dict { get; init; }
     public string[] Strings { get; init; } = [];
