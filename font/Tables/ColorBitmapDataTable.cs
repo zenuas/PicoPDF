@@ -1,17 +1,11 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace OpenType.Tables;
 
-public record class ColorBitmapDataTable : IExportable
+public record class ColorBitmapDataTable
 {
     public static ColorBitmapDataTable ReadFrom(Stream stream)
     {
         return new();
-    }
-
-    public void WriteTo(Stream stream)
-    {
-        throw new NotImplementedException();
     }
 }
