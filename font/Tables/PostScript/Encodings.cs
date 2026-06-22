@@ -2,7 +2,7 @@
 
 namespace OpenType.Tables.PostScript;
 
-public class Encodings
+public static class Encodings
 {
     public static readonly Dictionary<int, int> StandardEncoding = new()
     {
