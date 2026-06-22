@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class HorizontalHeaderTable : IExportable
+public record class HorizontalHeaderTable : IExportable
 {
     public required ushort MajorVersion { get; init; }
     public required ushort MinorVersion { get; init; }

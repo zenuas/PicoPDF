@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class HorizontalMetricsTable : IExportable
+public record class HorizontalMetricsTable : IExportable
 {
     public required HorizontalMetrics[] Metrics { get; init; }
     public required short[] LeftSideBearing { get; init; }

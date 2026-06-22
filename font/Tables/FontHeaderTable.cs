@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class FontHeaderTable : IExportable
+public record class FontHeaderTable : IExportable
 {
     public required ushort MajorVersion { get; init; }
     public required ushort MinorVersion { get; init; }

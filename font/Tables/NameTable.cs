@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OpenType.Tables;
 
-public class NameTable : IExportable
+public record class NameTable : IExportable
 {
     public required ushort Format { get; init; }
     public required ushort Count { get; init; }

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class ColorBitmapDataTable : IExportable
+public record class ColorBitmapDataTable : IExportable
 {
     public static ColorBitmapDataTable ReadFrom(Stream stream)
     {

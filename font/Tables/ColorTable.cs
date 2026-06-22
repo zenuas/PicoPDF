@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class ColorTable : IExportable
+public record class ColorTable : IExportable
 {
     public required ushort Version { get; init; }
     public required ushort NumberBaseGlyphRecords { get; init; }

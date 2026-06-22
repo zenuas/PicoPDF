@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class IndexToLocationTable
+public record class IndexToLocationTable
 {
     public required uint[] Offsets { get; init; }
 

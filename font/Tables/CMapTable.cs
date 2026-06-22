@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class CMapTable : IExportable
+public record class CMapTable : IExportable
 {
     public required ushort Version { get; init; }
     public required ushort NumberOfTables { get; init; }

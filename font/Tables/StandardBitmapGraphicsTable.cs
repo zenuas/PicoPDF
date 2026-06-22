@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class StandardBitmapGraphicsTable : IExportable
+public record class StandardBitmapGraphicsTable : IExportable
 {
     public static StandardBitmapGraphicsTable ReadFrom(Stream stream)
     {

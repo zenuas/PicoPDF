@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class PostScriptTable : IExportable
+public record class PostScriptTable : IExportable
 {
     public required uint Version { get; init; }
     public required Fixed ItalicAngle { get; init; }

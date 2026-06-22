@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class OS2Table : IExportable
+public record class OS2Table : IExportable
 {
     public required ushort Version { get; init; }
     public required short XAvgCharWidth { get; init; }

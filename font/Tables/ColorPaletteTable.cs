@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace OpenType.Tables;
 
-public class ColorPaletteTable : IExportable
+public record class ColorPaletteTable : IExportable
 {
     public required ushort Version { get; init; }
     public required ushort NumberOfPaletteEntries { get; init; }

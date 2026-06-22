@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OpenType.Tables;
 
-public class MaximumProfileTable : IExportable
+public record class MaximumProfileTable : IExportable
 {
     public required int Version { get; init; }
     public required ushort NumberOfGlyphs { get; init; }

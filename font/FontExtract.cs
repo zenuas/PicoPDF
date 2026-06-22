@@ -46,10 +46,10 @@ public static class FontExtract
             Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
             FontHeader = font.FontHeader,
-            MaximumProfile = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1)),
+            MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
             PostScript = font.PostScript,
             OS2 = font.OS2,
-            HorizontalHeader = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1)),
+            HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
@@ -119,10 +119,10 @@ public static class FontExtract
             Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
             FontHeader = font.FontHeader,
-            MaximumProfile = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1)),
+            MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
             PostScript = font.PostScript,
             OS2 = font.OS2,
-            HorizontalHeader = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1)),
+            HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_glyph.TryGetValue(x, out var v) ? v.HorizontalMetrics : null),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
@@ -155,10 +155,10 @@ public static class FontExtract
             Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
             FontHeader = font.FontHeader,
-            MaximumProfile = CopyMaximumProfileTable(font.MaximumProfile, (ushort)(num_of_glyph + 1)),
+            MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
             PostScript = font.PostScript,
             OS2 = font.OS2,
-            HorizontalHeader = CopyHorizontalHeaderTable(font.HorizontalHeader, (ushort)(num_of_glyph + 1)),
+            HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
             HorizontalMetrics = CreateHorizontalMetricsTable(num_of_glyph, font.HorizontalMetrics.Metrics[0], x => gid_hmtx.GetOrDefault(x)),
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
@@ -193,47 +193,6 @@ public static class FontExtract
 
         return new() { Format = 0, Count = (ushort)names.Length, StringOffset = 0, NameRecords = names };
     }
-
-    public static MaximumProfileTable CopyMaximumProfileTable(MaximumProfileTable maxp, ushort num_of_glyph_with_notdef) => new()
-    {
-        Version = maxp.Version,
-        NumberOfGlyphs = num_of_glyph_with_notdef,
-        MaxPoints = maxp.MaxPoints,
-        MaxContours = maxp.MaxContours,
-        MaxCompositePoints = maxp.MaxCompositePoints,
-        MaxCompositeContours = maxp.MaxCompositeContours,
-        MaxZones = maxp.MaxZones,
-        MaxTwilightPoints = maxp.MaxTwilightPoints,
-        MaxStorage = maxp.MaxStorage,
-        MaxFunctionDefs = maxp.MaxFunctionDefs,
-        MaxInstructionDefs = maxp.MaxInstructionDefs,
-        MaxStackElements = maxp.MaxStackElements,
-        MaxSizeOfInstructions = maxp.MaxSizeOfInstructions,
-        MaxComponentElements = maxp.MaxComponentElements,
-        MaxComponentDepth = maxp.MaxComponentDepth,
-    };
-
-    public static HorizontalHeaderTable CopyHorizontalHeaderTable(HorizontalHeaderTable hhea, ushort num_of_glyph_with_notdef) => new()
-    {
-        MajorVersion = hhea.MajorVersion,
-        MinorVersion = hhea.MinorVersion,
-        Ascender = hhea.Ascender,
-        Descender = hhea.Descender,
-        LineGap = hhea.LineGap,
-        AdvanceWidthMax = hhea.AdvanceWidthMax,
-        MinLeftSideBearing = hhea.MinLeftSideBearing,
-        MinRightSideBearing = hhea.MinRightSideBearing,
-        XMaxExtent = hhea.XMaxExtent,
-        CaretSlopeRise = hhea.CaretSlopeRise,
-        CaretSlopeRun = hhea.CaretSlopeRun,
-        CaretOffset = hhea.CaretOffset,
-        Reserved1 = hhea.Reserved1,
-        Reserved2 = hhea.Reserved2,
-        Reserved3 = hhea.Reserved3,
-        Reserved4 = hhea.Reserved4,
-        MetricDataFormat = hhea.MetricDataFormat,
-        NumberOfHMetrics = num_of_glyph_with_notdef,
-    };
 
     public static HorizontalMetricsTable CreateHorizontalMetricsTable(int num_of_glyph, HorizontalMetrics notdef, Func<uint, HorizontalMetrics?> f) => new()
     {
