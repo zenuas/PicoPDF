@@ -12,7 +12,7 @@ public class Type1Font : PdfObject, IFont
     public int LastChar { get => FirstChar + Widths.Length - 1; }
     public long[] Widths { get; init; } = [];
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         RelatedObjects.Add(FontDescriptor);
         _ = Elements.TryAdd("Type", $"/Font %{Name}");

@@ -12,7 +12,7 @@ public class CIDToUnicode : PdfObject
     public required IOpenTypeFont Font { get; init; }
     public required HashSet<int> Chars { get; init; }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         var bfchar = Chars
             .Order()

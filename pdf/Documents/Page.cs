@@ -28,7 +28,7 @@ public class Page : PdfObject
         _ = Elements.TryAdd("Contents", Contents);
     }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("MediaBox", new long[] { 0, 0, Width, Height });
 

@@ -12,7 +12,7 @@ public class PdfObject : IPdfObject
     public MemoryStream? Stream { get; set; }
     public List<PdfObject> RelatedObjects { get; init; } = [];
 
-    public virtual void DoExport(PdfExportOption option)
+    public virtual void BeforeExport(PdfExportOption option)
     {
     }
 

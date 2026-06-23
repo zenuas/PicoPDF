@@ -26,7 +26,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
             : FontExtract.Extract(Font.Cast<PostScriptFont>(), new() { ExtractChars = [.. Chars] });
     }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         RelatedObjects.Add(FontDictionary);
         _ = Elements.TryAdd("Type", "/Font");

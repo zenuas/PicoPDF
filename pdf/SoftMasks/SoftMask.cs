@@ -8,7 +8,7 @@ public class SoftMask : PdfObject
     public required MaskMethods S { get; init; }
     public required FormXObject G { get; init; }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         RelatedObjects.Add(G);
         _ = Elements.TryAdd("Type", "/Mask");

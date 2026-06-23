@@ -11,7 +11,7 @@ public class CIDFontDictionary : PdfObject
     public int? DW { get; init; }
     public ElementArray<ElementLiteral>? W { get; set; }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("Type", "/Font");
         _ = Elements.TryAdd("Subtype", $"/{Subtype}");

@@ -16,7 +16,7 @@ public class StitchingFunction : PdfObject, IFunction
     public required float[] Bounds { get; init; }
     public required float[] Encode { get; init; }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         Functions.OfType<PdfObject>().Each(RelatedObjects.Add);
         _ = Elements.TryAdd("FunctionType", (int)FunctionType);

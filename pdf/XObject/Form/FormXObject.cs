@@ -14,7 +14,7 @@ public class FormXObject : PdfObject, IXObject
     public IShading[] ResourcesShading { get; init; } = [];
     public GroupXObject? Group { get; init; } = null;
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         ResourcesShading.OfType<PdfObject>().Each(RelatedObjects.Add);
         if (Group is { }) RelatedObjects.Add(Group);

@@ -12,7 +12,7 @@ public class ExponentialInterpolationFunction : PdfObject, IFunction
     public float[] C1 { get; init; } = [1.0f];
     public required int N { get; init; }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("FunctionType", (int)FunctionType);
         _ = Elements.TryAdd("Domain", $"[{Domain.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]");

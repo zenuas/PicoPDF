@@ -9,7 +9,7 @@ public partial class Contents : PdfObject
     public required Page Page { get; init; }
     public List<IOperation> Operations { get; init; } = [];
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         var writer = GetWriteStream(option.ContentsStreamDeflate);
         Operations.Each(x => x.OperationWrite(Page.Width, Page.Height, writer, option));

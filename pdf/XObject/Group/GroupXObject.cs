@@ -6,7 +6,7 @@ public class GroupXObject : PdfObject, IXObject
     public bool I { get; init; } = false;
     public required string CS { get; init; }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("Type", "/Group");
         _ = Elements.TryAdd("S", S);

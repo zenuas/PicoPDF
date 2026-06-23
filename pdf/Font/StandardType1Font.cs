@@ -10,7 +10,7 @@ public class StandardType1Font : PdfObject, IFont
     public required string Name { get; init; }
     public required StandardType1Fonts Font { get; init; }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("Type", $"/Font %{Name}");
         _ = Elements.TryAdd("Subtype", "/Subtype1");

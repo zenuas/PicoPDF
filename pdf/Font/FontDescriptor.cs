@@ -6,7 +6,7 @@ public class FontDescriptor : PdfObject
     public required FontDescriptorFlags Flags { get; init; }
     public int? MissingWidth { get; init; }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("Type", "/FontDescriptor");
         _ = Elements.TryAdd("FontName", $"/{FontName}");

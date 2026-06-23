@@ -9,7 +9,7 @@ public class ImageXObject : PdfObject, IImageXObject
     public required int Height { get; init; }
     public required Color[][] Canvas { get; init; }
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         _ = Elements.TryAdd("Type", "/XObject");
         _ = Elements.TryAdd("Subtype", "/Image");

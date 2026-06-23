@@ -114,7 +114,7 @@ public class CIDFont : PdfObject, IFont
         {'~', 500},  // ~
     };
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         RelatedObjects.Add(FontDictionary);
         _ = Elements.TryAdd("Type", $"/Font %{Name}");

@@ -14,7 +14,7 @@ public class GraphicsStateParameter : PdfObject, IGraphicsStateParameter
     public float? Ca { get; init; } = null;
     public bool? AIS { get; init; } = null;
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         if (SMask is { }) RelatedObjects.Add(SMask.Cast<PdfObject>());
 

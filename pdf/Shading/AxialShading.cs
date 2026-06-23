@@ -19,7 +19,7 @@ public class AxialShading : PdfObject, IShading
     public required IFunction Function { get; init; }
     public (bool B0, bool B1) Extend { get; init; } = (false, false);
 
-    public override void DoExport(PdfExportOption option)
+    public override void BeforeExport(PdfExportOption option)
     {
         RelatedObjects.Add(Function.Cast<PdfObject>());
         _ = Elements.TryAdd("ShadingType", (int)ShadingType);
