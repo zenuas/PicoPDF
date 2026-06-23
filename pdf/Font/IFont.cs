@@ -1,6 +1,6 @@
 ﻿namespace Pdf.Font;
 
-public interface IFont : IPdfObject
+public interface IFont
 {
     public string Name { get; init; }
     public string CreateTextShowingOperator(string s);

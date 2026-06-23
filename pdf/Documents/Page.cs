@@ -66,7 +66,7 @@ public class Page : PdfObject
         if (fonts.Any())
         {
             var fontdic = new ElementDictionary();
-            fonts.Each(x => fontdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x }));
+            fonts.Each(x => fontdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
             dic.Dictionary.Add("Font", fontdic);
         }
 
