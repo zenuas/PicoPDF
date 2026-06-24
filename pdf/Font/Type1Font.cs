@@ -1,4 +1,6 @@
-﻿using Pdf.Extension;
+﻿using Mina.Extension;
+using Pdf.Extension;
+using System.Linq;
 
 namespace Pdf.Font;
 
@@ -26,4 +28,23 @@ public class Type1Font : PdfObject, IFont
     }
 
     public string CreateTextShowingOperator(string s) => $"{s.ToEscapeString(System.Text.Encoding.ASCII)} Tj";
+
+    public static Type1Font Create(string name, string basefont, Type1Encodings encoding, FontDescriptorFlags flags = FontDescriptorFlags.Nonsymbolic)
+    {
+        var fontdict = new FontDescriptor()
+        {
+            FontName = basefont,
+            Flags = flags,
+            MissingWidth = 500,
+        };
+        return new()
+        {
+            Name = name,
+            BaseFont = basefont,
+            Encoding = encoding.ToString(),
+            FontDescriptor = fontdict,
+            FirstChar = 32,
+            Widths = [.. Lists.Repeat(500L).Take(126 - 32 + 1)],
+        };
+    }
 }

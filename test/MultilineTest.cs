@@ -57,7 +57,6 @@ public class MultilineTest
             Name = "Type0FontMock",
             Font = new OpenTypeFontMock(),
             FontEmbed = FontEmbeds.PossibleEmbed,
-            FontRegister = null!,
             Encoding = "",
             FontDictionary = null!,
         };

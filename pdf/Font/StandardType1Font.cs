@@ -18,4 +18,6 @@ public class StandardType1Font : PdfObject, IFont
     }
 
     public string CreateTextShowingOperator(string s) => $"{s.ToEscapeString(Encoding.ASCII)} Tj";
+
+    public static StandardType1Font Create(string name, StandardType1Fonts fontname) => new() { Name = name, Font = fontname };
 }

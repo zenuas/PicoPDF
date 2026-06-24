@@ -16,20 +16,25 @@ public class ManualCreate : FontRegisterCommand
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientations.Horizontal);
         var page = document.NewPage(width, height);
 
-        var cid = document.AddFont("CID", "HeiseiMin", CMaps.UniJIS_UCS2_H, Encoding.BigEndianUnicode);
+        var cid = CIDFont.Create("CID", "HeiseiMin", CMaps.UniJIS_UCS2_H, Encoding.BigEndianUnicode);
+        document.AddFont(cid);
         page.Contents.Operations.Add(DrawString.Create("CID Font! あア亜", 100, 100, 12, cid));
         page.Contents.Operations.AddRange(DrawOperations.CreateTextStyle(TextStyles.Underline, 100, 100, 100, 50, 12));
 
-        var stdtype1 = document.AddFont("STDTYPE1", StandardType1Fonts.HelveticaBold);
+        var stdtype1 = StandardType1Font.Create("STDTYPE1", StandardType1Fonts.HelveticaBold);
+        document.AddFont(stdtype1);
         page.Contents.Operations.Add(DrawString.Create("Standard Type1 Font!", 120, 100, 12, stdtype1));
 
-        var type1 = document.AddFont("TYPE1", "Helvetica", Type1Encodings.WinAnsiEncoding);
+        var type1 = Type1Font.Create("TYPE1", "Helvetica", Type1Encodings.WinAnsiEncoding);
+        document.AddFont(type1);
         page.Contents.Operations.Add(DrawString.Create("Type1 Font!", 140, 100, 12, type1));
 
-        var post = document.AddFont("POST1", fontreg.LoadComplete("test-case/NotoSansCJK-Regular.ttc,0"));
+        var post = Type0Font.Create("POST1", fontreg.LoadComplete("test-case/NotoSansCJK-Regular.ttc,0"));
+        document.AddFont(post);
         page.Contents.Operations.Add(DrawString.Create(page.Document, "PostScript Font! あア亜 𠮷野家", 100, 160, 12, [post]));
 
-        var ttf = document.AddFont("true1", fontreg.LoadComplete("Meiryo Bold"));
+        var ttf = Type0Font.Create("true1", fontreg.LoadComplete("Meiryo Bold"));
+        document.AddFont(ttf);
         page.Contents.Operations.Add(DrawString.Create(page.Document, "TrueType Font! あア亜 𠮷野家", 100, 180, 12, [ttf]));
 
         document.Save("test-case/manual-create.pdf", new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });

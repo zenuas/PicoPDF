@@ -14,7 +14,6 @@ public class Type0Font : PdfObject, IFont, IFontChars
     public required IOpenTypeFont Font { get; init; }
     public required FontEmbeds FontEmbed { get; init; }
     public IOpenTypeFont? EmbeddedFont { get; set; }
-    public required IFontRegister FontRegister { get; init; }
     public required string Encoding { get; init; }
     public required CIDFontDictionary FontDictionary { get; init; }
     public HashSet<int> Chars { get; init; } = [];
@@ -76,4 +75,47 @@ public class Type0Font : PdfObject, IFont, IFontChars
     }
 
     public string CreateTextShowingOperator(string s) => $"<{s.ToUtf32CharArray().Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";
+
+    public static Type0Font Create(string name, IOpenTypeFont font, FontEmbeds embed = FontEmbeds.PossibleEmbed)
+    {
+        var flag =
+            (font.CMap.EncodingRecords.Contains(x => x.Key.PlatformID == (ushort)Platforms.Windows && x.Key.EncodingID == (ushort)Encodings.Windows_Symbol) ?
+                FontDescriptorFlags.Symbolic :
+                FontDescriptorFlags.Nonsymbolic) |
+            (font.PostScript.IsFixedPitch != 0 ? FontDescriptorFlags.FixedPitch : 0) |
+            ((font.FontHeader.MacStyle & 1) != 0 ? FontDescriptorFlags.ForceBold : 0) |
+            ((font.FontHeader.MacStyle & 2) != 0 ? FontDescriptorFlags.Italic : 0);
+
+        return Create(name, font, flag, embed);
+    }
+
+    public static Type0Font Create(string name, IOpenTypeFont font, FontDescriptorFlags flags, FontEmbeds embed)
+    {
+        var cmap = CMaps.Identity_H;
+        var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
+        var fontdict = new CIDFontDictionary()
+        {
+            Subtype = font.Offset.ContainTrueType() ? "CIDFontType2" : "CIDFontType0",
+            BaseFont = font.PostScriptName,
+            CIDSystemInfo = new()
+            {
+                Dictionary =
+                {
+                    ["Registry"] = new ElementString { Value = cidsysinfo.Registry },
+                    ["Ordering"] = new ElementString { Value = cidsysinfo.Ordering },
+                    ["Supplement"] = cidsysinfo.Supplement,
+                }
+            },
+            DW = font.FontHeader.UnitsPerEm,
+            FontDescriptor = new() { FontName = font.PostScriptName, Flags = flags },
+        };
+        return new()
+        {
+            Name = name,
+            Font = font,
+            FontEmbed = embed,
+            Encoding = cidsysinfo.Name,
+            FontDictionary = fontdict,
+        };
+    }
 }

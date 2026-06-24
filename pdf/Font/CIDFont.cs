@@ -134,4 +134,32 @@ public class CIDFont : PdfObject, IFont
             if (found) yield return (separator.ToString(), widths[separator]);
         }
     }
+
+    public static CIDFont Create(string name, string basefont, CMaps cmap, Encoding enc, FontDescriptorFlags flags = FontDescriptorFlags.Nonsymbolic)
+    {
+        var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
+        var fontdict = new CIDFontDictionary()
+        {
+            Subtype = "CIDFontType0",
+            BaseFont = basefont,
+            CIDSystemInfo = new()
+            {
+                Dictionary =
+                {
+                    ["Registry"] = new ElementString { Value = cidsysinfo.Registry },
+                    ["Ordering"] = new ElementString { Value = cidsysinfo.Ordering },
+                    ["Supplement"] = cidsysinfo.Supplement,
+                }
+            },
+            FontDescriptor = new() { FontName = basefont, Flags = flags },
+        };
+        return new()
+        {
+            Name = name,
+            BaseFont = $"{basefont}-{cidsysinfo.Name}",
+            Encoding = cidsysinfo.Name,
+            TextEncoding = enc,
+            FontDictionary = fontdict,
+        };
+    }
 }
