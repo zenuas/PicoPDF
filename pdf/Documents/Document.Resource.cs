@@ -26,17 +26,7 @@ public partial class Document
 
     public void AddImage(IImageXObject image) => PdfObjects.Add(image.Cast<PdfObject>());
 
-    public IShading AddShading(IShading shading)
-    {
-        PdfObjects.Add(shading.Cast<PdfObject>());
+    public void AddShading(IShading shading) => PdfObjects.Add(shading.Cast<PdfObject>());
 
-        return shading;
-    }
-
-    public IGraphicsStateParameter AddGraphicsStateParameter(IGraphicsStateParameter gstate)
-    {
-        PdfObjects.Add(gstate.Cast<PdfObject>());
-
-        return gstate;
-    }
+    public void AddGraphicsStateParameter(IGraphicsStateParameter gstate) => PdfObjects.Add(gstate.Cast<PdfObject>());
 }
