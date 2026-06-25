@@ -1,11 +1,9 @@
-﻿using Pdf.Extension;
-using System;
+﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Pdf.Documents.Security;
@@ -253,40 +251,5 @@ public class Aes128Handler : ISecurityHandler
             _ = Arcfour.Encrypt(Arcfour.InitializeKey(key), user_key);
         }
         return [.. user_key, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
-    }
-
-    public static (PdfObject Encrypt, byte[] EncryptionKey) Create(CFM cfm, string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id)
-    {
-        var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
-        var owner_password_bytes = Encoding.UTF8.GetBytes(owner_password);
-        Span<byte> o_key = stackalloc byte[32];
-        ComputeOwnerPassword_Algorithm3(
-            user_password_bytes,
-            owner_password_bytes,
-            16,
-            o_key
-        );
-        var encryption_key = ComputeEncryptionKey_Algorithm2(
-            user_password_bytes,
-            o_key,
-            permissions,
-            document_id,
-            true
-        );
-        return (new()
-        {
-            Elements =
-            {
-                ["Filter"] = "/Standard",
-                ["P"] = (int)(permissions | UserAccessPermissions.Default),
-                ["V"] = 4,
-                ["CF"] = $"<< /StdCF << /CFM /{cfm} /AuthEvent /DocOpen /Length 128 >> >>",
-                ["R"] = 4,
-                ["O"] = o_key.ToHexString(),
-                ["U"] = ComputeUserPassword_Algorithm5(document_id, encryption_key).ToHexString(),
-                ["StmF"] = "/StdCF",
-                ["StrF"] = "/StdCF",
-            }
-        }, encryption_key);
     }
 }

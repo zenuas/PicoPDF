@@ -88,7 +88,7 @@ public static class PdfExport
         stream.Write($"  /Size {xref.Count + 1}\n");
         stream.Write($"  /Root {document.Catalog.IndirectIndex} 0 R\n");
         if (document.Info is { }) stream.Write($"  /Info {document.Info.IndirectIndex} 0 R\n");
-        if (document.Encrypt is { }) stream.Write($"  /Encrypt {document.Encrypt.IndirectIndex} 0 R\n");
+        if (document.Encrypt is { }) stream.Write($"  /Encrypt {document.Encrypt.Cast<PdfObject>().IndirectIndex} 0 R\n");
         if (document.DocumentID is { } id) stream.Write($"  /ID [{id.CreateID.ToHexString()} {id.UpdateID.ToHexString()}]\n");
         stream.Write(">>\n");
         if (option.OutputCrossReferenceTable)
