@@ -61,29 +61,28 @@ public partial class Document
         StreamHandler = StringHandler = EmbeddedFileStreamsHandler = null;
         if (Encrypt is { }) _ = PdfObjects.Remove(Encrypt);
 
-        PdfObject encrypt;
         switch (cfm)
         {
             case CFM.None when Version >= 20:
-                encrypt = CreateStandardEncryptionNone_V5(user_password, owner_password, permissions);
+                Encrypt = CreateStandardEncryptionNone_V5(user_password, owner_password, permissions);
                 StreamHandler = StringHandler = new IdentityHandler();
                 break;
 
             case CFM.None:
-                encrypt = CreateStandardEncryptionNone_V4(user_password, owner_password, permissions, GetDocumentID().CreateID);
+                Encrypt = CreateStandardEncryptionNone_V4(user_password, owner_password, permissions, GetDocumentID().CreateID);
                 StreamHandler = StringHandler = new IdentityHandler();
                 break;
 
             case CFM.AESV2:
                 {
-                    (encrypt, var encryption_key) = CreateStandardEncryptionAes128(user_password, owner_password, permissions, GetDocumentID().CreateID);
+                    (Encrypt, var encryption_key) = CreateStandardEncryptionAes128(user_password, owner_password, permissions, GetDocumentID().CreateID);
                     StreamHandler = StringHandler = new Aes128Handler() { Key = encryption_key };
                     break;
                 }
 
             case CFM.AESV3:
                 {
-                    (encrypt, var encryption_key) = CreateStandardEncryptionAes256(user_password, owner_password, permissions);
+                    (Encrypt, var encryption_key) = CreateStandardEncryptionAes256(user_password, owner_password, permissions);
                     StreamHandler = StringHandler = new Aes256Handler() { Key = encryption_key };
                     break;
                 }
@@ -91,7 +90,7 @@ public partial class Document
             default:
                 throw new();
         }
-        PdfObjects.Add(Encrypt = encrypt);
+        PdfObjects.Add(Encrypt);
     }
 
     public static PdfObject CreateStandardEncryptionNone_V4(string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id)
