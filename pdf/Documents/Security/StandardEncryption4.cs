@@ -7,6 +7,7 @@ namespace Pdf.Documents.Security;
 public class StandardEncryption4 : PdfObject, IStandardEncryption
 {
     public required byte[] EncryptionKey { get; init; }
+    public required byte[] DocumentID { get; init; }
     public ISecurityHandler? StreamHandler { get; init; } = null;
     public ISecurityHandler? StringHandler { get; init; } = null;
     public ISecurityHandler? EmbeddedFileStreamsHandler { get; init; } = null;
@@ -33,6 +34,7 @@ public class StandardEncryption4 : PdfObject, IStandardEncryption
         return new()
         {
             EncryptionKey = encryption_key,
+            DocumentID = document_id,
             StreamHandler = handler,
             StringHandler = handler,
             Elements =

@@ -9,7 +9,6 @@ namespace PicoPDF.TestAll;
 
 public class EncryptCreate : FontRegisterCommand
 {
-
     [CommandOption("work-directory")]
     public string WorkDirectory { get; init; } = "test-case";
 
@@ -17,8 +16,7 @@ public class EncryptCreate : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
 
-        var id1 = Document.GenerateID();
-        var encrypt1 = StandardEncryption4.Create(CFM.None, "xyz987", "abc123", UserAccessPermissions.Default, id1);
+        var encrypt1 = StandardEncryption4.Create(CFM.None, "xyz987", "abc123", UserAccessPermissions.Default, Document.GenerateID());
         var document1 = new Document()
         {
             Version = 17,
@@ -27,7 +25,7 @@ public class EncryptCreate : FontRegisterCommand
             StreamHandler = encrypt1.StreamHandler,
             StringHandler = encrypt1.StringHandler,
             EmbeddedFileStreamsHandler = encrypt1.EmbeddedFileStreamsHandler,
-            DocumentID = (id1, id1),
+            DocumentID = (encrypt1.DocumentID, encrypt1.DocumentID),
             Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientations.Horizontal);
@@ -50,8 +48,7 @@ public class EncryptCreate : FontRegisterCommand
         page2.Contents.Operations.Add(new DrawLine { Points = [(new PointValue(50), new PointValue(75)), (new PointValue(100), new PointValue(125))], LineWidth = new PointValue(10) });
         document2.Save($"{WorkDirectory}/encrypt-none20-create.pdf", new() { ContentsStreamDeflate = false });
 
-        var id3 = Document.GenerateID();
-        var encrypt3 = StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, id3);
+        var encrypt3 = StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, Document.GenerateID());
         var document3 = new Document()
         {
             Version = 17,
@@ -60,7 +57,7 @@ public class EncryptCreate : FontRegisterCommand
             StreamHandler = encrypt3.StreamHandler,
             StringHandler = encrypt3.StringHandler,
             EmbeddedFileStreamsHandler = encrypt3.EmbeddedFileStreamsHandler,
-            DocumentID = (id3, id3),
+            DocumentID = (encrypt3.DocumentID, encrypt3.DocumentID),
             Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
         _ = document3.NewPage(width, height);
