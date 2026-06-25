@@ -49,9 +49,6 @@ public class PdfCreate : FontRegisterCommand
     [CommandOption("work-directory")]
     public string WorkDirectory { get; init; } = "test-case";
 
-    [CommandOption("info-add")]
-    public bool IsInfoAdd { get; init; } = false;
-
     public override void Run(string[] args)
     {
         var export_opt = new PdfExportOption
@@ -135,16 +132,6 @@ public class PdfCreate : FontRegisterCommand
             tasks.Add(Task.Run(() =>
             {
                 var document = PdfFactory.CreateDocument(json, table, event_opt);
-                if (IsInfoAdd)
-                {
-                    document.AddInfo(
-                        title: fname,
-                        producer: "PicoPDF",
-                        creation_date: DateTime.Now,
-                        mod_date: DateTime.Now,
-                        trapped: "/False"
-                    );
-                }
                 document.Save(pdfname, export_opt);
             }));
         }
