@@ -1,5 +1,4 @@
 ﻿using Image;
-using Image.Png;
 using Mina.Extension;
 using Pdf.ExtGState;
 using Pdf.Shading;
@@ -18,24 +17,14 @@ public partial class Document
         {
             if (imagecache.TryGetValue(path, out var value)) return value;
             var load = ImageLoader.FromFile(path)!;
-            var x = AddImage($"X{imagecache.Count}", path, load.Width, load.Height);
+            var x = IImageXObject.Load($"X{imagecache.Count}", path, load.Width, load.Height);
+            AddImage(x);
             imagecache.Add(path, x);
             return x;
         };
     }
 
-    public IImageXObject AddImage(string name, string path, int width, int height)
-    {
-        IImageXObject image = ImageLoader.TypeCheck(path) switch
-        {
-            ImageTypes.Jpeg => new JpegXObject() { Name = name, Width = width, Height = height, Path = path },
-            ImageTypes.Png => new ImageXObject() { Name = name, Width = width, Height = height, Canvas = ImageLoader.FromFile(path, ImageTypes.Png)!.Cast<PngFile>().Canvas },
-            _ => throw new(),
-        };
-        PdfObjects.Add(image.Cast<PdfObject>());
-
-        return image;
-    }
+    public void AddImage(IImageXObject image) => PdfObjects.Add(image.Cast<PdfObject>());
 
     public IShading AddShading(IShading shading)
     {
