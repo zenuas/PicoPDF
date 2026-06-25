@@ -13,7 +13,6 @@ namespace Pdf.Documents;
 public partial class Document
 {
     public int Version { get; init; } = 17;
-    public List<PdfObject> PdfObjects { get; init; } = [];
     public PdfObject Catalog { get; init; } = new()
     {
         Elements = new()
@@ -31,15 +30,13 @@ public partial class Document
         }
     };
     public required IFontRegister FontRegister { get; init; }
+    public List<Page> Pages { get; init; } = [];
     public Func<string, FontEmbeds, Type0Font> GetFont { get; init; }
     public Func<string, IImageXObject> GetImage { get; init; }
 
     public Document()
     {
         _ = Catalog.Elements.TryAdd("Pages", PageTree);
-
-        PdfObjects.Add(Catalog);
-        PdfObjects.Add(PageTree);
 
         GetFont = CreateFontCache();
         GetImage = CreateImageCache();
@@ -49,7 +46,7 @@ public partial class Document
     {
         var page = new Page() { Document = this, Width = width, Height = height };
         page.Elements["Parent"] = PageTree;
-        PdfObjects.Add(page);
+        Pages.Add(page);
 
         PageTree.Elements["Count"].Cast<ElementInteger>().Value += 1;
         PageTree.Elements["Kids"].Cast<ElementArray<ElementIndirectObject>>().Array.Add(page);
@@ -63,4 +60,19 @@ public partial class Document
     }
 
     public void Save(Stream stream, PdfExportOption? option = null) => PdfExport.Export(this, stream, option ?? new());
+
+    public IEnumerable<PdfObject> GetPdfObjects()
+    {
+        foreach (var x in Pages) yield return x;
+        foreach (var x in Fonts.OfType<PdfObject>()) yield return x;
+        foreach (var x in Images.OfType<PdfObject>()) yield return x;
+        foreach (var x in Shadings.OfType<PdfObject>()) yield return x;
+        foreach (var x in GraphicsStateParameters.OfType<PdfObject>()) yield return x;
+
+        yield return PageTree;
+        yield return Catalog;
+
+        if (Info is { }) yield return Info;
+        if (Encrypt is PdfObject encrypt) yield return encrypt;
+    }
 }

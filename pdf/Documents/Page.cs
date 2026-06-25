@@ -62,7 +62,7 @@ public class Page : PdfObject
             }
         }
 
-        var fonts = Document.PdfObjects.OfType<IFont>().Where(page_fonts.Contains);
+        var fonts = Document.Fonts.Where(page_fonts.Contains);
         if (fonts.Any())
         {
             var fontdic = new ElementDictionary();
@@ -70,7 +70,7 @@ public class Page : PdfObject
             dic.Dictionary.Add("Font", fontdic);
         }
 
-        var xobjs = Document.PdfObjects.OfType<IImageXObject>().Where(page_images.Contains);
+        var xobjs = Document.Images.Where(page_images.Contains);
         if (xobjs.Any())
         {
             var xobjdic = new ElementDictionary();
@@ -78,7 +78,7 @@ public class Page : PdfObject
             dic.Dictionary.Add("XObject", xobjdic);
         }
 
-        var shs = Document.PdfObjects.OfType<IShading>().Where(page_shadings.Contains);
+        var shs = Document.Shadings.Where(page_shadings.Contains);
         if (shs.Any())
         {
             var shdic = new ElementDictionary();
@@ -86,7 +86,7 @@ public class Page : PdfObject
             dic.Dictionary.Add("Shading", shdic);
         }
 
-        var gss = Document.PdfObjects.OfType<IGraphicsStateParameter>().Where(page_extgstates.Contains);
+        var gss = Document.GraphicsStateParameters.Where(page_extgstates.Contains);
         if (gss.Any())
         {
             var gsdic = new ElementDictionary();

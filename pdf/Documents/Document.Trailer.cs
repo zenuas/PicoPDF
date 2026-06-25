@@ -1,13 +1,12 @@
-﻿using Mina.Extension;
-using Pdf.Documents.Security;
+﻿using Pdf.Documents.Security;
 using System;
 
 namespace Pdf.Documents;
 
 public partial class Document
 {
-    public TrailerInfo? Info { get; init { if (value is { }) PdfObjects.Add(field = value); } } = null;
-    public IStandardEncryption? Encrypt { get; init { if (value is { }) PdfObjects.Add((field = value).Cast<PdfObject>()); } } = null;
+    public TrailerInfo? Info { get; init; } = null;
+    public IStandardEncryption? Encrypt { get; init; } = null;
     public ISecurityHandler? StreamHandler { get; init; } = null;
     public ISecurityHandler? StringHandler { get; init; } = null;
     public ISecurityHandler? EmbeddedFileStreamsHandler { get; init; } = null;

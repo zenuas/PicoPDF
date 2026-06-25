@@ -21,7 +21,7 @@ public static class PdfExport
         // This ensures proper behavior of file transfer applications that inspect data near the beginning of a file to determine whether to treat the file's contents as text or as binary.
         stream.Write("%\U0001F363\n\n"u8);
 
-        foreach (var font in document.PdfObjects.OfType<Type0Font>())
+        foreach (var font in document.Fonts.OfType<Type0Font>())
         {
             if (font.Chars.Count > 0 &&
                 (font.FontEmbed == FontEmbeds.ForceEmbed ||
@@ -125,7 +125,7 @@ public static class PdfExport
         return writer;
     }
 
-    public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option) => [.. document.PdfObjects
+    public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option) => [.. document.GetPdfObjects()
         .Select(TraverseReferences)
         .Flatten()
         .DoEach(x => x.BeforeExport(option))];

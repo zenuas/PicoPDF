@@ -1,32 +1,30 @@
 ﻿using Image;
-using Mina.Extension;
 using Pdf.ExtGState;
 using Pdf.Shading;
 using Pdf.XObject.Image;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Pdf.Documents;
 
 public partial class Document
 {
+    public List<IImageXObject> Images { get; init; } = [];
+    public List<IShading> Shadings { get; init; } = [];
+    public List<IGraphicsStateParameter> GraphicsStateParameters { get; init; } = [];
+
     public Func<string, IImageXObject> CreateImageCache()
     {
-        var imagecache = PdfObjects.OfType<IImageXObject>().ToDictionary(x => x.Name, x => x);
+        var imagecache = Images.ToDictionary(x => x.Name, x => x);
         return (path) =>
         {
             if (imagecache.TryGetValue(path, out var value)) return value;
             var load = ImageLoader.FromFile(path)!;
             var x = IImageXObject.Load($"X{imagecache.Count}", path, load.Width, load.Height);
-            AddImage(x);
+            Images.Add(x);
             imagecache.Add(path, x);
             return x;
         };
     }
-
-    public void AddImage(IImageXObject image) => PdfObjects.Add(image.Cast<PdfObject>());
-
-    public void AddShading(IShading shading) => PdfObjects.Add(shading.Cast<PdfObject>());
-
-    public void AddGraphicsStateParameter(IGraphicsStateParameter gstate) => PdfObjects.Add(gstate.Cast<PdfObject>());
 }
