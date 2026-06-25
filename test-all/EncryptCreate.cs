@@ -51,7 +51,7 @@ public class EncryptCreate : FontRegisterCommand
         document2.Save($"{WorkDirectory}/encrypt-none20-create.pdf", new() { ContentsStreamDeflate = false });
 
         var id3 = Document.GenerateID();
-        (var encrypt3, var encryption_key3) = Aes128Handler.Create(CFM.None, "xyz987", "abc123", UserAccessPermissions.Default, id3);
+        (var encrypt3, var encryption_key3) = Aes128Handler.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, id3);
         var handler3 = new Aes128Handler() { Key = encryption_key3 };
         var document3 = new Document()
         {
@@ -60,13 +60,13 @@ public class EncryptCreate : FontRegisterCommand
             Encrypt = encrypt3,
             StreamHandler = handler3,
             StringHandler = handler3,
-            DocumentID = (id1, id1),
+            DocumentID = (id3, id3),
             Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
         _ = document3.NewPage(width, height);
         document3.Save($"{WorkDirectory}/encrypt-aesv2-create.pdf");
 
-        (var encrypt4, var encryption_key4) = Aes256Handler.Create(CFM.None, "xyz987", "abc123", UserAccessPermissions.Default);
+        (var encrypt4, var encryption_key4) = Aes256Handler.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default);
         var handler4 = new Aes256Handler() { Key = encryption_key4 };
         var document4 = new Document()
         {
