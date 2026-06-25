@@ -13,6 +13,5 @@ public partial class Document
     public ISecurityHandler? EmbeddedFileStreamsHandler { get; init; } = null;
     public (byte[] CreateID, byte[] UpdateID)? DocumentID { get; init; }
 
-
     public static byte[] GenerateID() => Guid.NewGuid().ToByteArray();
 }
