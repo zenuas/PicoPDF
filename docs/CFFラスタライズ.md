@@ -257,6 +257,45 @@ while (stack.Count >= 4)
 
 ### vhcurveto、hvcurveto
 
+現在位置から相対座標で (dxa + dx1, dya) か (dxa, dya + dy1) を1番目の制御点、(dx2, dy2) を2番目の制御点とし (dx3, dy3) への3次ベジェ曲線を描画する。
+vhcurveto、hvcurvetoを交互に入れ替えて描画する。
+
+```cs
+while (stack.Count >= 4)
+{
+	if (ope == Vhcurveto)
+	{
+		var dy1 = stack.Shift();
+		var dx2 = stack.Shift();
+		var dy2 = stack.Shift();
+		var dx3 = stack.Shift();
+		var dyf = stack.Count == 1 ? stack.Shift() : 0;
+		
+		var cp1 = new Vector2(start.X, start.Y + dy1);
+		var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
+		var end = new Vector2(cp2.X + dx3, cp2.Y + dyf);
+		// start-cp1-cp2-end のベジェ曲線を描画
+		start = end;
+		ope = Hvcurveto;
+	}
+	else
+	{
+		var dx1 = stack.Shift();
+		var dx2 = stack.Shift();
+		var dy2 = stack.Shift();
+		var dy3 = stack.Shift();
+		var dxf = stack.Count == 1 ? stack.Shift() : 0;
+		
+		var cp1 = new Vector2(start.X + dx1, start.Y);
+		var cp2 = new Vector2(cp1.X + dx2, cp1.Y + dy2);
+		var end = new Vector2(cp2.X + dxf, cp2.Y + dy3);
+		// start-cp1-cp2-end のベジェ曲線を描画
+		start = end;
+		ope = Vhcurveto;
+	}
+}
+```
+
 ### shortint
 
 前置き型の命令である。
