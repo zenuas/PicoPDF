@@ -77,13 +77,42 @@ public class EncryptCreate : FontRegisterCommand
         _ = document4.NewPage(width, height);
         document4.Save($"{WorkDirectory}/encrypt-aesv3-create.pdf");
 
+        var encrypt5 = StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, Document.GenerateID(), false);
         var document5 = new Document()
+        {
+            Version = 17,
+            FontRegister = fontreg,
+            Encrypt = encrypt5,
+            StreamHandler = encrypt5.StreamHandler,
+            StringHandler = encrypt5.StringHandler,
+            EmbeddedFileStreamsHandler = encrypt5.EmbeddedFileStreamsHandler,
+            DocumentID = (encrypt5.DocumentID, encrypt5.DocumentID),
+            Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
+        };
+        _ = document5.NewPage(width, height);
+        document5.Save($"{WorkDirectory}/encrypt-aesv2-create-nometaencrypted.pdf");
+
+        var encrypt6 = StandardEncryption6.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default, false);
+        var document6 = new Document()
+        {
+            Version = 20,
+            FontRegister = fontreg,
+            Encrypt = encrypt6,
+            StreamHandler = encrypt6.StreamHandler,
+            StringHandler = encrypt6.StringHandler,
+            EmbeddedFileStreamsHandler = encrypt6.EmbeddedFileStreamsHandler,
+            Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
+        };
+        _ = document6.NewPage(width, height);
+        document6.Save($"{WorkDirectory}/encrypt-aesv3-create-nometaencrypted.pdf");
+
+        var document7 = new Document()
         {
             Version = 17,
             FontRegister = fontreg,
             Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
-        _ = document5.NewPage(width, height);
-        document5.Save($"{WorkDirectory}/encrypt-noencrypt-create.pdf", new() { ContentsStreamDeflate = false });
+        _ = document7.NewPage(width, height);
+        document7.Save($"{WorkDirectory}/encrypt-noencrypt-create.pdf", new() { ContentsStreamDeflate = false });
     }
 }

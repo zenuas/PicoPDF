@@ -48,7 +48,7 @@ public static class PdfExport
             var input = pdfobj.Stream;
             if (input is { })
             {
-                var stream_pipe = document.StreamHandler?.CreateEncrypterPipe(pdfobj.IndirectIndex, 0);
+                var stream_pipe = (pdfobj is not TrailerInfo || (document.Encrypt?.MetadataEncrypted ?? false) ? document.StreamHandler : null)?.CreateEncrypterPipe(pdfobj.IndirectIndex, 0);
                 if (stream_pipe is { } p) input = EncryptStream(input, p.Input, p.Output).GetAwaiter().GetResult();
                 pdfobj.Elements["Length"] = input.Length;
             }
