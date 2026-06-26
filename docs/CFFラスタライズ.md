@@ -345,7 +345,21 @@ var index = stack.Pop() + bias;
 
 ### hstem、vstem、hstemhm、vstemhm
 
+スタックをステムとする。
+ステムは2個づつペアになる。
+
 ### hintmask、cntrmask
+
+hintmask、cntrmaskは前置き命令である。
+後ろに来る値の数はステムの数によって異なる。
+ペアになったステムごとにビットフラグが続くため、ステムのペア数を8で割って切り上げた数の値が続く。
+
+hintmask、cntrmaskとそれに続くビットフラグを無視する場合は下記のようになる。
+
+```cs
+var step = (ステムの数 / 2 + 7) / 8;
+命令読み込み位置 += step;
+```
 
 ### add、sub、mul、div
 
