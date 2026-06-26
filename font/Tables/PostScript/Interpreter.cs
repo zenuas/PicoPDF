@@ -327,8 +327,22 @@ public static class Interpreter
             case CharstringCommandCodes.Hmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop(), frame.CurrentPoint.Y); break;
             case CharstringCommandCodes.Rmoveto: frame.CurrentPoint = new(frame.CurrentPoint.X + stack.Pop2(), frame.CurrentPoint.Y + stack.Pop()); break;
 
-            case CharstringCommandCodes.And: stack.Add(stack.Pop() != 0 && stack.Pop() != 0 ? 1 : 0); break;
-            case CharstringCommandCodes.Or: stack.Push(stack.Pop() != 0 || stack.Pop() != 0 ? 1 : 0); break;
+            case CharstringCommandCodes.And:
+            case CharstringCommandCodes.Or:
+                {
+                    var num2 = stack.Pop() != 0;
+                    var num1 = stack.Pop() != 0;
+                    if (ope == CharstringCommandCodes.And)
+                    {
+                        stack.Push(num1 && num2 ? 1 : 0);
+                    }
+                    else
+                    {
+                        stack.Push(num1 || num2 ? 1 : 0);
+                    }
+                    break;
+                }
+
             case CharstringCommandCodes.Not: stack.Push(stack.Pop() != 0 ? 0 : 1); break;
             case CharstringCommandCodes.Abs: stack.Push(Math.Abs(stack.Pop())); break;
             case CharstringCommandCodes.Add: stack.Push(stack.Pop() + stack.Pop()); break;

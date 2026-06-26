@@ -381,6 +381,20 @@ switch (ope)
 
 ### and、or、eq
 
+論理積、論理和、比較を行う。
+真の場合は1、偽の場合は0にする。
+
+```cs
+var num2 = stack.Pop();
+var num1 = stack.Pop();
+switch (ope)
+{
+	case And: stack.Push(num1 != 0 && num2 != 0 ? 1 : 0); break;
+	case Or: stack.Push(num1 != 0 || num2 != 0 ? 1 : 0); break;
+	case Eq: stack.Push(num1 == num2 ? 1 : 0); break;
+}
+```
+
 ### not、neg
 
 ### abs
