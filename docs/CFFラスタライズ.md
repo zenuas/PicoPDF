@@ -341,6 +341,8 @@ var index = stack.Pop() + bias;
 
 ### escape
 
+次の1バイトと合わせて2バイト命令とする。
+
 ### hstem、vstem、hstemhm、vstemhm
 
 ### hintmask、cntrmask
