@@ -363,6 +363,22 @@ var step = (ステムの数 / 2 + 7) / 8;
 
 ### add、sub、mul、div
 
+加減乗除を行う。
+スタックの先頭が右辺になる。
+乗算と除算のどちらもオーバーフロー時の動作は未定義、アンダーフローは0にする。
+
+```cs
+var num2 = stack.Pop();
+var num1 = stack.Pop();
+switch (ope)
+{
+	case Add: stack.Push(num1 + num2); break;
+	case Sub: stack.Push(num1 - num2); break;
+	case Mul: stack.Push(num1 * num2); break;
+	case Div: stack.Push(num1 / num2); break;
+}
+```
+
 ### and、or、eq
 
 ### not、neg
