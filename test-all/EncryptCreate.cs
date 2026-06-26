@@ -1,4 +1,5 @@
 ﻿using Mina.Command;
+using Mina.Extension;
 using Pdf.Documents;
 using Pdf.Documents.Security;
 using Pdf.Drawing;
@@ -26,9 +27,9 @@ public class EncryptCreate : FontRegisterCommand
             StringHandler = encrypt1.StringHandler,
             EmbeddedFileStreamsHandler = encrypt1.EmbeddedFileStreamsHandler,
             DocumentID = (encrypt1.DocumentID, encrypt1.DocumentID),
-            Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientations.Horizontal);
+        document1.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document1.Catalog.RelatedObjects.Add));
         var page1 = document1.NewPage(width, height);
         page1.Contents.Operations.Add(new DrawLine { Points = [(new PointValue(50), new PointValue(75)), (new PointValue(100), new PointValue(125))], LineWidth = new PointValue(10) });
         document1.Save($"{WorkDirectory}/encrypt-none17-create.pdf", new() { ContentsStreamDeflate = false });
@@ -42,8 +43,8 @@ public class EncryptCreate : FontRegisterCommand
             StreamHandler = encrypt2.StreamHandler,
             StringHandler = encrypt2.StringHandler,
             EmbeddedFileStreamsHandler = encrypt2.EmbeddedFileStreamsHandler,
-            Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
+        document2.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document2.Catalog.RelatedObjects.Add));
         var page2 = document2.NewPage(width, height);
         page2.Contents.Operations.Add(new DrawLine { Points = [(new PointValue(50), new PointValue(75)), (new PointValue(100), new PointValue(125))], LineWidth = new PointValue(10) });
         document2.Save($"{WorkDirectory}/encrypt-none20-create.pdf", new() { ContentsStreamDeflate = false });
@@ -58,10 +59,10 @@ public class EncryptCreate : FontRegisterCommand
             StringHandler = encrypt3.StringHandler,
             EmbeddedFileStreamsHandler = encrypt3.EmbeddedFileStreamsHandler,
             DocumentID = (encrypt3.DocumentID, encrypt3.DocumentID),
-            Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
+        document3.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document3.Catalog.RelatedObjects.Add));
         _ = document3.NewPage(width, height);
-        document3.Save($"{WorkDirectory}/encrypt-aesv2-create.pdf");
+        document3.Save($"{WorkDirectory}/encrypt-aesv2-create.pdf", new() { ContentsStreamDeflate = false });
 
         var encrypt4 = StandardEncryption6.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default);
         var document4 = new Document()
@@ -72,10 +73,10 @@ public class EncryptCreate : FontRegisterCommand
             StreamHandler = encrypt4.StreamHandler,
             StringHandler = encrypt4.StringHandler,
             EmbeddedFileStreamsHandler = encrypt4.EmbeddedFileStreamsHandler,
-            Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
+        document4.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document4.Catalog.RelatedObjects.Add));
         _ = document4.NewPage(width, height);
-        document4.Save($"{WorkDirectory}/encrypt-aesv3-create.pdf");
+        document4.Save($"{WorkDirectory}/encrypt-aesv3-create.pdf", new() { ContentsStreamDeflate = false });
 
         var encrypt5 = StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, Document.GenerateID(), false);
         var document5 = new Document()
@@ -87,10 +88,10 @@ public class EncryptCreate : FontRegisterCommand
             StringHandler = encrypt5.StringHandler,
             EmbeddedFileStreamsHandler = encrypt5.EmbeddedFileStreamsHandler,
             DocumentID = (encrypt5.DocumentID, encrypt5.DocumentID),
-            Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
+        document5.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document5.Catalog.RelatedObjects.Add));
         _ = document5.NewPage(width, height);
-        document5.Save($"{WorkDirectory}/encrypt-aesv2-create-nometaencrypted.pdf");
+        document5.Save($"{WorkDirectory}/encrypt-aesv2-create-nometaencrypted.pdf", new() { ContentsStreamDeflate = false });
 
         var encrypt6 = StandardEncryption6.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default, false);
         var document6 = new Document()
@@ -101,17 +102,17 @@ public class EncryptCreate : FontRegisterCommand
             StreamHandler = encrypt6.StreamHandler,
             StringHandler = encrypt6.StringHandler,
             EmbeddedFileStreamsHandler = encrypt6.EmbeddedFileStreamsHandler,
-            Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
+        document6.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document6.Catalog.RelatedObjects.Add));
         _ = document6.NewPage(width, height);
-        document6.Save($"{WorkDirectory}/encrypt-aesv3-create-nometaencrypted.pdf");
+        document6.Save($"{WorkDirectory}/encrypt-aesv3-create-nometaencrypted.pdf", new() { ContentsStreamDeflate = false });
 
         var document7 = new Document()
         {
             Version = 17,
             FontRegister = fontreg,
-            Info = new() { Title = "Title", CreationDate = new(2000, 1, 2, 3, 4, 5) },
         };
+        document7.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document7.Catalog.RelatedObjects.Add));
         _ = document7.NewPage(width, height);
         document7.Save($"{WorkDirectory}/encrypt-noencrypt-create.pdf", new() { ContentsStreamDeflate = false });
     }
