@@ -18,7 +18,22 @@ public static class PdfFactory
     public static Document CreateDocument(string json, Func<PageSection, PageModel[]> pages, PdfEventOption? option = null)
     {
         var opt = option ?? new();
-        var document = new Document { FontRegister = opt.CreateFontRegister() };
+        var encrypt = opt.CreateStandardEncryption();
+        var meta = opt.CreateMetadata();
+        var document = new Document
+        {
+            FontRegister = opt.CreateFontRegister(),
+            Encrypt = encrypt,
+            StreamHandler = encrypt?.StreamHandler,
+            StringHandler = encrypt?.StringHandler,
+            EmbeddedFileStreamsHandler = encrypt?.EmbeddedFileStreamsHandler,
+            Info = meta is TrailerInfo info ? info : null,
+        };
+        if (meta is XmpMetadata xmp)
+        {
+            document.Catalog.RelatedObjects.Add(xmp);
+            document.Catalog.Elements.Add("Metadata", xmp);
+        }
         ModelMapping.Mapping(document, pages(JsonLoader.CreatePageFromJsonFile(json, opt)), opt);
         return document;
     }

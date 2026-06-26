@@ -3,7 +3,7 @@ using System;
 
 namespace Pdf.Documents;
 
-public class TrailerInfo : PdfObject
+public class TrailerInfo : PdfObject, IMetadata
 {
     public string? Title { get; init; } = null;
     public string? Author { get; init; } = null;
