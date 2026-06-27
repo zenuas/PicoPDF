@@ -48,11 +48,11 @@ public static class PdfExport
             var input = pdfobj.Stream;
             if (input is { })
             {
-                var stream_pipe = (pdfobj is not IMetadata || (document.Encrypt?.MetadataEncrypted ?? false) ? document.StreamHandler : null)?.CreateEncrypterPipe(pdfobj.IndirectIndex, 0);
+                var stream_pipe = (pdfobj is not IMetadata || (document.Encrypt?.MetadataEncrypted ?? false) ? document.Encrypt?.StreamHandler : null)?.CreateEncrypterPipe(pdfobj.IndirectIndex, 0);
                 if (stream_pipe is { } p) input = EncryptStream(input, p.Input, p.Output).GetAwaiter().GetResult();
                 pdfobj.Elements["Length"] = input.Length;
             }
-            using var converter = document.StringHandler?.CreateEncrypterConverter(pdfobj.IndirectIndex, 0);
+            using var converter = document.Encrypt?.StringHandler?.CreateEncrypterConverter(pdfobj.IndirectIndex, 0);
             pdfobj.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString(converter)}\n"));
             stream.Write(">>\n");
             if (input is { })

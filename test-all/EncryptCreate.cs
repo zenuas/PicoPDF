@@ -23,9 +23,6 @@ public class EncryptCreate : FontRegisterCommand
             Version = 17,
             FontRegister = fontreg,
             Encrypt = encrypt1,
-            StreamHandler = encrypt1.StreamHandler,
-            StringHandler = encrypt1.StringHandler,
-            EmbeddedFileStreamsHandler = encrypt1.EmbeddedFileStreamsHandler,
             DocumentID = (encrypt1.DocumentID, encrypt1.DocumentID),
         };
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientations.Horizontal);
@@ -40,9 +37,6 @@ public class EncryptCreate : FontRegisterCommand
             Version = 20,
             FontRegister = fontreg,
             Encrypt = encrypt2,
-            StreamHandler = encrypt2.StreamHandler,
-            StringHandler = encrypt2.StringHandler,
-            EmbeddedFileStreamsHandler = encrypt2.EmbeddedFileStreamsHandler,
         };
         document2.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document2.Catalog.RelatedObjects.Add));
         var page2 = document2.NewPage(width, height);
@@ -55,9 +49,6 @@ public class EncryptCreate : FontRegisterCommand
             Version = 17,
             FontRegister = fontreg,
             Encrypt = encrypt3,
-            StreamHandler = encrypt3.StreamHandler,
-            StringHandler = encrypt3.StringHandler,
-            EmbeddedFileStreamsHandler = encrypt3.EmbeddedFileStreamsHandler,
             DocumentID = (encrypt3.DocumentID, encrypt3.DocumentID),
         };
         document3.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document3.Catalog.RelatedObjects.Add));
@@ -70,9 +61,6 @@ public class EncryptCreate : FontRegisterCommand
             Version = 20,
             FontRegister = fontreg,
             Encrypt = encrypt4,
-            StreamHandler = encrypt4.StreamHandler,
-            StringHandler = encrypt4.StringHandler,
-            EmbeddedFileStreamsHandler = encrypt4.EmbeddedFileStreamsHandler,
         };
         document4.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document4.Catalog.RelatedObjects.Add));
         _ = document4.NewPage(width, height);
@@ -84,9 +72,6 @@ public class EncryptCreate : FontRegisterCommand
             Version = 17,
             FontRegister = fontreg,
             Encrypt = encrypt5,
-            StreamHandler = encrypt5.StreamHandler,
-            StringHandler = encrypt5.StringHandler,
-            EmbeddedFileStreamsHandler = encrypt5.EmbeddedFileStreamsHandler,
             DocumentID = (encrypt5.DocumentID, encrypt5.DocumentID),
         };
         document5.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document5.Catalog.RelatedObjects.Add));
@@ -99,9 +84,6 @@ public class EncryptCreate : FontRegisterCommand
             Version = 20,
             FontRegister = fontreg,
             Encrypt = encrypt6,
-            StreamHandler = encrypt6.StreamHandler,
-            StringHandler = encrypt6.StringHandler,
-            EmbeddedFileStreamsHandler = encrypt6.EmbeddedFileStreamsHandler,
         };
         document6.Catalog.Elements.Add("Metadata", new XmpMetadata().Return(document6.Catalog.RelatedObjects.Add));
         _ = document6.NewPage(width, height);

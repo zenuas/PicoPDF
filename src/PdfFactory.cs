@@ -24,9 +24,6 @@ public static class PdfFactory
         {
             FontRegister = opt.CreateFontRegister(),
             Encrypt = encrypt,
-            StreamHandler = encrypt?.StreamHandler,
-            StringHandler = encrypt?.StringHandler,
-            EmbeddedFileStreamsHandler = encrypt?.EmbeddedFileStreamsHandler,
             Info = meta is TrailerInfo info ? info : null,
         };
         if (meta is XmpMetadata xmp)
