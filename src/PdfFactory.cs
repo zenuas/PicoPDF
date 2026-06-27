@@ -1,5 +1,6 @@
 ﻿using Binder;
 using Pdf.Documents;
+using Pdf.Documents.Security;
 using PicoPDF.Loader;
 using PicoPDF.Loader.Sections;
 using PicoPDF.Model;
@@ -25,6 +26,7 @@ public static class PdfFactory
             FontRegister = opt.CreateFontRegister(),
             Encrypt = encrypt,
             Info = meta is TrailerInfo info ? info : null,
+            DocumentID = encrypt is StandardEncryption4 stden4 ? (stden4.DocumentID, stden4.DocumentID) : null,
         };
         if (meta is XmpMetadata xmp)
         {
