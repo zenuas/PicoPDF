@@ -418,6 +418,17 @@ switch (ope)
 
 ### random
 
+0より大きく1以下ランダム値を取得する。
+
+```cs
+switch (ope)
+{
+	case Random: stack.Push(ランダム値); break;
+}
+```
+
+C#ではランダム値取得関数(Random.Shared.NextSingle)が0以上1未満を返すため、``1f - Random.Shared.NextSingle()`` のような変換が必要。
+
 ### exch
 
 ### index

@@ -352,7 +352,7 @@ public static class Interpreter
             case CharstringCommandCodes.Neg: stack.Push(-stack.Pop()); break;
             case CharstringCommandCodes.Eq: stack.Push(stack.Pop() == stack.Pop() ? 1 : 0); break;
             case CharstringCommandCodes.Drop: _ = stack.Pop(); break;
-            case CharstringCommandCodes.Random: stack.Push(Random.Shared.NextSingle()); break;
+            case CharstringCommandCodes.Random: stack.Push(1f - Random.Shared.NextSingle()); break; // Transform NextSingle's [0,1) output into the (0,1] range.
             case CharstringCommandCodes.Sqrt: stack.Push(MathF.Sqrt(stack.Pop())); break;
             case CharstringCommandCodes.Dup: stack.Push(stack.Peek()); break;
 
