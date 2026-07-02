@@ -8,13 +8,13 @@ public record class HorizontalHeaderTable : IExportable
 {
     public required ushort MajorVersion { get; init; }
     public required ushort MinorVersion { get; init; }
-    public required short Ascender { get; init; }
-    public required short Descender { get; init; }
-    public required short LineGap { get; init; }
-    public required ushort AdvanceWidthMax { get; init; }
-    public required short MinLeftSideBearing { get; init; }
-    public required short MinRightSideBearing { get; init; }
-    public required short XMaxExtent { get; init; }
+    public required FWORD Ascender { get; init; }
+    public required FWORD Descender { get; init; }
+    public required FWORD LineGap { get; init; }
+    public required UFWORD AdvanceWidthMax { get; init; }
+    public required FWORD MinLeftSideBearing { get; init; }
+    public required FWORD MinRightSideBearing { get; init; }
+    public required FWORD XMaxExtent { get; init; }
     public required short CaretSlopeRise { get; init; }
     public required short CaretSlopeRun { get; init; }
     public required short CaretOffset { get; init; }

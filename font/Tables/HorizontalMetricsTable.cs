@@ -8,7 +8,7 @@ namespace OpenType.Tables;
 public record class HorizontalMetricsTable : IExportable
 {
     public required HorizontalMetrics[] Metrics { get; init; }
-    public required short[] LeftSideBearing { get; init; }
+    public required FWORD[] LeftSideBearing { get; init; }
 
     public static HorizontalMetricsTable ReadFrom(Stream stream, ushort number_of_hmetrics, ushort number_of_glyphs) => new()
     {

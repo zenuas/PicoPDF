@@ -9,12 +9,12 @@ public class PaintRadialGradient : IPaintFormat
 {
     public required byte Format { get; init; }
     public required Offset24 ColorLineOffset { get; init; }
-    public required short X0 { get; init; }
-    public required short Y0 { get; init; }
-    public required ushort Radius0 { get; init; }
-    public required short X1 { get; init; }
-    public required short Y1 { get; init; }
-    public required ushort Radius1 { get; init; }
+    public required FWORD X0 { get; init; }
+    public required FWORD Y0 { get; init; }
+    public required UFWORD Radius0 { get; init; }
+    public required FWORD X1 { get; init; }
+    public required FWORD Y1 { get; init; }
+    public required UFWORD Radius1 { get; init; }
     public required ColorLine ColorLine { get; init; }
 
     public static PaintRadialGradient ReadFrom(Stream stream, Dictionary<long, IColorLine> colorLineCache)

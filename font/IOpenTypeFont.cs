@@ -33,5 +33,5 @@ public interface IOpenTypeFont : IOpenTypeHeader
 
     // If numberOfHMetrics is less than the total number of glyphs,
     // then the hMetrics array is followed by an array for the left side bearing values of the remaining glyphs.
-    public int GetAdvanceWidth(uint gid) => HorizontalMetrics.Metrics[Math.Min(gid, HorizontalHeader.NumberOfHMetrics - 1)].AdvanceWidth;
+    public int GetAdvanceWidth(uint gid) => HorizontalMetrics.Metrics[Math.Min(gid, HorizontalHeader.NumberOfHMetrics - 1)].AdvanceWidth.Value;
 }

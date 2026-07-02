@@ -7,10 +7,10 @@ namespace OpenType.Tables.Colr;
 public class ClipBoxFormat : IExportable
 {
     public required byte Format { get; init; }
-    public required short XMin { get; init; }
-    public required short YMin { get; init; }
-    public required short XMax { get; init; }
-    public required short YMax { get; init; }
+    public required FWORD XMin { get; init; }
+    public required FWORD YMin { get; init; }
+    public required FWORD XMax { get; init; }
+    public required FWORD YMax { get; init; }
     public required uint VarIndexBase { get; init; }
 
     public static ClipBoxFormat ReadFrom(Stream stream)

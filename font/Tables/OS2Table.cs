@@ -7,20 +7,20 @@ namespace OpenType.Tables;
 public record class OS2Table : IExportable
 {
     public required ushort Version { get; init; }
-    public required short XAvgCharWidth { get; init; }
+    public required FWORD XAvgCharWidth { get; init; }
     public required ushort UsWeightClass { get; init; }
     public required ushort UsWidthClass { get; init; }
     public required ushort FsType { get; init; }
-    public required short YSubscriptXSize { get; init; }
-    public required short YSubscriptYSize { get; init; }
-    public required short YSubscriptXOffset { get; init; }
-    public required short YSubscriptYOffset { get; init; }
-    public required short YSuperscriptXSize { get; init; }
-    public required short YSuperscriptYSize { get; init; }
-    public required short YSuperscriptXOffset { get; init; }
-    public required short YSuperscriptYOffset { get; init; }
-    public required short YStrikeoutSize { get; init; }
-    public required short YStrikeoutPosition { get; init; }
+    public required FWORD YSubscriptXSize { get; init; }
+    public required FWORD YSubscriptYSize { get; init; }
+    public required FWORD YSubscriptXOffset { get; init; }
+    public required FWORD YSubscriptYOffset { get; init; }
+    public required FWORD YSuperscriptXSize { get; init; }
+    public required FWORD YSuperscriptYSize { get; init; }
+    public required FWORD YSuperscriptXOffset { get; init; }
+    public required FWORD YSuperscriptYOffset { get; init; }
+    public required FWORD YStrikeoutSize { get; init; }
+    public required FWORD YStrikeoutPosition { get; init; }
     public required short SFamilyClass { get; init; }
     public required byte[] Panose { get; init; }
     public required uint UlUnicodeRange1 { get; init; }
@@ -31,17 +31,17 @@ public record class OS2Table : IExportable
     public required ushort FsSelection { get; init; }
     public required ushort UsFirstCharIndex { get; init; }
     public required ushort UsLastCharIndex { get; init; }
-    public required short STypoAscender { get; init; }
-    public required short STypoDescender { get; init; }
-    public required short STypoLineGap { get; init; }
-    public required ushort UsWinAscent { get; init; }
-    public required ushort UsWinDescent { get; init; }
+    public required FWORD STypoAscender { get; init; }
+    public required FWORD STypoDescender { get; init; }
+    public required FWORD STypoLineGap { get; init; }
+    public required UFWORD UsWinAscent { get; init; }
+    public required UFWORD UsWinDescent { get; init; }
 
     public uint UlCodePageRange1 { get; init; }
     public uint UlCodePageRange2 { get; init; }
 
-    public short SxHeight { get; init; }
-    public short SCapHeight { get; init; }
+    public FWORD SxHeight { get; init; }
+    public FWORD SCapHeight { get; init; }
     public ushort UsDefaultChar { get; init; }
     public ushort UsBreakChar { get; init; }
     public ushort UsMaxContext { get; init; }

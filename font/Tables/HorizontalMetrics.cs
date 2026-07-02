@@ -5,8 +5,8 @@ namespace OpenType.Tables;
 
 public class HorizontalMetrics : IExportable
 {
-    public required ushort AdvanceWidth { get; init; }
-    public required short LeftSideBearing { get; init; }
+    public required UFWORD AdvanceWidth { get; init; }
+    public required FWORD LeftSideBearing { get; init; }
 
     public static HorizontalMetrics ReadFrom(Stream stream) => new()
     {

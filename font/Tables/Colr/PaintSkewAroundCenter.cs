@@ -11,8 +11,8 @@ public class PaintSkewAroundCenter : IPaintFormat, IHavePaint
     public required Offset24 PaintOffset { get; init; }
     public required F2DOT14 XSkewAngle { get; init; }
     public required F2DOT14 YSkewAngle { get; init; }
-    public required short CenterX { get; init; }
-    public required short CenterY { get; init; }
+    public required FWORD CenterX { get; init; }
+    public required FWORD CenterY { get; init; }
     public required IPaintFormat Paint { get; init; }
 
     public static PaintSkewAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)

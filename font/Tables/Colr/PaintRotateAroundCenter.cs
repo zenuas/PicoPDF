@@ -10,8 +10,8 @@ public class PaintRotateAroundCenter : IPaintFormat, IHavePaint
     public required byte Format { get; init; }
     public required Offset24 PaintOffset { get; init; }
     public required F2DOT14 Angle { get; init; }
-    public required short CenterX { get; init; }
-    public required short CenterY { get; init; }
+    public required FWORD CenterX { get; init; }
+    public required FWORD CenterY { get; init; }
     public required IPaintFormat Paint { get; init; }
 
     public static PaintRotateAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)

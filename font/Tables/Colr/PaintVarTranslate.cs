@@ -9,8 +9,8 @@ public class PaintVarTranslate : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
     public required Offset24 PaintOffset { get; init; }
-    public required short DX { get; init; }
-    public required short DY { get; init; }
+    public required FWORD DX { get; init; }
+    public required FWORD DY { get; init; }
     public required uint VarIndexBase { get; init; }
     public required IPaintFormat Paint { get; init; }
 

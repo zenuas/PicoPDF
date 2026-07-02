@@ -11,8 +11,8 @@ public class PaintScaleAroundCenter : IPaintFormat, IHavePaint
     public required Offset24 PaintOffset { get; init; }
     public required F2DOT14 ScaleX { get; init; }
     public required F2DOT14 ScaleY { get; init; }
-    public required short CenterX { get; init; }
-    public required short CenterY { get; init; }
+    public required FWORD CenterX { get; init; }
+    public required FWORD CenterY { get; init; }
     public required IPaintFormat Paint { get; init; }
 
     public static PaintScaleAroundCenter ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)

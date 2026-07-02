@@ -9,12 +9,12 @@ public class PaintLinearGradient : IPaintFormat
 {
     public required byte Format { get; init; }
     public required Offset24 ColorLineOffset { get; init; }
-    public required short X0 { get; init; }
-    public required short Y0 { get; init; }
-    public required short X1 { get; init; }
-    public required short Y1 { get; init; }
-    public required short X2 { get; init; }
-    public required short Y2 { get; init; }
+    public required FWORD X0 { get; init; }
+    public required FWORD Y0 { get; init; }
+    public required FWORD X1 { get; init; }
+    public required FWORD Y1 { get; init; }
+    public required FWORD X2 { get; init; }
+    public required FWORD Y2 { get; init; }
     public required ColorLine ColorLine { get; init; }
 
     public static PaintLinearGradient ReadFrom(Stream stream, Dictionary<long, IColorLine> colorLineCache)

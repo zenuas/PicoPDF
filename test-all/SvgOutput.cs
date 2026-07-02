@@ -93,7 +93,7 @@ public class SvgOutput : FontRegisterCommand
             writer.WriteLine($"    <!-- baseline -->");
             writer.WriteLine($"""    <line x1="0" y1="{baseline.ToPointString(PointFormat)}" x2="{(total_width * scale).ToPointString(PointFormat)}" y2="{baseline.ToPointString(PointFormat)}" stroke="red" />""");
         }
-        return (total_width * scale, Math.Max(ascent - descent, ymax - ymin) * scale);
+        return (total_width * scale, Math.Max(ascent.Value - descent.Value, ymax - ymin) * scale);
     }
 
     public static Dictionary<IColorLayer, int> GetGradientLayers(Surface[] surfaces)

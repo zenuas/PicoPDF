@@ -9,8 +9,8 @@ public class PaintSweepGradient : IPaintFormat
 {
     public required byte Format { get; init; }
     public required Offset24 ColorLineOffset { get; init; }
-    public required short CenterX { get; init; }
-    public required short CenterY { get; init; }
+    public required FWORD CenterX { get; init; }
+    public required FWORD CenterY { get; init; }
     public required F2DOT14 StartAngle { get; init; }
     public required F2DOT14 EndAngle { get; init; }
     public required ColorLine ColorLine { get; init; }

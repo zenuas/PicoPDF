@@ -84,9 +84,9 @@ public static class ColorFont
 
             case PaintLinearGradient p:
                 {
-                    var p0 = new Vector2(p.X0, p.Y0);
-                    var p1 = new Vector2(p.X1, p.Y1);
-                    var p2 = new Vector2(p.X2, p.Y2);
+                    var p0 = new Vector2(p.X0.Value, p.Y0.Value);
+                    var p1 = new Vector2(p.X1.Value, p.Y1.Value);
+                    var p2 = new Vector2(p.X2.Value, p.Y2.Value);
 
                     // If either point p1 or p2 is the same as point p0, the gradient is ill-formed and must not be rendered.
                     if (p0 == p1 || p0 == p2) return [];
@@ -120,10 +120,10 @@ public static class ColorFont
             case PaintRadialGradient p:
                 return [new RadialGradientLayer
                 {
-                    Cxy = new Vector2(p.X0, p.Y0),
-                    Fxy = new Vector2(p.X1, p.Y1),
-                    Fr = p.Radius0,
-                    R = p.Radius1,
+                    Cxy = new Vector2(p.X0.Value, p.Y0.Value),
+                    Fxy = new Vector2(p.X1.Value, p.Y1.Value),
+                    Fr = p.Radius0.Value,
+                    R = p.Radius1.Value,
                     StopColors = ColorStopToStops(p.ColorLine.ColorStops, cpal),
                     SpreadMethod = ExtendToSpreadMethod(p.ColorLine.Extend),
                     GradientTransform = transform,
