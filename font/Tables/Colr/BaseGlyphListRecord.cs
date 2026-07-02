@@ -9,7 +9,7 @@ namespace OpenType.Tables.Colr;
 public class BaseGlyphListRecord : IExportable
 {
     public required uint NumberBaseGlyphPaintRecords { get; init; }
-    public required (ushort GlyphID, uint PaintOffset)[] BaseGlyphPaintRecord { get; init; }
+    public required (ushort GlyphID, Offset32 PaintOffset)[] BaseGlyphPaintRecord { get; init; }
     public required IPaintFormat[] Paints { get; init; }
 
     public static BaseGlyphListRecord ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)
@@ -23,7 +23,7 @@ public class BaseGlyphListRecord : IExportable
         {
             NumberBaseGlyphPaintRecords = numBaseGlyphPaintRecords,
             BaseGlyphPaintRecord = baseGlyphPaintRecord,
-            Paints = [.. baseGlyphPaintRecord.Select(x => PaintFormat.ReadFrom(stream, position + x.PaintOffset, paintCache, colorLineCache, affineCache))],
+            Paints = [.. baseGlyphPaintRecord.Select(x => PaintFormat.ReadFrom(stream, position + x.PaintOffset.Value, paintCache, colorLineCache, affineCache))],
         };
     }
 

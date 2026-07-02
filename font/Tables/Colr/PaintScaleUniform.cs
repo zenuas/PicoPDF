@@ -8,7 +8,7 @@ namespace OpenType.Tables.Colr;
 public class PaintScaleUniform : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
-    public required int PaintOffset { get; init; }
+    public required Offset24 PaintOffset { get; init; }
     public required F2DOT14 Scale { get; init; }
     public required IPaintFormat Paint { get; init; }
 
@@ -22,7 +22,7 @@ public class PaintScaleUniform : IPaintFormat, IHavePaint
             Format = 20,
             PaintOffset = paintOffset,
             Scale = stream.ReadF2DOT14(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache, affineCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset.Value, paintCache, colorLineCache, affineCache),
         };
     }
 
@@ -34,6 +34,6 @@ public class PaintScaleUniform : IPaintFormat, IHavePaint
         Paint.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Const.SizeofOffset24 +
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Offset24.SizeOf() +
         Scale.SizeOf();
 }

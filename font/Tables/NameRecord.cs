@@ -12,7 +12,7 @@ public class NameRecord
     public required ushort LanguageID { get; init; }
     public required NameIDs NameID { get; init; }
     public required ushort Length { get; init; }
-    public required ushort Offset { get; init; }
+    public required Offset16 Offset { get; init; }
 
     public static NameRecord ReadFrom(Stream stream) => new()
     {

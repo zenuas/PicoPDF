@@ -8,7 +8,7 @@ namespace OpenType.Tables.Colr;
 public class PaintVarSkew : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
-    public required int PaintOffset { get; init; }
+    public required Offset24 PaintOffset { get; init; }
     public required F2DOT14 XSkewAngle { get; init; }
     public required F2DOT14 YSkewAngle { get; init; }
     public required uint VarIndexBase { get; init; }
@@ -26,7 +26,7 @@ public class PaintVarSkew : IPaintFormat, IHavePaint
             XSkewAngle = stream.ReadF2DOT14(),
             YSkewAngle = stream.ReadF2DOT14(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache, affineCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset.Value, paintCache, colorLineCache, affineCache),
         };
     }
 
@@ -40,7 +40,7 @@ public class PaintVarSkew : IPaintFormat, IHavePaint
         Paint.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Const.SizeofOffset24 +
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Offset24.SizeOf() +
         XSkewAngle.SizeOf() + YSkewAngle.SizeOf() +
         VarIndexBase.SizeOf();
 }

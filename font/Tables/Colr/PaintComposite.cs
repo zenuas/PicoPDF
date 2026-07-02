@@ -8,9 +8,9 @@ namespace OpenType.Tables.Colr;
 public class PaintComposite : IPaintFormat
 {
     public required byte Format { get; init; }
-    public required int SourcePaintOffset { get; init; }
+    public required Offset24 SourcePaintOffset { get; init; }
     public required CompositeModes CompositeMode { get; init; }
-    public required int BackdropPaintOffset { get; init; }
+    public required Offset24 BackdropPaintOffset { get; init; }
     public required IPaintFormat SourcePaint { get; init; }
     public required IPaintFormat BackdropPaint { get; init; }
 
@@ -27,8 +27,8 @@ public class PaintComposite : IPaintFormat
             SourcePaintOffset = sourcePaintOffset,
             CompositeMode = (CompositeModes)compositeMode,
             BackdropPaintOffset = backdropPaintOffset,
-            SourcePaint = PaintFormat.ReadFrom(stream, position + sourcePaintOffset, paintCache, colorLineCache, affineCache),
-            BackdropPaint = PaintFormat.ReadFrom(stream, position + backdropPaintOffset, paintCache, colorLineCache, affineCache),
+            SourcePaint = PaintFormat.ReadFrom(stream, position + sourcePaintOffset.Value, paintCache, colorLineCache, affineCache),
+            BackdropPaint = PaintFormat.ReadFrom(stream, position + backdropPaintOffset.Value, paintCache, colorLineCache, affineCache),
         };
     }
 
@@ -46,7 +46,7 @@ public class PaintComposite : IPaintFormat
     }
 
     public int SizeOf() => Format.SizeOf() +
-        /* SourcePaintOffset */Const.SizeofOffset24 +
+        /* SourcePaintOffset */Offset24.SizeOf() +
         CompositeMode.SizeOf() +
-        /* BackdropPaintOffset */Const.SizeofOffset24;
+        /* BackdropPaintOffset */Offset24.SizeOf();
 }

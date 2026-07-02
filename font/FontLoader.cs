@@ -32,7 +32,7 @@ public static class FontLoader
         return header.TTCTag != "ttcf"
             ? throw new InvalidDataException()
             : [.. header.TableDirectoryOffsets
-                .Select((x, i) => Objects.Catch(() => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream.SeekTo(x), opt), out var r) is null ? r : null)
+                .Select((x, i) => Objects.Catch(() => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream.SeekTo(x.Value), opt), out var r) is null ? r : null)
                 .OfType<FontTableRecords>()];
     }
 
@@ -234,5 +234,5 @@ public static class FontLoader
 
     public static T? ReadTableRecord<T>(IOpenTypeHeader font, string name, Stream stream, Func<Stream, T> f) => ReadTableRecord(font.TableRecords, name, stream, f);
 
-    public static T? ReadTableRecord<T>(IReadOnlyDictionary<string, TableRecord> tables, string name, Stream stream, Func<Stream, T> f) => !tables.TryGetValue(name, out var record) ? default : f(stream.GetLimitedStream(record.Offset, record.Length));
+    public static T? ReadTableRecord<T>(IReadOnlyDictionary<string, TableRecord> tables, string name, Stream stream, Func<Stream, T> f) => !tables.TryGetValue(name, out var record) ? default : f(stream.GetLimitedStream(record.Offset.Value, record.Length));
 }

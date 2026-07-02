@@ -13,8 +13,8 @@ public class LazyGlyph : IReadOnlyList<IGlyph>, IDisposable
     public IGlyph this[int index] => GlyphLoad((uint)index);
     public required Stream Stream { get; init; }
     public required int Count { get; init; }
-    public required long IndexToLocationTableOffset { get; init; }
-    public required long GlyphTableOffset { get; init; }
+    public required Offset32 IndexToLocationTableOffset { get; init; }
+    public required Offset32 GlyphTableOffset { get; init; }
     public required short IndexToLocFormat { get; init; }
     public Dictionary<uint, IGlyph> GlyphCache { get; init; } = [];
     public bool Disposed { get; protected set; } = false;
@@ -27,13 +27,13 @@ public class LazyGlyph : IReadOnlyList<IGlyph>, IDisposable
         {
             if (GlyphCache.TryGetValue(gid, out var cache)) return cache;
 
-            _ = Stream.Seek(IndexToLocationTableOffset + (IndexToLocFormat == 0 ? gid * 2 : gid * 4), SeekOrigin.Begin);
-            var glyph_offset = IndexToLocFormat == 0 ? (uint)(Stream.ReadOffset16() * 2) : Stream.ReadOffset32();
-            var next_offset = IndexToLocFormat == 0 ? (uint)(Stream.ReadOffset16() * 2) : Stream.ReadOffset32();
+            _ = Stream.Seek(IndexToLocationTableOffset.Value + (IndexToLocFormat == 0 ? gid * 2 : gid * 4), SeekOrigin.Begin);
+            var glyph_offset = IndexToLocFormat == 0 ? (uint)(Stream.ReadOffset16().Value * 2) : Stream.ReadOffset32().Value;
+            var next_offset = IndexToLocFormat == 0 ? (uint)(Stream.ReadOffset16().Value * 2) : Stream.ReadOffset32().Value;
 
             if (glyph_offset == next_offset) return new NotdefGlyph();
 
-            var number_of_contours = Stream.SeekTo(GlyphTableOffset + glyph_offset).ReadShortByBigEndian();
+            var number_of_contours = Stream.SeekTo(GlyphTableOffset.Value + glyph_offset).ReadShortByBigEndian();
             var glyph = number_of_contours >= 0
                 ? SimpleGlyph.ReadFrom(Stream, number_of_contours).Cast<IGlyph>()
                 : CompositeGlyph.ReadFrom(Stream, number_of_contours);

@@ -9,7 +9,7 @@ public class ClipListRecord : IExportable
 {
     public required byte Format { get; init; }
     public required uint NumberClips { get; init; }
-    public required (ushort StartGlyphID, ushort EndGlyphID, int ClipBoxOffset)[] Clips { get; init; }
+    public required (ushort StartGlyphID, ushort EndGlyphID, Offset24 ClipBoxOffset)[] Clips { get; init; }
     public required ClipBoxFormat[] ClipBoxFormats { get; init; }
 
     public static ClipListRecord ReadFrom(Stream stream)
@@ -19,7 +19,7 @@ public class ClipListRecord : IExportable
         var format = stream.ReadUByte();
         var numClips = stream.ReadUIntByBigEndian();
         var clips = Lists.Repeat(() => (stream.ReadUShortByBigEndian(), stream.ReadUShortByBigEndian(), ClipBoxOffset: stream.ReadOffset24())).Take((int)numClips).ToArray();
-        var clipBoxFormats = clips.Select(x => stream.SeekTo(position + x.ClipBoxOffset).To(ClipBoxFormat.ReadFrom)).ToArray();
+        var clipBoxFormats = clips.Select(x => stream.SeekTo(position + x.ClipBoxOffset.Value).To(ClipBoxFormat.ReadFrom)).ToArray();
 
         return new()
         {
@@ -45,7 +45,7 @@ public class ClipListRecord : IExportable
         ClipBoxFormats.Each(x => x.WriteTo(stream));
     }
 
-    public int SizeOfWithoutClipBoxFormats() => Format.SizeOf() + NumberClips.SizeOf() + ((sizeof(ushort) + sizeof(ushort) + Const.SizeofOffset24) * Clips.Length);
+    public int SizeOfWithoutClipBoxFormats() => Format.SizeOf() + NumberClips.SizeOf() + ((sizeof(ushort) + sizeof(ushort) + Offset24.SizeOf()) * Clips.Length);
 
     public int SizeOf() => SizeOfWithoutClipBoxFormats() + ClipBoxFormats.Select(x => x.SizeOf()).Sum();
 }

@@ -8,7 +8,7 @@ namespace OpenType.Tables.Colr;
 public class PaintVarRadialGradient : IPaintFormat
 {
     public required byte Format { get; init; }
-    public required int ColorLineOffset { get; init; }
+    public required Offset24 ColorLineOffset { get; init; }
     public required short X0 { get; init; }
     public required short Y0 { get; init; }
     public required ushort Radius0 { get; init; }
@@ -34,7 +34,7 @@ public class PaintVarRadialGradient : IPaintFormat
             Y1 = stream.ReadFWORD(),
             Radius1 = stream.ReadUFWORD(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
-            ColorLine = VarColorLine.ReadFrom(stream, position + colorLineOffset, colorLineCache),
+            ColorLine = VarColorLine.ReadFrom(stream, position + colorLineOffset.Value, colorLineCache),
         };
     }
 
@@ -52,7 +52,7 @@ public class PaintVarRadialGradient : IPaintFormat
         ColorLine.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset */Const.SizeofOffset24 +
+    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset */Offset24.SizeOf() +
         X0.SizeOf() + Y0.SizeOf() +
         Radius0.SizeOf() +
         X1.SizeOf() + Y1.SizeOf() +

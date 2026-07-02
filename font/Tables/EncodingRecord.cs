@@ -8,7 +8,7 @@ public class EncodingRecord
 {
     public required ushort PlatformID { get; init; }
     public required ushort EncodingID { get; init; }
-    public required uint Offset { get; init; }
+    public required Offset32 Offset { get; init; }
 
     public static EncodingRecord ReadFrom(Stream stream) => new()
     {

@@ -8,7 +8,7 @@ namespace OpenType.Tables.Colr;
 public class PaintVarLinearGradient : IPaintFormat
 {
     public required byte Format { get; init; }
-    public required int ColorLineOffset { get; init; }
+    public required Offset24 ColorLineOffset { get; init; }
     public required short X0 { get; init; }
     public required short Y0 { get; init; }
     public required short X1 { get; init; }
@@ -34,7 +34,7 @@ public class PaintVarLinearGradient : IPaintFormat
             X2 = stream.ReadFWORD(),
             Y2 = stream.ReadFWORD(),
             VarIndexBase = stream.ReadUIntByBigEndian(),
-            ColorLine = VarColorLine.ReadFrom(stream, position + colorLineOffset, colorLineCache),
+            ColorLine = VarColorLine.ReadFrom(stream, position + colorLineOffset.Value, colorLineCache),
         };
     }
 
@@ -52,7 +52,7 @@ public class PaintVarLinearGradient : IPaintFormat
         ColorLine.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset */Const.SizeofOffset24 +
+    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset */Offset24.SizeOf() +
         X0.SizeOf() + Y0.SizeOf() +
         X1.SizeOf() + Y1.SizeOf() +
         X2.SizeOf() + Y2.SizeOf() +

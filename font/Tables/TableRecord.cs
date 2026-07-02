@@ -9,7 +9,7 @@ public class TableRecord
 {
     public required string TableTag { get; init; }
     public required uint CheckSum { get; init; }
-    public required uint Offset { get; init; }
+    public required Offset32 Offset { get; init; }
     public required uint Length { get; init; }
 
     public static TableRecord ReadFrom(Stream stream) => new()

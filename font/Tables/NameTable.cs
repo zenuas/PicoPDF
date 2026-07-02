@@ -10,7 +10,7 @@ public record class NameTable : IExportable
 {
     public required ushort Format { get; init; }
     public required ushort Count { get; init; }
-    public required ushort StringOffset { get; init; }
+    public required Offset16 StringOffset { get; init; }
     public required (string Name, NameRecord NameRecord)[] NameRecords { get; init; }
     public ushort LanguageTagCount { get; init; } = 0;
     public (string Name, LanguageTagRecord LanguageTagRecord)[] LanguageTagRecords { get; init; } = [];
@@ -37,11 +37,11 @@ public record class NameTable : IExportable
         }
 
         var name_records = records
-            .Select(x => (x.GetEncoding().GetString(stream.SeekTo(position + string_offset + x.Offset).ReadExactly(x.Length)), x))
+            .Select(x => (x.GetEncoding().GetString(stream.SeekTo(position + string_offset.Value + x.Offset.Value).ReadExactly(x.Length)), x))
             .ToArray();
 
         var lang_tags = tags
-            .Select(x => (Encoding.BigEndianUnicode.GetString(stream.SeekTo(position + string_offset + x.LanguageTagOffset).ReadExactly(x.Length)), x))
+            .Select(x => (Encoding.BigEndianUnicode.GetString(stream.SeekTo(position + string_offset.Value + x.LanguageTagOffset.Value).ReadExactly(x.Length)), x))
             .ToArray();
 
         return new()

@@ -8,8 +8,8 @@ namespace OpenType.Tables.Colr;
 public class PaintTransform : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
-    public required int PaintOffset { get; init; }
-    public required int TransformOffset { get; init; }
+    public required Offset24 PaintOffset { get; init; }
+    public required Offset24 TransformOffset { get; init; }
     public required IPaintFormat Paint { get; init; }
     public required Affine2x3 Transform { get; init; }
 
@@ -24,8 +24,8 @@ public class PaintTransform : IPaintFormat, IHavePaint
             Format = 12,
             PaintOffset = paintOffset,
             TransformOffset = transformOffset,
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache, affineCache),
-            Transform = Affine2x3.ReadFrom(stream, position + transformOffset, affineCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset.Value, paintCache, colorLineCache, affineCache),
+            Transform = Affine2x3.ReadFrom(stream, position + transformOffset.Value, affineCache),
         };
     }
 
@@ -38,5 +38,5 @@ public class PaintTransform : IPaintFormat, IHavePaint
         Paint.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Const.SizeofOffset24 + /* TransformOffset */Const.SizeofOffset24;
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Offset24.SizeOf() + /* TransformOffset */Offset24.SizeOf();
 }

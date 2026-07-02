@@ -9,7 +9,7 @@ namespace OpenType.Tables.Colr;
 public class LayerListRecord : IExportable
 {
     public required uint NumberOfLayers { get; init; }
-    public required uint[] PaintOffsets { get; init; }
+    public required Offset32[] PaintOffsets { get; init; }
     public required IPaintFormat[] Paints { get; init; }
 
     public static LayerListRecord ReadFrom(Stream stream, Dictionary<long, IPaintFormat> paintCache, Dictionary<long, IColorLine> colorLineCache, Dictionary<long, IAffine2x3> affineCache)
@@ -23,7 +23,7 @@ public class LayerListRecord : IExportable
         {
             NumberOfLayers = numLayers,
             PaintOffsets = paintOffsets,
-            Paints = [.. paintOffsets.Select(x => PaintFormat.ReadFrom(stream, position + x, paintCache, colorLineCache, affineCache))],
+            Paints = [.. paintOffsets.Select(x => PaintFormat.ReadFrom(stream, position + x.Value, paintCache, colorLineCache, affineCache))],
         };
     }
 
@@ -40,5 +40,5 @@ public class LayerListRecord : IExportable
         stream.Write(mem.ToArray());
     }
 
-    public int SizeOf() => NumberOfLayers.SizeOf() + (sizeof(uint) * Paints.Length);
+    public int SizeOf() => NumberOfLayers.SizeOf() + (Offset32.SizeOf() * Paints.Length);
 }

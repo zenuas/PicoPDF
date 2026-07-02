@@ -11,8 +11,8 @@ public record class ColorTable : IExportable
 {
     public required ushort Version { get; init; }
     public required ushort NumberBaseGlyphRecords { get; init; }
-    public required uint BaseGlyphRecordsOffset { get; init; }
-    public required uint LayerRecordsOffset { get; init; }
+    public required Offset32 BaseGlyphRecordsOffset { get; init; }
+    public required Offset32 LayerRecordsOffset { get; init; }
     public required ushort NumberLayerRecords { get; init; }
     public required BaseGlyphRecord[] BaseGlyphRecords { get; init; }
     public required LayerRecord[] LayerRecords { get; init; }
@@ -32,11 +32,11 @@ public record class ColorTable : IExportable
         var layerRecordsOffset = stream.ReadOffset32();
         var numLayerRecords = stream.ReadUShortByBigEndian();
 
-        uint baseGlyphListOffset = 0;
-        uint layerListOffset = 0;
-        uint clipListOffset = 0;
-        uint varIndexMapOffset = 0;
-        uint itemVariationStoreOffset = 0;
+        Offset32 baseGlyphListOffset = 0;
+        Offset32 layerListOffset = 0;
+        Offset32 clipListOffset = 0;
+        Offset32 varIndexMapOffset = 0;
+        Offset32 itemVariationStoreOffset = 0;
         if (version >= 1)
         {
             baseGlyphListOffset = stream.ReadOffset32();
@@ -46,30 +46,30 @@ public record class ColorTable : IExportable
             itemVariationStoreOffset = stream.ReadOffset32();
         }
 
-        var baseGlyphRecords = baseGlyphRecordsOffset == 0 || numBaseGlyphRecords == 0 ? [] :
-            stream.SeekTo(position + baseGlyphRecordsOffset).To(_ => Lists.Repeat(() => BaseGlyphRecord.ReadFrom(stream)).Take(numBaseGlyphRecords).ToArray());
+        var baseGlyphRecords = baseGlyphRecordsOffset.Value == 0 || numBaseGlyphRecords == 0 ? [] :
+            stream.SeekTo(position + baseGlyphRecordsOffset.Value).To(_ => Lists.Repeat(() => BaseGlyphRecord.ReadFrom(stream)).Take(numBaseGlyphRecords).ToArray());
 
-        var layerRecords = layerRecordsOffset == 0 || numLayerRecords == 0 ? [] :
-            stream.SeekTo(position + layerRecordsOffset).To(_ => Lists.Repeat(() => LayerRecord.ReadFrom(stream)).Take(numLayerRecords).ToArray());
+        var layerRecords = layerRecordsOffset.Value == 0 || numLayerRecords == 0 ? [] :
+            stream.SeekTo(position + layerRecordsOffset.Value).To(_ => Lists.Repeat(() => LayerRecord.ReadFrom(stream)).Take(numLayerRecords).ToArray());
 
         var paintCache = new Dictionary<long, IPaintFormat>();
         var colorLineCache = new Dictionary<long, IColorLine>();
         var affineCache = new Dictionary<long, IAffine2x3>();
 
-        var baseGlyphList = baseGlyphListOffset == 0 ? null
-            : stream.SeekTo(position + baseGlyphListOffset).To(x => BaseGlyphListRecord.ReadFrom(x, paintCache, colorLineCache, affineCache));
+        var baseGlyphList = baseGlyphListOffset.Value == 0 ? null
+            : stream.SeekTo(position + baseGlyphListOffset.Value).To(x => BaseGlyphListRecord.ReadFrom(x, paintCache, colorLineCache, affineCache));
 
-        var layerList = layerListOffset == 0 ? null
-            : stream.SeekTo(position + layerListOffset).To(x => LayerListRecord.ReadFrom(x, paintCache, colorLineCache, affineCache));
+        var layerList = layerListOffset.Value == 0 ? null
+            : stream.SeekTo(position + layerListOffset.Value).To(x => LayerListRecord.ReadFrom(x, paintCache, colorLineCache, affineCache));
 
-        var clipList = clipListOffset == 0 ? null
-            : stream.SeekTo(position + clipListOffset).To(ClipListRecord.ReadFrom);
+        var clipList = clipListOffset.Value == 0 ? null
+            : stream.SeekTo(position + clipListOffset.Value).To(ClipListRecord.ReadFrom);
 
-        var varIndexMap = varIndexMapOffset == 0 ? null
-            : stream.SeekTo(position + varIndexMapOffset).To(DeltaSetIndexMapRecord.ReadFrom);
+        var varIndexMap = varIndexMapOffset.Value == 0 ? null
+            : stream.SeekTo(position + varIndexMapOffset.Value).To(DeltaSetIndexMapRecord.ReadFrom);
 
-        var itemVariationStore = itemVariationStoreOffset == 0 ? null
-            : stream.SeekTo(position + itemVariationStoreOffset).To(ItemVariationStoreRecord.ReadFrom);
+        var itemVariationStore = itemVariationStoreOffset.Value == 0 ? null
+            : stream.SeekTo(position + itemVariationStoreOffset.Value).To(ItemVariationStoreRecord.ReadFrom);
 
         return new()
         {
@@ -96,8 +96,8 @@ public record class ColorTable : IExportable
 
         stream.WriteUShortByBigEndian(Version);
         stream.WriteUShortByBigEndian((ushort)BaseGlyphRecords.Length);
-        stream.WriteOffset32(BaseGlyphRecords.Length == 0 ? 0 : (uint)offset);
-        stream.WriteOffset32(LayerRecords.Length == 0 ? 0 : (uint)(offset + sizeof_BaseGlyphRecords));
+        stream.WriteOffset32(BaseGlyphRecords.Length == 0 ? 0 : offset);
+        stream.WriteOffset32(LayerRecords.Length == 0 ? 0 : offset + sizeof_BaseGlyphRecords);
         stream.WriteUShortByBigEndian((ushort)LayerRecords.Length);
 
         offset += sizeof_BaseGlyphRecords + sizeof_LayerRecords;
@@ -107,7 +107,7 @@ public record class ColorTable : IExportable
         {
             if (BaseGlyphListRecord is { })
             {
-                stream.WriteOffset32((uint)offset);
+                stream.WriteOffset32(offset);
                 BaseGlyphListRecord.WriteTo(baseGlyphList);
                 offset += (int)baseGlyphList.Length;
             }
@@ -118,7 +118,7 @@ public record class ColorTable : IExportable
 
             if (LayerListRecord is { })
             {
-                stream.WriteOffset32((uint)offset);
+                stream.WriteOffset32(offset);
                 LayerListRecord.WriteTo(layerList);
                 offset += (int)layerList.Length;
 
@@ -127,9 +127,9 @@ public record class ColorTable : IExportable
             {
                 stream.WriteUIntByBigEndian(0);
             }
-            stream.WriteOffset32(ClipListRecord is { } ? (uint)offset : 0); offset += ClipListRecord?.SizeOf() ?? 0;
-            stream.WriteOffset32(DeltaSetIndexMapRecord is { } ? (uint)offset : 0); offset += DeltaSetIndexMapRecord?.SizeOf() ?? 0;
-            stream.WriteOffset32(ItemVariationStoreRecord is { } ? (uint)offset : 0); offset += ItemVariationStoreRecord?.SizeOf() ?? 0;
+            stream.WriteOffset32(ClipListRecord is { } ? offset : 0); offset += ClipListRecord?.SizeOf() ?? 0;
+            stream.WriteOffset32(DeltaSetIndexMapRecord is { } ? offset : 0); offset += DeltaSetIndexMapRecord?.SizeOf() ?? 0;
+            stream.WriteOffset32(ItemVariationStoreRecord is { } ? offset : 0); offset += ItemVariationStoreRecord?.SizeOf() ?? 0;
         }
 
         BaseGlyphRecords.Each(x => x.WriteTo(stream));

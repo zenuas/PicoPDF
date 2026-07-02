@@ -12,7 +12,7 @@ public class TrueTypeCollectionHeader
     public required ushort MajorVersion { get; init; }
     public required ushort MinorVersion { get; init; }
     public required uint NumberOfFonts { get; init; }
-    public required uint[] TableDirectoryOffsets { get; init; }
+    public required Offset32[] TableDirectoryOffsets { get; init; }
     public required uint DsigTag { get; init; }
     public required uint DsigLength { get; init; }
     public required uint DsigOffset { get; init; }

@@ -12,7 +12,7 @@ public record class IndexToLocationTable
     public static IndexToLocationTable ReadFrom(Stream stream, short index_to_locformat, ushort number_of_glyphs) => new()
     {
         Offsets = index_to_locformat == 0
-            ? [.. Lists.Repeat(() => (uint)stream.ReadOffset16() * 2).Take(number_of_glyphs + 1)]
-            : [.. Lists.Repeat(stream.ReadOffset32).Take(number_of_glyphs + 1)],
+            ? [.. Lists.Repeat(() => (uint)stream.ReadOffset16().Value * 2).Take(number_of_glyphs + 1)]
+            : [.. Lists.Repeat(() => stream.ReadOffset32().Value).Take(number_of_glyphs + 1)],
     };
 }

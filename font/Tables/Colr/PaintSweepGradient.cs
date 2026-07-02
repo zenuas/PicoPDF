@@ -8,7 +8,7 @@ namespace OpenType.Tables.Colr;
 public class PaintSweepGradient : IPaintFormat
 {
     public required byte Format { get; init; }
-    public required int ColorLineOffset { get; init; }
+    public required Offset24 ColorLineOffset { get; init; }
     public required short CenterX { get; init; }
     public required short CenterY { get; init; }
     public required F2DOT14 StartAngle { get; init; }
@@ -28,7 +28,7 @@ public class PaintSweepGradient : IPaintFormat
             CenterY = stream.ReadFWORD(),
             StartAngle = stream.ReadF2DOT14(),
             EndAngle = stream.ReadF2DOT14(),
-            ColorLine = ColorLine.ReadFrom(stream, position + colorLineOffset, colorLineCache),
+            ColorLine = ColorLine.ReadFrom(stream, position + colorLineOffset.Value, colorLineCache),
         };
     }
 
@@ -43,7 +43,7 @@ public class PaintSweepGradient : IPaintFormat
         ColorLine.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset */Const.SizeofOffset24 +
+    public int SizeOf() => Format.SizeOf() + /* ColorLineOffset */Offset24.SizeOf() +
         CenterX.SizeOf() + CenterY.SizeOf() +
         StartAngle.SizeOf() + EndAngle.SizeOf();
 }

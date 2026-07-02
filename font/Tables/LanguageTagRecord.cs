@@ -7,7 +7,7 @@ namespace OpenType.Tables;
 public class LanguageTagRecord
 {
     public required ushort Length { get; init; }
-    public required ushort LanguageTagOffset { get; init; }
+    public required Offset16 LanguageTagOffset { get; init; }
 
     public static LanguageTagRecord ReadFrom(Stream stream) => new()
     {

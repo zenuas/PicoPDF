@@ -8,7 +8,7 @@ namespace OpenType.Tables.Colr;
 public class PaintGlyph : IPaintFormat, IHaveGlyph, IHavePaint
 {
     public required byte Format { get; init; }
-    public required int PaintOffset { get; init; }
+    public required Offset24 PaintOffset { get; init; }
     public required ushort GlyphID { get; init; }
     public required IPaintFormat Paint { get; init; }
 
@@ -22,7 +22,7 @@ public class PaintGlyph : IPaintFormat, IHaveGlyph, IHavePaint
             Format = 10,
             PaintOffset = paintOffset,
             GlyphID = stream.ReadUShortByBigEndian(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache, affineCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset.Value, paintCache, colorLineCache, affineCache),
         };
     }
 
@@ -34,5 +34,5 @@ public class PaintGlyph : IPaintFormat, IHaveGlyph, IHavePaint
         Paint.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Const.SizeofOffset24 + GlyphID.SizeOf();
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Offset24.SizeOf() + GlyphID.SizeOf();
 }

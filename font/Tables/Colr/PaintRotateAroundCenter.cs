@@ -8,7 +8,7 @@ namespace OpenType.Tables.Colr;
 public class PaintRotateAroundCenter : IPaintFormat, IHavePaint
 {
     public required byte Format { get; init; }
-    public required int PaintOffset { get; init; }
+    public required Offset24 PaintOffset { get; init; }
     public required F2DOT14 Angle { get; init; }
     public required short CenterX { get; init; }
     public required short CenterY { get; init; }
@@ -26,7 +26,7 @@ public class PaintRotateAroundCenter : IPaintFormat, IHavePaint
             Angle = stream.ReadF2DOT14(),
             CenterX = stream.ReadFWORD(),
             CenterY = stream.ReadFWORD(),
-            Paint = PaintFormat.ReadFrom(stream, position + paintOffset, paintCache, colorLineCache, affineCache),
+            Paint = PaintFormat.ReadFrom(stream, position + paintOffset.Value, paintCache, colorLineCache, affineCache),
         };
     }
 
@@ -40,7 +40,7 @@ public class PaintRotateAroundCenter : IPaintFormat, IHavePaint
         Paint.WriteTo(stream);
     }
 
-    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Const.SizeofOffset24 +
+    public int SizeOf() => Format.SizeOf() + /* PaintOffset */Offset24.SizeOf() +
         Angle.SizeOf() +
         CenterX.SizeOf() + CenterY.SizeOf();
 }

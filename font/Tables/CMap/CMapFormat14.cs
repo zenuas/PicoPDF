@@ -10,7 +10,7 @@ public class CMapFormat14 : ICMapFormat, IExportable
     public required ushort Format { get; init; }
     public required uint Length { get; init; }
     public required uint NumberOfVariationSelectorRecords { get; init; }
-    public required (int VariationSelector, uint DefaultUVSOffset, uint NonDefaultUVSOffset)[] VariationSelector { get; init; }
+    public required (int VariationSelector, Offset32 DefaultUVSOffset, Offset32 NonDefaultUVSOffset)[] VariationSelector { get; init; }
 
     public static CMapFormat14 ReadFrom(Stream stream)
     {
