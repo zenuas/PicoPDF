@@ -69,16 +69,16 @@ public class PdfCreate : FontRegisterCommand
             CreateFontRegister = () => fontreg,
             BindSection = (section, page_section) =>
             {
-                if (section is SectionModel section_model && section_model.Section.Name.StartsWith("HeightAdjusting"))
+                if (section.Section.Name.StartsWith("HeightAdjusting"))
                 {
                     var dummy_document = new Document() { FontRegister = fontreg };
-                    var multilines = section_model.Elements
+                    var multilines = section.Elements
                         .OfType<TextModel>()
                         .Where(x => x.Style.HasFlag(TextStyles.MultiLine) && !x.Style.HasFlag(TextStyles.Clipping));
                     var maxheight = multilines
                         .Select(x => x.Y + DrawString.Create(x.Text, x.X, x.Y, x.Size, [.. x.Font.Select(f => dummy_document.GetFont(f.Path, f.Embed))], dummy_document, x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()).Cast<DrawOperations>().Height.ToPoint())
                         .Max();
-                    if (maxheight > section_model.Height) return section_model with { Height = (int)maxheight };
+                    if (maxheight > section.Height) return section with { Height = (int)maxheight };
                 }
                 return section;
             },
