@@ -102,7 +102,7 @@ SummaryElementの集計方法はSummaryMethodプロパティで設定する。
 
 ## Function overview
 
-jsonファイルとデータを元にCreateDocument関数、Saveメソッドのみを呼び出すだけでよい。  
+jsonファイルとデータを元にPdfFactory.Create関数、Saveメソッドのみを呼び出すだけでよい。  
 内部構造は次の通り。  
 
 ```mermaid
