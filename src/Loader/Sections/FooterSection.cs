@@ -10,9 +10,9 @@ public class FooterSection : IFooterSection, ISectionStyle
     public required int Height { get; init; }
     public ViewModes ViewMode { get; init => field = value is ViewModes.Last or ViewModes.Every ? value : throw new ArgumentException(); } = ViewModes.Last;
     public IElement[] Elements { get; init; } = [];
-    public bool IsFill { get => Style.HasFlag(SectionStyles.Fill); }
-    public bool IsPageBreak { get => Style.HasFlag(SectionStyles.PageBreak); }
+    public bool IsFill => Style.HasFlag(SectionStyles.Fill);
+    public bool IsPageBreak => Style.HasFlag(SectionStyles.PageBreak);
     public bool IsFooter { get; init; } = true;
-    public bool IsHeightAdjusting { get => Style.HasFlag(SectionStyles.HeightAdjusting); }
+    public bool IsHeightAdjusting => Style.HasFlag(SectionStyles.HeightAdjusting);
     public SectionStyles Style { get; init; } = SectionStyles.None;
 }

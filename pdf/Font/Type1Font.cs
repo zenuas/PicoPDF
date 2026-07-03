@@ -11,7 +11,7 @@ public class Type1Font : PdfObject, IFont
     public required string Encoding { get; init; }
     public required FontDescriptor FontDescriptor { get; init; }
     public required int FirstChar { get; init; }
-    public int LastChar { get => FirstChar + Widths.Length - 1; }
+    public int LastChar => FirstChar + Widths.Length - 1;
     public long[] Widths { get; init; } = [];
 
     public override void BeforeExport(PdfExportOption option)
