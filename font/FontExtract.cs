@@ -776,69 +776,6 @@ public static class FontExtract
         };
     }
 
-    public static IGlyph OutlineToSimpleGlyph(IGlyph glyph, IReadOnlyList<IGlyph> glyphs)
-    {
-        var surfaces = glyph.ToOutline(glyphs);
-        if (surfaces.Length == 0)
-        {
-            return new NotdefGlyph();
-        }
-        var end_points_of_contours = new List<ushort>();
-        var flags = new List<SimpleGlyphFlags>();
-        var xcoordinates = new List<short>();
-        var ycoordinates = new List<short>();
-
-        foreach (var surface in surfaces.Where(x => x.Edges.Length > 0))
-        {
-            var start = surface.Edges.First().Start;
-            flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
-            xcoordinates.Add((short)start.X);
-            ycoordinates.Add((short)start.Y);
-
-            foreach (var edge in surface.Edges)
-            {
-                switch (edge)
-                {
-                    case Line line:
-                        flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
-                        xcoordinates.Add((short)line.End.X);
-                        ycoordinates.Add((short)line.End.Y);
-                        break;
-
-                    case BezierCurve bezier when bezier.ControlPoint.Length == 1:
-                        flags.Add(0);
-                        xcoordinates.Add((short)bezier.ControlPoint[0].X);
-                        ycoordinates.Add((short)bezier.ControlPoint[0].Y);
-
-                        if (!bezier.ComplementPoint)
-                        {
-                            flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
-                            xcoordinates.Add((short)bezier.End.X);
-                            ycoordinates.Add((short)bezier.End.Y);
-                        }
-                        break;
-                }
-            }
-            end_points_of_contours.Add((ushort)(flags.Count - 1));
-        }
-
-        var (width, left, ymax, ymin) = surfaces.GetSurfaceSize();
-        return new SimpleGlyph()
-        {
-            NumberOfContours = (short)end_points_of_contours.Count,
-            XMin = (short)left,
-            YMin = (short)ymin,
-            XMax = (short)(left + width),
-            YMax = (short)ymax,
-            EndPointsOfContours = [.. end_points_of_contours],
-            InstructionLength = 0,
-            Instructions = [],
-            Flags = [.. flags],
-            XCoordinates = RelativeCoordinates(xcoordinates),
-            YCoordinates = RelativeCoordinates(ycoordinates),
-        };
-    }
-
     public static short[] RelativeCoordinates(List<short> absolute_coordinates)
     {
         if (absolute_coordinates.Count == 0) return [];
