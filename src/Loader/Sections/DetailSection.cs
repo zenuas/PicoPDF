@@ -11,6 +11,5 @@ public class DetailSection : IDetailSection, ISubSection, ISectionStyle
     public ViewModes ViewMode { get => ViewModes.Every; init => _ = value == ViewModes.Every ? value : throw new ArgumentException(); }
     public IElement[] Elements { get; init; } = [];
     public bool IsFill => Style.HasFlag(SectionStyles.Fill);
-    public bool IsHeightAdjusting => Style.HasFlag(SectionStyles.HeightAdjusting);
     public SectionStyles Style { get; init => field = !value.HasFlag(SectionStyles.PageBreak) ? value : throw new ArgumentException(); } = SectionStyles.None;
 }

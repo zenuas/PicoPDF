@@ -10,4 +10,5 @@ public enum SectionStyles
     Fill = 1 << 1,
     Clipping = 1 << 2,
     HeightAdjusting = 1 << 3,
+    Hidden = 1 << 4,
 }

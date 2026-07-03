@@ -35,6 +35,7 @@ public record class SectionModel : ISectionModel<SectionModel>
     {
         var page_section = page.Cast<PageSection>();
         var footer = section as IFooterSection;
+        var style = section as ISectionStyle;
         return page_section.EventOption.BindSection(new()
         {
             Section = section,
@@ -48,8 +49,8 @@ public record class SectionModel : ISectionModel<SectionModel>
             Elements = BindElements(section, data, bind, page_section, break_count, depth),
             PageCount = bind.GetPageCount(),
             IsEmpty = bind.IsEmpty,
-            IsVisible = true,
-            IsHeightAdjusting = (section as ISectionStyle)?.IsHeightAdjusting ?? false,
+            IsVisible = style is not { } || !style.Style.HasFlag(SectionStyles.Hidden),
+            IsHeightAdjusting = style?.Style.HasFlag(SectionStyles.HeightAdjusting) ?? false,
         }, page_section);
     }
 
