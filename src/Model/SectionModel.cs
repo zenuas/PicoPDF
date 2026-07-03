@@ -24,6 +24,7 @@ public record class SectionModel : ISectionModel<SectionModel>
     public required int PageCount { get; init; }
     public required bool IsEmpty { get; init; }
     public required bool IsVisible { get; init; }
+    public required bool IsHeightAdjusting { get; init; }
 
     public void UpdatePosition() => Elements
         .OfType<ICrossSectionModel<SectionModel>>()
@@ -48,6 +49,7 @@ public record class SectionModel : ISectionModel<SectionModel>
             PageCount = bind.GetPageCount(),
             IsEmpty = bind.IsEmpty,
             IsVisible = true,
+            IsHeightAdjusting = (section as ISectionStyle)?.IsHeightAdjusting ?? false,
         }, page_section);
     }
 

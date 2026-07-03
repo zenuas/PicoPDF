@@ -69,7 +69,7 @@ public class PdfCreate : FontRegisterCommand
             CreateFontRegister = () => fontreg,
             BindSection = (section, page_section) =>
             {
-                if (section.Section.Name.StartsWith("HeightAdjusting"))
+                if (section.IsHeightAdjusting)
                 {
                     var dummy_document = new Document() { FontRegister = fontreg };
                     var multilines = section.Elements

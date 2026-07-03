@@ -11,7 +11,7 @@
 			"Detail": {
 					"BreakKey": "Todouhuken",
 					"Header": "Header2",
-					"Detail": "HeightAdjustingDetail",
+					"Detail": "Detail",
 					"Footer": "Total2",
 				},
 			"Footer": "Total",
@@ -39,7 +39,7 @@
 			{"Type": "TextElement", "Text": "All",    "Size": 10, "X": 380, "Y": 0, "Alignment": "End", "Width": 50},
 			{"Type": "CrossSectionLineElement", "X": 100, "Y": 10, "Width": 0, "Height": 25, "Color": "green"},
 		]},
-		{"Type": "DetailSection", "Name": "HeightAdjustingDetail", "Height": 10, "Style": "Fill", "Elements": [
+		{"Type": "DetailSection", "Name": "Detail", "Height": 10, "Style": "Fill, HeightAdjusting", "Elements": [
 			{"Type": "BindElement", "Bind": "Todouhuken",  "Size": 10, "X": 10, "Y": 0},
 			{"Type": "BindElement", "Bind": "Sikutyouson", "Size": 10, "X": 60, "Y": 0, "Width": 30, "Style": "MultiLine"},
 			{"Type": "BindElement", "Bind": "Number",      "Size": 10, "X": 100, "Y": 0, "Format": "#,0", "Alignment": "End", "Width": 50},

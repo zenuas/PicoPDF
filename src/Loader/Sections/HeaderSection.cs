@@ -10,5 +10,6 @@ public class HeaderSection : IHeaderSection, ISectionStyle
     public required int Height { get; init; }
     public ViewModes ViewMode { get; init => field = value is ViewModes.First or ViewModes.Every or ViewModes.PageFirst ? value : throw new ArgumentException(); } = ViewModes.First;
     public IElement[] Elements { get; init; } = [];
+    public bool IsHeightAdjusting { get => Style.HasFlag(SectionStyles.HeightAdjusting); }
     public SectionStyles Style { get; init => field = !value.HasFlag(SectionStyles.PageBreak | SectionStyles.Fill) ? value : throw new ArgumentException(); } = SectionStyles.None;
 }

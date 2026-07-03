@@ -13,5 +13,6 @@ public class FooterSection : IFooterSection, ISectionStyle
     public bool IsFill { get => Style.HasFlag(SectionStyles.Fill); }
     public bool IsPageBreak { get => Style.HasFlag(SectionStyles.PageBreak); }
     public bool IsFooter { get; init; } = true;
+    public bool IsHeightAdjusting { get => Style.HasFlag(SectionStyles.HeightAdjusting); }
     public SectionStyles Style { get; init; } = SectionStyles.None;
 }
