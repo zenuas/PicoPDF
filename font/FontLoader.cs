@@ -181,7 +181,7 @@ public static class FontLoader
         return newfont;
     }
 
-    public static NoOutlineFont LoadNoOutlineFont(IOpenTypeHeader font)
+    public static GenericFont LoadNoOutlineFont(IOpenTypeHeader font)
     {
         using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 

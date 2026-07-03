@@ -19,7 +19,7 @@ public static class FontExtract
     {
         TrueTypeFont ttf => Extract(ttf, opt),
         PostScriptFont psf => Extract(psf, opt),
-        NoOutlineFont noo => Extract(noo, opt),
+        GenericFont gen => Extract(gen, opt),
         _ => throw new(),
     };
 
@@ -105,7 +105,7 @@ public static class FontExtract
         };
     }
 
-    public static NoOutlineFont Extract(NoOutlineFont font, FontExtractOption opt)
+    public static GenericFont Extract(GenericFont font, FontExtractOption opt)
     {
         var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()], opt.IsColorSupport);
         var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();

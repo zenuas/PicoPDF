@@ -69,7 +69,7 @@ public static class FontExporter
         {
             case TrueTypeFont ttf: Export(ttf, tables, stream, start_stream_position); break;
             case PostScriptFont psf: Export(psf, tables, stream, start_stream_position); break;
-            case NoOutlineFont noo: Export(noo, tables, stream, start_stream_position); break;
+            case GenericFont gen: Export(gen, tables, stream, start_stream_position); break;
             default: throw new();
         }
 
@@ -121,7 +121,7 @@ public static class FontExporter
         ExportTable(stream, start_stream_position, tables["CFF "], font.CompactFontFormat);
     }
 
-    public static void Export(NoOutlineFont font, Dictionary<string, MutableTableRecord> tables, Stream stream, long start_stream_position = 0)
+    public static void Export(GenericFont font, Dictionary<string, MutableTableRecord> tables, Stream stream, long start_stream_position = 0)
     {
     }
 
