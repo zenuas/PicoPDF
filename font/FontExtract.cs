@@ -15,63 +15,83 @@ namespace OpenType;
 
 public static class FontExtract
 {
-    public static IOpenTypeFont Extract(IOpenTypeFont font, FontExtractOption opt) => font switch
+    public static IOpenTypeFont Extract(IOpenTypeFont font, FontTypes fonttype, FontExtractOption opt) => fonttype switch
     {
-        TrueTypeFont ttf => Extract(ttf, opt),
-        PostScriptFont psf => Extract(psf, opt),
-        GenericFont gen => Extract(gen, opt),
+        FontTypes.TrueType => ExtractToTrueType(font, opt),
+        FontTypes.PostScript => ExtractToPostScript(font, opt),
         _ => throw new(),
     };
 
-    public static TrueTypeFont Extract(TrueTypeFont font, FontExtractOption opt)
+    public static TrueTypeFont ExtractToTrueType(IOpenTypeFont font, FontExtractOption opt)
     {
         var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()], opt.IsColorSupport);
         var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
-        var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (Glyph: font.Glyphs[(int)x.OldGID], x.HorizontalMetrics));
+        var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (Outline: font.GIDToOutline(x.OldGID, false), x.HorizontalMetrics));
         var num_of_glyph = (int)gid_glyph.Keys.Max();
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
         var glyphs = Lists.RangeTo(1, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? OutlineToSimpleGlyph(glyph.Glyph, font.Glyphs) : new NotdefGlyph())
+            .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? OutlineToSimpleGlyph(glyph.Outline) : new NotdefGlyph())
             .Prepend(new NotdefGlyph())
             .ToArray();
 
         TrueTypeFont newfont = null!;
-        return newfont = font with
+        return newfont = new()
         {
+            PostScriptName = font.PostScriptName,
+            Path = font.Path,
+            Position = font.Position,
+            TableRecords = font.TableRecords,
+            Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
+            FontHeader = font.FontHeader,
             MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
+            PostScript = font.PostScript,
+            OS2 = font.OS2,
             HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
             HorizontalMetrics = new() { Metrics = [font.HorizontalMetrics.Metrics[0], .. Lists.RangeTo(1, num_of_glyph).Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])], LeftSideBearing = [] },
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyphs[gid].ToOutline(glyphs),
             Glyphs = glyphs,
+            ColorBitmapData = null,
+            ColorBitmapLocation = null,
             Color = colr,
             ColorPalette = cpal,
+            StandardBitmapGraphics = null,
+            ScalableVectorGraphics = null,
             DisposeAction = null,
         };
     }
 
-    public static PostScriptFont Extract(PostScriptFont font, FontExtractOption opt)
+    public static PostScriptFont ExtractToPostScript(IOpenTypeFont font, FontExtractOption opt)
     {
+        var glyphs = Lists.RangeTo(0, font.MaximumProfile.NumberOfGlyphs - 1)
+            .Select(x => font.GIDToOutline((uint)x, false))
+            .Select(xs => OutlineToCharStrings([.. xs.OfType<Surface>()], 0))
+            .ToArray();
+
         var validchars = opt.ExtractChars.Where(x => font.CharToGID(x) != 0).Order().ToArray();
         var outputs = CreateCharToGIDMetrics(font, validchars, opt.IsColorSupport).Append((Char: 0, NewGID: 0u, OldGID: 0u, HorizontalMetrics: font.HorizontalMetrics.Metrics[0])).ToArray();
         var char_gids = outputs[0..validchars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (
-                Glyph: font.CompactFontFormat.TopDict.CharStrings[x.OldGID],
                 x.HorizontalMetrics,
                 Outline: font.GIDToOutline(x.OldGID, false).OfType<Surface>().ToArray())
             );
         var num_of_glyph = (int)gid_glyph.Keys.Max();
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
-        var dict = font.CompactFontFormat.TopDict.Dict.ToDictionary();
-        _ = dict.TryAdd(TopDictOperators.ROS, [/* SID.StandardStrings[0] = ".notdef" */0, 0, 0]);
+        var dict = new Dictionary<TopDictOperators, IntOrDouble[]>();
+        var strings = new List<string>();
+        dict[TopDictOperators.ROS] = [SID.AddSID(strings, "Adobe"), SID.AddSID(strings, "Identity"), 0];
+        dict[TopDictOperators.Charset] = [0];
+        dict[TopDictOperators.CharStrings] = [0];
+        dict[TopDictOperators.FDSelect] = [0];
+        dict[TopDictOperators.FDArray] = [0];
         dict[TopDictOperators.CIDCount] = [outputs.Length];
         var top_dict = new TopDict
         {
-            Strings = font.CompactFontFormat.Strings,
+            Strings = [.. strings],
             Dict = dict,
             CharStrings = [.. Lists.RangeTo(0, num_of_glyph).Select(x => OutlineToCharStrings(gid_glyph[(uint)x].Outline, 0))],
             Charsets = new()
@@ -83,47 +103,43 @@ public static class FontExtract
             FontDictSelect = [.. Lists.Repeat<byte>(0).Take(num_of_glyph + 1)],
         };
 
-        var cff = font.CompactFontFormat with
+        var cff = new CompactFontFormat
         {
+            Major = 1,
+            Minor = 0,
+            HeaderSize = 4,
+            OffsetSize = 3,
+            Names = [],
             TopDict = top_dict,
+            Strings = [],
             GlobalSubroutines = [],
         };
 
         PostScriptFont newfont = null!;
-        return newfont = font with
+        return newfont = new()
         {
+            PostScriptName = font.PostScriptName,
+            Path = font.Path,
+            Position = font.Position,
+            TableRecords = font.TableRecords,
+            Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
+            FontHeader = font.FontHeader,
             MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
+            PostScript = font.PostScript,
+            OS2 = font.OS2,
             HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
             HorizontalMetrics = new() { Metrics = [font.HorizontalMetrics.Metrics[0], .. Lists.RangeTo(1, num_of_glyph).Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])], LeftSideBearing = [] },
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
+            ColorBitmapData = null,
+            ColorBitmapLocation = null,
             Color = colr,
             ColorPalette = cpal,
-        };
-    }
-
-    public static GenericFont Extract(GenericFont font, FontExtractOption opt)
-    {
-        var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()], opt.IsColorSupport);
-        var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
-        var gid_hmtx = outputs.ToDictionary(x => x.NewGID, x => x.HorizontalMetrics);
-        var num_of_glyph = (int)gid_hmtx.Keys.Max();
-        var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
-
-        return font with
-        {
-            Name = ExtractNameTable(font.Name, opt),
-            MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
-            HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
-            HorizontalMetrics = new() { Metrics = [font.HorizontalMetrics.Metrics[0], .. Lists.RangeTo(1, num_of_glyph).Select(x => gid_hmtx.GetOrDefault((uint)x) ?? font.HorizontalMetrics.Metrics[0])], LeftSideBearing = [] },
-            CMap = CreateCMapTable(opt, char_gids),
-            CharToGID = CreateCharToGID(char_gids),
-            GIDToOutline = (_, _) => [],
-            Color = colr,
-            ColorPalette = cpal,
+            StandardBitmapGraphics = null,
+            ScalableVectorGraphics = null,
         };
     }
 
@@ -695,6 +711,69 @@ public static class FontExtract
                 PaletteLabels = [],
                 PaletteEntryLabels = [],
             });
+    }
+
+    public static IGlyph OutlineToSimpleGlyph(IOutline[] outlines)
+    {
+        var surfaces = outlines.OfType<Surface>().ToArray();
+        if (surfaces.Length == 0)
+        {
+            return new NotdefGlyph();
+        }
+        var end_points_of_contours = new List<ushort>();
+        var flags = new List<SimpleGlyphFlags>();
+        var xcoordinates = new List<short>();
+        var ycoordinates = new List<short>();
+
+        foreach (var surface in surfaces.Where(x => x.Edges.Length > 0))
+        {
+            var start = surface.Edges.First().Start;
+            flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
+            xcoordinates.Add((short)start.X);
+            ycoordinates.Add((short)start.Y);
+
+            foreach (var edge in surface.Edges)
+            {
+                switch (edge)
+                {
+                    case Line line:
+                        flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
+                        xcoordinates.Add((short)line.End.X);
+                        ycoordinates.Add((short)line.End.Y);
+                        break;
+
+                    case BezierCurve bezier when bezier.ControlPoint.Length == 1:
+                        flags.Add(0);
+                        xcoordinates.Add((short)bezier.ControlPoint[0].X);
+                        ycoordinates.Add((short)bezier.ControlPoint[0].Y);
+
+                        if (!bezier.ComplementPoint)
+                        {
+                            flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
+                            xcoordinates.Add((short)bezier.End.X);
+                            ycoordinates.Add((short)bezier.End.Y);
+                        }
+                        break;
+                }
+            }
+            end_points_of_contours.Add((ushort)(flags.Count - 1));
+        }
+
+        var (width, left, ymax, ymin) = surfaces.GetSurfaceSize();
+        return new SimpleGlyph()
+        {
+            NumberOfContours = (short)end_points_of_contours.Count,
+            XMin = (short)left,
+            YMin = (short)ymin,
+            XMax = (short)(left + width),
+            YMax = (short)ymax,
+            EndPointsOfContours = [.. end_points_of_contours],
+            InstructionLength = 0,
+            Instructions = [],
+            Flags = [.. flags],
+            XCoordinates = RelativeCoordinates(xcoordinates),
+            YCoordinates = RelativeCoordinates(ycoordinates),
+        };
     }
 
     public static IGlyph OutlineToSimpleGlyph(IGlyph glyph, IReadOnlyList<IGlyph> glyphs)
