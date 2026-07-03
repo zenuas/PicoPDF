@@ -48,7 +48,7 @@ public record class SectionModel : ISectionModel<SectionModel>
             PageCount = bind.GetPageCount(),
             IsEmpty = bind.IsEmpty,
             IsVisible = true,
-        });
+        }, page_section);
     }
 
     public static IModelElement[] BindElements<T>(ISection section, T data, BindSummaryMapper<T, SectionModel> bind, PageSection page, int break_count, int? depth) => [.. section.Elements.Select(x => page.EventOption.BindElement(section, x, data, BindElement(x, data, bind, page, break_count, depth)))];

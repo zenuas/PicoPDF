@@ -58,7 +58,7 @@ public class DrawString : IOperation
         };
     }
 
-    public static IOperation Create(Document document, string text, double left, double top, double size, Type0Font[] fonts, double width = 0, double height = 0, TextStyles style = TextStyles.None, TextAlignments alignment = TextAlignments.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
+    public static IOperation Create(string text, double left, double top, double size, Type0Font[] fonts, Document document, double width = 0, double height = 0, TextStyles style = TextStyles.None, TextAlignments alignment = TextAlignments.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
     {
         var linetop = top;
         double? prev_linegap = null;

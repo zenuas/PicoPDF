@@ -144,7 +144,7 @@ public class SectionBinderEventTest
 
     public static readonly PdfEventOption NextNoPageHeader = new()
     {
-        BindSection = (section) =>
+        BindSection = (section, page_section) =>
         {
             if (section is SectionModel section_model && section_model.Section.Name == "PageHeader")
             {
@@ -260,7 +260,7 @@ public class SectionBinderEventTest
 
     public static readonly PdfEventOption NextNoFooter = new()
     {
-        BindSection = (section) =>
+        BindSection = (section, page_section) =>
         {
             if (section is SectionModel section_model && section_model.Section.Name == "Footer1")
             {
@@ -386,7 +386,7 @@ public class SectionBinderEventTest
 
     public static readonly PdfEventOption HeaderExpand = new()
     {
-        BindSection = (section) =>
+        BindSection = (section, page_section) =>
         {
             if (section is SectionModel section_model && section_model.Section.Name == "Header1")
             {
@@ -521,7 +521,7 @@ public class SectionBinderEventTest
 
     public static readonly PdfEventOption FooterExpand = new()
     {
-        BindSection = (section) =>
+        BindSection = (section, page_section) =>
         {
             if (section is SectionModel section_model && section_model.Section.Name == "Footer1")
             {

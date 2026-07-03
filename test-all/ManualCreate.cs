@@ -31,11 +31,11 @@ public class ManualCreate : FontRegisterCommand
 
         var post = Type0Font.Create("POST1", fontreg.LoadComplete("test-case/NotoSansCJK-Regular.ttc,0"));
         document.Fonts.Add(post);
-        page.Contents.Operations.Add(DrawString.Create(page.Document, "PostScript Font! あア亜 𠮷野家", 100, 160, 12, [post]));
+        page.Contents.Operations.Add(DrawString.Create("PostScript Font! あア亜 𠮷野家", 100, 160, 12, [post], page.Document));
 
         var ttf = Type0Font.Create("true1", fontreg.LoadComplete("Meiryo Bold"));
         document.Fonts.Add(ttf);
-        page.Contents.Operations.Add(DrawString.Create(page.Document, "TrueType Font! あア亜 𠮷野家", 100, 180, 12, [ttf]));
+        page.Contents.Operations.Add(DrawString.Create("TrueType Font! あア亜 𠮷野家", 100, 180, 12, [ttf], page.Document));
 
         document.Save("test-case/manual-create.pdf", new() { ContentsStreamDeflate = false, Debug = true, OutputCrossReferenceTable = false });
     }
