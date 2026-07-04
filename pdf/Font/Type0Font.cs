@@ -39,7 +39,8 @@ public class Type0Font : PdfObject, IFont, IFontChars
             var fontfile = new PdfObject();
             RelatedObjects.Add(fontfile);
             var writer = fontfile.GetWriteStream(option.FontStreamDeflate);
-            if ((FontEmbed & FontEmbeds.ConvertMask) == FontEmbeds.ConvertToTrueType || Font.Offset.ContainTrueType())
+            if ((FontEmbed & FontEmbeds.ConvertMask) == FontEmbeds.ConvertToTrueType ||
+                ((FontEmbed & FontEmbeds.ConvertMask) == FontEmbeds.ConvertNone && Font.Offset.ContainTrueType()))
             {
                 var export = FontExporter.Export(EmbeddedFont, FontTypes.TrueType);
                 _ = descriptor.Elements.TryAdd("FontFile2", fontfile);
