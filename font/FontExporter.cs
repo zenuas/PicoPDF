@@ -232,7 +232,7 @@ public static class FontExporter
             OffsetSize = 3,
             Names = [font.PostScriptName],
             TopDict = top_dict,
-            Strings = [],
+            Strings = top_dict.Strings,
             GlobalSubroutines = [],
         };
 
