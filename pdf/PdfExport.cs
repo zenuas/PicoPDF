@@ -24,8 +24,8 @@ public static class PdfExport
         foreach (var font in document.Fonts.OfType<Type0Font>())
         {
             if (font.Chars.Count > 0 &&
-                (font.FontEmbed == FontEmbeds.ForceEmbed ||
-                (font.FontEmbed == FontEmbeds.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
+                ((font.FontEmbed & FontEmbeds.EmbedsMask) == FontEmbeds.ForceEmbed ||
+                ((font.FontEmbed & FontEmbeds.EmbedsMask) == FontEmbeds.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
         }
 
         var all_refs = GetAllReferencesExport(document, option);

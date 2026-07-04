@@ -18,12 +18,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
     public required CIDFontDictionary FontDictionary { get; init; }
     public HashSet<int> Chars { get; init; } = [];
 
-    public void CreateEmbeddedFont()
-    {
-        EmbeddedFont = Font.Offset.ContainTrueType()
-            ? FontExtract.ExtractToTrueType(Font, new() { ExtractChars = [.. Chars] })
-            : FontExtract.ExtractToPostScript(Font, new() { ExtractChars = [.. Chars] });
-    }
+    public void CreateEmbeddedFont() => EmbeddedFont = FontExtract.Extract(Font, new() { ExtractChars = [.. Chars] });
 
     public override void BeforeExport(PdfExportOption option)
     {
@@ -44,16 +39,16 @@ public class Type0Font : PdfObject, IFont, IFontChars
             var fontfile = new PdfObject();
             RelatedObjects.Add(fontfile);
             var writer = fontfile.GetWriteStream(option.FontStreamDeflate);
-            if (EmbeddedFont.Offset.ContainTrueType())
+            if ((FontEmbed & FontEmbeds.ConvertMask) == FontEmbeds.ConvertToTrueType || Font.Offset.ContainTrueType())
             {
-                var export = FontExporter.Export(EmbeddedFont.Cast<TrueTypeFont>());
+                var export = FontExporter.Export(EmbeddedFont, FontTypes.TrueType);
                 _ = descriptor.Elements.TryAdd("FontFile2", fontfile);
                 _ = fontfile.Elements.TryAdd("Length1", export.Length);
                 writer.Write(export);
             }
             else
             {
-                var export = FontExporter.Export(EmbeddedFont.Cast<PostScriptFont>());
+                var export = FontExporter.Export(EmbeddedFont, FontTypes.PostScript);
                 _ = descriptor.Elements.TryAdd("FontFile3", fontfile);
                 _ = fontfile.Elements.TryAdd("Subtype", "/OpenType");
                 writer.Write(export);

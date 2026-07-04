@@ -2,40 +2,24 @@
 using OpenType.Tables;
 using OpenType.Tables.CMap;
 using OpenType.Tables.Colr;
-using OpenType.Tables.PostScript;
-using OpenType.Tables.TrueType;
-using Svg.Extension;
-using Svg.Outline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace OpenType;
 
 public static class FontExtract
 {
-    public static IOpenTypeFont Extract(IOpenTypeFont font, FontTypes fonttype, FontExtractOption opt) => fonttype switch
-    {
-        FontTypes.TrueType => ExtractToTrueType(font, opt),
-        FontTypes.PostScript => ExtractToPostScript(font, opt),
-        _ => throw new(),
-    };
-
-    public static TrueTypeFont ExtractToTrueType(IOpenTypeFont font, FontExtractOption opt)
+    public static GenericFont Extract(IOpenTypeFont font, FontExtractOption opt)
     {
         var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()], opt.IsColorSupport);
         var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
         var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (Outline: font.GIDToOutline(x.OldGID, false), x.HorizontalMetrics));
-        var num_of_glyph = (int)gid_glyph.Keys.Max();
+        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0]));
+        var num_of_glyph_include_notdef = (int)gid_glyph.Keys.Max() + 1;
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
-        var glyphs = Lists.RangeTo(1, num_of_glyph)
-            .Select(x => gid_glyph.TryGetValue((uint)x, out var glyph) ? OutlineToSimpleGlyph(glyph.Outline) : new NotdefGlyph())
-            .Prepend(new NotdefGlyph())
-            .ToArray();
-
-        TrueTypeFont newfont = null!;
+        GenericFont newfont = null!;
         return newfont = new()
         {
             PostScriptName = font.PostScriptName,
@@ -45,101 +29,20 @@ public static class FontExtract
             Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
             FontHeader = font.FontHeader,
-            MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
+            MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)num_of_glyph_include_notdef },
             PostScript = font.PostScript,
             OS2 = font.OS2,
-            HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
-            HorizontalMetrics = new() { Metrics = [font.HorizontalMetrics.Metrics[0], .. Lists.RangeTo(1, num_of_glyph).Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])], LeftSideBearing = [] },
+            HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)num_of_glyph_include_notdef },
+            HorizontalMetrics = new() { Metrics = [.. Lists.RangeTo(0, num_of_glyph_include_notdef).Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])], LeftSideBearing = [] },
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
-            GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyphs[gid].ToOutline(glyphs),
-            Glyphs = glyphs,
-            ColorBitmapData = null,
-            ColorBitmapLocation = null,
+            GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? gid_glyph[gid].Outline,
+            ColorBitmapData = font.ColorBitmapData,
+            ColorBitmapLocation = font.ColorBitmapLocation,
             Color = colr,
             ColorPalette = cpal,
-            StandardBitmapGraphics = null,
-            ScalableVectorGraphics = null,
-            DisposeAction = null,
-        };
-    }
-
-    public static PostScriptFont ExtractToPostScript(IOpenTypeFont font, FontExtractOption opt)
-    {
-        var glyphs = Lists.RangeTo(0, font.MaximumProfile.NumberOfGlyphs - 1)
-            .Select(x => font.GIDToOutline((uint)x, false))
-            .Select(xs => OutlineToCharStrings([.. xs.OfType<Surface>()], 0))
-            .ToArray();
-
-        var validchars = opt.ExtractChars.Where(x => font.CharToGID(x) != 0).Order().ToArray();
-        var outputs = CreateCharToGIDMetrics(font, validchars, opt.IsColorSupport).Append((Char: 0, NewGID: 0u, OldGID: 0u, HorizontalMetrics: font.HorizontalMetrics.Metrics[0])).ToArray();
-        var char_gids = outputs[0..validchars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
-        var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (
-                x.HorizontalMetrics,
-                Outline: font.GIDToOutline(x.OldGID, false).OfType<Surface>().ToArray())
-            );
-        var num_of_glyph = (int)gid_glyph.Keys.Max();
-        var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
-
-        var dict = new Dictionary<TopDictOperators, IntOrDouble[]>();
-        var strings = new List<string>();
-        dict[TopDictOperators.ROS] = [SID.AddSID(strings, "Adobe"), SID.AddSID(strings, "Identity"), 0];
-        dict[TopDictOperators.Charset] = [0];
-        dict[TopDictOperators.CharStrings] = [0];
-        dict[TopDictOperators.FDSelect] = [0];
-        dict[TopDictOperators.FDArray] = [0];
-        dict[TopDictOperators.CIDCount] = [outputs.Length];
-        var top_dict = new TopDict
-        {
-            Strings = [.. strings],
-            Dict = dict,
-            CharStrings = [.. Lists.RangeTo(0, num_of_glyph).Select(x => OutlineToCharStrings(gid_glyph[(uint)x].Outline, 0))],
-            Charsets = new()
-            {
-                Format = 0,
-                Glyph = [.. Lists.RangeTo(1, num_of_glyph).Select(x => (ushort)x)],
-            },
-            FontDictArray = [new TopDict { Dict = [] }],
-            FontDictSelect = [.. Lists.Repeat<byte>(0).Take(num_of_glyph + 1)],
-        };
-
-        var cff = new CompactFontFormat
-        {
-            Major = 1,
-            Minor = 0,
-            HeaderSize = 4,
-            OffsetSize = 3,
-            Names = [],
-            TopDict = top_dict,
-            Strings = [],
-            GlobalSubroutines = [],
-        };
-
-        PostScriptFont newfont = null!;
-        return newfont = new()
-        {
-            PostScriptName = font.PostScriptName,
-            Path = font.Path,
-            Position = font.Position,
-            TableRecords = font.TableRecords,
-            Offset = font.Offset,
-            Name = ExtractNameTable(font.Name, opt),
-            FontHeader = font.FontHeader,
-            MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)(num_of_glyph + 1) },
-            PostScript = font.PostScript,
-            OS2 = font.OS2,
-            HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)(num_of_glyph + 1) },
-            HorizontalMetrics = new() { Metrics = [font.HorizontalMetrics.Metrics[0], .. Lists.RangeTo(1, num_of_glyph).Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])], LeftSideBearing = [] },
-            CMap = CreateCMapTable(opt, char_gids),
-            CharToGID = CreateCharToGID(char_gids),
-            GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
-            CompactFontFormat = cff,
-            ColorBitmapData = null,
-            ColorBitmapLocation = null,
-            Color = colr,
-            ColorPalette = cpal,
-            StandardBitmapGraphics = null,
-            ScalableVectorGraphics = null,
+            StandardBitmapGraphics = font.StandardBitmapGraphics,
+            ScalableVectorGraphics = font.ScalableVectorGraphics,
         };
     }
 
@@ -711,126 +614,5 @@ public static class FontExtract
                 PaletteLabels = [],
                 PaletteEntryLabels = [],
             });
-    }
-
-    public static IGlyph OutlineToSimpleGlyph(IOutline[] outlines)
-    {
-        var surfaces = outlines.OfType<Surface>().ToArray();
-        if (surfaces.Length == 0)
-        {
-            return new NotdefGlyph();
-        }
-        var end_points_of_contours = new List<ushort>();
-        var flags = new List<SimpleGlyphFlags>();
-        var xcoordinates = new List<short>();
-        var ycoordinates = new List<short>();
-
-        foreach (var surface in surfaces.Where(x => x.Edges.Length > 0))
-        {
-            var start = surface.Edges.First().Start;
-            flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
-            xcoordinates.Add((short)start.X);
-            ycoordinates.Add((short)start.Y);
-
-            foreach (var edge in surface.Edges)
-            {
-                switch (edge)
-                {
-                    case Line line:
-                        flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
-                        xcoordinates.Add((short)line.End.X);
-                        ycoordinates.Add((short)line.End.Y);
-                        break;
-
-                    case BezierCurve bezier when bezier.ControlPoint.Length == 1:
-                        flags.Add(0);
-                        xcoordinates.Add((short)bezier.ControlPoint[0].X);
-                        ycoordinates.Add((short)bezier.ControlPoint[0].Y);
-
-                        if (!bezier.ComplementPoint)
-                        {
-                            flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
-                            xcoordinates.Add((short)bezier.End.X);
-                            ycoordinates.Add((short)bezier.End.Y);
-                        }
-                        break;
-                }
-            }
-            end_points_of_contours.Add((ushort)(flags.Count - 1));
-        }
-
-        var (width, left, ymax, ymin) = surfaces.GetSurfaceSize();
-        return new SimpleGlyph()
-        {
-            NumberOfContours = (short)end_points_of_contours.Count,
-            XMin = (short)left,
-            YMin = (short)ymin,
-            XMax = (short)(left + width),
-            YMax = (short)ymax,
-            EndPointsOfContours = [.. end_points_of_contours],
-            InstructionLength = 0,
-            Instructions = [],
-            Flags = [.. flags],
-            XCoordinates = RelativeCoordinates(xcoordinates),
-            YCoordinates = RelativeCoordinates(ycoordinates),
-        };
-    }
-
-    public static short[] RelativeCoordinates(List<short> absolute_coordinates)
-    {
-        if (absolute_coordinates.Count == 0) return [];
-        var relative_coordinates = new short[absolute_coordinates.Count];
-        relative_coordinates[0] = absolute_coordinates[0];
-        for (var i = 1; i < absolute_coordinates.Count; i++)
-        {
-            relative_coordinates[i] = (short)(absolute_coordinates[i] - absolute_coordinates[i - 1]);
-        }
-        return relative_coordinates;
-    }
-
-    public static byte[] OutlineToCharStrings(Surface[] surfaces, int nominalWidthX)
-    {
-        var char_strings = new List<byte>();
-        char_strings.AddRange(Interpreter.NumberToBytes(surfaces.GetSurfaceSize().Width - nominalWidthX));
-
-        var current = new Vector2(0, 0);
-        foreach (var surface in surfaces.Where(x => x.Edges.Length > 0))
-        {
-            var start = surface.Edges.First().Start;
-            char_strings.AddRange(Interpreter.NumberToBytes(start.X - current.X));
-            char_strings.AddRange(Interpreter.NumberToBytes(start.Y - current.Y));
-            char_strings.Add((byte)CharstringCommandCodes.Rmoveto);
-            current = start;
-
-            foreach (var edge in surface.Edges)
-            {
-                switch (edge)
-                {
-                    case Line line:
-                        char_strings.AddRange(Interpreter.NumberToBytes(line.End.X - current.X));
-                        char_strings.AddRange(Interpreter.NumberToBytes(line.End.Y - current.Y));
-                        char_strings.Add((byte)CharstringCommandCodes.Rlineto);
-                        current = line.End;
-                        break;
-
-                    case BezierCurve bezier when bezier.ControlPoint.Length == 2:
-                        {
-                            var cp1 = bezier.ControlPoint[0];
-                            var cp2 = bezier.ControlPoint[1];
-                            char_strings.AddRange(Interpreter.NumberToBytes(cp1.X - current.X));
-                            char_strings.AddRange(Interpreter.NumberToBytes(cp1.Y - current.Y));
-                            char_strings.AddRange(Interpreter.NumberToBytes(cp2.X - cp1.X));
-                            char_strings.AddRange(Interpreter.NumberToBytes(cp2.Y - cp1.Y));
-                            char_strings.AddRange(Interpreter.NumberToBytes(bezier.End.X - cp2.X));
-                            char_strings.AddRange(Interpreter.NumberToBytes(bezier.End.Y - cp2.Y));
-                            char_strings.Add((byte)CharstringCommandCodes.Rrcurveto);
-                            current = bezier.End;
-                            break;
-                        }
-                }
-            }
-        }
-        char_strings.Add((byte)CharstringCommandCodes.Endchar);
-        return [.. char_strings];
     }
 }

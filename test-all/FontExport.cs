@@ -20,9 +20,9 @@ public class FontExport : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
         var font = fontreg.LoadComplete(Font);
-        var fontextract = FontExtract.Extract(font, FontType, CreateOption(args.Join()));
+        var fontextract = FontExtract.Extract(font, CreateOption(args.Join()));
         using var stream = new FileStream(Output, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
-        FontExporter.Export(fontextract, stream);
+        FontExporter.Export(fontextract, FontType, stream);
     }
 
     public static FontExtractOption CreateOption(string export_chars) => new()
