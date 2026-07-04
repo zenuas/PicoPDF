@@ -230,7 +230,7 @@ public static class FontExporter
             Minor = 0,
             HeaderSize = 4,
             OffsetSize = 3,
-            Names = [],
+            Names = [font.PostScriptName],
             TopDict = top_dict,
             Strings = [],
             GlobalSubroutines = [],
