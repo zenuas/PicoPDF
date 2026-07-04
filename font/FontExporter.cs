@@ -264,6 +264,24 @@ public static class FontExporter
                         current = line.End;
                         break;
 
+                    case BezierCurve bezier when bezier.ControlPoint.Length == 1:
+                        {
+                            var cp = bezier.ControlPoint[0];
+                            var cp1_x = (cp.X + cp.X + current.X) / 3.0f;
+                            var cp1_y = (cp.Y + cp.Y + current.Y) / 3.0f;
+                            var cp2_x = (cp.X + cp.X + bezier.End.X) / 3.0f;
+                            var cp2_y = (cp.Y + cp.Y + bezier.End.Y) / 3.0f;
+                            char_strings.AddRange(Interpreter.NumberToBytes(cp1_x - current.X));
+                            char_strings.AddRange(Interpreter.NumberToBytes(cp1_y - current.Y));
+                            char_strings.AddRange(Interpreter.NumberToBytes(cp2_x - cp1_x));
+                            char_strings.AddRange(Interpreter.NumberToBytes(cp2_y - cp1_y));
+                            char_strings.AddRange(Interpreter.NumberToBytes(bezier.End.X - cp2_x));
+                            char_strings.AddRange(Interpreter.NumberToBytes(bezier.End.Y - cp2_y));
+                            char_strings.Add((byte)CharstringCommandCodes.Rrcurveto);
+                            current = bezier.End;
+                            break;
+                        }
+
                     case BezierCurve bezier when bezier.ControlPoint.Length == 2:
                         {
                             var cp1 = bezier.ControlPoint[0];
