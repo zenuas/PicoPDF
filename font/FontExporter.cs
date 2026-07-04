@@ -38,7 +38,7 @@ public static class FontExporter
         var tables_pow = (int)Math.Pow(2, Math.Floor(Math.Log2(tables.Count)));
         new OffsetTable
         {
-            SfntVersion = font.Offset.SfntVersion,
+            SfntVersion = fonttypes == FontTypes.TrueType ? 0x00010000u : 0x4F54544Fu,
             NumberOfTables = (ushort)tables.Count,
             SearchRange = (ushort)(tables_pow * 16),
             EntrySelector = (ushort)Math.Log2(tables_pow),
