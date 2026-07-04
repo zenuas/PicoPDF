@@ -166,6 +166,32 @@ public static class FontExporter
                             ycoordinates.Add((short)bezier.End.Y);
                         }
                         break;
+
+                    case BezierCurve bezier when bezier.ControlPoint.Length == 2:
+                        {
+                            var cp1 = bezier.ControlPoint[0];
+                            var cp2 = bezier.ControlPoint[1];
+
+                            var t = 0.75f;
+                            var a1 = bezier.Start + ((cp1 - bezier.Start) * t);
+                            var a2 = bezier.End - ((bezier.End - cp2) * t);
+
+                            flags.Add(0);
+                            xcoordinates.Add((short)a1.X);
+                            ycoordinates.Add((short)a1.Y);
+
+                            flags.Add(0);
+                            xcoordinates.Add((short)a2.X);
+                            ycoordinates.Add((short)a2.Y);
+
+                            if (!bezier.ComplementPoint)
+                            {
+                                flags.Add(SimpleGlyphFlags.ON_CURVE_POINT);
+                                xcoordinates.Add((short)bezier.End.X);
+                                ycoordinates.Add((short)bezier.End.Y);
+                            }
+                            break;
+                        }
                 }
             }
             end_points_of_contours.Add((ushort)(flags.Count - 1));
