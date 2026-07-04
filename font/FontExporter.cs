@@ -230,7 +230,7 @@ public static class FontExporter
             Minor = 0,
             HeaderSize = 4,
             OffsetSize = 3,
-            Names = [font.PostScriptName],
+            Names = [font.PostScriptName], // There must be at least one entry in this INDEX, i.e. the FontSet must contain at least one font.
             TopDict = top_dict,
             Strings = top_dict.Strings,
             GlobalSubroutines = [],
