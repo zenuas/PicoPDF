@@ -241,7 +241,7 @@ public static class JsonLoader
         new()
         {
             Path = node.ToNode("Path").ToString(),
-            Embed = node["Embed"] is { } embed ? Enum.Parse<FontEmbeds>(embed.ToString()) : FontEmbeds.PossibleEmbed,
+            Embed = node["Embed"] is { } embed ? Enum.Parse<FontEmbeds>(embed.ToString()) : FontEmbeds.PossibleEmbed | FontEmbeds.ConvertNone,
         };
 
     public static PageSize LoadPageSize(JsonNode? node)

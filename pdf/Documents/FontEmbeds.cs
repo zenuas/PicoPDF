@@ -5,13 +5,13 @@ namespace Pdf.Documents;
 [Flags]
 public enum FontEmbeds
 {
-    NotEmbed = 1,
     /// <summary>
     /// font emmed, but Restricted License font is not embed.
     /// </summary>
-    PossibleEmbed = 2,
-    ForceEmbed = 3,
-    Stroke = 4,
+    PossibleEmbed = 0,
+    ForceEmbed = 1,
+    NotEmbed = 2,
+    Stroke = 3,
 
     ConvertNone = 0 << 8,
     ConvertToTrueType = 1 << 8,

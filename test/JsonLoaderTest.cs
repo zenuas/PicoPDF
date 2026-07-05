@@ -28,15 +28,23 @@ public class JsonLoaderTest
     {
         var f1 = JsonLoader.ToFontPath(JsonNode.Parse(""" "Arial" """, null, Option)!);
         Assert.Equal(f1.Path, "Arial");
-        Assert.Equal(f1.Embed, FontEmbeds.PossibleEmbed);
+        Assert.Equal(f1.Embed, FontEmbeds.PossibleEmbed | FontEmbeds.ConvertNone);
 
         var f2 = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Times New Roman"}""", null, Option)!);
         Assert.Equal(f2.Path, "Times New Roman");
-        Assert.Equal(f2.Embed, FontEmbeds.PossibleEmbed);
+        Assert.Equal(f2.Embed, FontEmbeds.PossibleEmbed | FontEmbeds.ConvertNone);
 
         var f3 = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Courier New", "Embed": "NotEmbed"}""", null, Option)!);
         Assert.Equal(f3.Path, "Courier New");
-        Assert.Equal(f3.Embed, FontEmbeds.NotEmbed);
+        Assert.Equal(f3.Embed, FontEmbeds.NotEmbed | FontEmbeds.ConvertNone);
+
+        var f4 = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Courier New", "Embed": "ConvertToTrueType"}""", null, Option)!);
+        Assert.Equal(f4.Path, "Courier New");
+        Assert.Equal(f4.Embed, FontEmbeds.PossibleEmbed | FontEmbeds.ConvertToTrueType);
+
+        var f5 = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Courier New", "Embed": "NotEmbed, ConvertToTrueType"}""", null, Option)!);
+        Assert.Equal(f5.Path, "Courier New");
+        Assert.Equal(f5.Embed, FontEmbeds.NotEmbed | FontEmbeds.ConvertToTrueType);
 
         _ = Assert.Throws<ArgumentException>(() => _ = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Arial", "Embed": "None"}""", null, Option)!));
         Assert.Equal(Assert.Throws<NullReferenceException>(() => _ = JsonLoader.ToFontPath(JsonNode.Parse("""{"Embed": "NotEmbed"}""", null, Option)!)).Message, "Element 'Path' was not found.");

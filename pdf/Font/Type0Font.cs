@@ -72,7 +72,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
 
     public string CreateTextShowingOperator(string s) => $"<{s.ToUtf32CharArray().Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";
 
-    public static Type0Font Create(string name, IOpenTypeFont font, FontEmbeds embed = FontEmbeds.PossibleEmbed)
+    public static Type0Font Create(string name, IOpenTypeFont font, FontEmbeds embed = FontEmbeds.PossibleEmbed | FontEmbeds.ConvertNone)
     {
         var flag =
             (font.CMap.EncodingRecords.Contains(x => x.Key.PlatformID == (ushort)Platforms.Windows && x.Key.EncodingID == (ushort)Encodings.Windows_Symbol) ?
