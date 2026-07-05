@@ -232,8 +232,8 @@ public static class JsonLoader
     };
 
     public static FontPath[] ToFontPathArray(JsonNode? node) =>
-        node is JsonValue v ? [new() { Path = (string)v! }] :
         node is JsonArray xs ? [.. xs.Select(x => ToFontPath(x!))] :
+        node is { } ? [ToFontPath(node)] :
         [];
 
     public static FontPath ToFontPath(JsonNode node) =>

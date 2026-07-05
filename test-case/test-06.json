@@ -1,7 +1,7 @@
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
-	"DefaultFont": "test-case/NotoSansCJK-Regular.ttc,0",
+	"DefaultFont": {"Path": "test-case/NotoSansCJK-Regular.ttc,0", "Embed": "ConvertToTrueType"},
 	"Padding": [15, 10, 15],
 	
 	"Header": "PageHeader",
