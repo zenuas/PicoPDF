@@ -53,6 +53,13 @@ public static class FontExporter
             WriteTableRecord(stream, table);
         }
 
+        var maxp = fonttypes switch
+        {
+            FontTypes.TrueType when font.MaximumProfile.Version.Value != 0x0001_0000 => font.MaximumProfile with { Version = 0x0001_0000 },
+            FontTypes.PostScript when font.MaximumProfile.Version.Value != 0x0000_5000 => font.MaximumProfile with { Version = 0x0000_5000 },
+            _ => font.MaximumProfile,
+        };
+
         if (font.Color is { }) ExportTable(stream, start_stream_position, tables["COLR"], font.Color);
         if (font.ColorPalette is { }) ExportTable(stream, start_stream_position, tables["CPAL"], font.ColorPalette);
         if (font.OS2 is { }) ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
@@ -60,7 +67,7 @@ public static class FontExporter
         ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0));
         ExportTable(stream, start_stream_position, tables["hhea"], font.HorizontalHeader);
         ExportTable(stream, start_stream_position, tables["hmtx"], font.HorizontalMetrics);
-        ExportTable(stream, start_stream_position, tables["maxp"], font.MaximumProfile);
+        ExportTable(stream, start_stream_position, tables["maxp"], maxp);
         ExportTable(stream, start_stream_position, tables["name"], font.Name);
         ExportTable(stream, start_stream_position, tables["post"], font.PostScript);
 
