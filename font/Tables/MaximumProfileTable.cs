@@ -27,7 +27,7 @@ public record class MaximumProfileTable : IExportable
         var version = stream.ReadVersion16Dot16();
         var number_of_glyphs = stream.ReadUShortByBigEndian();
 
-        return version.Value != 0x00010000
+        return version.Value != 0x0001_0000
             ? new() { Version = version, NumberOfGlyphs = number_of_glyphs }
             : new()
             {
@@ -54,7 +54,7 @@ public record class MaximumProfileTable : IExportable
         stream.WriteVersion16Dot16(Version);
         stream.WriteUShortByBigEndian(NumberOfGlyphs);
 
-        if (Version.Value == 0x00010000)
+        if (Version.Value == 0x0001_0000)
         {
             stream.WriteUShortByBigEndian(MaxPoints);
             stream.WriteUShortByBigEndian(MaxContours);
