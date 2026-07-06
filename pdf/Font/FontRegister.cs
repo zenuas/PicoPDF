@@ -55,7 +55,7 @@ public class FontRegister : IFontRegister
             {
                 AddFont(name);
             }
-            name = GetFontFilePath(path);
+            name = path.GetPath();
         }
         var prop = Fonts[name];
         var font = FontLoader.LoadComplete(prop.Value);
@@ -64,10 +64,8 @@ public class FontRegister : IFontRegister
     }
 
     public (string Name, IOpenTypeHeader Font)[] GetFonts(bool include_alternative_font = false) => [.. Fonts
-        .Where(x => include_alternative_font || x.Key == GetFontFilePath(x.Value.Value.Path))
+        .Where(x => include_alternative_font || x.Key == x.Value.Value.Path.GetPath())
         .Select(x => (x.Key, x.Value.Value))];
-
-    public static string GetFontFilePath(IFontPath path) => path is FontCollectionPath fc ? $"{Path.GetFullPath(fc.Path)},{fc.Index}" : Path.GetFullPath(path.Path);
 
     public static IFontPath GetFontFilePathValue(string name)
     {
@@ -79,7 +77,7 @@ public class FontRegister : IFontRegister
 
     public bool Add(IOpenTypeHeader font)
     {
-        var name = GetFontFilePath(font.Path);
+        var name = font.Path.GetPath();
         if (Fonts.ContainsKey(name)) return false;
 
         var prop = new PropertyGetSet<IOpenTypeHeader>() { Value = font };

@@ -1,5 +1,4 @@
 ﻿using Mina.Command;
-using Pdf.Font;
 using System;
 
 namespace PicoPDF.TestAll;
@@ -15,7 +14,7 @@ public class CMapList : FontRegisterCommand
 
         foreach (var (name, font) in fontreg.GetFonts(AllFontPreview))
         {
-            var font_complete = fontreg.LoadComplete(FontRegister.GetFontFilePath(font.Path));
+            var font_complete = fontreg.LoadComplete(font.Path.GetPath());
             foreach (var encoding in font_complete.CMap.EncodingRecords)
             {
                 Console.WriteLine($"{name},PlatformID={encoding.Key.PlatformID},EncodingID={encoding.Key.EncodingID},Format={encoding.Value.Format}");

@@ -1,5 +1,4 @@
 ﻿using Mina.Command;
-using Pdf.Font;
 using System;
 
 namespace PicoPDF.TestAll;
@@ -15,7 +14,7 @@ public class FontList : FontRegisterCommand
 
         foreach (var (name, font) in fontreg.GetFonts(AllFontPreview))
         {
-            Console.WriteLine($"{name},\"{FontRegister.GetFontFilePath(font.Path)}\",Offset.SfntVersion=0x{font.Offset.SfntVersion:x8}");
+            Console.WriteLine($"{name},\"{font.Path.GetPath()}\",Offset.SfntVersion=0x{font.Offset.SfntVersion:x8}");
         }
     }
 }

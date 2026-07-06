@@ -25,6 +25,11 @@ public static class FontLoader
         return LoadTableRecordsCollection(path, stream, opt ?? new());
     }
 
+    public static FontTableRecords LoadTableRecords(Stream stream, LoadOption? opt = null)
+    {
+        return LoadTableRecords(new FontStream { Stream = stream }, stream, opt ?? new());
+    }
+
     public static FontTableRecords[] LoadTableRecordsCollection(string path, Stream stream, LoadOption opt)
     {
         var header = TrueTypeCollectionHeader.ReadFrom(stream);
@@ -75,7 +80,7 @@ public static class FontLoader
 
     public static TrueTypeFont LoadTrueTypeFont(IOpenTypeHeader font)
     {
-        var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        var stream = font.Path.Open();
 
         var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
         var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
@@ -133,7 +138,7 @@ public static class FontLoader
 
     public static PostScriptFont LoadPostScriptFont(IOpenTypeHeader font)
     {
-        using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var stream = font.Path.Open();
 
         var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
         var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();
@@ -183,7 +188,7 @@ public static class FontLoader
 
     public static GenericFont LoadNoOutlineFont(IOpenTypeHeader font)
     {
-        using var stream = File.Open(font.Path.Path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var stream = font.Path.Open();
 
         var os2 = ReadTableRecord(font, "OS/2", stream, OS2Table.ReadFrom);
         var cmap = ReadTableRecord(font, "cmap", stream, CMapTable.ReadFrom).Try();

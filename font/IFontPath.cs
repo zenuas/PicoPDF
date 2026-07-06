@@ -1,6 +1,9 @@
-﻿namespace OpenType;
+﻿using System.IO;
+
+namespace OpenType;
 
 public interface IFontPath
 {
-    public string Path { get; init; }
+    public Stream Open();
+    public string GetPath();
 }

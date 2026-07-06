@@ -14,7 +14,7 @@ public class NameRecordList : FontRegisterCommand
 
         foreach (var (_, font) in fontreg.GetFonts(AllFontPreview))
         {
-            var path = $"\"{Escape(font.Path.Path)}\"";
+            var path = $"\"{Escape(font.Path.GetPath())}\"";
             Console.WriteLine($"{path},PostScriptName,\"{Escape(font.PostScriptName)}\"");
             for (var i = 0; i < font.Name.NameRecords.Length; i++)
             {
