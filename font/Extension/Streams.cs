@@ -19,6 +19,7 @@ public static class Streams
     public static void WriteFWORD(this Stream self, FWORD n) => self.WriteShortByBigEndian(n.Value);
     public static void WriteUFWORD(this Stream self, UFWORD n) => self.WriteUShortByBigEndian(n.Value);
     public static void WriteF2DOT14(this Stream self, F2DOT14 n) => self.WriteShortByBigEndian(n.Value);
+    public static void WriteVersion16Dot16(this Stream self, Version16Dot16 n) => self.WriteUIntByBigEndian(n.Value);
     public static void WriteLONGDATETIME(this Stream self, LONGDATETIME n) => self.WriteLongByBigEndian(n.Value);
     public static void WriteTag(this Stream self, string s) => self.Write(s);
 
@@ -33,6 +34,7 @@ public static class Streams
     public static FWORD ReadFWORD(this Stream self) => self.ReadShortByBigEndian();
     public static UFWORD ReadUFWORD(this Stream self) => self.ReadUShortByBigEndian();
     public static F2DOT14 ReadF2DOT14(this Stream self) => self.ReadShortByBigEndian();
+    public static Version16Dot16 ReadVersion16Dot16(this Stream self) => self.ReadUIntByBigEndian();
     public static LONGDATETIME ReadLONGDATETIME(this Stream self) => self.ReadLongByBigEndian();
     public static string ReadTag(this Stream self) => Encoding.ASCII.GetString(self.ReadExactly(4));
 

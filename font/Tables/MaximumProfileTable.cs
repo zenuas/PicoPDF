@@ -1,11 +1,12 @@
 ﻿using Mina.Extension;
+using OpenType.Extension;
 using System.IO;
 
 namespace OpenType.Tables;
 
 public record class MaximumProfileTable : IExportable
 {
-    public required int Version { get; init; }
+    public required Version16Dot16 Version { get; init; }
     public required ushort NumberOfGlyphs { get; init; }
     public ushort MaxPoints { get; init; }
     public ushort MaxContours { get; init; }
@@ -23,10 +24,10 @@ public record class MaximumProfileTable : IExportable
 
     public static MaximumProfileTable ReadFrom(Stream stream)
     {
-        var version = stream.ReadIntByBigEndian();
+        var version = stream.ReadVersion16Dot16();
         var number_of_glyphs = stream.ReadUShortByBigEndian();
 
-        return version != 0x00010000
+        return version.Value != 0x00010000
             ? new() { Version = version, NumberOfGlyphs = number_of_glyphs }
             : new()
             {
@@ -50,10 +51,10 @@ public record class MaximumProfileTable : IExportable
 
     public void WriteTo(Stream stream)
     {
-        stream.WriteIntByBigEndian(Version);
+        stream.WriteVersion16Dot16(Version);
         stream.WriteUShortByBigEndian(NumberOfGlyphs);
 
-        if (Version == 0x00010000)
+        if (Version.Value == 0x00010000)
         {
             stream.WriteUShortByBigEndian(MaxPoints);
             stream.WriteUShortByBigEndian(MaxContours);

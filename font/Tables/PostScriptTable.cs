@@ -6,7 +6,7 @@ namespace OpenType.Tables;
 
 public record class PostScriptTable : IExportable
 {
-    public required uint Version { get; init; }
+    public required Version16Dot16 Version { get; init; }
     public required Fixed ItalicAngle { get; init; }
     public required FWORD UnderlinePosition { get; init; }
     public required FWORD UnderlineThickness { get; init; }
@@ -18,7 +18,7 @@ public record class PostScriptTable : IExportable
 
     public static PostScriptTable ReadFrom(Stream stream) => new()
     {
-        Version = stream.ReadUIntByBigEndian(),
+        Version = stream.ReadVersion16Dot16(),
         ItalicAngle = stream.ReadFixed(),
         UnderlinePosition = stream.ReadFWORD(),
         UnderlineThickness = stream.ReadFWORD(),
@@ -31,7 +31,7 @@ public record class PostScriptTable : IExportable
 
     public void WriteTo(Stream stream)
     {
-        stream.WriteUIntByBigEndian(Version);
+        stream.WriteVersion16Dot16(Version);
         stream.WriteFixed(ItalicAngle);
         stream.WriteFWORD(UnderlinePosition);
         stream.WriteFWORD(UnderlineThickness);
