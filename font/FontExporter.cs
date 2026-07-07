@@ -72,8 +72,8 @@ public static class FontExporter
                     {
                         Version = 0x0001_0000,
                         NumberOfGlyphs = (ushort)glyphs.Length,
-                        MaxPoints = (ushort)glyphs.OfType<SimpleGlyph>().Max(x => x.Flags.Length),
-                        MaxContours = (ushort)glyphs.OfType<SimpleGlyph>().Max(x => x.EndPointsOfContours.Length),
+                        MaxPoints = (ushort)glyphs.OfType<SimpleGlyph>().Select(x => x.Flags.Length).Max(),
+                        MaxContours = (ushort)glyphs.OfType<SimpleGlyph>().Select(x => x.NumberOfContours).Max(),
                         MaxZones = 1,
                     });
                     break;
