@@ -1,5 +1,4 @@
 ﻿using Mina.Command;
-using Mina.Extension;
 using Pdf.Documents;
 using Pdf.Documents.Security;
 using Pdf.Drawing;
@@ -18,84 +17,68 @@ public class EncryptCreate : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
 
-        var encrypt1 = StandardEncryption4.Create(CFM.None, "xyz987", "abc123", UserAccessPermissions.Default, Document.GenerateID());
-        var document1 = new Document()
-        {
-            Version = 17,
-            FontRegister = fontreg,
-            Encrypt = encrypt1,
-            DocumentID = (encrypt1.DocumentID, encrypt1.DocumentID),
-        };
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientations.Horizontal);
-        document1.Catalog.Elements.Add("Metadata", new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" }.Return(document1.Catalog.RelatedObjects.Add));
+        var document1 = PdfFactory.Create(new()
+        {
+            CreateFontRegister = () => fontreg,
+            CreateStandardEncryption = () => StandardEncryption4.Create(CFM.None, "xyz987", "abc123", UserAccessPermissions.Default, Document.GenerateID()),
+            CreateMetadata = () => new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" },
+        });
         var page1 = document1.NewPage(width, height);
         page1.Contents.Operations.Add(new DrawLine { Points = [(new PointValue(50), new PointValue(75)), (new PointValue(100), new PointValue(125))], LineWidth = new PointValue(10) });
         document1.Save($"{WorkDirectory}/encrypt-none17-create.pdf", new() { ContentsStreamDeflate = false });
 
-        var encrypt2 = StandardEncryption6.Create(CFM.None, "xyz987", "abc123", UserAccessPermissions.Default);
-        var document2 = new Document()
+        var document2 = PdfFactory.Create(new()
         {
-            Version = 20,
-            FontRegister = fontreg,
-            Encrypt = encrypt2,
-        };
-        document2.Catalog.Elements.Add("Metadata", new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" }.Return(document2.Catalog.RelatedObjects.Add));
+            CreateFontRegister = () => fontreg,
+            CreateStandardEncryption = () => StandardEncryption6.Create(CFM.None, "xyz987", "abc123", UserAccessPermissions.Default),
+            CreateMetadata = () => new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" },
+        });
         var page2 = document2.NewPage(width, height);
         page2.Contents.Operations.Add(new DrawLine { Points = [(new PointValue(50), new PointValue(75)), (new PointValue(100), new PointValue(125))], LineWidth = new PointValue(10) });
         document2.Save($"{WorkDirectory}/encrypt-none20-create.pdf", new() { ContentsStreamDeflate = false });
 
-        var encrypt3 = StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, Document.GenerateID());
-        var document3 = new Document()
+        var document3 = PdfFactory.Create(new()
         {
-            Version = 17,
-            FontRegister = fontreg,
-            Encrypt = encrypt3,
-            DocumentID = (encrypt3.DocumentID, encrypt3.DocumentID),
-        };
-        document3.Catalog.Elements.Add("Metadata", new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" }.Return(document3.Catalog.RelatedObjects.Add));
+            CreateFontRegister = () => fontreg,
+            CreateStandardEncryption = () => StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, Document.GenerateID()),
+            CreateMetadata = () => new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" },
+        });
         _ = document3.NewPage(width, height);
         document3.Save($"{WorkDirectory}/encrypt-aesv2-create.pdf", new() { ContentsStreamDeflate = false });
 
-        var encrypt4 = StandardEncryption6.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default);
-        var document4 = new Document()
+        var document4 = PdfFactory.Create(new()
         {
-            Version = 20,
-            FontRegister = fontreg,
-            Encrypt = encrypt4,
-        };
-        document4.Catalog.Elements.Add("Metadata", new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" }.Return(document4.Catalog.RelatedObjects.Add));
+            CreateFontRegister = () => fontreg,
+            CreateStandardEncryption = () => StandardEncryption6.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default),
+            CreateMetadata = () => new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" },
+        });
         _ = document4.NewPage(width, height);
         document4.Save($"{WorkDirectory}/encrypt-aesv3-create.pdf", new() { ContentsStreamDeflate = false });
 
-        var encrypt5 = StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, Document.GenerateID(), false);
-        var document5 = new Document()
+        var document5 = PdfFactory.Create(new()
         {
-            Version = 17,
-            FontRegister = fontreg,
-            Encrypt = encrypt5,
-            DocumentID = (encrypt5.DocumentID, encrypt5.DocumentID),
-        };
-        document5.Catalog.Elements.Add("Metadata", new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" }.Return(document5.Catalog.RelatedObjects.Add));
+            CreateFontRegister = () => fontreg,
+            CreateStandardEncryption = () => StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, Document.GenerateID(), false),
+            CreateMetadata = () => new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" },
+        });
         _ = document5.NewPage(width, height);
         document5.Save($"{WorkDirectory}/encrypt-aesv2-create-nometaencrypted.pdf", new() { ContentsStreamDeflate = false });
 
-        var encrypt6 = StandardEncryption6.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default, false);
-        var document6 = new Document()
+        var document6 = PdfFactory.Create(new()
         {
-            Version = 20,
-            FontRegister = fontreg,
-            Encrypt = encrypt6,
-        };
-        document6.Catalog.Elements.Add("Metadata", new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" }.Return(document6.Catalog.RelatedObjects.Add));
+            CreateFontRegister = () => fontreg,
+            CreateStandardEncryption = () => StandardEncryption6.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default, false),
+            CreateMetadata = () => new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" },
+        });
         _ = document6.NewPage(width, height);
         document6.Save($"{WorkDirectory}/encrypt-aesv3-create-nometaencrypted.pdf", new() { ContentsStreamDeflate = false });
 
-        var document7 = new Document()
+        var document7 = PdfFactory.Create(new()
         {
-            Version = 17,
-            FontRegister = fontreg,
-        };
-        document7.Catalog.Elements.Add("Metadata", new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" }.Return(document7.Catalog.RelatedObjects.Add));
+            CreateFontRegister = () => fontreg,
+            CreateMetadata = () => new XmpMetadata() { CreateDate = DateTime.Now, Keywords = "keyword" },
+        });
         _ = document7.NewPage(width, height);
         document7.Save($"{WorkDirectory}/encrypt-noencrypt-create.pdf", new() { ContentsStreamDeflate = false });
     }
