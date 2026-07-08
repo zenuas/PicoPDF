@@ -19,6 +19,16 @@ public static class PdfFactory
     public static Document Create(string json, Func<PageSection, PageModel[]> pages, PdfEventOption? option = null)
     {
         var opt = option ?? new();
+        var document = Create(opt);
+        ModelMapping.Mapping(document, pages(JsonLoader.CreatePageFromJsonFile(json, opt)), opt);
+        return document;
+    }
+
+    public static Document Create() => Create(new());
+
+    public static Document Create(PdfEventOption option)
+    {
+        var opt = option ?? new();
         var encrypt = opt.CreateStandardEncryption();
         var meta = opt.CreateMetadata();
         var document = new Document
@@ -34,7 +44,6 @@ public static class PdfFactory
             document.Catalog.RelatedObjects.Add(xmp);
             document.Catalog.Elements.Add("Metadata", xmp);
         }
-        ModelMapping.Mapping(document, pages(JsonLoader.CreatePageFromJsonFile(json, opt)), opt);
         return document;
     }
 }
