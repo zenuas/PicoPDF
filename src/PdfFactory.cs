@@ -33,7 +33,7 @@ public static class PdfFactory
         var meta = opt.CreateMetadata();
         var document = new Document
         {
-            Version = encrypt is StandardEncryption6 ? 20 : 17,
+            Version = opt.PDFVersion ?? (encrypt is StandardEncryption6 ? 20 : 17),
             FontRegister = opt.CreateFontRegister(),
             Encrypt = encrypt,
             Info = meta is TrailerInfo info ? info : null,

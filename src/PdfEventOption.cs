@@ -13,6 +13,7 @@ namespace PicoPDF;
 
 public class PdfEventOption
 {
+    public int? PDFVersion = null;
     public Func<IFontRegister> CreateFontRegister { get; init; } = () => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetFontDirectories()]));
     public Func<IStandardEncryption?> CreateStandardEncryption { get; init; } = () => null;
     public Func<IMetadata?> CreateMetadata { get; init; } = () => null;
