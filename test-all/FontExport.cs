@@ -20,26 +20,8 @@ public class FontExport : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
         var font = fontreg.LoadComplete(Font);
-        var fontextract = FontExtract.Extract(font, CreateOption(args.Join()));
+        var fontextract = FontExtract.Extract(font, new FontExtractOption { ExtractChars = [.. args.Join().ToUtf32CharArray()] });
         using var stream = new FileStream(Output, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
         FontExporter.Export(fontextract, FontType, stream);
     }
-
-    public static FontExtractOption CreateOption(string export_chars) => new()
-    {
-        ExtractChars = [.. export_chars.ToUtf32CharArray()],
-        OutputNames = [
-            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontFamilyName),
-            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FontSubfamilyName),
-            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.UniqueFontIdentifier),
-            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.FullFontName),
-            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.Version),
-            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, null, NameIDs.PostScriptName),
-        ],
-        OutputCMap = [
-            new(Platforms.Unicode, Encodings.Unicode2_0_FullRepertoire, CMapFormats.Format12),
-            new(Platforms.Windows, Encodings.Windows_UnicodeBMP, CMapFormats.Format4),
-            new(Platforms.Windows, Encodings.Windows_UnicodeFullRepertoire, CMapFormats.Format12),
-        ],
-    };
 }
