@@ -2,9 +2,11 @@
 using OpenType.Tables;
 using OpenType.Tables.CMap;
 using OpenType.Tables.Colr;
+using Svg.Outline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace OpenType;
 
@@ -14,10 +16,38 @@ public static class FontExtract
     {
         var outputs = CreateCharToGIDMetrics(font, [.. opt.ExtractChars.Order()], opt.IsColorSupport);
         var char_gids = outputs[0..opt.ExtractChars.Length].Select(x => (x.Char, x.NewGID)).ToArray();
-        var gid_glyph = outputs.ToDictionary(x => x.NewGID, x => (Outline: font.GIDToOutline(x.OldGID, false), x.HorizontalMetrics));
-        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0]));
+        var gid_glyph = outputs.ToDictionary(x => x.NewGID, x =>
+        {
+            var outline = font.GIDToOutline(x.OldGID, false);
+            var points = EnumAllPoints(outline).ToArray();
+            return (
+                Outline: outline,
+                x.HorizontalMetrics,
+                Notdef: points.Length == 0,
+                Ascender: points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
+                Descender: points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
+                XMin: points.Length > 0 ? points.Select(x => x.X).Min() : 0f,
+                XMax: points.Length > 0 ? points.Select(x => x.X).Max() : 0f
+            );
+        });
+        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], true, 0f, 0f, 0f, 0f));
         var num_of_glyph_include_notdef = (int)gid_glyph.Keys.Max() + 1;
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
+
+        var hmetrics = Lists.RangeTo(0, num_of_glyph_include_notdef)
+            .Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
+            .ToArray();
+
+        var hhea = font.HorizontalHeader with
+        {
+            Ascender = (int)gid_glyph.Values.Select(x => x.Ascender).Max(),
+            Descender = (int)gid_glyph.Values.Select(x => x.Descender).Min(),
+            AdvanceWidthMax = hmetrics.Select(x => x.AdvanceWidth.Value).Max(),
+            MinLeftSideBearing = gid_glyph.Values.Where(x => !x.Notdef).Select(x => x.HorizontalMetrics.LeftSideBearing.Value).Min(),
+            MinRightSideBearing = (int)gid_glyph.Values.Where(x => !x.Notdef).Select(x => x.HorizontalMetrics.AdvanceWidth.Value - (x.HorizontalMetrics.LeftSideBearing.Value + x.XMax - x.XMin)).Min(),
+            XMaxExtent = (int)gid_glyph.Values.Select(x => x.HorizontalMetrics.LeftSideBearing.Value + (x.XMax - x.XMin)).Max(),
+            NumberOfHMetrics = (ushort)num_of_glyph_include_notdef,
+        };
 
         GenericFont newfont = null!;
         return newfont = new()
@@ -32,8 +62,8 @@ public static class FontExtract
             MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)num_of_glyph_include_notdef },
             PostScript = font.PostScript,
             OS2 = font.OS2,
-            HorizontalHeader = font.HorizontalHeader with { NumberOfHMetrics = (ushort)num_of_glyph_include_notdef },
-            HorizontalMetrics = new() { Metrics = [.. Lists.RangeTo(0, num_of_glyph_include_notdef).Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])], LeftSideBearing = [] },
+            HorizontalHeader = hhea,
+            HorizontalMetrics = new() { Metrics = hmetrics, LeftSideBearing = [] },
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? gid_glyph[gid].Outline,
@@ -72,6 +102,25 @@ public static class FontExtract
     {
         var dict = char_gids.ToDictionary(x => x.Char, x => x.GID);
         return c => dict.TryGetValue(c, out var gid) ? gid : 0;
+    }
+    public static IEnumerable<Vector2> EnumAllPoints(IOutline[] outlines)
+    {
+        foreach (var edge in outlines.OfType<Surface>().Select(x => x.Edges).Flatten())
+        {
+            switch (edge)
+            {
+                case Line line:
+                    yield return line.Start;
+                    yield return line.End;
+                    break;
+
+                case BezierCurve bezier:
+                    yield return bezier.Start;
+                    foreach (var cp in bezier.ControlPoint) yield return cp;
+                    yield return bezier.End;
+                    break;
+            }
+        }
     }
 
     public static CMapTable CreateCMapTable(FontExtractOption opt, (int Char, uint GID)[] char_gids)
