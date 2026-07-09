@@ -71,7 +71,7 @@ public class PdfCreate : FontRegisterCommand
             {
                 if (section.IsHeightAdjusting)
                 {
-                    var dummy_document = new Document() { FontRegister = fontreg };
+                    var dummy_document = PdfFactory.Create(new() { CreateFontRegister = () => fontreg });
                     var multilines = section.Elements
                         .OfType<TextModel>()
                         .Where(x => x.Style.HasFlag(TextStyles.MultiLine) && !x.Style.HasFlag(TextStyles.Clipping));

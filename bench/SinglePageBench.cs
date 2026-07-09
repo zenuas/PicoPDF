@@ -57,7 +57,7 @@ public class SinglePageBench
 
     public static Document CreateSinglePage<T>(IEnumerable<T> datas, Dictionary<string, Func<T, object>> mapper)
     {
-        var document = new Document() { FontRegister = FontRegister };
+        var document = PdfFactory.Create(new() { CreateFontRegister = () => FontRegister });
         var pages = SectionBinder.Bind<T, PageModel, SectionModel>(PageSection, datas, mapper);
         ModelMapping.Mapping(document, pages, new());
         return document;
@@ -65,7 +65,7 @@ public class SinglePageBench
 
     public static Document CreateSinglePage<T>(IEnumerable<T> datas)
     {
-        var document = new Document() { FontRegister = FontRegister };
+        var document = PdfFactory.Create(new() { CreateFontRegister = () => FontRegister });
         var pages = SectionBinder.Bind<T, PageModel, SectionModel>(PageSection, datas);
         ModelMapping.Mapping(document, pages, new());
         return document;
@@ -73,7 +73,7 @@ public class SinglePageBench
 
     public static Document CreateSinglePage(DataTable table)
     {
-        var document = new Document() { FontRegister = FontRegister };
+        var document = PdfFactory.Create(new() { CreateFontRegister = () => FontRegister });
         var pages = SectionBinder.Bind<PageModel, SectionModel>(PageSection, table);
         ModelMapping.Mapping(document, pages, new());
         return document;

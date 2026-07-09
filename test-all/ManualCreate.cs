@@ -12,7 +12,7 @@ public class ManualCreate : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
 
-        var document = new Document() { FontRegister = fontreg };
+        var document = PdfFactory.Create(new() { CreateFontRegister = () => fontreg });
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientations.Horizontal);
         var page = document.NewPage(width, height);
 
