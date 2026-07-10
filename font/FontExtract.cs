@@ -27,10 +27,11 @@ public static class FontExtract
                 Ascender: points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
                 Descender: points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
                 XMin: points.Length > 0 ? points.Select(x => x.X).Min() : 0f,
-                XMax: points.Length > 0 ? points.Select(x => x.X).Max() : 0f
+                XMax: points.Length > 0 ? points.Select(x => x.X).Max() : 0f,
+                CharIndex: Math.Min(x.Char, 0xFFFF)
             );
         });
-        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], true, 0f, 0f, 0f, 0f));
+        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], true, 0f, 0f, 0f, 0f, 0));
         var num_of_glyph_include_notdef = (int)gid_glyph.Keys.Max() + 1;
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
@@ -57,6 +58,16 @@ public static class FontExtract
             NumberOfHMetrics = (ushort)num_of_glyph_include_notdef,
         };
 
+        var os2 = font.OS2 is null ? null : font.OS2 with
+        {
+            UsFirstCharIndex = (ushort)gid_glyph.Values.Select(x => x.CharIndex).Min(),
+            UsLastCharIndex = (ushort)gid_glyph.Values.Select(x => x.CharIndex).Max(),
+            STypoAscender = head.YMax,
+            STypoDescender = head.YMin,
+            UsWinAscent = head.YMax,
+            UsWinDescent = head.YMin,
+        };
+
         GenericFont newfont = null!;
         return newfont = new()
         {
@@ -69,7 +80,7 @@ public static class FontExtract
             FontHeader = head,
             MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)num_of_glyph_include_notdef },
             PostScript = font.PostScript,
-            OS2 = font.OS2,
+            OS2 = os2,
             HorizontalHeader = hhea,
             HorizontalMetrics = new() { Metrics = hmetrics, LeftSideBearing = [] },
             CMap = CreateCMapTable(opt, char_gids),
