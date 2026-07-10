@@ -36,7 +36,7 @@ public static class FontExtract
         var num_of_glyph_include_notdef = (int)gid_glyph.Keys.Max() + 1;
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
-        var hmetrics = Lists.RangeTo(0, num_of_glyph_include_notdef)
+        var hmetrics = Lists.RangeTo(0, num_of_glyph_include_notdef - 1)
             .Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
             .ToArray();
 
