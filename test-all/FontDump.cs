@@ -1,6 +1,7 @@
 ﻿using Mina.Command;
 using Mina.Extension;
 using OpenType;
+using OpenType.Tables.PostScript;
 using System;
 using System.Linq;
 
@@ -158,5 +159,106 @@ public class FontDump : FontRegisterCommand
         //var hmtx = font.HorizontalMetrics;
         //var cmap4 = font.CMap;
         //var cmap4_range = font.CMap4;
+
+        if (font is PostScriptFont ps)
+        {
+            var cff = ps.CompactFontFormat;
+            Console.WriteLine($"cff,Major,{cff.Major}");
+            Console.WriteLine($"cff,Minor,{cff.Minor}");
+            Console.WriteLine($"cff,HeaderSize,{cff.HeaderSize}");
+            Console.WriteLine($"cff,OffsetSize,{cff.OffsetSize}");
+            for (var i = 0; i < cff.Names.Length; i++)
+            {
+                Console.WriteLine($"cff,Names[{i}],{cff.Names[i]}");
+            }
+            DumpTopDict("cff,TopDict", cff.TopDict);
+            for (var i = 0; i < cff.Strings.Length; i++)
+            {
+                Console.WriteLine($"cff,Strings[{i}],{cff.Strings[i]}");
+            }
+        }
     }
+
+    public static void DumpTopDict(string prefix, TopDict top_dict)
+    {
+        DumpTopDict(prefix, top_dict, TopDictOperators.Version);
+        DumpTopDict(prefix, top_dict, TopDictOperators.Notice);
+        DumpTopDict(prefix, top_dict, TopDictOperators.Copyright);
+        DumpTopDict(prefix, top_dict, TopDictOperators.FullName);
+        DumpTopDict(prefix, top_dict, TopDictOperators.FamilyName);
+        DumpTopDict(prefix, top_dict, TopDictOperators.Weight);
+        DumpTopDict(prefix, top_dict, TopDictOperators.IsFixedPitch);
+        DumpTopDict(prefix, top_dict, TopDictOperators.ItalicAngle);
+        DumpTopDict(prefix, top_dict, TopDictOperators.UnderlinePosition);
+        DumpTopDict(prefix, top_dict, TopDictOperators.UnderlineThickness);
+        DumpTopDict(prefix, top_dict, TopDictOperators.PaintType);
+        DumpTopDict(prefix, top_dict, TopDictOperators.CharstringType);
+        DumpTopDict(prefix, top_dict, TopDictOperators.FontMatrix);
+        DumpTopDict(prefix, top_dict, TopDictOperators.UniqueID);
+        DumpTopDict(prefix, top_dict, TopDictOperators.FontBBox);
+        DumpTopDict(prefix, top_dict, TopDictOperators.StrokeWidth);
+        DumpTopDict(prefix, top_dict, TopDictOperators.XUID);
+        DumpTopDict(prefix, top_dict, TopDictOperators.Charset);
+        DumpTopDict(prefix, top_dict, TopDictOperators.Encoding);
+        DumpTopDict(prefix, top_dict, TopDictOperators.CharStrings);
+        DumpTopDict(prefix, top_dict, TopDictOperators.Private);
+        DumpTopDict(prefix, top_dict, TopDictOperators.SyntheticBase);
+        DumpTopDict(prefix, top_dict, TopDictOperators.PostScript);
+        DumpTopDict(prefix, top_dict, TopDictOperators.BaseFontName);
+        DumpTopDict(prefix, top_dict, TopDictOperators.BaseFontBlend);
+        DumpTopDict(prefix, top_dict, TopDictOperators.ROS);
+        DumpTopDict(prefix, top_dict, TopDictOperators.CIDFontVersion);
+        DumpTopDict(prefix, top_dict, TopDictOperators.CIDFontRevision);
+        DumpTopDict(prefix, top_dict, TopDictOperators.CIDFontType);
+        DumpTopDict(prefix, top_dict, TopDictOperators.CIDCount);
+        DumpTopDict(prefix, top_dict, TopDictOperators.UIDBase);
+        DumpTopDict(prefix, top_dict, TopDictOperators.FDArray);
+        DumpTopDict(prefix, top_dict, TopDictOperators.FDSelect);
+        DumpTopDict(prefix, top_dict, TopDictOperators.FontName);
+
+        if (top_dict.PrivateDict is { } private_dict)
+        {
+            DumpPrivateDict($"{prefix},PrivateDict", private_dict);
+        }
+
+        for (var i = 0; i < top_dict.FontDictArray.Length; i++)
+        {
+            var fd = top_dict.FontDictArray[i];
+            DumpTopDict($"{prefix},FontDictArray[{i}]", fd);
+        }
+    }
+
+    public static void DumpPrivateDict(string prefix, PrivateDict private_dict)
+    {
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.BlueValues);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.OtherBlues);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.FamilyBlues);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.FamilyOtherBlues);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.BlueScale);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.BlueShift);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.BlueFuzz);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.StdHW);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.StdVW);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.StemSnapH);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.StemSnapV);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.ForceBold);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.LanguageGroup);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.ExpansionFactor);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.InitialRandomSeed);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.Subrs);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.DefaultWidthX);
+        DumpPrivateDict(prefix, private_dict, PrivateDictOperators.NominalWidthX);
+    }
+
+    public static void DumpTopDict(string prefix, TopDict top_dict, TopDictOperators op)
+    {
+        if (top_dict.Dict.TryGetValue(op, out var x)) Console.WriteLine($"{prefix},{op},{ToString(x)}");
+    }
+
+    public static void DumpPrivateDict(string prefix, PrivateDict private_dict, PrivateDictOperators op)
+    {
+        if (private_dict.Dict.TryGetValue(op, out var x)) Console.WriteLine($"{prefix},{op},{ToString(x)}");
+    }
+
+    public static string ToString(IntOrDouble[] array) => array.Select(x => x.ToString()).Join(",");
 }
