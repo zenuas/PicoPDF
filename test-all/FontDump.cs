@@ -25,7 +25,7 @@ public class FontDump : FontRegisterCommand
         Console.WriteLine($"head,MinorVersion,{head.MinorVersion}");
         Console.WriteLine($"head,FontRevision,{head.FontRevision}");
         Console.WriteLine($"head,ChecksumAdjustment,{head.ChecksumAdjustment}");
-        Console.WriteLine($"head,MagicNumber,{head.MagicNumber}");
+        Console.WriteLine($"head,MagicNumber,0x{head.MagicNumber:x8}");
         Console.WriteLine($"head,Flags,{head.Flags}");
         Console.WriteLine($"head,UnitsPerEm,{head.UnitsPerEm}");
         Console.WriteLine($"head,Created,{head.Created.ToDateTime()}");
