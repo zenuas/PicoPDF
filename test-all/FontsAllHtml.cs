@@ -49,7 +49,7 @@ public class FontsAllHtml : SvgOutput
 """);
         foreach (var (name, _) in fontreg.GetFonts())
         {
-            var font = fontreg.LoadComplete(name);
+            var font = fontreg.LoadFont(name);
             var gid = font.CharToGID(Char);
             if (gid == 0) continue;
 

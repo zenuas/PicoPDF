@@ -12,10 +12,10 @@ public class CMapList : FontRegisterCommand
     {
         var fontreg = CreateFontRegister();
 
-        foreach (var (name, font) in fontreg.GetFonts(AllFontPreview))
+        foreach (var (name, _) in fontreg.GetFonts(AllFontPreview))
         {
-            var font_complete = fontreg.LoadComplete(font.Path.GetPath());
-            foreach (var encoding in font_complete.CMap.EncodingRecords)
+            var font = fontreg.LoadFont(name);
+            foreach (var encoding in font.CMap.EncodingRecords)
             {
                 Console.WriteLine($"{name},PlatformID={encoding.Key.PlatformID},EncodingID={encoding.Key.EncodingID},Format={encoding.Value.Format}");
             }

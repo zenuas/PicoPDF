@@ -14,7 +14,7 @@ public class FontHtml : SvgOutput
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister();
-        var font = fontreg.LoadComplete(Font);
+        var font = fontreg.LoadFont(Font);
 
         OutputHtml(font,
             args.Length == 0 ?

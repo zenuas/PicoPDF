@@ -15,7 +15,7 @@ public class FontDump : FontRegisterCommand
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister();
-        var font = fontreg.LoadComplete(Font);
+        var font = fontreg.LoadFont(Font);
         Dump(font);
     }
 

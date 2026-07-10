@@ -19,7 +19,7 @@ public class FontExport : FontRegisterCommand
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister();
-        var font = fontreg.LoadComplete(Font);
+        var font = fontreg.LoadFont(Font);
         var fontextract = FontExtract.Extract(font, new FontExtractOption { ExtractChars = [.. args.Join().ToUtf32CharArray()] });
         using var stream = new FileStream(Output, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
         FontExporter.Export(fontextract, FontType, stream);

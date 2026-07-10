@@ -73,7 +73,7 @@ public static class FontLoader
         };
     }
 
-    public static IOpenTypeFont LoadComplete(IOpenTypeHeader font) => font is IOpenTypeFont opentype ? opentype :
+    public static IOpenTypeFont LoadFont(IOpenTypeHeader font) => font is IOpenTypeFont opentype ? opentype :
         font.Offset.ContainCFF() ? LoadPostScriptFont(font) :
         font.TableRecords.ContainsKey("loca") && font.TableRecords.ContainsKey("glyf") ? LoadTrueTypeFont(font) :
         LoadNoOutlineFont(font);

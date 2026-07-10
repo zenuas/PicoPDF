@@ -16,7 +16,7 @@ public class ColorDump : FontRegisterCommand
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister();
-        var font = fontreg.LoadComplete(Font);
+        var font = fontreg.LoadFont(Font);
 
         if (font.Color is null) return;
 

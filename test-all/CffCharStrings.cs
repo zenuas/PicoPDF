@@ -17,7 +17,7 @@ public class CffCharStrings : FontRegisterCommand
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister();
-        var font = fontreg.LoadComplete(Font).Cast<PostScriptFont>();
+        var font = fontreg.LoadFont(Font).Cast<PostScriptFont>();
 
         var cff = font.CompactFontFormat;
         var global_bias = Interpreter.GetSubroutineBias(cff.GlobalSubroutines.Length);

@@ -32,7 +32,7 @@ public class ManualArgsCreate : FontRegisterCommand
 
         var document = PdfFactory.Create(new() { CreateFontRegister = () => fontreg });
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientations.Horizontal);
-        var font = Type0Font.Create("fo", fontreg.LoadComplete(Font), FontEmbed);
+        var font = Type0Font.Create("fo", fontreg.LoadFont(Font), FontEmbed);
         document.Fonts.Add(font);
         foreach (var arg in args)
         {

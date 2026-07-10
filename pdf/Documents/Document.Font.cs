@@ -16,7 +16,7 @@ public partial class Document
         {
             var namekey = $"{name};{embed}";
             if (fontcache.TryGetValue(namekey, out var value)) return value;
-            var x = Type0Font.Create($"F{fontcache.Count}", FontRegister.LoadComplete(name), embed);
+            var x = Type0Font.Create($"F{fontcache.Count}", FontRegister.LoadFont(name), embed);
             Fonts.Add(x);
             fontcache.Add(namekey, x);
             return x;

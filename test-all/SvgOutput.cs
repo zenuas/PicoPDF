@@ -43,7 +43,7 @@ public class SvgOutput : FontRegisterCommand
     public override void Run(string[] args)
     {
         var fontreg = CreateFontRegister();
-        var font = fontreg.LoadComplete(Font);
+        var font = fontreg.LoadFont(Font);
         OutputSvg(font, [.. args.Select(arg => arg.ToUtf32CharArray().Select(x => (x, font.CharToGID(x))).ToArray())], "c");
         Output.Flush();
     }

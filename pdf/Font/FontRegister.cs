@@ -40,7 +40,7 @@ public class FontRegister : IFontRegister
 
     public void RegisterDirectory(params string[] paths) => RegisterDirectory(null, paths);
 
-    public IOpenTypeFont LoadComplete(string name)
+    public IOpenTypeFont LoadFont(string name)
     {
         if (Fonts.TryGetValue(name, out var fontdata) && fontdata.Value is IOpenTypeFont x) return x;
 
@@ -58,7 +58,7 @@ public class FontRegister : IFontRegister
             name = path.GetPath();
         }
         var prop = Fonts[name];
-        var font = FontLoader.LoadComplete(prop.Value);
+        var font = FontLoader.LoadFont(prop.Value);
         prop.Value = font;
         return font;
     }
