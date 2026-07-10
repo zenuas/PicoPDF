@@ -38,10 +38,18 @@ public static class FontExtract
             .Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.HorizontalMetrics : font.HorizontalMetrics.Metrics[0])
             .ToArray();
 
+        var head = font.FontHeader with
+        {
+            XMin = (short)gid_glyph.Values.Select(x => x.XMin).Min(),
+            YMin = (short)gid_glyph.Values.Select(x => x.Descender).Min(),
+            XMax = (short)gid_glyph.Values.Select(x => x.XMax).Max(),
+            YMax = (short)gid_glyph.Values.Select(x => x.Ascender).Max(),
+        };
+
         var hhea = font.HorizontalHeader with
         {
-            Ascender = (int)gid_glyph.Values.Select(x => x.Ascender).Max(),
-            Descender = (int)gid_glyph.Values.Select(x => x.Descender).Min(),
+            Ascender = head.YMax,
+            Descender = head.YMin,
             AdvanceWidthMax = hmetrics.Select(x => x.AdvanceWidth.Value).Max(),
             MinLeftSideBearing = gid_glyph.Values.Where(x => !x.Notdef).Select(x => x.HorizontalMetrics.LeftSideBearing.Value).Min(),
             MinRightSideBearing = (int)gid_glyph.Values.Where(x => !x.Notdef).Select(x => x.HorizontalMetrics.AdvanceWidth.Value - (x.HorizontalMetrics.LeftSideBearing.Value + x.XMax - x.XMin)).Min(),
@@ -58,7 +66,7 @@ public static class FontExtract
             TableRecords = font.TableRecords,
             Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
-            FontHeader = font.FontHeader,
+            FontHeader = head,
             MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)num_of_glyph_include_notdef },
             PostScript = font.PostScript,
             OS2 = font.OS2,
