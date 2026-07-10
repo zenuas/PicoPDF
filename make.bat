@@ -48,13 +48,17 @@
 	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile -- %*
 	@exit /b %ERRORLEVEL%
 
+:run
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %*
+	@exit /b %ERRORLEVEL%
+
 :sample
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile            -- %* create --work-directory docs/sample --register-user-font docs/sample --debug false --contents-deflate true --cmap-deflate true
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %* font-export --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.ttf abc
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %* font-export --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.otf abc
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %* manual-args --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.pdf TTF-subset
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %* manual-args --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.pdf CFF-subset
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %* encrypt --work-directory docs/sample
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile            -- create --work-directory docs/sample --register-user-font docs/sample --debug false --contents-deflate true --cmap-deflate true
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- font-export --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.ttf abc
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- font-export --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.otf abc
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- manual-args --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.pdf TTF-subset
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- manual-args --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.pdf CFF-subset
+	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- encrypt --work-directory docs/sample
 	@exit /b %ERRORLEVEL%
 
 :bench
@@ -67,7 +71,7 @@
 	@call :setenv VERSION_FILE "powershell -Command Get-Date -Format yyyyMMdd"
 	@call :setenv VERSION_NAME "powershell -Command Get-Date -Format yyyy.M.d"
 	@call :setenv BUILD_NAME   "powershell -Command Get-Date -Format HHmm"
-	@set      VERSION=%VERSION_NAME%
+	@set VERSION=%VERSION_NAME%
 	git tag %VERSION%
 	git push origin %VERSION%
 	gh release create %VERSION% %PROJ%-lib-%VERSION_FILE%.zip -t %VERSION% > nul
