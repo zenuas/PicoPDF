@@ -23,15 +23,16 @@ public static class FontExtract
             return (
                 Outline: outline,
                 x.HorizontalMetrics,
-                Notdef: points.Length == 0,
+                NoOutline: points.Length == 0,
+                Notdef: false,
                 Ascender: points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
                 Descender: points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
                 XMin: points.Length > 0 ? points.Select(x => x.X).Min() : 0f,
                 XMax: points.Length > 0 ? points.Select(x => x.X).Max() : 0f,
-                CharIndex: Math.Min(x.Char, 0xFFFF)
+                x.Char
             );
         });
-        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], true, 0f, 0f, 0f, 0f, 0));
+        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], true, true, 0f, 0f, 0f, 0f, 0));
         var num_of_glyph_include_notdef = (int)gid_glyph.Keys.Max() + 1;
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
@@ -52,16 +53,17 @@ public static class FontExtract
             Ascender = head.YMax,
             Descender = head.YMin,
             AdvanceWidthMax = hmetrics.Select(x => x.AdvanceWidth.Value).Max(),
-            MinLeftSideBearing = gid_glyph.Values.Where(x => !x.Notdef).Select(x => x.HorizontalMetrics.LeftSideBearing.Value).Min(),
-            MinRightSideBearing = (int)gid_glyph.Values.Where(x => !x.Notdef).Select(x => x.HorizontalMetrics.AdvanceWidth.Value - (x.HorizontalMetrics.LeftSideBearing.Value + x.XMax - x.XMin)).Min(),
+            MinLeftSideBearing = gid_glyph.Values.Where(x => !x.NoOutline).Select(x => x.HorizontalMetrics.LeftSideBearing.Value).Min(),
+            MinRightSideBearing = (int)gid_glyph.Values.Where(x => !x.NoOutline).Select(x => x.HorizontalMetrics.AdvanceWidth.Value - (x.HorizontalMetrics.LeftSideBearing.Value + x.XMax - x.XMin)).Min(),
             XMaxExtent = (int)gid_glyph.Values.Select(x => x.HorizontalMetrics.LeftSideBearing.Value + (x.XMax - x.XMin)).Max(),
             NumberOfHMetrics = (ushort)num_of_glyph_include_notdef,
         };
 
         var os2 = font.OS2 is null ? null : font.OS2 with
         {
-            UsFirstCharIndex = (ushort)gid_glyph.Values.Select(x => x.CharIndex).Min(),
-            UsLastCharIndex = (ushort)gid_glyph.Values.Select(x => x.CharIndex).Max(),
+            XAvgCharWidth = (short)gid_glyph.Values.Where(x => !x.NoOutline).Select(x => x.XMax - x.XMin).Average(),
+            UsFirstCharIndex = (ushort)Math.Min(gid_glyph.Values.Where(x => !x.Notdef).Select(x => x.Char).Min(), 0xFFFF),
+            UsLastCharIndex = (ushort)Math.Min(gid_glyph.Values.Where(x => !x.Notdef).Select(x => x.Char).Max(), 0xFFFF),
             STypoAscender = head.YMax,
             STypoDescender = head.YMin,
             UsWinAscent = head.YMax,
