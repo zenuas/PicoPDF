@@ -124,6 +124,7 @@ public static class FontExtract
         var dict = char_gids.ToDictionary(x => x.Char, x => x.GID);
         return c => dict.TryGetValue(c, out var gid) ? gid : 0;
     }
+
     public static IEnumerable<Vector2> EnumAllPoints(IOutline[] outlines)
     {
         foreach (var edge in outlines.OfType<Surface>().Select(x => x.Edges).Flatten())
