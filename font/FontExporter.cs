@@ -16,6 +16,8 @@ namespace OpenType;
 
 public static class FontExporter
 {
+    public static readonly string[] SfntRequiredTable = ["cmap", "head", "hhea", "hmtx", "maxp", "name", "post"];
+
     public static byte[] Export(IOpenTypeFont font, FontTypes fonttypes)
     {
         using var stream = new MemoryStream();
@@ -25,7 +27,7 @@ public static class FontExporter
 
     public static void Export(IOpenTypeFont font, FontTypes fonttypes, Stream stream, long start_stream_position = 0)
     {
-        var table_names = new string[] { "cmap", "head", "hhea", "hmtx", "maxp", "name", "post" }
+        var table_names = SfntRequiredTable
             .If(_ => fonttypes == FontTypes.PostScript, xs => xs.Concat("CFF "), xs => xs)
             .If(_ => font.Color is { }, xs => xs.Concat("COLR"), xs => xs)
             .If(_ => font.ColorPalette is { }, xs => xs.Concat("CPAL"), xs => xs)
