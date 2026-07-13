@@ -1,11 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Binder;
 using Mina.Extension;
-using Pdf.Documents;
 using Pdf.Font;
-using PicoPDF.Loader;
-using PicoPDF.Loader.Sections;
-using PicoPDF.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,7 +11,7 @@ namespace PicoPDF.Benchmark;
 
 public class SinglePageBench
 {
-    public static PageSection PageSection { get; } = JsonLoader.CreatePageFromJson("""
+    public const string PageJson = """
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
@@ -44,7 +39,7 @@ public class SinglePageBench
 		]},
 	],
 }
-""", new());
+""";
 
     public class DataLine
     {
@@ -55,35 +50,14 @@ public class SinglePageBench
 
     public static FontRegister FontRegister { get; } = new FontRegister().Return(x => x.RegisterDirectory(Environment.ExpandEnvironmentVariables(@"%SystemRoot%\Fonts")));
 
-    public static Document CreateSinglePage<T>(IEnumerable<T> datas, Dictionary<string, Func<T, object>> mapper)
-    {
-        var document = PdfFactory.Create(new() { CreateFontRegister = () => FontRegister });
-        var pages = SectionBinder.Bind<T, PageModel, SectionModel>(PageSection, datas, mapper);
-        ModelMapping.Mapping(document, pages, new());
-        return document;
-    }
-
-    public static Document CreateSinglePage<T>(IEnumerable<T> datas)
-    {
-        var document = PdfFactory.Create(new() { CreateFontRegister = () => FontRegister });
-        var pages = SectionBinder.Bind<T, PageModel, SectionModel>(PageSection, datas);
-        ModelMapping.Mapping(document, pages, new());
-        return document;
-    }
-
-    public static Document CreateSinglePage(DataTable table)
-    {
-        var document = PdfFactory.Create(new() { CreateFontRegister = () => FontRegister });
-        var pages = SectionBinder.Bind<PageModel, SectionModel>(PageSection, table);
-        ModelMapping.Mapping(document, pages, new());
-        return document;
-    }
+    public static readonly int[] Line1_Data = [1];
+    public static readonly int[] Line1K_Data = [.. Lists.Sequence(1).Take(1_000)];
 
     [Benchmark]
     public void Line1()
     {
         var mapper = new Dictionary<string, Func<int, object>> { ["Foo"] = (x) => x, ["Bar"] = (x) => (long)(x * 1000), ["Baz"] = (x) => x.ToString() };
-        var document = CreateSinglePage([1], mapper);
+        var document = PdfFactory.Create(PageJson, Line1_Data, mapper, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
@@ -92,15 +66,18 @@ public class SinglePageBench
     public void Line1K()
     {
         var mapper = new Dictionary<string, Func<int, object>> { ["Foo"] = (x) => x, ["Bar"] = (x) => (long)(x * 1000), ["Baz"] = (x) => x.ToString() };
-        var document = CreateSinglePage(Lists.Sequence(1).Take(1_000), mapper);
+        var document = PdfFactory.Create(PageJson, Line1K_Data, mapper, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
 
+    public static readonly DataLine[] Mapper1_Data = [new DataLine() { Foo = 1, Bar = 1000, Baz = "1" }];
+    public static readonly DataLine[] Mapper1K_Data = [.. Lists.Sequence(1).Take(1_000).Select(x => new DataLine() { Foo = x, Bar = x * 1000, Baz = x.ToString() })];
+
     [Benchmark]
     public void Mapper1()
     {
-        var document = CreateSinglePage([new DataLine() { Foo = 1, Bar = 1000, Baz = "1" }]);
+        var document = PdfFactory.Create(PageJson, Mapper1_Data, null, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
@@ -108,21 +85,32 @@ public class SinglePageBench
     [Benchmark]
     public void Mapper1K()
     {
-        var document = CreateSinglePage(Lists.Sequence(1).Take(1_000).Select(x => new DataLine() { Foo = x, Bar = x * 1000, Baz = x.ToString() }));
+        var document = PdfFactory.Create(PageJson, Mapper1K_Data, null, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
 
+    public static readonly DataTable DataTable1_Data = new DataTable()
+        .Return(x =>
+        {
+            _ = x.Columns.Add("Foo");
+            _ = x.Columns.Add("Bar");
+            _ = x.Columns.Add("Baz");
+            x.Rows.Add(x.NewRow().Return(x => { x["Foo"] = 1; x["Bar"] = (long)1000; x["Baz"] = "1"; }));
+        });
+    public static readonly DataTable DataTable1K_Data = new DataTable()
+        .Return(x =>
+        {
+            _ = x.Columns.Add("Foo");
+            _ = x.Columns.Add("Bar");
+            _ = x.Columns.Add("Baz");
+            Lists.Sequence(1).Take(1_000).Each(i => x.Rows.Add(x.NewRow().Return(x => { x["Foo"] = i; x["Bar"] = (long)(i * 1000); x["Baz"] = i.ToString(); })));
+        });
+
     [Benchmark]
     public void DataTable1()
     {
-        var table = new DataTable();
-        _ = table.Columns.Add("Foo");
-        _ = table.Columns.Add("Bar");
-        _ = table.Columns.Add("Baz");
-        table.Rows.Add(table.NewRow().Return(x => { x["Foo"] = 1; x["Bar"] = (long)1000; x["Baz"] = "1"; }));
-
-        var document = CreateSinglePage(table);
+        var document = PdfFactory.Create(PageJson, DataTable1_Data, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
@@ -130,13 +118,7 @@ public class SinglePageBench
     [Benchmark]
     public void DataTable1K()
     {
-        var table = new DataTable();
-        _ = table.Columns.Add("Foo");
-        _ = table.Columns.Add("Bar");
-        _ = table.Columns.Add("Baz");
-        Lists.Sequence(1).Take(1_000).Each(i => table.Rows.Add(table.NewRow().Return(x => { x["Foo"] = i; x["Bar"] = (long)(i * 1000); x["Baz"] = i.ToString(); })));
-
-        var document = CreateSinglePage(table);
+        var document = PdfFactory.Create(PageJson, DataTable1K_Data, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
