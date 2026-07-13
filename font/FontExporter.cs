@@ -16,7 +16,7 @@ namespace OpenType;
 
 public static class FontExporter
 {
-    public static readonly string[] SfntRequiredTable = ["cmap", "head", "hhea", "hmtx", "maxp", "name", "post"];
+    public static readonly string[] SfntRequiredTable = ["OS/2", "cmap", "head", "hhea", "hmtx", "maxp", "name", "post"];
 
     public static byte[] Export(IOpenTypeFont font, FontTypes fonttypes)
     {
@@ -31,7 +31,6 @@ public static class FontExporter
             .If(_ => fonttypes == FontTypes.PostScript, xs => xs.Concat("CFF "), xs => xs)
             .If(_ => font.Color is { }, xs => xs.Concat("COLR"), xs => xs)
             .If(_ => font.ColorPalette is { }, xs => xs.Concat("CPAL"), xs => xs)
-            .If(_ => font.OS2 is { }, xs => xs.Concat("OS/2"), xs => xs)
             .If(_ => fonttypes == FontTypes.TrueType, xs => xs.Concat(["glyf", "loca"]), xs => xs)
             .Order(StringComparer.Ordinal)
             .ToArray();
@@ -57,7 +56,7 @@ public static class FontExporter
 
         if (font.Color is { }) ExportTable(stream, start_stream_position, tables["COLR"], font.Color);
         if (font.ColorPalette is { }) ExportTable(stream, start_stream_position, tables["CPAL"], font.ColorPalette);
-        if (font.OS2 is { }) ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2);
+        ExportTable(stream, start_stream_position, tables["OS/2"], font.OS2 ?? OS2Table.Create());
         ExportTable(stream, start_stream_position, tables["cmap"], font.CMap);
         ExportTable(stream, start_stream_position, tables["head"], x => font.FontHeader.WriteTo(x, 0));
         ExportTable(stream, start_stream_position, tables["hhea"], font.HorizontalHeader);
@@ -91,7 +90,7 @@ public static class FontExporter
             default: throw new();
         }
 
-        if (font.OS2 is { }) Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
+        Debug.Assert(tables["OS/2"].Length is 78 or 86 or 96 or 100);
         Debug.Assert(tables["head"].Length == 54);
         Debug.Assert(tables["hhea"].Length == 36);
         Debug.Assert(tables["maxp"].Length is 6 or 32);

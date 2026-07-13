@@ -148,4 +148,47 @@ public record class OS2Table : IExportable
             stream.WriteUShortByBigEndian(UsUpperOpticalPointSize);
         }
     }
+
+    public static OS2Table Create() => new()
+    {
+        Version = 5,
+        XAvgCharWidth = 0,
+        UsWeightClass = 0,
+        UsWidthClass = 0,
+        FsType = 0,
+        YSubscriptXSize = 0,
+        YSubscriptYSize = 0,
+        YSubscriptXOffset = 0,
+        YSubscriptYOffset = 0,
+        YSuperscriptXSize = 0,
+        YSuperscriptYSize = 0,
+        YSuperscriptXOffset = 0,
+        YSuperscriptYOffset = 0,
+        YStrikeoutSize = 0,
+        YStrikeoutPosition = 0,
+        SFamilyClass = 0,
+        Panose = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        UlUnicodeRange1 = 0,
+        UlUnicodeRange2 = 0,
+        UlUnicodeRange3 = 0,
+        UlUnicodeRange4 = 0,
+        AchVendID = "    ",
+        FsSelection = 0,
+        UsFirstCharIndex = 0,
+        UsLastCharIndex = 0,
+        STypoAscender = 0,
+        STypoDescender = 0,
+        STypoLineGap = 0,
+        UsWinAscent = 0,
+        UsWinDescent = 0,
+        UlCodePageRange1 = 0,
+        UlCodePageRange2 = 0,
+        SxHeight = 0,
+        SCapHeight = 0,
+        UsDefaultChar = 0,
+        UsBreakChar = 0,
+        UsMaxContext = 0,
+        UsLowerOpticalPointSize = 0,
+        UsUpperOpticalPointSize = 0,
+    };
 }
