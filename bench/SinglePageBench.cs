@@ -52,12 +52,12 @@ public class SinglePageBench
 
     public static readonly int[] Line1_Data = [1];
     public static readonly int[] Line1K_Data = [.. Lists.Sequence(1).Take(1_000)];
+    public static readonly Dictionary<string, Func<int, object>> LineMapper = new() { ["Foo"] = (x) => x, ["Bar"] = (x) => (long)(x * 1000), ["Baz"] = (x) => x.ToString() };
 
     [Benchmark]
     public void Line1()
     {
-        var mapper = new Dictionary<string, Func<int, object>> { ["Foo"] = (x) => x, ["Bar"] = (x) => (long)(x * 1000), ["Baz"] = (x) => x.ToString() };
-        var document = PdfFactory.Create(PageJson, Line1_Data, mapper, new() { CreateFontRegister = () => FontRegister });
+        var document = PdfFactory.Create(PageJson, Line1_Data, LineMapper, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
@@ -65,8 +65,7 @@ public class SinglePageBench
     [Benchmark]
     public void Line1K()
     {
-        var mapper = new Dictionary<string, Func<int, object>> { ["Foo"] = (x) => x, ["Bar"] = (x) => (long)(x * 1000), ["Baz"] = (x) => x.ToString() };
-        var document = PdfFactory.Create(PageJson, Line1K_Data, mapper, new() { CreateFontRegister = () => FontRegister });
+        var document = PdfFactory.Create(PageJson, Line1K_Data, LineMapper, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
