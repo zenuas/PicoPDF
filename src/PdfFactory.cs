@@ -7,6 +7,7 @@ using PicoPDF.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 
 namespace PicoPDF;
 
@@ -20,7 +21,7 @@ public static class PdfFactory
     {
         var opt = option ?? new();
         var document = Create(opt);
-        ModelMapping.Mapping(document, pages(JsonLoader.CreatePageFromJsonFile(json, opt)), opt);
+        ModelMapping.Mapping(document, pages(Path.Exists(json) ? JsonLoader.CreatePageFromJsonFile(json, opt) : JsonLoader.CreatePageFromJson(json, opt)), opt);
         return document;
     }
 
