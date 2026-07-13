@@ -24,9 +24,7 @@ public static class PdfFactory
         return document;
     }
 
-    public static Document Create() => Create(new());
-
-    public static Document Create(PdfEventOption option)
+    public static Document Create(PdfEventOption? option)
     {
         var opt = option ?? new();
         var encrypt = opt.CreateStandardEncryption();
