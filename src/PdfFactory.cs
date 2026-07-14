@@ -17,12 +17,11 @@ public static class PdfFactory
     public static Document CreateBind(string json, DataTable table, PdfEventOption? option = null) => CreateBind(json, (section) => SectionBinder.Bind<PageModel, SectionModel>(section, table), option);
     public static Document CreateBind(string json, DataView view, PdfEventOption? option = null) => CreateBind(json, (section) => SectionBinder.Bind<PageModel, SectionModel>(section, view), option);
 
-    public static Document CreateBind(string json, Func<PageSection, PageModel[]> pages, PdfEventOption? option = null)
+    public static Document CreateBind(string json, Func<PageSection, PageModel[]> binder, PdfEventOption? option = null)
     {
         var opt = option ?? new();
         var document = Create(opt);
-        var pagesection = Path.Exists(json) ? JsonLoader.CreatePageFromJsonFile(json, opt) : JsonLoader.CreatePageFromJson(json, opt);
-        ModelMapping.Mapping(document, pages(pagesection), opt);
+        Bind(document, json, binder, opt);
         return document;
     }
 
@@ -46,4 +45,13 @@ public static class PdfFactory
         }
         return document;
     }
+
+    public static void Bind(Document document, string json, Func<PageSection, PageModel[]> binder, PdfEventOption? option = null)
+    {
+        var opt = option ?? new();
+        var pagesection = Path.Exists(json) ? JsonLoader.CreatePageFromJsonFile(json, opt) : JsonLoader.CreatePageFromJson(json, opt);
+        Bind(document, binder(pagesection), opt);
+    }
+
+    public static void Bind(Document document, PageModel[] pages, PdfEventOption? option = null) => ModelMapping.Mapping(document, pages, option ?? new());
 }
