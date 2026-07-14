@@ -57,7 +57,7 @@ public class SinglePageBench
     [Benchmark]
     public void Line1()
     {
-        var document = PdfFactory.Create(PageJson, Line1_Data, LineMapper, new() { CreateFontRegister = () => FontRegister });
+        var document = PdfFactory.CreateBind(PageJson, Line1_Data, LineMapper, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
@@ -65,7 +65,7 @@ public class SinglePageBench
     [Benchmark]
     public void Line1K()
     {
-        var document = PdfFactory.Create(PageJson, Line1K_Data, LineMapper, new() { CreateFontRegister = () => FontRegister });
+        var document = PdfFactory.CreateBind(PageJson, Line1K_Data, LineMapper, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
@@ -76,7 +76,7 @@ public class SinglePageBench
     [Benchmark]
     public void Mapper1()
     {
-        var document = PdfFactory.Create(PageJson, Mapper1_Data, null, new() { CreateFontRegister = () => FontRegister });
+        var document = PdfFactory.CreateBind(PageJson, Mapper1_Data, null, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
@@ -84,7 +84,7 @@ public class SinglePageBench
     [Benchmark]
     public void Mapper1K()
     {
-        var document = PdfFactory.Create(PageJson, Mapper1K_Data, null, new() { CreateFontRegister = () => FontRegister });
+        var document = PdfFactory.CreateBind(PageJson, Mapper1K_Data, null, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
@@ -109,7 +109,7 @@ public class SinglePageBench
     [Benchmark]
     public void DataTable1()
     {
-        var document = PdfFactory.Create(PageJson, DataTable1_Data, new() { CreateFontRegister = () => FontRegister });
+        var document = PdfFactory.CreateBind(PageJson, DataTable1_Data, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }
@@ -117,7 +117,7 @@ public class SinglePageBench
     [Benchmark]
     public void DataTable1K()
     {
-        var document = PdfFactory.Create(PageJson, DataTable1K_Data, new() { CreateFontRegister = () => FontRegister });
+        var document = PdfFactory.CreateBind(PageJson, DataTable1K_Data, new() { CreateFontRegister = () => FontRegister });
         using var mem = new MemoryStream();
         document.Save(mem);
     }

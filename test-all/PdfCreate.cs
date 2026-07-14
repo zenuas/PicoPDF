@@ -131,7 +131,7 @@ public class PdfCreate : FontRegisterCommand
 
             tasks.Add(Task.Run(() =>
             {
-                var document = PdfFactory.Create(json, table, event_opt);
+                var document = PdfFactory.CreateBind(json, table, event_opt);
                 document.Save(pdfname, export_opt);
             }));
         }

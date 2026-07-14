@@ -19,7 +19,7 @@ PicoPDFは知っている最小のSI接頭語にちなんで名付けた。
 ```cs
 var datas = new Data[] { ... };
 
-PicoPDF.PdfFactory.Create("example.json", datas).Save("example.pdf");
+PicoPDF.PdfFactory.CreateBind("example.json", datas).Save("example.pdf");
 ```
 
 ## Json definition file
@@ -102,7 +102,7 @@ SummaryElementの集計方法はSummaryMethodプロパティで設定する。
 
 ## Function overview
 
-jsonファイルとデータを元にPdfFactory.Create関数、Saveメソッドのみを呼び出すだけでよい。  
+jsonファイルとデータを元にPdfFactory.CreateBind関数、Saveメソッドのみを呼び出すだけでよい。  
 内部構造は次の通り。  
 
 ```mermaid
@@ -121,8 +121,24 @@ graph TD;
       cff;
     end
     
-    json:::input-->JsonLoader;
-    JsonLoader-->PageSection;
+    subgraph factory ["PdfFactory.CreateBind"]
+      direction TB;
+      
+      data;
+      font;
+      CreatePageFromJsonFile;
+      CreatePageFromJson;
+      PageSection;
+      SectionBinder;
+      PageModel;
+      ModelMapping;
+      Document;
+    end
+    
+    jsonfile:::input-->CreatePageFromJsonFile;
+    jsonnode:::input-->CreatePageFromJson;
+    CreatePageFromJsonFile-->PageSection;
+    CreatePageFromJson-->PageSection;
     PageSection-->SectionBinder;
     data:::input-->SectionBinder;
     SectionBinder-->PageModel;
@@ -132,13 +148,15 @@ graph TD;
     Document-->Save;
     Save-->pdf;
     
-    json@{ shape: doc, label: "*.json" }
+    jsonfile@{ shape: doc, label: "*.json" }
+    jsonnode@{ shape: doc, label: "json string" }
     array@{ shape: rect, label: "Any Array" }
     ttf@{ shape: doc, label: "TrueTypeFont" }
     cff@{ shape: doc, label: "PostScriptFont" }
     pdf@{ shape: doc, label: "*.pdf" }
     
-    JsonLoader@{ shape: subproc, label: "JsonLoader.CreatePageFromJsonFile" }
+    CreatePageFromJsonFile@{ shape: subproc, label: "JsonLoader.CreatePageFromJsonFile" }
+    CreatePageFromJson@{ shape: subproc, label: "JsonLoader.CreatePageFromJson" }
     SectionBinder@{ shape: subproc, label: "SectionBinder.Bind" }
     ModelMapping@{ shape: subproc, label: "ModelMapping.Mapping" }
     Save@{ shape: subproc, label: "Save" }
