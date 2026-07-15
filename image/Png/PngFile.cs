@@ -35,8 +35,6 @@ public class PngFile : IImageCanvas
         while (true)
         {
             var chunk = stream.ReadExactly(8).AsSpan();
-            if (chunk.Length < 8) break;
-
             var length = BinaryPrimitives.ReadInt32BigEndian(chunk[0..4]);
             var type = BinaryPrimitives.ReadUInt32BigEndian(chunk[4..8]);
             var chunkdataraw = stream.ReadExactly(length);
