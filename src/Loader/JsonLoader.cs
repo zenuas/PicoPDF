@@ -140,15 +140,15 @@ public static class JsonLoader
             Format = json["Format"]?.ToString() ?? "",
             Font = ToFontPathArray(json["Font"]),
             Size = (int)json.ToNode("Size").AsValue(),
-            Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
-            Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
+            Alignment = json["Alignment"]?.AsValue() is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
+            Style = json["Style"]?.AsValue() is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
             Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
             Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
             Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
             SummaryType = sumtype,
             SummaryMethod = summethod,
             BreakKey = json["BreakKey"]?.ToString() ?? "",
-            Culture = json["Culture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
+            Culture = json["Culture"]?.AsValue() is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
         };
     }
 
@@ -159,7 +159,7 @@ public static class JsonLoader
         Name = name,
         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        Color = json["Color"]?.AsValue()?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
         LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
     };
 
@@ -170,7 +170,7 @@ public static class JsonLoader
         Name = name,
         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        Color = json["Color"]?.AsValue()?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
         LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
     };
 
@@ -181,7 +181,7 @@ public static class JsonLoader
         Name = name,
         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        Color = json["Color"]?.AsValue()?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
         LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
     };
 
@@ -192,7 +192,7 @@ public static class JsonLoader
         Name = name,
         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        Color = json["Color"]?.AsValue()?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
         LineWidth = json["LineWidth"]?.AsValue() is { } linewidth ? (int)linewidth : 1,
     };
 
@@ -213,8 +213,8 @@ public static class JsonLoader
         X = posx,
         Y = posy,
         Name = name,
-        Path = json["Path"]?.ToString() ?? "",
-        Bind = json["Bind"]?.ToString() ?? "",
+        Path = json["Path"]?.AsValue()?.ToString() ?? "",
+        Bind = json["Bind"]?.AsValue()?.ToString() ?? "",
         ZoomWidth = json["ZoomWidth"]?.AsValue() is { } zoomwidth ? (double)zoomwidth : 1.0,
         ZoomHeight = json["ZoomHeight"]?.AsValue() is { } zoomheight ? (double)zoomheight : 1.0,
     };
