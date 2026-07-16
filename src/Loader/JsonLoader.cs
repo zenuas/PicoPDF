@@ -37,22 +37,22 @@ public static class JsonLoader
         return new()
         {
             Size = size,
-            Orientation = json["Orientation"] is { } orient ? Enum.Parse<Orientations>(orient!.ToString()) : Orientations.Vertical,
+            Orientation = json["Orientation"]?.AsValue() is { } orient ? Enum.Parse<Orientations>(orient!.ToString()) : Orientations.Vertical,
             DefaultFont = fonts,
-            Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
-            Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
+            Header = json["Header"]?.AsValue() is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
+            Footer = json["Footer"]?.AsValue() is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
             SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json.ToNode("Detail").ToString()].Cast<ISubSection>(),
             Padding = padding,
-            DefaultCulture = json["DefaultCulture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : CultureInfo.InvariantCulture,
+            DefaultCulture = json["DefaultCulture"]?.AsValue() is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : CultureInfo.InvariantCulture,
             EventOption = option,
         };
     }
 
     public static Section LoadSection(JsonNode json, Dictionary<string, ISection> sections) => new()
     {
-        BreakKey = json["BreakKey"]?.ToString() ?? "",
-        Header = json["Header"] is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
-        Footer = json["Footer"] is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
+        BreakKey = json["BreakKey"]?.AsValue()?.ToString() ?? "",
+        Header = json["Header"]?.AsValue() is { } p1 ? sections[p1.ToString()].Cast<IHeaderSection>() : null,
+        Footer = json["Footer"]?.AsValue() is { } p2 ? sections[p2.ToString()].Cast<IFooterSection>() : null,
         SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json.ToNode("Detail").ToString()].Cast<ISubSection>(),
     };
 
@@ -61,7 +61,7 @@ public static class JsonLoader
         var name = json.ToNode("Name").ToString();
         var height = (int)json.ToNode("Height").AsValue();
         var elements = json.ToNode("Elements").AsArray().Select(x => LoadElement(x!)).ToArray();
-        var viewmode = json["ViewMode"] is { } v ? Enum.Parse<ViewModes>(v.ToString()) : ViewModes.Every;
+        var viewmode = json["ViewMode"]?.AsValue() is { } v ? Enum.Parse<ViewModes>(v.ToString()) : ViewModes.Every;
         var style = json["Style"]?.AsValue() is { } st ? Enum.Parse<SectionStyles>(st.ToString()) : SectionStyles.None;
         return json.ToNode("Type").ToString() switch
         {
@@ -77,7 +77,7 @@ public static class JsonLoader
     {
         var posx = (int)json.ToNode("X").AsValue();
         var posy = (int)json.ToNode("Y").AsValue();
-        var name = json["Name"]?.ToString() ?? "";
+        var name = json["Name"]?.AsValue()?.ToString() ?? "";
         return json.ToNode("Type").ToString() switch
         {
             "TextElement" => LoadTextElement(posx, posy, name, json),
@@ -103,10 +103,10 @@ public static class JsonLoader
         Font = ToFontPathArray(json["Font"]),
         Size = (int)json.ToNode("Size").AsValue(),
         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
-        Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
+        Style = json["Style"]?.AsValue() is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        Color = json["Color"]?.AsValue()?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
     };
 
     public static BindElement LoadBindElement(int posx, int posy, string name, JsonNode json) => new()
@@ -115,15 +115,15 @@ public static class JsonLoader
         Y = posy,
         Name = name,
         Bind = json.ToNode("Bind").ToString(),
-        Format = json["Format"]?.ToString() ?? "",
+        Format = json["Format"]?.AsValue()?.ToString() ?? "",
         Font = ToFontPathArray(json["Font"]),
         Size = (int)json.ToNode("Size").AsValue(),
         Alignment = json["Alignment"] is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
         Style = json["Style"] is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
         Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
         Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-        Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
-        Culture = json["Culture"] is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
+        Color = json["Color"]?.AsValue()?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+        Culture = json["Culture"]?.AsValue() is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
     };
 
     public static SummaryElement LoadSummaryElement(int posx, int posy, string name, JsonNode json)
@@ -136,18 +136,18 @@ public static class JsonLoader
             X = posx,
             Y = posy,
             Name = name,
-            Bind = json["Bind"]?.ToString() ?? "",
-            Format = json["Format"]?.ToString() ?? "",
+            Bind = json["Bind"]?.AsValue()?.ToString() ?? "",
+            Format = json["Format"]?.AsValue()?.ToString() ?? "",
             Font = ToFontPathArray(json["Font"]),
             Size = (int)json.ToNode("Size").AsValue(),
             Alignment = json["Alignment"]?.AsValue() is { } align ? Enum.Parse<TextAlignments>(align.ToString()) : TextAlignments.Start,
             Style = json["Style"]?.AsValue() is { } style ? Enum.Parse<TextStyles>(style.ToString()) : TextStyles.None,
             Width = json["Width"]?.AsValue() is { } width ? (int)width : 0,
             Height = json["Height"]?.AsValue() is { } height ? (int)height : 0,
-            Color = json["Color"]?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
+            Color = json["Color"]?.AsValue()?.ToString() is { } color ? ColorTranslator.FromHtml(color) : null,
             SummaryType = sumtype,
             SummaryMethod = summethod,
-            BreakKey = json["BreakKey"]?.ToString() ?? "",
+            BreakKey = json["BreakKey"]?.AsValue()?.ToString() ?? "",
             Culture = json["Culture"]?.AsValue() is { } ci ? CultureInfo.GetCultureInfo(ci.ToString()) : null,
         };
     }
