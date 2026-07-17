@@ -20,11 +20,11 @@ public static class JsonLoader
 
     public static PageSection CreatePageFromJson(JsonNode json, PdfEventOption option)
     {
-        var fonts = ToFontPathArray(json["DefaultFont"]);
+        var fonts = ToFontPathArray(json.GetNodeOrDefaultWithoutNullValue("DefaultFont"));
         if (fonts.Length == 0) throw new("DefaultFont is empty");
 
-        var size = LoadPageSize(json["Size"]);
-        var padding = LoadAllSides(json["Padding"]);
+        var size = LoadPageSize(json.GetNodeOrDefaultWithoutNullValue("Size"));
+        var padding = LoadAllSides(json.GetNodeOrDefaultWithoutNullValue("Padding"));
         var sections = json.GetNode("Sections")
             .AsArray()
             .Select(x => LoadSubSection(x!, size.Width - padding.Left - padding.Right))
@@ -96,7 +96,7 @@ public static class JsonLoader
         Y = posy,
         Name = name,
         Text = json.GetStringValue("Text"),
-        Font = ToFontPathArray(json["Font"]),
+        Font = ToFontPathArray(json.GetNodeOrDefaultWithoutNullValue("Font")),
         Size = json.GetIntValue("Size"),
         Alignment = json.GetEnumOrDefaultWithoutNullValue<TextAlignments>("Alignment") ?? TextAlignments.Start,
         Style = json.GetEnumOrDefaultWithoutNullValue<TextStyles>("Style") ?? TextStyles.None,
@@ -112,7 +112,7 @@ public static class JsonLoader
         Name = name,
         Bind = json.GetNode("Bind").ToString(),
         Format = json.GetStringOrDefaultWithoutNullValue("Format") ?? "",
-        Font = ToFontPathArray(json["Font"]),
+        Font = ToFontPathArray(json.GetNodeOrDefaultWithoutNullValue("Font")),
         Size = json.GetIntValue("Size"),
         Alignment = json.GetEnumOrDefaultWithoutNullValue<TextAlignments>("Alignment") ?? TextAlignments.Start,
         Style = json.GetEnumOrDefaultWithoutNullValue<TextStyles>("Style") ?? TextStyles.None,
@@ -134,7 +134,7 @@ public static class JsonLoader
             Name = name,
             Bind = json.GetStringOrDefaultWithoutNullValue("Bind") ?? "",
             Format = json.GetStringOrDefaultWithoutNullValue("Format") ?? "",
-            Font = ToFontPathArray(json["Font"]),
+            Font = ToFontPathArray(json.GetNodeOrDefaultWithoutNullValue("Font")),
             Size = json.GetIntValue("Size"),
             Alignment = json.GetEnumOrDefaultWithoutNullValue<TextAlignments>("Alignment") ?? TextAlignments.Start,
             Style = json.GetEnumOrDefaultWithoutNullValue<TextStyles>("Style") ?? TextStyles.None,

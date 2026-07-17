@@ -10,9 +10,16 @@ public static class JsonNodes
     public static JsonNode GetNode(this JsonNode self, string name) => self[name] ?? throw new NullReferenceException($"Element '{name}' was not found.");
     public static JsonValue GetValue(this JsonNode self, string name) => self.GetNode(name).AsValue();
     public static JsonValue? GetValueOrDefaultWithoutNullValue(this JsonNode self, string name) => self.TryGetValue(name, out var value) ? (value ?? throw new NullReferenceException($"Element '{name}' was null.")) : null;
+    public static JsonNode? GetNodeOrDefaultWithoutNullValue(this JsonNode self, string name) => self.TryGetNode(name, out var value) ? (value ?? throw new NullReferenceException($"Element '{name}' was null.")) : null;
     public static bool TryGetValue(this JsonNode self, string name, out JsonValue? value)
     {
-        value = self[name]?.AsValue();
+        var result = self.TryGetNode(name, out var node);
+        value = node?.AsValue();
+        return result;
+    }
+    public static bool TryGetNode(this JsonNode self, string name, out JsonNode? value)
+    {
+        value = self[name];
         return self.AsObject() is { } x && x.ContainsKey(name);
     }
 
