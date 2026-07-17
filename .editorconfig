@@ -12,3 +12,7 @@ dotnet_diagnostic.IDE0120.severity = none
 dotnet_diagnostic.xUnit1013.severity = none
 dotnet_diagnostic.xUnit2000.severity = none
 dotnet_diagnostic.xUnit2013.severity = none
+
+# JSONの不適切な警告抑止
+
+dotnet_diagnostic.JSON001.severity = none
