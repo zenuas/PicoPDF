@@ -169,6 +169,27 @@ public class JsonLoaderTest
         _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("FalseValue"));
         _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("Array"));
         _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("Object"));
+
+        Assert.Null(node.GetNodeOrDefaultWithoutNullValue("InvalidName"));
+        _ = Assert.Throws<NullReferenceException>(() => node.GetNodeOrDefaultWithoutNullValue("NullValue"));
+        Assert.Equal(node.GetNodeOrDefaultWithoutNullValue("EmptyString")!.AsValue().ToString(), "");
+        Assert.Equal(node.GetNodeOrDefaultWithoutNullValue("StringValue")!.AsValue().ToString(), "xyz");
+        Assert.Equal(node.GetNodeOrDefaultWithoutNullValue("IntStringValue")!.AsValue().ToString(), "234");
+        Assert.Equal(node.GetNodeOrDefaultWithoutNullValue("DoubleStringValue")!.AsValue().ToString(), "234.5");
+        Assert.Equal((int)node.GetNodeOrDefaultWithoutNullValue("IntValue")!.AsValue(), 123);
+        Assert.Equal((double)node.GetNodeOrDefaultWithoutNullValue("DoubleValue")!.AsValue(), 123.4);
+        Assert.Equal((bool)node.GetNodeOrDefaultWithoutNullValue("TrueValue")!.AsValue(), true);
+        Assert.Equal((bool)node.GetNodeOrDefaultWithoutNullValue("FalseValue")!.AsValue(), false);
+        var xs = node.GetNodeOrDefaultWithoutNullValue("Array")!.AsArray();
+        Assert.Equal(xs.Count, 3);
+        Assert.Equal((int)xs[0]!, 1);
+        Assert.Equal((int)xs[1]!, 2);
+        Assert.Equal((int)xs[2]!, 3);
+        var obj = node.GetNodeOrDefaultWithoutNullValue("Object")!.AsObject();
+        Assert.Equal(obj.Count, 3);
+        Assert.Equal((int)obj["X"]!, 10);
+        Assert.Equal((int)obj["Y"]!, 20);
+        Assert.Equal((int)obj["Z"]!, 30);
     }
 
     [Fact]
