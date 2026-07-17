@@ -14,6 +14,66 @@ public class JsonLoaderTest
     public static JsonDocumentOptions Option { get; } = new() { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip };
 
     [Fact]
+    public void TypeCheck()
+    {
+        var node = JsonNode.Parse("""
+{
+    "NullValue": null,
+    "EmptyString": "",
+    "StringValue": "xyz",
+    "IntValue": 123,
+    "TrueValue": true,
+    "FalseValue": false,
+    "Array": [1, 2, 3],
+    "Object": { "X": 10, "Y": 20, "Z": 30 },
+}
+""", null, Option)!;
+
+        Assert.Null(node["InvalidName"]);
+        Assert.Equal(node["InvalidName"]?.AsValue(), null);
+        Assert.Equal(node["InvalidName"]?.AsValue() is { } a1 ? (int)a1 : 0, 0);
+        Assert.Equal(node["InvalidName"]?.AsValue() is { } a2 ? a2.ToString() : "", "");
+
+        Assert.Null(node["NullValue"]);
+        Assert.Equal(node["NullValue"]?.AsValue(), null);
+        Assert.Equal(node["NullValue"]?.AsValue() is { } b1 ? (int)b1 : 0, 0);
+        Assert.Equal(node["NullValue"]?.AsValue() is { } b2 ? b2.ToString() : "", "");
+
+        Assert.NotNull(node["EmptyString"]);
+        Assert.Equal(node["EmptyString"]?.AsValue()?.ToString(), "");
+        _ = Assert.Throws<InvalidOperationException>(() => node["EmptyString"]?.AsValue() is { } c1 ? (int)c1 : 0);
+        Assert.Equal(node["EmptyString"]?.AsValue() is { } c2 ? c2.ToString() : "", "");
+
+        Assert.NotNull(node["StringValue"]);
+        Assert.Equal(node["StringValue"]?.AsValue()?.ToString(), "xyz");
+        _ = Assert.Throws<InvalidOperationException>(() => node["StringValue"]?.AsValue() is { } d1 ? (int)d1 : 0);
+        Assert.Equal(node["StringValue"]?.AsValue() is { } d2 ? d2.ToString() : "", "xyz");
+
+        Assert.NotNull(node["IntValue"]);
+        Assert.Equal((int)node["IntValue"]?.AsValue()!, 123);
+        Assert.Equal(node["IntValue"]?.AsValue() is { } e1 ? (int)e1 : 0, 123);
+        Assert.Equal(node["IntValue"]?.AsValue() is { } e2 ? e2.ToString() : "", "123");
+
+        Assert.NotNull(node["TrueValue"]);
+        Assert.Equal((bool)node["TrueValue"]?.AsValue()!, true);
+        Assert.Equal(node["TrueValue"]?.AsValue() is { } f1 ? (bool)f1 : false, true);
+        Assert.Equal(node["TrueValue"]?.AsValue() is { } f2 ? f2.ToString() : "", "true");
+
+        Assert.NotNull(node["FalseValue"]);
+        Assert.Equal((bool)node["FalseValue"]?.AsValue()!, false);
+        Assert.Equal(node["FalseValue"]?.AsValue() is { } g1 ? (bool)g1 : true, false);
+        Assert.Equal(node["FalseValue"]?.AsValue() is { } g2 ? g2.ToString() : "", "false");
+
+        Assert.NotNull(node["Array"]);
+        _ = Assert.Throws<InvalidOperationException>(() => node["Array"]?.AsValue());
+        Assert.Equal(node["Array"]?.AsArray().Count, 3);
+
+        Assert.NotNull(node["Object"]);
+        _ = Assert.Throws<InvalidOperationException>(() => node["Object"]?.AsValue());
+        Assert.Equal(node["Object"]?.AsObject().Count, 3);
+    }
+
+    [Fact]
     public void LoadElementError()
     {
         Assert.Equal(Assert.Throws<NullReferenceException>(() => _ = JsonLoader.LoadElement(JsonNode.Parse("""{ }""", null, Option)!)).Message, "Element 'X' was not found.");
