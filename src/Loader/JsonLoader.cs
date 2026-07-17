@@ -58,7 +58,7 @@ public static class JsonLoader
             DefaultFont = fonts,
             Header = json.GetStringOrNullValue("Header") is { } p1 ? sections[p1].Cast<IHeaderSection>() : null,
             Footer = json.GetStringOrNullValue("Footer") is { } p2 ? sections[p2].Cast<IFooterSection>() : null,
-            SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json.GetStringValue("Detail").ToString()].Cast<ISubSection>(),
+            SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json.GetStringValue("Detail")].Cast<ISubSection>(),
             Padding = padding,
             DefaultCulture = json.GetCultureOrNullValue("DefaultCulture") ?? CultureInfo.InvariantCulture,
             EventOption = option,
