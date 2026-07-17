@@ -9,7 +9,12 @@ public static class JsonNodes
 {
     public static JsonNode GetNode(this JsonNode self, string name) => self[name] ?? throw new NullReferenceException($"Element '{name}' was not found.");
     public static JsonValue GetValue(this JsonNode self, string name) => self.GetNode(name).AsValue();
-    public static JsonValue? GetValueOrDefaultWithoutNullValue(this JsonNode self, string name) => self.AsObject() is { } x && x.ContainsKey(name) ? (x[name] is { } v ? v.AsValue() : throw new NullReferenceException($"Element '{name}' was null.")) : null;
+    public static JsonValue? GetValueOrDefaultWithoutNullValue(this JsonNode self, string name) => self.TryGetValue(name, out var value) ? (value ?? throw new NullReferenceException($"Element '{name}' was null.")) : null;
+    public static bool TryGetValue(this JsonNode self, string name, out JsonValue? value)
+    {
+        value = self[name]?.AsValue();
+        return self.AsObject() is { } x && x.ContainsKey(name);
+    }
 
     public static int GetIntValue(this JsonNode self, string name) => (int)self.GetValue(name);
     public static double GetDoubleValue(this JsonNode self, string name) => (double)self.GetValue(name);
