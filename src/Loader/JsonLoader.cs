@@ -33,22 +33,22 @@ public static class JsonLoader
         return new()
         {
             Size = size,
-            Orientation = json.GetEnumOrNullValue<Orientations>("Orientation") ?? Orientations.Vertical,
+            Orientation = json.GetEnumOrDefaultWithoutNullValue<Orientations>("Orientation") ?? Orientations.Vertical,
             DefaultFont = fonts,
-            Header = json.GetStringOrNullValue("Header") is { } p1 ? sections[p1].Cast<IHeaderSection>() : null,
-            Footer = json.GetStringOrNullValue("Footer") is { } p2 ? sections[p2].Cast<IFooterSection>() : null,
+            Header = json.GetStringOrDefaultWithoutNullValue("Header") is { } p1 ? sections[p1].Cast<IHeaderSection>() : null,
+            Footer = json.GetStringOrDefaultWithoutNullValue("Footer") is { } p2 ? sections[p2].Cast<IFooterSection>() : null,
             SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json.GetStringValue("Detail")].Cast<ISubSection>(),
             Padding = padding,
-            DefaultCulture = json.GetCultureOrNullValue("DefaultCulture") ?? CultureInfo.InvariantCulture,
+            DefaultCulture = json.GetCultureOrDefaultWithoutNullValue("DefaultCulture") ?? CultureInfo.InvariantCulture,
             EventOption = option,
         };
     }
 
     public static Section LoadSection(JsonNode json, Dictionary<string, ISection> sections) => new()
     {
-        BreakKey = json.GetStringOrNullValue("BreakKey") ?? "",
-        Header = json.GetStringOrNullValue("Header") is { } p1 ? sections[p1].Cast<IHeaderSection>() : null,
-        Footer = json.GetStringOrNullValue("Footer") is { } p2 ? sections[p2].Cast<IFooterSection>() : null,
+        BreakKey = json.GetStringOrDefaultWithoutNullValue("BreakKey") ?? "",
+        Header = json.GetStringOrDefaultWithoutNullValue("Header") is { } p1 ? sections[p1].Cast<IHeaderSection>() : null,
+        Footer = json.GetStringOrDefaultWithoutNullValue("Footer") is { } p2 ? sections[p2].Cast<IFooterSection>() : null,
         SubSection = json["Detail"] is JsonObject o ? LoadSection(o, sections) : sections[json.GetStringValue("Detail")].Cast<ISubSection>(),
     };
 
@@ -57,8 +57,8 @@ public static class JsonLoader
         var name = json.GetStringValue("Name");
         var height = json.GetIntValue("Height");
         var elements = json.GetNode("Elements").AsArray().Select(x => LoadElement(x!)).ToArray();
-        var viewmode = json.GetEnumOrNullValue<ViewModes>("ViewMode") ?? ViewModes.Every;
-        var style = json.GetEnumOrNullValue<SectionStyles>("Style") ?? SectionStyles.None;
+        var viewmode = json.GetEnumOrDefaultWithoutNullValue<ViewModes>("ViewMode") ?? ViewModes.Every;
+        var style = json.GetEnumOrDefaultWithoutNullValue<SectionStyles>("Style") ?? SectionStyles.None;
         return json.GetStringValue("Type") switch
         {
             "HeaderSection" => new HeaderSection() { Name = name, Height = height, Width = width, Elements = elements, ViewMode = viewmode, Style = style },
@@ -73,7 +73,7 @@ public static class JsonLoader
     {
         var posx = json.GetIntValue("X");
         var posy = json.GetIntValue("Y");
-        var name = json.GetStringOrNullValue("Name") ?? "";
+        var name = json.GetStringOrDefaultWithoutNullValue("Name") ?? "";
         return json.GetStringValue("Type") switch
         {
             "TextElement" => LoadTextElement(posx, posy, name, json),
@@ -98,11 +98,11 @@ public static class JsonLoader
         Text = json.GetStringValue("Text"),
         Font = ToFontPathArray(json["Font"]),
         Size = json.GetIntValue("Size"),
-        Alignment = json.GetEnumOrNullValue<TextAlignments>("Alignment") ?? TextAlignments.Start,
-        Style = json.GetEnumOrNullValue<TextStyles>("Style") ?? TextStyles.None,
-        Width = json.GetIntOrNullValue("Width") ?? 0,
-        Height = json.GetIntOrNullValue("Height") ?? 0,
-        Color = json.GetColorOrNullValue("Color"),
+        Alignment = json.GetEnumOrDefaultWithoutNullValue<TextAlignments>("Alignment") ?? TextAlignments.Start,
+        Style = json.GetEnumOrDefaultWithoutNullValue<TextStyles>("Style") ?? TextStyles.None,
+        Width = json.GetIntOrDefaultWithoutNullValue("Width") ?? 0,
+        Height = json.GetIntOrDefaultWithoutNullValue("Height") ?? 0,
+        Color = json.GetColorOrDefaultWithoutNullValue("Color"),
     };
 
     public static BindElement LoadBindElement(int posx, int posy, string name, JsonNode json) => new()
@@ -111,40 +111,40 @@ public static class JsonLoader
         Y = posy,
         Name = name,
         Bind = json.GetNode("Bind").ToString(),
-        Format = json.GetStringOrNullValue("Format") ?? "",
+        Format = json.GetStringOrDefaultWithoutNullValue("Format") ?? "",
         Font = ToFontPathArray(json["Font"]),
         Size = json.GetIntValue("Size"),
-        Alignment = json.GetEnumOrNullValue<TextAlignments>("Alignment") ?? TextAlignments.Start,
-        Style = json.GetEnumOrNullValue<TextStyles>("Style") ?? TextStyles.None,
-        Width = json.GetIntOrNullValue("Width") ?? 0,
-        Height = json.GetIntOrNullValue("Height") ?? 0,
-        Color = json.GetColorOrNullValue("Color"),
-        Culture = json.GetCultureOrNullValue("Culture"),
+        Alignment = json.GetEnumOrDefaultWithoutNullValue<TextAlignments>("Alignment") ?? TextAlignments.Start,
+        Style = json.GetEnumOrDefaultWithoutNullValue<TextStyles>("Style") ?? TextStyles.None,
+        Width = json.GetIntOrDefaultWithoutNullValue("Width") ?? 0,
+        Height = json.GetIntOrDefaultWithoutNullValue("Height") ?? 0,
+        Color = json.GetColorOrDefaultWithoutNullValue("Color"),
+        Culture = json.GetCultureOrDefaultWithoutNullValue("Culture"),
     };
 
     public static SummaryElement LoadSummaryElement(int posx, int posy, string name, JsonNode json)
     {
-        var sumtype = json.GetEnumOrNullValue<SummaryTypes>("SummaryType") ?? SummaryTypes.Summary;
-        var summethod = json.GetEnumOrNullValue<SummaryMethods>("SummaryMethod") ?? (sumtype == SummaryTypes.PageCount ? SummaryMethods.Page : SummaryMethods.Group);
+        var sumtype = json.GetEnumOrDefaultWithoutNullValue<SummaryTypes>("SummaryType") ?? SummaryTypes.Summary;
+        var summethod = json.GetEnumOrDefaultWithoutNullValue<SummaryMethods>("SummaryMethod") ?? (sumtype == SummaryTypes.PageCount ? SummaryMethods.Page : SummaryMethods.Group);
         if (json["BreakKey"] is not null && summethod is not (SummaryMethods.Group or SummaryMethods.GroupIncremental)) throw new($"when SummaryElement is SummaryMethod={summethod}, BreakKey is invalid");
         return new SummaryElement()
         {
             X = posx,
             Y = posy,
             Name = name,
-            Bind = json.GetStringOrNullValue("Bind") ?? "",
-            Format = json.GetStringOrNullValue("Format") ?? "",
+            Bind = json.GetStringOrDefaultWithoutNullValue("Bind") ?? "",
+            Format = json.GetStringOrDefaultWithoutNullValue("Format") ?? "",
             Font = ToFontPathArray(json["Font"]),
             Size = json.GetIntValue("Size"),
-            Alignment = json.GetEnumOrNullValue<TextAlignments>("Alignment") ?? TextAlignments.Start,
-            Style = json.GetEnumOrNullValue<TextStyles>("Style") ?? TextStyles.None,
-            Width = json.GetIntOrNullValue("Width") ?? 0,
-            Height = json.GetIntOrNullValue("Height") ?? 0,
-            Color = json.GetColorOrNullValue("Color"),
+            Alignment = json.GetEnumOrDefaultWithoutNullValue<TextAlignments>("Alignment") ?? TextAlignments.Start,
+            Style = json.GetEnumOrDefaultWithoutNullValue<TextStyles>("Style") ?? TextStyles.None,
+            Width = json.GetIntOrDefaultWithoutNullValue("Width") ?? 0,
+            Height = json.GetIntOrDefaultWithoutNullValue("Height") ?? 0,
+            Color = json.GetColorOrDefaultWithoutNullValue("Color"),
             SummaryType = sumtype,
             SummaryMethod = summethod,
-            BreakKey = json.GetStringOrNullValue("BreakKey") ?? "",
-            Culture = json.GetCultureOrNullValue("Culture"),
+            BreakKey = json.GetStringOrDefaultWithoutNullValue("BreakKey") ?? "",
+            Culture = json.GetCultureOrDefaultWithoutNullValue("Culture"),
         };
     }
 
@@ -153,10 +153,10 @@ public static class JsonLoader
         X = posx,
         Y = posy,
         Name = name,
-        Width = json.GetIntOrNullValue("Width") ?? 0,
-        Height = json.GetIntOrNullValue("Height") ?? 0,
-        Color = json.GetColorOrNullValue("Color"),
-        LineWidth = json.GetIntOrNullValue("LineWidth") ?? 1,
+        Width = json.GetIntOrDefaultWithoutNullValue("Width") ?? 0,
+        Height = json.GetIntOrDefaultWithoutNullValue("Height") ?? 0,
+        Color = json.GetColorOrDefaultWithoutNullValue("Color"),
+        LineWidth = json.GetIntOrDefaultWithoutNullValue("LineWidth") ?? 1,
     };
 
     public static CrossSectionLineElement LoadCrossSectionLineElement(int posx, int posy, string name, JsonNode json) => new()
@@ -164,10 +164,10 @@ public static class JsonLoader
         X = posx,
         Y = posy,
         Name = name,
-        Width = json.GetIntOrNullValue("Width") ?? 0,
-        Height = json.GetIntOrNullValue("Height") ?? 0,
-        Color = json.GetColorOrNullValue("Color"),
-        LineWidth = json.GetIntOrNullValue("LineWidth") ?? 1,
+        Width = json.GetIntOrDefaultWithoutNullValue("Width") ?? 0,
+        Height = json.GetIntOrDefaultWithoutNullValue("Height") ?? 0,
+        Color = json.GetColorOrDefaultWithoutNullValue("Color"),
+        LineWidth = json.GetIntOrDefaultWithoutNullValue("LineWidth") ?? 1,
     };
 
     public static RectangleElement LoadRectangleElement(int posx, int posy, string name, JsonNode json) => new()
@@ -175,10 +175,10 @@ public static class JsonLoader
         X = posx,
         Y = posy,
         Name = name,
-        Width = json.GetIntOrNullValue("Width") ?? 0,
-        Height = json.GetIntOrNullValue("Height") ?? 0,
-        Color = json.GetColorOrNullValue("Color"),
-        LineWidth = json.GetIntOrNullValue("LineWidth") ?? 1,
+        Width = json.GetIntOrDefaultWithoutNullValue("Width") ?? 0,
+        Height = json.GetIntOrDefaultWithoutNullValue("Height") ?? 0,
+        Color = json.GetColorOrDefaultWithoutNullValue("Color"),
+        LineWidth = json.GetIntOrDefaultWithoutNullValue("LineWidth") ?? 1,
     };
 
     public static CrossSectionRectangleElement LoadCrossSectionRectangleElement(int posx, int posy, string name, JsonNode json) => new()
@@ -186,10 +186,10 @@ public static class JsonLoader
         X = posx,
         Y = posy,
         Name = name,
-        Width = json.GetIntOrNullValue("Width") ?? 0,
-        Height = json.GetIntOrNullValue("Height") ?? 0,
-        Color = json.GetColorOrNullValue("Color"),
-        LineWidth = json.GetIntOrNullValue("LineWidth") ?? 1,
+        Width = json.GetIntOrDefaultWithoutNullValue("Width") ?? 0,
+        Height = json.GetIntOrDefaultWithoutNullValue("Height") ?? 0,
+        Color = json.GetColorOrDefaultWithoutNullValue("Color"),
+        LineWidth = json.GetIntOrDefaultWithoutNullValue("LineWidth") ?? 1,
     };
 
     public static CrossSectionFillRectangleElement LoadCrossSectionFillRectangleElement(int posx, int posy, string name, JsonNode json) => new()
@@ -197,11 +197,11 @@ public static class JsonLoader
         X = posx,
         Y = posy,
         Name = name,
-        Width = json.GetIntOrNullValue("Width") ?? 0,
-        Height = json.GetIntOrNullValue("Height") ?? 0,
+        Width = json.GetIntOrDefaultWithoutNullValue("Width") ?? 0,
+        Height = json.GetIntOrDefaultWithoutNullValue("Height") ?? 0,
         LineColor = json.GetColorValue("LineColor"),
         FillColor = json.GetColorValue("FillColor"),
-        LineWidth = json.GetIntOrNullValue("LineWidth") ?? 1,
+        LineWidth = json.GetIntOrDefaultWithoutNullValue("LineWidth") ?? 1,
     };
 
     public static ImageElement LoadImageElement(int posx, int posy, string name, JsonNode json) => new()
@@ -209,10 +209,10 @@ public static class JsonLoader
         X = posx,
         Y = posy,
         Name = name,
-        Path = json.GetStringOrNullValue("Path") ?? "",
-        Bind = json.GetStringOrNullValue("Bind") ?? "",
-        ZoomWidth = json.GetDoubleOrNullValue("ZoomWidth") ?? 1.0,
-        ZoomHeight = json.GetDoubleOrNullValue("ZoomHeight") ?? 1.0,
+        Path = json.GetStringOrDefaultWithoutNullValue("Path") ?? "",
+        Bind = json.GetStringOrDefaultWithoutNullValue("Bind") ?? "",
+        ZoomWidth = json.GetDoubleOrDefaultWithoutNullValue("ZoomWidth") ?? 1.0,
+        ZoomHeight = json.GetDoubleOrDefaultWithoutNullValue("ZoomHeight") ?? 1.0,
     };
 
     public static FillRectangleElement LoadFillRectangleElement(int posx, int posy, string name, JsonNode json) => new()
@@ -220,11 +220,11 @@ public static class JsonLoader
         X = posx,
         Y = posy,
         Name = name,
-        Width = json.GetIntOrNullValue("Width") ?? 0,
-        Height = json.GetIntOrNullValue("Height") ?? 0,
+        Width = json.GetIntOrDefaultWithoutNullValue("Width") ?? 0,
+        Height = json.GetIntOrDefaultWithoutNullValue("Height") ?? 0,
         LineColor = json.GetColorValue("LineColor"),
         FillColor = json.GetColorValue("FillColor"),
-        LineWidth = json.GetIntOrNullValue("LineWidth") ?? 1,
+        LineWidth = json.GetIntOrDefaultWithoutNullValue("LineWidth") ?? 1,
     };
 
     public static FontPath[] ToFontPathArray(JsonNode? node) =>
@@ -237,7 +237,7 @@ public static class JsonLoader
         new()
         {
             Path = node.GetStringValue("Path"),
-            Embed = node.GetEnumOrNullValue<FontEmbeds>("Embed") ?? (FontEmbeds.PossibleEmbed | FontEmbeds.ConvertNone),
+            Embed = node.GetEnumOrDefaultWithoutNullValue<FontEmbeds>("Embed") ?? (FontEmbeds.PossibleEmbed | FontEmbeds.ConvertNone),
         };
 
     public static PageSize LoadPageSize(JsonNode? node)

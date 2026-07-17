@@ -74,6 +74,104 @@ public class JsonLoaderTest
     }
 
     [Fact]
+    public void TypeCheckExtension()
+    {
+        var node = JsonNode.Parse("""
+{
+    "NullValue": null,
+    "EmptyString": "",
+    "StringValue": "xyz",
+    "IntStringValue": "234",
+    "DoubleStringValue": "234.5",
+    "IntValue": 123,
+    "DoubleValue": 123.4,
+    "TrueValue": true,
+    "FalseValue": false,
+    "Array": [1, 2, 3],
+    "Object": { "X": 10, "Y": 20, "Z": 30 },
+}
+""", null, Option)!;
+
+        _ = Assert.Throws<NullReferenceException>(() => node.GetStringValue("InvalidName"));
+        _ = Assert.Throws<NullReferenceException>(() => node.GetStringValue("NullValue"));
+        Assert.Equal(node.GetStringValue("EmptyString"), "");
+        Assert.Equal(node.GetStringValue("StringValue"), "xyz");
+        Assert.Equal(node.GetStringValue("IntStringValue"), "234");
+        Assert.Equal(node.GetStringValue("DoubleStringValue"), "234.5");
+        Assert.Equal(node.GetStringValue("IntValue"), "123");
+        Assert.Equal(node.GetStringValue("DoubleValue"), "123.4");
+        Assert.Equal(node.GetStringValue("TrueValue"), "true");
+        Assert.Equal(node.GetStringValue("FalseValue"), "false");
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetStringValue("Array"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetStringValue("Object"));
+
+        _ = Assert.Throws<NullReferenceException>(() => node.GetIntValue("InvalidName"));
+        _ = Assert.Throws<NullReferenceException>(() => node.GetIntValue("NullValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntValue("EmptyString"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntValue("StringValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntValue("IntStringValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntValue("DoubleStringValue"));
+        Assert.Equal(node.GetIntValue("IntValue"), 123);
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntValue("DoubleValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntValue("TrueValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntValue("FalseValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntValue("Array"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntValue("Object"));
+
+        _ = Assert.Throws<NullReferenceException>(() => node.GetDoubleValue("InvalidName"));
+        _ = Assert.Throws<NullReferenceException>(() => node.GetDoubleValue("NullValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleValue("EmptyString"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleValue("StringValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleValue("IntStringValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleValue("DoubleStringValue"));
+        Assert.Equal(node.GetDoubleValue("IntValue"), 123.0);
+        Assert.Equal(node.GetDoubleValue("DoubleValue"), 123.4);
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleValue("TrueValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleValue("FalseValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleValue("Array"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleValue("Object"));
+
+        Assert.Null(node.GetStringOrDefaultWithoutNullValue("InvalidName"));
+        _ = Assert.Throws<NullReferenceException>(() => node.GetStringOrDefaultWithoutNullValue("NullValue"));
+        Assert.Equal(node.GetStringOrDefaultWithoutNullValue("EmptyString"), "");
+        Assert.Equal(node.GetStringOrDefaultWithoutNullValue("StringValue"), "xyz");
+        Assert.Equal(node.GetStringOrDefaultWithoutNullValue("IntStringValue"), "234");
+        Assert.Equal(node.GetStringOrDefaultWithoutNullValue("DoubleStringValue"), "234.5");
+        Assert.Equal(node.GetStringOrDefaultWithoutNullValue("IntValue"), "123");
+        Assert.Equal(node.GetStringOrDefaultWithoutNullValue("DoubleValue"), "123.4");
+        Assert.Equal(node.GetStringOrDefaultWithoutNullValue("TrueValue"), "true");
+        Assert.Equal(node.GetStringOrDefaultWithoutNullValue("FalseValue"), "false");
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetStringOrDefaultWithoutNullValue("Array"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetStringOrDefaultWithoutNullValue("Object"));
+
+        Assert.Null(node.GetIntOrDefaultWithoutNullValue("InvalidName"));
+        _ = Assert.Throws<NullReferenceException>(() => node.GetIntOrDefaultWithoutNullValue("NullValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntOrDefaultWithoutNullValue("EmptyString"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntOrDefaultWithoutNullValue("StringValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntOrDefaultWithoutNullValue("IntStringValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntOrDefaultWithoutNullValue("DoubleStringValue"));
+        Assert.Equal(node.GetIntOrDefaultWithoutNullValue("IntValue"), 123);
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntOrDefaultWithoutNullValue("DoubleValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntOrDefaultWithoutNullValue("TrueValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntOrDefaultWithoutNullValue("FalseValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntOrDefaultWithoutNullValue("Array"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetIntOrDefaultWithoutNullValue("Object"));
+
+        Assert.Null(node.GetDoubleOrDefaultWithoutNullValue("InvalidName"));
+        _ = Assert.Throws<NullReferenceException>(() => node.GetDoubleOrDefaultWithoutNullValue("NullValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("EmptyString"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("StringValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("IntStringValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("DoubleStringValue"));
+        Assert.Equal(node.GetDoubleOrDefaultWithoutNullValue("IntValue"), 123.0);
+        Assert.Equal(node.GetDoubleOrDefaultWithoutNullValue("DoubleValue"), 123.4);
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("TrueValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("FalseValue"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("Array"));
+        _ = Assert.Throws<InvalidOperationException>(() => node.GetDoubleOrDefaultWithoutNullValue("Object"));
+    }
+
+    [Fact]
     public void LoadElementError()
     {
         Assert.Equal(Assert.Throws<NullReferenceException>(() => _ = JsonLoader.LoadElement(JsonNode.Parse("""{ }""", null, Option)!)).Message, "Element 'X' was not found.");
