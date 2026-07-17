@@ -54,7 +54,7 @@ public static class JsonLoader
         return new()
         {
             Size = size,
-            Orientation = json["Orientation"]?.AsValue() is { } orient ? Enum.Parse<Orientations>(orient!.ToString()) : Orientations.Vertical,
+            Orientation = json.GetEnumOrNullValue<Orientations>("Orientation") ?? Orientations.Vertical,
             DefaultFont = fonts,
             Header = json.GetStringOrNullValue("Header") is { } p1 ? sections[p1].Cast<IHeaderSection>() : null,
             Footer = json.GetStringOrNullValue("Footer") is { } p2 ? sections[p2].Cast<IFooterSection>() : null,
