@@ -21,7 +21,13 @@ public static class ImageLoader
         return FromStream(stream, type);
     }
 
-    public static IImage? FromStream(Stream stream) => FromStream(stream, TypeCheck(stream));
+    public static IImage? FromStream(Stream stream)
+    {
+        var position = stream.Position;
+        var type = TypeCheck(stream);
+        stream.Position = position;
+        return FromStream(stream, type);
+    }
 
     public static IImage? FromStream(Stream stream, ImageTypes type) => type switch
     {
@@ -34,9 +40,7 @@ public static class ImageLoader
 
     public static ImageTypes TypeCheck(Stream stream)
     {
-        var position = stream.Position;
         var header = stream.ReadExactly(9);
-        stream.Position = position;
 
         return header.Length >= JpegFile.MagicNumber.Length && header.Take(JpegFile.MagicNumber.Length).SequenceEqual(JpegFile.MagicNumber) ? ImageTypes.Jpeg
             : header.Length >= PngFile.MagicNumber.Length && header.Take(PngFile.MagicNumber.Length).SequenceEqual(PngFile.MagicNumber) ? ImageTypes.Png
