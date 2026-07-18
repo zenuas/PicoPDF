@@ -94,14 +94,16 @@ public class PngFile : IImageCanvas
         ApplyFilterType(data, height, byte_per_pixel, row_byte);
 
         Func<byte[], Color> makecolor =
-            color_type == ColorTypes.Palette ? xs => palette[xs[0]] :
+            color_type == ColorTypes.Palette && bit_per_pixel == 16 ? xs => palette[(xs[0] << 8) + xs[1]] :
+            color_type == ColorTypes.Palette && bit_per_pixel == 8 ? xs => palette[xs[0]] :
+            color_type == ColorTypes.Grayscale && bit_per_pixel == 16 ? xs => throw new NotSupportedException() :
+            color_type == ColorTypes.Grayscale && bit_per_pixel == 8 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
+            color_type == ColorTypes.Grayscale && bit_per_pixel == 4 ? xs => throw new NotSupportedException() :
+            color_type == ColorTypes.Grayscale && bit_per_pixel == 2 ? xs => throw new NotSupportedException() :
+            color_type == ColorTypes.Grayscale && bit_per_pixel == 1 ? xs => throw new NotSupportedException() :
             byte_per_pixel == 2 ? xs => throw new NotSupportedException() :
             byte_per_pixel == 3 ? xs => Color.FromArgb(xs[0], xs[1], xs[2]) :
             byte_per_pixel == 4 ? xs => Color.FromArgb(xs[3], xs[0], xs[1], xs[2]) :
-            byte_per_pixel == 1 && bit_per_pixel == 8 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
-            byte_per_pixel == 1 && bit_per_pixel == 4 ? xs => throw new NotSupportedException() :
-            byte_per_pixel == 1 && bit_per_pixel == 2 ? xs => throw new NotSupportedException() :
-            byte_per_pixel == 1 && bit_per_pixel == 1 ? xs => throw new NotSupportedException() :
             xs => Color.FromArgb(xs[0], xs[0], xs[0]);
 
         return new()
