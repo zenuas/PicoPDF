@@ -25,7 +25,7 @@ public class PngFile : IImageCanvas
         var width = 0;
         var height = 0;
         var bit_deps = (byte)0;
-        var color_type = (byte)0;
+        var color_type = ColorTypes.Grayscale;
         var compression_method = (byte)0;
         var filter_method = (byte)0;
         var interlace_method = (byte)0;
@@ -36,49 +36,49 @@ public class PngFile : IImageCanvas
         {
             var chunk = stream.ReadExactly(8).AsSpan();
             var length = BinaryPrimitives.ReadInt32BigEndian(chunk[0..4]);
-            var type = BinaryPrimitives.ReadUInt32BigEndian(chunk[4..8]);
+            var type = (ChunkTypes)BinaryPrimitives.ReadUInt32BigEndian(chunk[4..8]);
             var chunkdataraw = stream.ReadExactly(length);
             var chunkdata = chunkdataraw.AsSpan();
             stream.Position += 4;
             switch (type)
             {
-                case (uint)ChunkTypes.IHDR:
+                case ChunkTypes.IHDR:
                     Debug.Assert(length == 13);
                     width = BinaryPrimitives.ReadInt32BigEndian(chunkdata[0..4]);
                     height = BinaryPrimitives.ReadInt32BigEndian(chunkdata[4..8]);
                     bit_deps = chunkdata[8];
-                    color_type = chunkdata[9];
+                    color_type = (ColorTypes)chunkdata[9];
                     compression_method = chunkdata[10];
                     filter_method = chunkdata[11];
                     interlace_method = chunkdata[12];
                     break;
 
-                case (uint)ChunkTypes.PLTE:
+                case ChunkTypes.PLTE:
                     Debug.Assert(length >= 3 && length % 3 == 0);
                     palette = [.. Lists.RangeTo(0, (length / 3) - 1).Select(x => Color.FromArgb(chunkdataraw[x * 3], chunkdataraw[(x * 3) + 1], chunkdataraw[(x * 3) + 2]))];
                     break;
 
-                case (uint)ChunkTypes.IDAT:
+                case ChunkTypes.IDAT:
                     datas.AddRange(chunkdataraw);
                     break;
 
-                case (uint)ChunkTypes.IEND:
+                case ChunkTypes.IEND:
                     goto END_OF_DATA;
 
-                case (uint)ChunkTypes.cHRM:
-                case (uint)ChunkTypes.gAMA:
-                case (uint)ChunkTypes.iCCP:
-                case (uint)ChunkTypes.sBIT:
-                case (uint)ChunkTypes.sRGB:
-                case (uint)ChunkTypes.bKGD:
-                case (uint)ChunkTypes.hIST:
-                case (uint)ChunkTypes.tRNS:
-                case (uint)ChunkTypes.pHYs:
-                case (uint)ChunkTypes.sPLT:
-                case (uint)ChunkTypes.tIME:
-                case (uint)ChunkTypes.iTXt:
-                case (uint)ChunkTypes.tEXt:
-                case (uint)ChunkTypes.zTXt:
+                case ChunkTypes.cHRM:
+                case ChunkTypes.gAMA:
+                case ChunkTypes.iCCP:
+                case ChunkTypes.sBIT:
+                case ChunkTypes.sRGB:
+                case ChunkTypes.bKGD:
+                case ChunkTypes.hIST:
+                case ChunkTypes.tRNS:
+                case ChunkTypes.pHYs:
+                case ChunkTypes.sPLT:
+                case ChunkTypes.tIME:
+                case ChunkTypes.iTXt:
+                case ChunkTypes.tEXt:
+                case ChunkTypes.zTXt:
                     break;
             }
         }
@@ -94,10 +94,14 @@ public class PngFile : IImageCanvas
         ApplyFilterType(data, height, byte_per_pixel, row_byte);
 
         Func<byte[], Color> makecolor =
-            color_type == 3 ? xs => palette[xs[0]] :
+            color_type == ColorTypes.Palette ? xs => palette[xs[0]] :
+            byte_per_pixel == 2 ? xs => throw new NotSupportedException() :
             byte_per_pixel == 3 ? xs => Color.FromArgb(xs[0], xs[1], xs[2]) :
             byte_per_pixel == 4 ? xs => Color.FromArgb(xs[3], xs[0], xs[1], xs[2]) :
-            byte_per_pixel == 1 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
+            byte_per_pixel == 1 && bit_per_pixel == 8 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
+            byte_per_pixel == 1 && bit_per_pixel == 4 ? xs => throw new NotSupportedException() :
+            byte_per_pixel == 1 && bit_per_pixel == 2 ? xs => throw new NotSupportedException() :
+            byte_per_pixel == 1 && bit_per_pixel == 1 ? xs => throw new NotSupportedException() :
             xs => Color.FromArgb(xs[0], xs[0], xs[0]);
 
         return new()
@@ -110,13 +114,13 @@ public class PngFile : IImageCanvas
         };
     }
 
-    public static int GetBitsPerPixel(byte color_type, byte bit_deps) => color_type switch
+    public static int GetBitsPerPixel(ColorTypes color_type, byte bit_deps) => color_type switch
     {
-        (byte)ColorTypes.Grayscale => bit_deps,
-        (byte)ColorTypes.Rgb => bit_deps * 3,
-        (byte)ColorTypes.Palette => bit_deps,
-        (byte)ColorTypes.GrayscaleAlpha => bit_deps * 2,
-        (byte)ColorTypes.Rgba => bit_deps * 4,
+        ColorTypes.Grayscale => bit_deps,
+        ColorTypes.Rgb => bit_deps * 3,
+        ColorTypes.Palette => bit_deps,
+        ColorTypes.GrayscaleAlpha => bit_deps * 2,
+        ColorTypes.Rgba => bit_deps * 4,
         _ => throw new(),
     };
 
@@ -128,28 +132,28 @@ public class PngFile : IImageCanvas
         for (var y = 0; y < height; y++)
         {
             var line = datas[(y * row_byte)..((y * row_byte) + row_byte)];
-            var filter_type = line[0];
+            var filter_type = (FilterTypes)line[0];
             var scanline = line[1..];
 
             switch (filter_type)
             {
-                case (byte)FilterTypes.None: break;
+                case FilterTypes.None: break;
 
-                case (byte)FilterTypes.Sub:
+                case FilterTypes.Sub:
                     for (var x = byte_per_pixel; x < scanline.Length; x++)
                     {
                         scanline[x] += scanline[x - byte_per_pixel];
                     }
                     break;
 
-                case (byte)FilterTypes.Up:
+                case FilterTypes.Up:
                     for (var x = 0; x < scanline.Length; x++)
                     {
                         scanline[x] += prev_scanline[x];
                     }
                     break;
 
-                case (byte)FilterTypes.Average:
+                case FilterTypes.Average:
                     for (var x = 0; x < byte_per_pixel; x++)
                     {
                         scanline[x] += (byte)(prev_scanline[x] / 2);
@@ -160,7 +164,7 @@ public class PngFile : IImageCanvas
                     }
                     break;
 
-                case (byte)FilterTypes.Paeth:
+                case FilterTypes.Paeth:
                     for (var i = 0; i < byte_per_pixel; i++)
                     {
                         var a = 0;
