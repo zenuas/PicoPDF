@@ -94,17 +94,19 @@ public class PngFile : IImageCanvas
         ApplyFilterType(data, height, byte_per_pixel, row_byte);
 
         Func<byte[], Color> makecolor =
-            color_type == ColorTypes.Palette && bit_per_pixel == 16 ? xs => palette[(xs[0] << 8) + xs[1]] :
-            color_type == ColorTypes.Palette && bit_per_pixel == 8 ? xs => palette[xs[0]] :
-            color_type == ColorTypes.Grayscale && bit_per_pixel == 16 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
-            color_type == ColorTypes.Grayscale && bit_per_pixel == 8 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
-            color_type == ColorTypes.Grayscale && bit_per_pixel == 4 ? xs => Color.FromArgb(xs[0] * 17, xs[0] * 17, xs[0] * 17) :
-            color_type == ColorTypes.Grayscale && bit_per_pixel == 2 ? xs => Color.FromArgb(xs[0] * 85, xs[0] * 85, xs[0] * 85) :
-            color_type == ColorTypes.Grayscale && bit_per_pixel == 1 ? xs => Color.FromArgb(xs[0] * 255, xs[0] * 255, xs[0] * 255) :
-            byte_per_pixel == 2 ? xs => throw new NotSupportedException() :
-            byte_per_pixel == 3 ? xs => Color.FromArgb(xs[0], xs[1], xs[2]) :
-            byte_per_pixel == 4 ? xs => Color.FromArgb(xs[3], xs[0], xs[1], xs[2]) :
-            xs => Color.FromArgb(xs[0], xs[0], xs[0]);
+            color_type == ColorTypes.Grayscale && bit_deps == 1 ? xs => Color.FromArgb(xs[0] * 255, xs[0] * 255, xs[0] * 255) :
+            color_type == ColorTypes.Grayscale && bit_deps == 2 ? xs => Color.FromArgb(xs[0] * 85, xs[0] * 85, xs[0] * 85) :
+            color_type == ColorTypes.Grayscale && bit_deps == 4 ? xs => Color.FromArgb(xs[0] * 17, xs[0] * 17, xs[0] * 17) :
+            color_type == ColorTypes.Grayscale && bit_deps == 8 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
+            color_type == ColorTypes.Grayscale && bit_deps == 16 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
+            color_type == ColorTypes.Rgb && bit_deps == 8 ? xs => Color.FromArgb(xs[0], xs[1], xs[2]) :
+            color_type == ColorTypes.Rgb && bit_deps == 16 ? xs => Color.FromArgb(xs[0], xs[2], xs[4]) :
+            color_type == ColorTypes.Palette ? xs => palette[xs[0]] : // By ChunkBits, bit_per_pixel is 1, 2, 4 to 1-bytes array.
+            color_type == ColorTypes.GrayscaleAlpha && bit_deps == 8 ? xs => Color.FromArgb(xs[1], xs[0], xs[0], xs[0]) :
+            color_type == ColorTypes.GrayscaleAlpha && bit_deps == 16 ? xs => Color.FromArgb(xs[1], xs[0], xs[0], xs[0]) :
+            color_type == ColorTypes.Rgba && bit_deps == 8 ? xs => Color.FromArgb(xs[3], xs[0], xs[1], xs[2]) :
+            color_type == ColorTypes.Rgba && bit_deps == 16 ? xs => Color.FromArgb(xs[6], xs[0], xs[2], xs[4]) :
+            throw new InvalidOperationException($"Unsupported color-type: {color_type}, bit-depth: {bit_deps}.");
 
         return new()
         {
@@ -112,8 +114,9 @@ public class PngFile : IImageCanvas
             Height = height,
             Canvas = [.. data
                 .Chunk(row_byte)
-                .Select(xs => (color_type == ColorTypes.Grayscale && bit_per_pixel < 8 ?
-                        ChunkBits(xs.Skip(1), bit_per_pixel) :
+                .Select(xs => (
+                        color_type == ColorTypes.Grayscale && bit_per_pixel < 8 ? ChunkBits(xs.Skip(1), bit_per_pixel) :
+                        color_type == ColorTypes.Palette && bit_per_pixel < 8 ? ChunkBits(xs.Skip(1), bit_per_pixel) :
                         xs.Skip(1).Chunk(byte_per_pixel)
                     )
                     .Select(makecolor)
