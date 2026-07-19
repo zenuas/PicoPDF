@@ -96,11 +96,11 @@ public class PngFile : IImageCanvas
         Func<byte[], Color> makecolor =
             color_type == ColorTypes.Palette && bit_per_pixel == 16 ? xs => palette[(xs[0] << 8) + xs[1]] :
             color_type == ColorTypes.Palette && bit_per_pixel == 8 ? xs => palette[xs[0]] :
-            color_type == ColorTypes.Grayscale && bit_per_pixel == 16 ? xs => throw new NotSupportedException() :
+            color_type == ColorTypes.Grayscale && bit_per_pixel == 16 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
             color_type == ColorTypes.Grayscale && bit_per_pixel == 8 ? xs => Color.FromArgb(xs[0], xs[0], xs[0]) :
-            color_type == ColorTypes.Grayscale && bit_per_pixel == 4 ? xs => throw new NotSupportedException() :
-            color_type == ColorTypes.Grayscale && bit_per_pixel == 2 ? xs => throw new NotSupportedException() :
-            color_type == ColorTypes.Grayscale && bit_per_pixel == 1 ? xs => throw new NotSupportedException() :
+            color_type == ColorTypes.Grayscale && bit_per_pixel == 4 ? xs => Color.FromArgb(xs[0] * 17, xs[0] * 17, xs[0] * 17) :
+            color_type == ColorTypes.Grayscale && bit_per_pixel == 2 ? xs => Color.FromArgb(xs[0] * 85, xs[0] * 85, xs[0] * 85) :
+            color_type == ColorTypes.Grayscale && bit_per_pixel == 1 ? xs => Color.FromArgb(xs[0] * 255, xs[0] * 255, xs[0] * 255) :
             byte_per_pixel == 2 ? xs => throw new NotSupportedException() :
             byte_per_pixel == 3 ? xs => Color.FromArgb(xs[0], xs[1], xs[2]) :
             byte_per_pixel == 4 ? xs => Color.FromArgb(xs[3], xs[0], xs[1], xs[2]) :
@@ -112,7 +112,13 @@ public class PngFile : IImageCanvas
             Height = height,
             Canvas = [.. data
                 .Chunk(row_byte)
-                .Select(xs => xs.Skip(1).Chunk(byte_per_pixel).Select(makecolor).ToArray())],
+                .Select(xs => (color_type == ColorTypes.Grayscale && bit_per_pixel < 8 ?
+                        ChunkBits(xs.Skip(1), width, bit_per_pixel) :
+                        xs.Skip(1).Chunk(byte_per_pixel)
+                    )
+                    .Select(makecolor)
+                    .ToArray()
+                )],
         };
     }
 
@@ -127,6 +133,38 @@ public class PngFile : IImageCanvas
     };
 
     public static int BitToByte(int bit) => (bit + 7) / 8;
+
+    public static IEnumerable<byte[]> ChunkBits(IEnumerable<byte> self, int width, int bit)
+    {
+        foreach (var b in self)
+        {
+            switch (bit)
+            {
+                case 1:
+                    yield return [(byte)((b & 0x80) >> 7)];
+                    yield return [(byte)((b & 0x40) >> 6)];
+                    yield return [(byte)((b & 0x20) >> 5)];
+                    yield return [(byte)((b & 0x10) >> 4)];
+                    yield return [(byte)((b & 0x08) >> 3)];
+                    yield return [(byte)((b & 0x04) >> 2)];
+                    yield return [(byte)((b & 0x02) >> 1)];
+                    yield return [(byte)(b & 0x01)];
+                    break;
+
+                case 2:
+                    yield return [(byte)((b & 0xC0) >> 6)];
+                    yield return [(byte)((b & 0x30) >> 4)];
+                    yield return [(byte)((b & 0x0C) >> 2)];
+                    yield return [(byte)(b & 0x03)];
+                    break;
+
+                case 4:
+                    yield return [(byte)((b & 0xF0) >> 4)];
+                    yield return [(byte)(b & 0x0F)];
+                    break;
+            }
+        }
+    }
 
     public static void ApplyFilterType(Span<byte> datas, int height, int byte_per_pixel, int row_byte)
     {
