@@ -1,6 +1,9 @@
 ﻿using Mina.Extension;
+using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace Image.Bmp;
 
@@ -43,5 +46,92 @@ public class BmpFile : IImageCanvas, IImageWritable
                 stream.WriteByte(0);
             }
         }
+    }
+
+    public static BmpFile FromStream(Stream stream)
+    {
+        // BITMAPFILEHEADER
+        var signature = stream.ReadExactly(2);
+        Debug.Assert(MagicNumber.SequenceEqual(signature));
+
+        stream.Position += 12;
+
+        var header_size = stream.ReadUIntByLittleEndian();
+        var width = 0;
+        var height = 0;
+        var bitcount = 1;
+
+        switch (header_size)
+        {
+            case 12: // BITMAPCOREHEADER
+                width = stream.ReadUShortByLittleEndian();
+                height = stream.ReadUShortByLittleEndian();
+                _ = stream.ReadUShortByLittleEndian();
+                bitcount = stream.ReadUShortByLittleEndian();
+                break;
+
+            case 40: // BITMAPINFOHEADER
+                width = stream.ReadIntByLittleEndian();
+                height = stream.ReadIntByLittleEndian();
+                _ = stream.ReadUShortByLittleEndian();
+                bitcount = stream.ReadUShortByLittleEndian();
+                var compression = stream.ReadUIntByLittleEndian();
+                if (compression != 0) throw new InvalidOperationException($"Unsupported bitmap compression({compression}).");
+                stream.Position += 20;
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unsupported bitmap header size({header_size}).");
+        }
+        if (bitcount is not 16 and not 24 and not 32) throw new InvalidOperationException($"Unsupported bitmap bit-count({bitcount}).");
+
+        var height_abs = Math.Abs(height);
+        var canvas = new Color[height_abs][];
+        var stride = ((bitcount * width) + 31) / 32 * 4;
+        var padding = stride - (bitcount * width / 8);
+        for (var i = 0; i < height_abs; i++)
+        {
+            var row = new Color[width];
+
+            for (var x = 0; x < width; x++)
+            {
+                switch (bitcount)
+                {
+                    case 16:
+                        {
+                            var rgb = stream.ReadUShortByLittleEndian();
+                            var r = (byte)((rgb & 0b01111100_00000000) >> 10);
+                            var g = (byte)((rgb & 0b00000011_11100000) >> 5);
+                            var b = (byte)(rgb & 0b00000000_00011111);
+                            row[x] = Color.FromArgb(r, g, b);
+                        }
+                        break;
+
+                    case 24:
+                    case 32:
+                        {
+                            var b = stream.ReadByte();
+                            var g = stream.ReadByte();
+                            var r = stream.ReadByte();
+                            if (bitcount == 32) _ = stream.ReadByte();
+                            row[x] = Color.FromArgb(r, g, b);
+                        }
+                        break;
+                }
+            }
+            stream.Position += padding;
+
+            // For uncompressed RGB bitmaps,
+            // if biHeight is positive, the bitmap is a bottom-up DIB with the origin at the lower left corner.
+            // If biHeight is negative, the bitmap is a top-down DIB with the origin at the upper left corner.
+            canvas[height > 0 ? height_abs - 1 - i : i] = row;
+        }
+
+        return new()
+        {
+            Width = width,
+            Height = height_abs,
+            Canvas = canvas,
+        };
     }
 }

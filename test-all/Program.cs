@@ -18,6 +18,7 @@ var (command, xargs) = CommandLine.Run<ICommand>([
         ("font-export", typeof(FontExport)),
         ("cff-charstrings", typeof(CffCharStrings)),
         ("color-dump", typeof(ColorDump)),
+        ("image-dump", typeof(ImageDump)),
     ], args);
 
 command.Run(xargs);

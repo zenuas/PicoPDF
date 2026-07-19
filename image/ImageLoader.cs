@@ -33,6 +33,7 @@ public static class ImageLoader
     {
         ImageTypes.Jpeg => JpegFile.FromStream(stream),
         ImageTypes.Png => PngFile.FromStream(stream),
+        ImageTypes.Bmp => BmpFile.FromStream(stream),
         _ => null,
     };
 
