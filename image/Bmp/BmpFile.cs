@@ -87,19 +87,20 @@ public class BmpFile : IImageCanvas, IImageWritable
                 throw new InvalidOperationException($"Unsupported bitmap header size({header_size}).");
         }
 
-        var palettes = bitcount switch
-        {
-            1 => new Color[2],
-            4 => new Color[16],
-            8 => new Color[256],
-            _ => [],
-        };
+        Color[] palettes = null!;
         switch (bitcount)
         {
             case 1:
             case 4:
             case 8:
                 {
+                    palettes = bitcount switch
+                    {
+                        1 => new Color[2],
+                        4 => new Color[16],
+                        8 => new Color[256],
+                        _ => [],
+                    };
                     var color_table_size = (bfOffBits - (14 + header_size)) / 4;
                     if (palettes.Length != color_table_size) throw new InvalidOperationException($"Invalid number of colors in {bitcount}-bit bitmap palette({color_table_size}).");
                     for (var i = 0; i < color_table_size; i++)
@@ -110,7 +111,6 @@ public class BmpFile : IImageCanvas, IImageWritable
                         _ = stream.ReadByte();
                         palettes[i] = Color.FromArgb(r, g, b);
                     }
-                    stream.Position = position + bfOffBits;
                     break;
                 }
 
