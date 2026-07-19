@@ -50,11 +50,14 @@ public class BmpFile : IImageCanvas, IImageWritable
 
     public static BmpFile FromStream(Stream stream)
     {
+        var position = stream.Position;
+
         // BITMAPFILEHEADER
         var signature = stream.ReadExactly(2);
         Debug.Assert(MagicNumber.SequenceEqual(signature));
 
-        stream.Position += 12;
+        stream.Position += 8;
+        var bfOffBits = stream.ReadUIntByLittleEndian();
 
         var header_size = stream.ReadUIntByLittleEndian();
         var width = 0;
@@ -83,7 +86,43 @@ public class BmpFile : IImageCanvas, IImageWritable
             default:
                 throw new InvalidOperationException($"Unsupported bitmap header size({header_size}).");
         }
-        if (bitcount is not 16 and not 24 and not 32) throw new InvalidOperationException($"Unsupported bitmap bit-count({bitcount}).");
+
+        var palettes = bitcount switch
+        {
+            1 => new Color[2],
+            4 => new Color[16],
+            8 => new Color[256],
+            _ => [],
+        };
+        switch (bitcount)
+        {
+            case 1:
+            case 4:
+            case 8:
+                {
+                    var color_table_size = (bfOffBits - (14 + header_size)) / 4;
+                    if (palettes.Length != color_table_size) throw new InvalidOperationException($"Invalid number of colors in {bitcount}-bit bitmap palette({color_table_size}).");
+                    for (var i = 0; i < color_table_size; i++)
+                    {
+                        var b = stream.ReadByte();
+                        var g = stream.ReadByte();
+                        var r = stream.ReadByte();
+                        _ = stream.ReadByte();
+                        palettes[i] = Color.FromArgb(r, g, b);
+                    }
+                    stream.Position = position + bfOffBits;
+                    break;
+                }
+
+            case 16:
+            case 24:
+            case 32:
+                stream.Position = position + bfOffBits;
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unsupported bitmap bit-count({bitcount}).");
+        }
 
         var height_abs = Math.Abs(height);
         var canvas = new Color[height_abs][];
@@ -92,11 +131,26 @@ public class BmpFile : IImageCanvas, IImageWritable
         for (var i = 0; i < height_abs; i++)
         {
             var row = new Color[width];
+            var palette_data = 0;
 
             for (var x = 0; x < width; x++)
             {
                 switch (bitcount)
                 {
+                    case 1:
+                        if ((x % 8) == 0) palette_data = stream.ReadByte();
+                        row[x] = palettes[(palette_data >> (7 - (x % 8))) & 0b00000001];
+                        break;
+
+                    case 4:
+                        if ((x % 2) == 0) palette_data = stream.ReadByte();
+                        row[x] = palettes[(palette_data >> (x % 2 * 4)) & 0b00001111];
+                        break;
+
+                    case 8:
+                        row[x] = palettes[stream.ReadByte()];
+                        break;
+
                     case 16:
                         {
                             var rgb = stream.ReadUShortByLittleEndian();
