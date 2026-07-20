@@ -40,9 +40,12 @@ public class BmpFile : IImageCanvas, IImageWritable
         {
             for (var x = 0; x < Width; x++)
             {
-                stream.WriteByte(Canvas[y][x].B);
-                stream.WriteByte(Canvas[y][x].G);
-                stream.WriteByte(Canvas[y][x].R);
+                var color = Canvas[y][x];
+                var a = color.A / 255F;
+
+                stream.WriteByte((byte)Math.Round((color.B * a) + (255 * (1 - a))));
+                stream.WriteByte((byte)Math.Round((color.G * a) + (255 * (1 - a))));
+                stream.WriteByte((byte)Math.Round((color.R * a) + (255 * (1 - a))));
                 stream.WriteByte(0);
             }
         }
