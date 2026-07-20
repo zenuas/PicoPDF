@@ -1,7 +1,6 @@
 ﻿using Image;
 using Image.Bmp;
 using Image.Png;
-using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -29,11 +28,8 @@ public class PngTest
     {
         return [.. colors.Select(color =>
         {
-            var a = color.A / 255F;
-            var r = (byte)Math.Round((color.R * a) + (255 * (1 - a)));
-            var g = (byte)Math.Round((color.G * a) + (255 * (1 - a)));
-            var b = (byte)Math.Round((color.B * a) + (255 * (1 - a)));
-            return (r << 16) | (g << 8) | b;
+            var c = BmpFile.AlphaBlend(color);
+            return (c.R << 16) | (c.G << 8) | c.B;
         })];
     }
 

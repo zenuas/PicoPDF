@@ -40,15 +40,25 @@ public class BmpFile : IImageCanvas, IImageWritable
         {
             for (var x = 0; x < Width; x++)
             {
-                var color = Canvas[y][x];
-                var a = color.A / 255F;
+                var color = AlphaBlend(Canvas[y][x]);
 
-                stream.WriteByte((byte)Math.Round((color.B * a) + (255 * (1 - a))));
-                stream.WriteByte((byte)Math.Round((color.G * a) + (255 * (1 - a))));
-                stream.WriteByte((byte)Math.Round((color.R * a) + (255 * (1 - a))));
+                stream.WriteByte(color.B);
+                stream.WriteByte(color.G);
+                stream.WriteByte(color.R);
                 stream.WriteByte(0);
             }
         }
+    }
+
+    public static Color AlphaBlend(Color color)
+    {
+        var a = color.A;
+        if (a == 255) return color;
+
+        var r = ((color.R * a) + (255 * (255 - a)) + 127) / 255;
+        var g = ((color.G * a) + (255 * (255 - a)) + 127) / 255;
+        var b = ((color.B * a) + (255 * (255 - a)) + 127) / 255;
+        return Color.FromArgb(r, g, b);
     }
 
     public static BmpFile FromStream(Stream stream)
