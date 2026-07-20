@@ -29,7 +29,7 @@ public class PngFile : IImageCanvas
         var filter_method = (byte)0;
         var interlace_method = (byte)0;
         IColor[] palette = [];
-        var datas = new List<byte>();
+        using var memory = new MemoryStream();
 
         while (true)
         {
@@ -58,7 +58,7 @@ public class PngFile : IImageCanvas
                     break;
 
                 case ChunkTypes.IDAT:
-                    datas.AddRange(chunkdataraw);
+                    memory.Write(chunkdataraw);
                     break;
 
                 case ChunkTypes.IEND:
@@ -84,7 +84,7 @@ public class PngFile : IImageCanvas
 
     END_OF_DATA:
 
-        using var memory = new MemoryStream([.. datas]);
+        memory.Position = 0;
         using var zlib = new ZLibStream(memory, CompressionMode.Decompress, true);
         var data = zlib.EnumerableReadBytes().ToArray();
         var bit_per_pixel = GetBitsPerPixel(color_type, bit_deps);
