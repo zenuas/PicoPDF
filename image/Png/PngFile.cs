@@ -103,7 +103,7 @@ public class PngFile : IImageCanvas
             color_type == ColorTypes.Rgb && bit_deps == 16 ? xs => Color.FromArgb(xs[0], xs[2], xs[4]) :
             color_type == ColorTypes.Palette ? xs => palette[xs[0]] : // By ChunkBits, bit_per_pixel is 1, 2, 4 to 1-bytes array.
             color_type == ColorTypes.GrayscaleAlpha && bit_deps == 8 ? xs => Color.FromArgb(xs[1], xs[0], xs[0], xs[0]) :
-            color_type == ColorTypes.GrayscaleAlpha && bit_deps == 16 ? xs => Color.FromArgb(xs[1], xs[0], xs[0], xs[0]) :
+            color_type == ColorTypes.GrayscaleAlpha && bit_deps == 16 ? xs => Color.FromArgb(xs[2], xs[0], xs[0], xs[0]) :
             color_type == ColorTypes.Rgba && bit_deps == 8 ? xs => Color.FromArgb(xs[3], xs[0], xs[1], xs[2]) :
             color_type == ColorTypes.Rgba && bit_deps == 16 ? xs => Color.FromArgb(xs[6], xs[0], xs[2], xs[4]) :
             throw new InvalidOperationException($"Unsupported color-type: {color_type}, bit-depth: {bit_deps}.");
