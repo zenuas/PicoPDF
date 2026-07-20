@@ -16,6 +16,16 @@ public class PngFile : IImageCanvas
     public required int Height { get; init; }
     public required IColor[][] Canvas { get; init; }
 
+    public static readonly (int XFactor, int YFactor, int XOffset, int YOffset)[] Interlaces = [
+        (8, 8, 0, 0),
+        (8, 8, 4, 0),
+        (4, 8, 0, 4),
+        (4, 4, 2, 0),
+        (2, 4, 0, 2),
+        (2, 2, 1, 0),
+        (1, 2, 0, 1),
+    ];
+
     public static PngFile FromStream(Stream stream)
     {
         var signature = stream.ReadExactly(8);
@@ -89,25 +99,68 @@ public class PngFile : IImageCanvas
         var data = zlib.EnumerableReadBytes().ToArray();
         var bit_per_pixel = GetBitsPerPixel(color_type, bit_deps);
         var byte_per_pixel = BitToByte(bit_per_pixel);
-        var row_byte = 1 + BitToByte(bit_per_pixel * width);
-        ApplyFilterType(data, height, byte_per_pixel, row_byte);
-        var makecolor = MakeColor(color_type, bit_deps, palette);
+        var row_byte = BitToByte(bit_per_pixel * width);
 
+        if (interlace_method == 0)
+        {
+            ApplyFilterType(data, height, byte_per_pixel, row_byte + 1);
+        }
+        else
+        {
+            data = Deinterlacing(data, width, height, bit_per_pixel, byte_per_pixel);
+        }
+
+        var makecolor = MakeColor(color_type, bit_deps, palette);
+        var skip_header = interlace_method == 0 ? 1 : 0;
         return new()
         {
             Width = width,
             Height = height,
             Canvas = [.. data
-                .Chunk(row_byte)
+                .Chunk(row_byte + skip_header)
                 .Select(xs => (
-                        color_type == ColorTypes.Grayscale && bit_per_pixel < 8 ? ChunkBits(xs.Skip(1), bit_per_pixel) :
-                        color_type == ColorTypes.Palette && bit_per_pixel < 8 ? ChunkBits(xs.Skip(1), bit_per_pixel) :
-                        xs.Skip(1).Chunk(byte_per_pixel)
+                        color_type == ColorTypes.Grayscale && bit_per_pixel < 8 ? ChunkBits(xs.Skip(skip_header), bit_per_pixel) :
+                        color_type == ColorTypes.Palette && bit_per_pixel < 8 ? ChunkBits(xs.Skip(skip_header), bit_per_pixel) :
+                        xs.Skip(skip_header).Chunk(byte_per_pixel)
                     )
                     .Select(makecolor)
                     .ToArray()
                 )],
         };
+    }
+
+    public static byte[] Deinterlacing(byte[] data, int width, int height, int bit_per_pixel, int byte_per_pixel)
+    {
+        var deinterlacing = new byte[width * height * byte_per_pixel];
+        var offset = 0;
+        for (var pass = 0; pass < Interlaces.Length; pass++)
+        {
+            var p = Interlaces[pass];
+            var pass_width = (width - p.XOffset + p.XFactor - 1) / p.XFactor;
+            var pass_height = (height - p.YOffset + p.YFactor - 1) / p.YFactor;
+            var data_length = pass_width * pass_height * byte_per_pixel;
+
+            var pass_span = data.AsSpan(offset, data_length + pass_height);
+            var pass_row_byte = 1 + BitToByte(bit_per_pixel * pass_width);
+            ApplyFilterType(pass_span, pass_height, byte_per_pixel, pass_row_byte);
+            offset += data_length + pass_height;
+
+            var pass_index = 1;
+            for (var y = 0; y < pass_height; y++)
+            {
+                var deinterlacing_scanline_offset = (((y * p.YFactor) + p.YOffset) * width) + p.XOffset;
+                for (var x = 0; x < pass_width; x++)
+                {
+                    var deinterlacing_offset = deinterlacing_scanline_offset + (x * p.XFactor);
+                    for (var b = 0; b < byte_per_pixel; b++)
+                    {
+                        deinterlacing[deinterlacing_offset + b] = pass_span[pass_index++];
+                    }
+                }
+                pass_index++;
+            }
+        }
+        return deinterlacing;
     }
 
     public static int GetBitsPerPixel(ColorTypes color_type, byte bit_deps) => color_type switch
