@@ -12,7 +12,7 @@ public class BmpFile : IImageCanvas, IImageWritable
     public static readonly byte[] MagicNumber = [0x42, 0x4D];
     public required int Width { get; init; }
     public required int Height { get; init; }
-    public required Color[][] Canvas { get; init; }
+    public required IColor[][] Canvas { get; init; }
 
     public void Write(Stream stream)
     {
@@ -40,7 +40,7 @@ public class BmpFile : IImageCanvas, IImageWritable
         {
             for (var x = 0; x < Width; x++)
             {
-                var color = AlphaBlend(Canvas[y][x]);
+                var color = Canvas[y][x].AlphaBlend().ToColor();
 
                 stream.WriteByte(color.B);
                 stream.WriteByte(color.G);
@@ -100,7 +100,7 @@ public class BmpFile : IImageCanvas, IImageWritable
                 throw new InvalidOperationException($"Unsupported bitmap header size({header_size}).");
         }
 
-        Color[] palettes = null!;
+        IColor[] palettes = null!;
         switch (bitcount)
         {
             case 1:
@@ -109,9 +109,9 @@ public class BmpFile : IImageCanvas, IImageWritable
                 {
                     palettes = bitcount switch
                     {
-                        1 => new Color[2],
-                        4 => new Color[16],
-                        8 => new Color[256],
+                        1 => new IColor[2],
+                        4 => new IColor[16],
+                        8 => new IColor[256],
                         _ => [],
                     };
                     var color_table_size = (bfOffBits - (14 + header_size)) / 4;
@@ -122,7 +122,7 @@ public class BmpFile : IImageCanvas, IImageWritable
                         var g = stream.ReadByte();
                         var r = stream.ReadByte();
                         _ = stream.ReadByte();
-                        palettes[i] = Color.FromArgb(r, g, b);
+                        palettes[i] = Color8.FromRgb(r, g, b);
                     }
                     break;
                 }
@@ -138,12 +138,12 @@ public class BmpFile : IImageCanvas, IImageWritable
         }
 
         var height_abs = Math.Abs(height);
-        var canvas = new Color[height_abs][];
+        var canvas = new IColor[height_abs][];
         var stride = ((bitcount * width) + 31) / 32 * 4;
         var padding = stride - (bitcount * width / 8);
         for (var i = 0; i < height_abs; i++)
         {
-            var row = new Color[width];
+            var row = new IColor[width];
             var palette_data = 0;
 
             for (var x = 0; x < width; x++)
@@ -170,7 +170,7 @@ public class BmpFile : IImageCanvas, IImageWritable
                             var r = (byte)((rgb & 0b01111100_00000000) >> 10);
                             var g = (byte)((rgb & 0b00000011_11100000) >> 5);
                             var b = (byte)(rgb & 0b00000000_00011111);
-                            row[x] = Color.FromArgb(r, g, b);
+                            row[x] = Color8.FromRgb(r, g, b);
                         }
                         break;
 
@@ -181,7 +181,7 @@ public class BmpFile : IImageCanvas, IImageWritable
                             var g = stream.ReadByte();
                             var r = stream.ReadByte();
                             if (bitcount == 32) _ = stream.ReadByte();
-                            row[x] = Color.FromArgb(r, g, b);
+                            row[x] = Color8.FromRgb(r, g, b);
                         }
                         break;
                 }

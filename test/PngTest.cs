@@ -1,7 +1,6 @@
 ﻿using Image;
 using Image.Bmp;
 using Image.Png;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using Xunit;
@@ -24,11 +23,11 @@ public class PngTest
         bmp.Write(file);
     }
 
-    public static int[] ColorsToInts(Color[] colors)
+    public static int[] ColorsToInts(IColor[] colors)
     {
         return [.. colors.Select(color =>
         {
-            var c = BmpFile.AlphaBlend(color);
+            var c = color.AlphaBlend().ToColor();
             return (c.R << 16) | (c.G << 8) | c.B;
         })];
     }

@@ -19,7 +19,7 @@ public class ImageDump : ICommand
             for (int x = 0; x < image.Width; x++)
             {
                 if (x > 0) Console.Write(", ");
-                var color = row[x];
+                var color = row[x].ToColor();
                 Console.Write($"0x{color.R:X2}{color.G:X2}{color.B:X2}");
             }
             Console.WriteLine("]);");

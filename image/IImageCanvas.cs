@@ -1,8 +1,6 @@
-﻿using System.Drawing;
-
-namespace Image;
+﻿namespace Image;
 
 public interface IImageCanvas : IImage
 {
-    public Color[][] Canvas { get; init; }
+    public IColor[][] Canvas { get; init; }
 }
