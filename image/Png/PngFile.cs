@@ -147,10 +147,10 @@ public class PngFile : IImageCanvas
             var pass_index = 1;
             for (var y = 0; y < pass_height; y++)
             {
-                var deinterlacing_scanline_offset = (((y * p.YFactor) + p.YOffset) * row_byte) + p.XOffset;
-                for (var x = 0; x < pass_row_byte; x++)
+                var deinterlacing_scanline_offset = (((y * p.YFactor) + p.YOffset) * row_byte) + (p.XOffset * byte_per_pixel);
+                for (var x = 0; x < pass_width; x++)
                 {
-                    var deinterlacing_offset = deinterlacing_scanline_offset + (x * p.XFactor);
+                    var deinterlacing_offset = deinterlacing_scanline_offset + (x * p.XFactor * byte_per_pixel);
                     for (var b = 0; b < byte_per_pixel; b++)
                     {
                         deinterlacing[deinterlacing_offset + b] = pass_span[pass_index++];
