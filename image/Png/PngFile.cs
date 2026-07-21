@@ -107,21 +107,21 @@ public class PngFile : IImageCanvas
         }
         else
         {
-            data = Deinterlacing(data, width, height, bit_per_pixel, byte_per_pixel);
+            data = Deinterlacing(data, width, height, bit_per_pixel, byte_per_pixel, row_byte);
         }
 
         var makecolor = MakeColor(color_type, bit_deps, palette);
-        var skip_header = interlace_method == 0 ? 1 : 0;
+        var skip_filter_type = interlace_method == 0 ? 1 : 0;
         return new()
         {
             Width = width,
             Height = height,
             Canvas = [.. data
-                .Chunk(row_byte + skip_header)
+                .Chunk(row_byte + skip_filter_type)
                 .Select(xs => (
-                        color_type == ColorTypes.Grayscale && bit_per_pixel < 8 ? ChunkBits(xs.Skip(skip_header), bit_per_pixel) :
-                        color_type == ColorTypes.Palette && bit_per_pixel < 8 ? ChunkBits(xs.Skip(skip_header), bit_per_pixel) :
-                        xs.Skip(skip_header).Chunk(byte_per_pixel)
+                        color_type == ColorTypes.Grayscale && bit_per_pixel < 8 ? ChunkBits(xs.Skip(skip_filter_type), bit_per_pixel) :
+                        color_type == ColorTypes.Palette && bit_per_pixel < 8 ? ChunkBits(xs.Skip(skip_filter_type), bit_per_pixel) :
+                        xs.Skip(skip_filter_type).Chunk(byte_per_pixel)
                     )
                     .Select(makecolor)
                     .ToArray()
@@ -129,27 +129,26 @@ public class PngFile : IImageCanvas
         };
     }
 
-    public static byte[] Deinterlacing(byte[] data, int width, int height, int bit_per_pixel, int byte_per_pixel)
+    public static byte[] Deinterlacing(byte[] data, int width, int height, int bit_per_pixel, int byte_per_pixel, int row_byte)
     {
-        var deinterlacing = new byte[width * height * byte_per_pixel];
+        var deinterlacing = new byte[row_byte * height];
         var offset = 0;
         for (var pass = 0; pass < Interlaces.Length; pass++)
         {
             var p = Interlaces[pass];
             var pass_width = (width - p.XOffset + p.XFactor - 1) / p.XFactor;
             var pass_height = (height - p.YOffset + p.YFactor - 1) / p.YFactor;
-            var data_length = pass_width * pass_height * byte_per_pixel;
+            var pass_row_byte = BitToByte(bit_per_pixel * pass_width);
+            var pass_span = data.AsSpan(offset, (pass_row_byte * pass_height) + pass_height);
 
-            var pass_span = data.AsSpan(offset, data_length + pass_height);
-            var pass_row_byte = 1 + BitToByte(bit_per_pixel * pass_width);
-            ApplyFilterType(pass_span, pass_height, byte_per_pixel, pass_row_byte);
-            offset += data_length + pass_height;
+            ApplyFilterType(pass_span, pass_height, byte_per_pixel, pass_row_byte + 1);
+            offset += pass_span.Length;
 
             var pass_index = 1;
             for (var y = 0; y < pass_height; y++)
             {
-                var deinterlacing_scanline_offset = (((y * p.YFactor) + p.YOffset) * width) + p.XOffset;
-                for (var x = 0; x < pass_width; x++)
+                var deinterlacing_scanline_offset = (((y * p.YFactor) + p.YOffset) * row_byte) + p.XOffset;
+                for (var x = 0; x < pass_row_byte; x++)
                 {
                     var deinterlacing_offset = deinterlacing_scanline_offset + (x * p.XFactor);
                     for (var b = 0; b < byte_per_pixel; b++)
@@ -207,12 +206,12 @@ public class PngFile : IImageCanvas
         }
     }
 
-    public static void ApplyFilterType(Span<byte> datas, int height, int byte_per_pixel, int row_byte)
+    public static void ApplyFilterType(Span<byte> datas, int height, int byte_per_pixel, int row_byte_with_filter_type)
     {
-        ReadOnlySpan<byte> prev_scanline = stackalloc byte[row_byte - 1];
+        ReadOnlySpan<byte> prev_scanline = stackalloc byte[row_byte_with_filter_type - 1];
         for (var y = 0; y < height; y++)
         {
-            var line = datas[(y * row_byte)..((y * row_byte) + row_byte)];
+            var line = datas[(y * row_byte_with_filter_type)..((y * row_byte_with_filter_type) + row_byte_with_filter_type)];
             var filter_type = (FilterTypes)line[0];
             var scanline = line[1..];
 
