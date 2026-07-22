@@ -157,15 +157,15 @@ public class PngFile : IImageCanvas
             {
                 for (var y = 0; y < pass_height; y++)
                 {
-                    var deinterlacing_scanline_offset = (((y * p.YFactor) + p.YOffset) * row_byte) + (p.XOffset / packed_bit_per_byte);
-                    var x_shift = p.XOffset % packed_bit_per_byte;
+                    var deinterlacing_scanline_offset = ((y * p.YFactor) + p.YOffset) * row_byte;
                     for (var x = 0; x < pass_width; x++)
                     {
-                        var deinterlacing_offset = deinterlacing_scanline_offset + (x * p.XFactor / packed_bit_per_byte);
-                        var x_shift2 = x * p.XFactor % packed_bit_per_byte;
+                        var x_offset = p.XOffset + (x * p.XFactor);
+                        var deinterlacing_offset = deinterlacing_scanline_offset + (x_offset / packed_bit_per_byte);
+                        var x_shift = x_offset % packed_bit_per_byte;
                         var x_bit_mask = bit_mask >> (x % packed_bit_per_byte * bit_per_pixel);
                         var left_shift = bit_per_pixel * (x % packed_bit_per_byte);
-                        deinterlacing[deinterlacing_offset] |= (byte)((pass_span[pass_index] & x_bit_mask) << left_shift >> (x_shift + x_shift2));
+                        deinterlacing[deinterlacing_offset] |= (byte)(((pass_span[pass_index] & x_bit_mask) << left_shift) >> x_shift);
                         if (x % packed_bit_per_byte == packed_bit_per_byte - 1 || x + 1 == pass_width) pass_index++;
                     }
                     pass_index++;
