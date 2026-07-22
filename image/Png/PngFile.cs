@@ -162,7 +162,7 @@ public class PngFile : IImageCanvas
                     {
                         var x_offset = p.XOffset + (x * p.XFactor);
                         var deinterlacing_offset = deinterlacing_scanline_offset + (x_offset / packed_bit_per_byte);
-                        var x_shift = x_offset % packed_bit_per_byte;
+                        var x_shift = x_offset % packed_bit_per_byte * bit_per_pixel;
                         var x_bit_mask = bit_mask >> (x % packed_bit_per_byte * bit_per_pixel);
                         var left_shift = bit_per_pixel * (x % packed_bit_per_byte);
                         deinterlacing[deinterlacing_offset] |= (byte)(((pass_span[pass_index] & x_bit_mask) << left_shift) >> x_shift);
