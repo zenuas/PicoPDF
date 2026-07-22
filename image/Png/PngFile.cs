@@ -133,6 +133,14 @@ public class PngFile : IImageCanvas
     {
         var deinterlacing = new byte[row_byte * height];
         var offset = 0;
+        var packed_bit_per_byte = bit_per_pixel < 8 ? 8 / bit_per_pixel : 0;
+        var bit_mask = bit_per_pixel switch
+        {
+            1 => 0b1000_0000,
+            2 => 0b1100_0000,
+            4 => 0b1111_0000,
+            _ => 0,
+        };
         for (var pass = 0; pass < Interlaces.Length; pass++)
         {
             var p = Interlaces[pass];
@@ -145,18 +153,39 @@ public class PngFile : IImageCanvas
             offset += pass_span.Length;
 
             var pass_index = 1;
-            for (var y = 0; y < pass_height; y++)
+            if (bit_per_pixel < 8)
             {
-                var deinterlacing_scanline_offset = (((y * p.YFactor) + p.YOffset) * row_byte) + (p.XOffset * byte_per_pixel);
-                for (var x = 0; x < pass_width; x++)
+                for (var y = 0; y < pass_height; y++)
                 {
-                    var deinterlacing_offset = deinterlacing_scanline_offset + (x * p.XFactor * byte_per_pixel);
-                    for (var b = 0; b < byte_per_pixel; b++)
+                    var deinterlacing_scanline_offset = (((y * p.YFactor) + p.YOffset) * row_byte) + (p.XOffset / packed_bit_per_byte);
+                    var x_shift = p.XOffset % packed_bit_per_byte;
+                    for (var x = 0; x < pass_width; x++)
                     {
-                        deinterlacing[deinterlacing_offset + b] = pass_span[pass_index++];
+                        var deinterlacing_offset = deinterlacing_scanline_offset + (x * p.XFactor / packed_bit_per_byte);
+                        var x_shift2 = x * p.XFactor % packed_bit_per_byte;
+                        var x_bit_mask = bit_mask >> (x % packed_bit_per_byte * bit_per_pixel);
+                        var left_shift = bit_per_pixel * (x % packed_bit_per_byte);
+                        deinterlacing[deinterlacing_offset] |= (byte)((pass_span[pass_index] & x_bit_mask) << left_shift >> (x_shift + x_shift2));
+                        if (x % packed_bit_per_byte == packed_bit_per_byte - 1 || x + 1 == pass_width) pass_index++;
                     }
+                    pass_index++;
                 }
-                pass_index++;
+            }
+            else
+            {
+                for (var y = 0; y < pass_height; y++)
+                {
+                    var deinterlacing_scanline_offset = (((y * p.YFactor) + p.YOffset) * row_byte) + (p.XOffset * byte_per_pixel);
+                    for (var x = 0; x < pass_width; x++)
+                    {
+                        var deinterlacing_offset = deinterlacing_scanline_offset + (x * p.XFactor * byte_per_pixel);
+                        for (var b = 0; b < byte_per_pixel; b++)
+                        {
+                            deinterlacing[deinterlacing_offset + b] = pass_span[pass_index++];
+                        }
+                    }
+                    pass_index++;
+                }
             }
         }
         return deinterlacing;
