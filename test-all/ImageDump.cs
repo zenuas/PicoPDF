@@ -22,6 +22,9 @@ public class ImageDump : ICommand
             Console.WriteLine($"        Assert.Equal(png.Height, {image.Height});");
             Console.WriteLine($"        Assert.Equal(png.Canvas.Length, {image.Canvas.Length});");
             Console.WriteLine($"        ");
+            Console.Write($"        //                                          pos  |");
+            for (int x = 0; x < image.Width; x++) Console.Write($" {x,-7} |");
+            Console.WriteLine($"");
             for (int y = 0; y < image.Height; y++)
             {
                 var row = image.Canvas[y];
