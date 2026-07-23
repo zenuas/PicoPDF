@@ -72,6 +72,7 @@ public class BmpImage : IImageCanvas, IImageWritable
                 height = stream.ReadUShortByLittleEndian();
                 _ = stream.ReadUShortByLittleEndian();
                 bitcount = stream.ReadUShortByLittleEndian();
+                if (bitcount is not 1 and not 4 and not 8 and not 24) throw new InvalidOperationException($"Unsupported bitmap bit-count({bitcount}).");
                 break;
 
             case 40: // BITMAPINFOHEADER
@@ -79,6 +80,7 @@ public class BmpImage : IImageCanvas, IImageWritable
                 height = stream.ReadIntByLittleEndian();
                 _ = stream.ReadUShortByLittleEndian();
                 bitcount = stream.ReadUShortByLittleEndian();
+                if (bitcount is not 1 and not 4 and not 8 and not 24 and not 32) throw new InvalidOperationException($"Unsupported bitmap bit-count({bitcount}).");
                 var compression = stream.ReadUIntByLittleEndian();
                 if (compression != 0) throw new InvalidOperationException($"Unsupported bitmap compression({compression}).");
                 stream.Position += 20;
@@ -88,42 +90,8 @@ public class BmpImage : IImageCanvas, IImageWritable
                 throw new InvalidOperationException($"Unsupported bitmap header size({header_size}).");
         }
 
-        IColor[] palettes = null!;
-        switch (bitcount)
-        {
-            case 1:
-            case 4:
-            case 8:
-                {
-                    palettes = bitcount switch
-                    {
-                        1 => new IColor[2],
-                        4 => new IColor[16],
-                        8 => new IColor[256],
-                        _ => [],
-                    };
-                    var color_table_size = (bfOffBits - (14 + header_size)) / 4;
-                    if (palettes.Length != color_table_size) throw new InvalidOperationException($"Invalid number of colors in {bitcount}-bit bitmap palette({color_table_size}).");
-                    for (var i = 0; i < color_table_size; i++)
-                    {
-                        var b = stream.ReadByte();
-                        var g = stream.ReadByte();
-                        var r = stream.ReadByte();
-                        _ = stream.ReadByte();
-                        palettes[i] = Color8.FromRgb(r, g, b);
-                    }
-                    break;
-                }
-
-            case 16:
-            case 24:
-            case 32:
-                stream.Position = position + bfOffBits;
-                break;
-
-            default:
-                throw new InvalidOperationException($"Unsupported bitmap bit-count({bitcount}).");
-        }
+        var palettes = bitcount <= 8 ? ReadPalettes(stream, bitcount, (bfOffBits - (14 + header_size)) / 4) : [];
+        stream.Position = position + bfOffBits;
 
         var height_abs = Math.Abs(height);
         var canvas = new IColor[height_abs][];
@@ -188,5 +156,20 @@ public class BmpImage : IImageCanvas, IImageWritable
             Height = height_abs,
             Canvas = canvas,
         };
+    }
+
+    public static IColor[] ReadPalettes(Stream stream, int bitcount, uint color_table_size)
+    {
+        var palettes = new IColor[1 << bitcount];
+        if (palettes.Length != color_table_size) throw new InvalidOperationException($"Invalid number of colors in {bitcount}-bit bitmap palette({color_table_size}).");
+        for (var i = 0; i < color_table_size; i++)
+        {
+            var b = stream.ReadByte();
+            var g = stream.ReadByte();
+            var r = stream.ReadByte();
+            _ = stream.ReadByte();
+            palettes[i] = Color8.FromRgb(r, g, b);
+        }
+        return palettes;
     }
 }
