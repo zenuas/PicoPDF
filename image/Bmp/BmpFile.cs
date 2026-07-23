@@ -157,7 +157,7 @@ public class BmpFile : IImageCanvas, IImageWritable
 
                     case 4:
                         if ((x % 2) == 0) palette_data = stream.ReadByte();
-                        row[x] = palettes[(palette_data >> (x % 2 * 4)) & 0b00001111];
+                        row[x] = palettes[(palette_data >> ((1 - (x % 2)) * 4)) & 0b00001111];
                         break;
 
                     case 8:
