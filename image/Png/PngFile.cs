@@ -123,6 +123,7 @@ public class PngFile : IImageCanvas
                         color_type == ColorTypes.Palette && bit_per_pixel < 8 ? ChunkBits(xs.Skip(skip_filter_type), bit_per_pixel) :
                         xs.Skip(skip_filter_type).Chunk(byte_per_pixel)
                     )
+                    .Take(width)
                     .Select(makecolor)
                     .ToArray()
                 )],
