@@ -140,7 +140,7 @@ public class BmpFile : IImageCanvas, IImageWritable
         var height_abs = Math.Abs(height);
         var canvas = new IColor[height_abs][];
         var stride = ((bitcount * width) + 31) / 32 * 4;
-        var padding = stride - (bitcount * width / 8);
+        var padding = stride - (((bitcount * width) + 7) / 8);
         for (var i = 0; i < height_abs; i++)
         {
             var row = new IColor[width];
