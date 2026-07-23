@@ -1,6 +1,7 @@
 ﻿using Image;
-using Image.Png;
+using Image.Jpeg;
 using Mina.Extension;
+using System;
 using System.Linq;
 
 namespace Pdf.XObject.Image;
@@ -11,20 +12,22 @@ public interface IImageXObject : IXObject
     public int Width { get; init; }
     public int Height { get; init; }
 
-    public static IImageXObject Load(string name, string path, int width, int height) => ImageLoader.TypeCheck(path) switch
+    public static IImageXObject Load(string name, string path)
     {
-        ImageTypes.Jpeg => new JpegXObject() { Name = name, Width = width, Height = height, Path = path },
-        ImageTypes.Png => new ImageXObject()
+        var load = ImageLoader.FromFile(path).Try();
+        return load.GetType() switch
         {
-            Name = name,
-            Width = width,
-            Height = height,
-            Canvas = ImageLoader.FromFile(path, ImageTypes.Png)
-                !.Cast<PngImage>()
-                .Canvas
-                .Select(x => x.Select(color => color.ToColor()).ToArray())
-                .ToArray(),
-        },
-        _ => throw new(),
-    };
+            Type a when a == typeof(JpegImage) => new JpegXObject() { Name = name, Width = load.Width, Height = load.Height, Path = path },
+            _ => new ImageXObject()
+            {
+                Name = name,
+                Width = load.Width,
+                Height = load.Height,
+                Canvas = [.. load
+                    .Cast<IImageCanvas>()
+                    .Canvas
+                    .Select(x => x.Select(color => color.ToColor()).ToArray())],
+            },
+        };
+    }
 }

@@ -1,5 +1,4 @@
-﻿using Image;
-using Pdf.ExtGState;
+﻿using Pdf.ExtGState;
 using Pdf.Shading;
 using Pdf.XObject.Image;
 using System;
@@ -20,8 +19,7 @@ public partial class Document
         return (path) =>
         {
             if (imagecache.TryGetValue(path, out var value)) return value;
-            var load = ImageLoader.FromFile(path)!;
-            var x = IImageXObject.Load($"X{imagecache.Count}", path, load.Width, load.Height);
+            var x = IImageXObject.Load($"X{imagecache.Count}", path);
             Images.Add(x);
             imagecache.Add(path, x);
             return x;
