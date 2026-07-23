@@ -45,24 +45,24 @@
 	@exit /b %ERRORLEVEL%
 
 :test-all
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile -- %*
+	dotnet run --project test-all --no-launch-profile -- %*
 	@exit /b %ERRORLEVEL%
 
 :run
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- %*
+	dotnet run --project test-all --no-launch-profile --no-build -- %*
 	@exit /b %ERRORLEVEL%
 
 :sample
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile            -- create --work-directory docs/sample --register-user-font docs/sample --debug false --contents-deflate true --cmap-deflate true
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- font-export --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.ttf abc
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- font-export --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.otf abc
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- manual-args --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.pdf TTF-subset
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- manual-args --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.pdf CFF-subset
-	dotnet run --project test-all/%PROJ%.TestAll.csproj --no-launch-profile --no-build -- encrypt --work-directory docs/sample
+	dotnet run --project test-all --no-launch-profile            -- create --work-directory docs/sample --register-user-font docs/sample --debug false --contents-deflate true --cmap-deflate true
+	dotnet run --project test-all --no-launch-profile --no-build -- font-export --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.ttf abc
+	dotnet run --project test-all --no-launch-profile --no-build -- font-export --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.otf abc
+	dotnet run --project test-all --no-launch-profile --no-build -- manual-args --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.pdf TTF-subset
+	dotnet run --project test-all --no-launch-profile --no-build -- manual-args --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.pdf CFF-subset
+	dotnet run --project test-all --no-launch-profile --no-build -- encrypt --work-directory docs/sample
 	@exit /b %ERRORLEVEL%
 
 :bench
-	dotnet run --project bench/%PROJ%.Benchmark.csproj --no-launch-profile -c Release %*
+	dotnet run --project bench --no-launch-profile -c Release %*
 	@exit /b %ERRORLEVEL%
 
 :publish
