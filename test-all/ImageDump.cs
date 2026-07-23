@@ -1,28 +1,41 @@
 ﻿using Image;
 using Mina.Extension;
 using System;
+using System.IO;
 
 namespace PicoPDF.TestAll;
 
 public class ImageDump : ICommand
 {
-    public string ColorToIntFunctionName { get; init; } = "ColorsToInts";
-    public string ImageObjectName { get; init; } = "png";
-
     public void Run(string[] args)
     {
-        var image = ImageLoader.FromFile(args[0])!.Cast<IImageCanvas>();
-        for (int y = 0; y < image.Height; y++)
+        foreach (string arg in args)
         {
-            var row = image.Canvas[y];
-            Console.Write($"Assert.Equal<int[]>({ColorToIntFunctionName}({ImageObjectName}.Canvas[{y}]), [");
-            for (int x = 0; x < image.Width; x++)
+            var image = ImageLoader.FromFile(arg)!.Cast<IImageCanvas>();
+            var filename = Path.GetFileNameWithoutExtension(arg);
+            Console.WriteLine($"    [Fact]");
+            Console.WriteLine($"    public void Load_{filename}()");
+            Console.WriteLine($"    {{");
+            Console.WriteLine($"        var image = ImageLoader.FromFile($\"{{TestDirectory}}/{filename}.png\");");
+            Console.WriteLine($"        var png = Assert.IsType<PngFile>(image);");
+            Console.WriteLine($"        Assert.Equal(png.Width, {image.Width});");
+            Console.WriteLine($"        Assert.Equal(png.Height, {image.Height});");
+            Console.WriteLine($"        Assert.Equal(png.Canvas.Length, {image.Canvas.Length});");
+            Console.WriteLine($"        ");
+            for (int y = 0; y < image.Height; y++)
             {
-                if (x > 0) Console.Write(", ");
-                var color = row[x].ToColor();
-                Console.Write($"0x{color.R:X2}{color.G:X2}{color.B:X2}");
+                var row = image.Canvas[y];
+                Console.Write($"        Assert.Equal<int[]>(ColorsToInts(png.Canvas[{y}]), [");
+                for (int x = 0; x < image.Width; x++)
+                {
+                    if (x > 0) Console.Write(", ");
+                    var color = row[x].ToColor();
+                    Console.Write($"0x{color.R:X2}{color.G:X2}{color.B:X2}");
+                }
+                Console.WriteLine("]);");
             }
-            Console.WriteLine("]);");
+            Console.WriteLine($"    }}");
+            Console.WriteLine($"    ");
         }
     }
 }
