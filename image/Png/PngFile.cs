@@ -119,8 +119,8 @@ public class PngFile : IImageCanvas
             Canvas = [.. data
                 .Chunk(row_byte + skip_filter_type)
                 .Select(xs => (
-                        color_type == ColorTypes.Grayscale && bit_per_pixel < 8 ? ChunkBits(xs.Skip(skip_filter_type), bit_per_pixel) :
-                        color_type == ColorTypes.Palette && bit_per_pixel < 8 ? ChunkBits(xs.Skip(skip_filter_type), bit_per_pixel) :
+                        color_type == ColorTypes.Grayscale && bit_deps < 8 ? ChunkBits(xs.Skip(skip_filter_type), bit_deps) :
+                        color_type == ColorTypes.Palette && bit_deps < 8 ? ChunkBits(xs.Skip(skip_filter_type), bit_deps) :
                         xs.Skip(skip_filter_type).Chunk(byte_per_pixel)
                     )
                     .Take(width)
@@ -206,11 +206,11 @@ public class PngFile : IImageCanvas
 
     public static int BitToByte(int bit) => (bit + 7) / 8;
 
-    public static IEnumerable<byte[]> ChunkBits(IEnumerable<byte> self, int bit)
+    public static IEnumerable<byte[]> ChunkBits(IEnumerable<byte> self, int bit_deps)
     {
         foreach (var b in self)
         {
-            switch (bit)
+            switch (bit_deps)
             {
                 case 1:
                     yield return [(byte)((b & 0x80) >> 7)];
