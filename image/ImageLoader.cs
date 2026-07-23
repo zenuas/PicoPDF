@@ -31,9 +31,9 @@ public static class ImageLoader
 
     public static IImage? FromStream(Stream stream, ImageTypes type) => type switch
     {
-        ImageTypes.Jpeg => JpegFile.FromStream(stream),
-        ImageTypes.Png => PngFile.FromStream(stream),
-        ImageTypes.Bmp => BmpFile.FromStream(stream),
+        ImageTypes.Jpeg => JpegImage.FromStream(stream),
+        ImageTypes.Png => PngImage.FromStream(stream),
+        ImageTypes.Bmp => BmpImage.FromStream(stream),
         _ => null,
     };
 
@@ -43,9 +43,9 @@ public static class ImageLoader
     {
         var header = stream.ReadExactly(9);
 
-        return header.Length >= JpegFile.MagicNumber.Length && header.Take(JpegFile.MagicNumber.Length).SequenceEqual(JpegFile.MagicNumber) ? ImageTypes.Jpeg
-            : header.Length >= PngFile.MagicNumber.Length && header.Take(PngFile.MagicNumber.Length).SequenceEqual(PngFile.MagicNumber) ? ImageTypes.Png
-            : header.Length >= BmpFile.MagicNumber.Length && header.Take(BmpFile.MagicNumber.Length).SequenceEqual(BmpFile.MagicNumber) ? ImageTypes.Bmp
+        return header.Length >= JpegImage.MagicNumber.Length && header.Take(JpegImage.MagicNumber.Length).SequenceEqual(JpegImage.MagicNumber) ? ImageTypes.Jpeg
+            : header.Length >= PngImage.MagicNumber.Length && header.Take(PngImage.MagicNumber.Length).SequenceEqual(PngImage.MagicNumber) ? ImageTypes.Png
+            : header.Length >= BmpImage.MagicNumber.Length && header.Take(BmpImage.MagicNumber.Length).SequenceEqual(BmpImage.MagicNumber) ? ImageTypes.Bmp
             : ImageTypes.Unknown;
     }
 }

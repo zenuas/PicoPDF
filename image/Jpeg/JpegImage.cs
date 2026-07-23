@@ -7,14 +7,14 @@ using System.Linq;
 
 namespace Image.Jpeg;
 
-public class JpegFile : IImage
+public class JpegImage : IImage
 {
     public static readonly byte[] MagicNumber = [0xFF, 0xD8];
     public required int Width { get; init; }
     public required int Height { get; init; }
     public required int Precision { get; init; }
 
-    public static JpegFile FromStream(Stream stream)
+    public static JpegImage FromStream(Stream stream)
     {
         var signature = stream.ReadExactly(2);
         Debug.Assert(MagicNumber.SequenceEqual(signature));

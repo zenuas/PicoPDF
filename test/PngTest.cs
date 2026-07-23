@@ -11,9 +11,9 @@ public class PngTest
 {
     public static readonly string TestDirectory = "../../../../test-case/PngSuite-2017jul19/";
 
-    public static void WriteBitmap(PngFile png, string path)
+    public static void WriteBitmap(PngImage png, string path)
     {
-        var bmp = new BmpFile
+        var bmp = new BmpImage
         {
             Width = png.Width,
             Height = png.Height,
@@ -37,7 +37,7 @@ public class PngTest
     public void Load_basn0g01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn0g01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -81,7 +81,7 @@ public class PngTest
     public void Load_basn0g02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn0g02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -125,7 +125,7 @@ public class PngTest
     public void Load_basn0g04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn0g04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -169,7 +169,7 @@ public class PngTest
     public void Load_basn0g08()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn0g08.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -213,7 +213,7 @@ public class PngTest
     public void Load_basn0g16()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn0g16.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -257,7 +257,7 @@ public class PngTest
     public void Load_basn2c08()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn2c08.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -301,7 +301,7 @@ public class PngTest
     public void Load_basn2c16()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn2c16.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -345,7 +345,7 @@ public class PngTest
     public void Load_basn3p01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn3p01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -389,7 +389,7 @@ public class PngTest
     public void Load_basn3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -433,7 +433,7 @@ public class PngTest
     public void Load_basn3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -477,7 +477,7 @@ public class PngTest
     public void Load_basn3p08()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn3p08.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -521,7 +521,7 @@ public class PngTest
     public void Load_basn4a08()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn4a08.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -565,7 +565,7 @@ public class PngTest
     public void Load_basn4a16()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn4a16.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -609,7 +609,7 @@ public class PngTest
     public void Load_basn6a08()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn6a08.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -653,7 +653,7 @@ public class PngTest
     public void Load_basn6a16()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basn6a16.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -698,7 +698,7 @@ public class PngTest
     public void Load_basi0g01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi0g01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -742,7 +742,7 @@ public class PngTest
     public void Load_basi0g02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi0g02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -786,7 +786,7 @@ public class PngTest
     public void Load_basi0g04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi0g04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -830,7 +830,7 @@ public class PngTest
     public void Load_basi0g08()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi0g08.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -874,7 +874,7 @@ public class PngTest
     public void Load_basi0g16()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi0g16.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -918,7 +918,7 @@ public class PngTest
     public void Load_basi2c08()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi2c08.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -962,7 +962,7 @@ public class PngTest
     public void Load_basi2c16()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi2c16.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1006,7 +1006,7 @@ public class PngTest
     public void Load_basi3p01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi3p01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1050,7 +1050,7 @@ public class PngTest
     public void Load_basi3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1094,7 +1094,7 @@ public class PngTest
     public void Load_basi3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1138,7 +1138,7 @@ public class PngTest
     public void Load_basi3p08()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi3p08.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1182,7 +1182,7 @@ public class PngTest
     public void Load_basi4a08()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi4a08.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1226,7 +1226,7 @@ public class PngTest
     public void Load_basi4a16()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi4a16.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1270,7 +1270,7 @@ public class PngTest
     public void Load_basi6a08()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi6a08.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1314,7 +1314,7 @@ public class PngTest
     public void Load_basi6a16()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/basi6a16.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1359,7 +1359,7 @@ public class PngTest
     public void Load_s01i3p01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s01i3p01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 1);
         Assert.Equal(png.Height, 1);
         Assert.Equal(png.Canvas.Length, 1);
@@ -1372,7 +1372,7 @@ public class PngTest
     public void Load_s01n3p01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s01n3p01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 1);
         Assert.Equal(png.Height, 1);
         Assert.Equal(png.Canvas.Length, 1);
@@ -1385,7 +1385,7 @@ public class PngTest
     public void Load_s02i3p01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s02i3p01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 2);
         Assert.Equal(png.Height, 2);
         Assert.Equal(png.Canvas.Length, 2);
@@ -1399,7 +1399,7 @@ public class PngTest
     public void Load_s02n3p01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s02n3p01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 2);
         Assert.Equal(png.Height, 2);
         Assert.Equal(png.Canvas.Length, 2);
@@ -1413,7 +1413,7 @@ public class PngTest
     public void Load_s03i3p01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s03i3p01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 3);
         Assert.Equal(png.Height, 3);
         Assert.Equal(png.Canvas.Length, 3);
@@ -1428,7 +1428,7 @@ public class PngTest
     public void Load_s03n3p01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s03n3p01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 3);
         Assert.Equal(png.Height, 3);
         Assert.Equal(png.Canvas.Length, 3);
@@ -1443,7 +1443,7 @@ public class PngTest
     public void Load_s04i3p01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s04i3p01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 4);
         Assert.Equal(png.Height, 4);
         Assert.Equal(png.Canvas.Length, 4);
@@ -1459,7 +1459,7 @@ public class PngTest
     public void Load_s04n3p01()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s04n3p01.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 4);
         Assert.Equal(png.Height, 4);
         Assert.Equal(png.Canvas.Length, 4);
@@ -1475,7 +1475,7 @@ public class PngTest
     public void Load_s05i3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s05i3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 5);
         Assert.Equal(png.Height, 5);
         Assert.Equal(png.Canvas.Length, 5);
@@ -1492,7 +1492,7 @@ public class PngTest
     public void Load_s05n3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s05n3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 5);
         Assert.Equal(png.Height, 5);
         Assert.Equal(png.Canvas.Length, 5);
@@ -1509,7 +1509,7 @@ public class PngTest
     public void Load_s06i3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s06i3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 6);
         Assert.Equal(png.Height, 6);
         Assert.Equal(png.Canvas.Length, 6);
@@ -1527,7 +1527,7 @@ public class PngTest
     public void Load_s06n3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s06n3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 6);
         Assert.Equal(png.Height, 6);
         Assert.Equal(png.Canvas.Length, 6);
@@ -1545,7 +1545,7 @@ public class PngTest
     public void Load_s07i3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s07i3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 7);
         Assert.Equal(png.Height, 7);
         Assert.Equal(png.Canvas.Length, 7);
@@ -1564,7 +1564,7 @@ public class PngTest
     public void Load_s07n3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s07n3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 7);
         Assert.Equal(png.Height, 7);
         Assert.Equal(png.Canvas.Length, 7);
@@ -1583,7 +1583,7 @@ public class PngTest
     public void Load_s08i3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s08i3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 8);
         Assert.Equal(png.Height, 8);
         Assert.Equal(png.Canvas.Length, 8);
@@ -1603,7 +1603,7 @@ public class PngTest
     public void Load_s08n3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s08n3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 8);
         Assert.Equal(png.Height, 8);
         Assert.Equal(png.Canvas.Length, 8);
@@ -1623,7 +1623,7 @@ public class PngTest
     public void Load_s09i3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s09i3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 9);
         Assert.Equal(png.Height, 9);
         Assert.Equal(png.Canvas.Length, 9);
@@ -1644,7 +1644,7 @@ public class PngTest
     public void Load_s09n3p02()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s09n3p02.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 9);
         Assert.Equal(png.Height, 9);
         Assert.Equal(png.Canvas.Length, 9);
@@ -1665,7 +1665,7 @@ public class PngTest
     public void Load_s32i3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s32i3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1709,7 +1709,7 @@ public class PngTest
     public void Load_s32n3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s32n3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 32);
         Assert.Equal(png.Height, 32);
         Assert.Equal(png.Canvas.Length, 32);
@@ -1753,7 +1753,7 @@ public class PngTest
     public void Load_s33i3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s33i3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 33);
         Assert.Equal(png.Height, 33);
         Assert.Equal(png.Canvas.Length, 33);
@@ -1798,7 +1798,7 @@ public class PngTest
     public void Load_s33n3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s33n3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 33);
         Assert.Equal(png.Height, 33);
         Assert.Equal(png.Canvas.Length, 33);
@@ -1843,7 +1843,7 @@ public class PngTest
     public void Load_s34i3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s34i3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 34);
         Assert.Equal(png.Height, 34);
         Assert.Equal(png.Canvas.Length, 34);
@@ -1889,7 +1889,7 @@ public class PngTest
     public void Load_s34n3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s34n3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 34);
         Assert.Equal(png.Height, 34);
         Assert.Equal(png.Canvas.Length, 34);
@@ -1935,7 +1935,7 @@ public class PngTest
     public void Load_s35i3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s35i3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 35);
         Assert.Equal(png.Height, 35);
         Assert.Equal(png.Canvas.Length, 35);
@@ -1982,7 +1982,7 @@ public class PngTest
     public void Load_s35n3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s35n3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 35);
         Assert.Equal(png.Height, 35);
         Assert.Equal(png.Canvas.Length, 35);
@@ -2029,7 +2029,7 @@ public class PngTest
     public void Load_s36i3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s36i3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 36);
         Assert.Equal(png.Height, 36);
         Assert.Equal(png.Canvas.Length, 36);
@@ -2077,7 +2077,7 @@ public class PngTest
     public void Load_s36n3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s36n3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 36);
         Assert.Equal(png.Height, 36);
         Assert.Equal(png.Canvas.Length, 36);
@@ -2125,7 +2125,7 @@ public class PngTest
     public void Load_s37i3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s37i3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 37);
         Assert.Equal(png.Height, 37);
         Assert.Equal(png.Canvas.Length, 37);
@@ -2174,7 +2174,7 @@ public class PngTest
     public void Load_s37n3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s37n3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 37);
         Assert.Equal(png.Height, 37);
         Assert.Equal(png.Canvas.Length, 37);
@@ -2223,7 +2223,7 @@ public class PngTest
     public void Load_s38i3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s38i3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 38);
         Assert.Equal(png.Height, 38);
         Assert.Equal(png.Canvas.Length, 38);
@@ -2273,7 +2273,7 @@ public class PngTest
     public void Load_s38n3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s38n3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 38);
         Assert.Equal(png.Height, 38);
         Assert.Equal(png.Canvas.Length, 38);
@@ -2323,7 +2323,7 @@ public class PngTest
     public void Load_s39i3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s39i3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 39);
         Assert.Equal(png.Height, 39);
         Assert.Equal(png.Canvas.Length, 39);
@@ -2374,7 +2374,7 @@ public class PngTest
     public void Load_s39n3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s39n3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 39);
         Assert.Equal(png.Height, 39);
         Assert.Equal(png.Canvas.Length, 39);
@@ -2425,7 +2425,7 @@ public class PngTest
     public void Load_s40i3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s40i3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 40);
         Assert.Equal(png.Height, 40);
         Assert.Equal(png.Canvas.Length, 40);
@@ -2477,7 +2477,7 @@ public class PngTest
     public void Load_s40n3p04()
     {
         var image = ImageLoader.FromFile($"{TestDirectory}/s40n3p04.png");
-        var png = Assert.IsType<PngFile>(image);
+        var png = Assert.IsType<PngImage>(image);
         Assert.Equal(png.Width, 40);
         Assert.Equal(png.Height, 40);
         Assert.Equal(png.Canvas.Length, 40);

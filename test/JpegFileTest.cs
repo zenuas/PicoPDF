@@ -10,7 +10,7 @@ public class JpegFileTest
     public void GetSize1()
     {
         var image = ImageLoader.FromFile("../../../../test-case/300x150.jpg", ImageTypes.Jpeg);
-        var jpeg = Assert.IsType<JpegFile>(image);
+        var jpeg = Assert.IsType<JpegImage>(image);
         Assert.Equal(jpeg.Width, 300);
         Assert.Equal(jpeg.Height, 150);
         Assert.Equal(jpeg.Precision, 8);

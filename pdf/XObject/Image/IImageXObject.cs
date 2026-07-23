@@ -20,7 +20,7 @@ public interface IImageXObject : IXObject
             Width = width,
             Height = height,
             Canvas = ImageLoader.FromFile(path, ImageTypes.Png)
-                !.Cast<PngFile>()
+                !.Cast<PngImage>()
                 .Canvas
                 .Select(x => x.Select(color => color.ToColor()).ToArray())
                 .ToArray(),

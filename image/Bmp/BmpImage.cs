@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Image.Bmp;
 
-public class BmpFile : IImageCanvas, IImageWritable
+public class BmpImage : IImageCanvas, IImageWritable
 {
     public static readonly byte[] MagicNumber = [0x42, 0x4D];
     public required int Width { get; init; }
@@ -61,7 +61,7 @@ public class BmpFile : IImageCanvas, IImageWritable
         return Color.FromArgb(r, g, b);
     }
 
-    public static BmpFile FromStream(Stream stream)
+    public static BmpImage FromStream(Stream stream)
     {
         var position = stream.Position;
 

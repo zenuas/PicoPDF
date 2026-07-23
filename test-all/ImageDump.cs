@@ -17,7 +17,7 @@ public class ImageDump : ICommand
             Console.WriteLine($"    public void Load_{filename}()");
             Console.WriteLine($"    {{");
             Console.WriteLine($"        var image = ImageLoader.FromFile($\"{{TestDirectory}}/{filename}.png\");");
-            Console.WriteLine($"        var png = Assert.IsType<PngFile>(image);");
+            Console.WriteLine($"        var png = Assert.IsType<PngImage>(image);");
             Console.WriteLine($"        Assert.Equal(png.Width, {image.Width});");
             Console.WriteLine($"        Assert.Equal(png.Height, {image.Height});");
             Console.WriteLine($"        Assert.Equal(png.Canvas.Length, {image.Canvas.Length});");
