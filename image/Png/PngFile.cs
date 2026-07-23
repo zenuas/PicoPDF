@@ -147,6 +147,7 @@ public class PngFile : IImageCanvas
             var p = Interlaces[pass];
             var pass_width = (width - p.XOffset + p.XFactor - 1) / p.XFactor;
             var pass_height = (height - p.YOffset + p.YFactor - 1) / p.YFactor;
+            if (pass_width <= 0) continue;
             var pass_row_byte = BitToByte(bit_per_pixel * pass_width);
             var pass_span = data.AsSpan(offset, (pass_row_byte * pass_height) + pass_height);
 
