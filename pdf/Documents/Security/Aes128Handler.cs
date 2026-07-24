@@ -232,10 +232,12 @@ public class Aes128Handler : ISecurityHandler
 
         PadOrTruncatePassword32Bytes(user_password, desitination);
         Span<byte> key = stackalloc byte[size];
+        Span<byte> state = stackalloc byte[256];
         for (var i = 0; i < 20; i++)
         {
             for (var j = 0; j < size; j++) key[j] = (byte)(hash[j] ^ i);
-            _ = Arcfour.Encrypt(Arcfour.InitializeKey(key), desitination);
+            Arcfour.InitializeKey(key, state);
+            _ = Arcfour.Encrypt(state, desitination);
         }
     }
 
@@ -245,10 +247,12 @@ public class Aes128Handler : ISecurityHandler
         _ = MD5.HashData([.. PasswordPaddingBytes, .. document_id], user_key);
 
         Span<byte> key = stackalloc byte[encryption_key.Length];
+        Span<byte> state = stackalloc byte[256];
         for (var i = 0; i < 20; i++)
         {
             for (var j = 0; j < encryption_key.Length; j++) key[j] = (byte)(encryption_key[j] ^ i);
-            _ = Arcfour.Encrypt(Arcfour.InitializeKey(key), user_key);
+            Arcfour.InitializeKey(key, state);
+            _ = Arcfour.Encrypt(state, user_key);
         }
         return [.. user_key, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
     }
