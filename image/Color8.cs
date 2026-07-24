@@ -19,9 +19,10 @@ public readonly struct Color8 : IColor
         var a = A;
         if (a == 255) return this;
 
-        var r = ((R * a) + (255 * (255 - a)) + 127) / 255;
-        var g = ((G * a) + (255 * (255 - a)) + 127) / 255;
-        var b = ((B * a) + (255 * (255 - a)) + 127) / 255;
+        var alpha = (255 * (255 - a)) + 127;
+        var r = ((R * a) + alpha) / 255;
+        var g = ((G * a) + alpha) / 255;
+        var b = ((B * a) + alpha) / 255;
         return Color8.FromRgb(r, g, b);
     }
 

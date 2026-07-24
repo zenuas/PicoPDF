@@ -19,9 +19,10 @@ public readonly struct Color16 : IColor
         var a = A;
         if (a == 65535) return this;
 
-        var r = ((R * a) + (65535 * (65535 - a)) + 32767) / 65535;
-        var g = ((G * a) + (65535 * (65535 - a)) + 32767) / 65535;
-        var b = ((B * a) + (65535 * (65535 - a)) + 32767) / 65535;
+        var alpha = (65535 * (65535 - a)) + 32767;
+        var r = ((R * a) + alpha) / 65535;
+        var g = ((G * a) + alpha) / 65535;
+        var b = ((B * a) + alpha) / 65535;
         return Color16.FromRgb(r, g, b);
     }
 
