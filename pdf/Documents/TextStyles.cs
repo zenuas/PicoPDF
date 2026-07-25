@@ -16,11 +16,17 @@ public enum TextStyles
     DoubleStrikethrough = 1 << 7,
     ShrinkToFit = 1 << 8,
     MultiLine = 1 << 9,
-    LineBreak = 1 << 10,
-    Clipping = 1 << 11,
-    Stroke = 1 << 12,
+    Clipping = 1 << 10,
+    Stroke = 1 << 11,
     Border = BorderTop | BorderLeft | BorderRight | BorderBottom,
+
+    LineBreakSimplifiedChinese = 1 << 16,
+    LineBreakTraditionalChinese = 2 << 16,
+    LineBreakJapanese = 4 << 16,
+    LineBreakKorean = 8 << 16,
+    LineBreak = LineBreakSimplifiedChinese | LineBreakTraditionalChinese | LineBreakJapanese | LineBreakKorean,
 
     TextStyleMask = Underline | DoubleUnderline | Strikethrough | DoubleStrikethrough,
     BorderStyleMask = Border,
+    BreakMask = 0x000F_0000,
 }

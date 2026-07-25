@@ -41,9 +41,6 @@ public class DrawString : IOperation
         writer.Write("ET\n");
     }
 
-    public static readonly NoneLineBreakRule NoneLineBreakRule = new();
-    public static readonly GenericLineBreakRule GenericLineBreakRule = new();
-
     public static DrawString Create(string text, double basey, double left, double size, IFont font, IColor? color = null)
     {
         if (font is IFontChars fontchars) fontchars.AddCharCache(text);
@@ -58,6 +55,50 @@ public class DrawString : IOperation
         };
     }
 
+    public static readonly NoneLineBreakRule NoneLineBreakRule = new();
+
+    public static ILineBreakRule GetLineBreakRule(TextStyles style)
+    {
+        if ((style & TextStyles.BreakMask) == 0) return NoneLineBreakRule;
+
+        var deny_start_char = new HashSet<int>();
+        var deny_end_char = new HashSet<int>();
+
+        if (style.HasFlag(TextStyles.LineBreakSimplifiedChinese))
+        {
+            var rule = new SimplifiedChineseLineBreakRule();
+            rule.DenyStartChar.Each(x => deny_start_char.Add(x));
+            rule.DenyEndChar.Each(x => deny_end_char.Add(x));
+        }
+
+        if (style.HasFlag(TextStyles.LineBreakTraditionalChinese))
+        {
+            var rule = new TraditionalChineseLineBreakRule();
+            rule.DenyStartChar.Each(x => deny_start_char.Add(x));
+            rule.DenyEndChar.Each(x => deny_end_char.Add(x));
+        }
+
+        if (style.HasFlag(TextStyles.LineBreakJapanese))
+        {
+            var rule = new JapaneseLineBreakRule();
+            rule.DenyStartChar.Each(x => deny_start_char.Add(x));
+            rule.DenyEndChar.Each(x => deny_end_char.Add(x));
+        }
+
+        if (style.HasFlag(TextStyles.LineBreakKorean))
+        {
+            var rule = new KoreanLineBreakRule();
+            rule.DenyStartChar.Each(x => deny_start_char.Add(x));
+            rule.DenyEndChar.Each(x => deny_end_char.Add(x));
+        }
+
+        return new NoneLineBreakRule()
+        {
+            DenyStartChar = deny_start_char,
+            DenyEndChar = deny_end_char,
+        };
+    }
+
     public static IOperation Create(string text, double left, double top, double size, Type0Font[] fonts, Document document, double width = 0, double height = 0, TextStyles style = TextStyles.None, TextAlignments alignment = TextAlignments.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
     {
         var linetop = top;
@@ -65,7 +106,7 @@ public class DrawString : IOperation
         var max_width = 0.0;
         var max_height = 0.0;
         var opes = new List<IOperation>();
-        foreach (var textfonts in GetMultilineTextFont(text, fonts, size, style.HasFlag(TextStyles.MultiLine) ? width : 0, linebreak_rule ?? (style.HasFlag(TextStyles.LineBreak) ? GenericLineBreakRule : NoneLineBreakRule)))
+        foreach (var textfonts in GetMultilineTextFont(text, fonts, size, style.HasFlag(TextStyles.MultiLine) ? width : 0, linebreak_rule ?? GetLineBreakRule(style)))
         {
             if (prev_linegap is { } gap) linetop += gap;
 

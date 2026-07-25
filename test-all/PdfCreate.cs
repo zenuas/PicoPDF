@@ -2,11 +2,8 @@
 using Mina.Extension;
 using Pdf;
 using Pdf.Documents;
-using Pdf.Documents.BreakRule;
 using Pdf.Extension;
 using Pdf.Operation;
-using PicoPDF.Loader.Elements;
-using PicoPDF.Model;
 using PicoPDF.Model.Elements;
 using System;
 using System.Collections.Generic;
@@ -85,22 +82,6 @@ public class PdfCreate : FontRegisterCommand
             BindElement = (section, element, data, model) => model is TextModel text && element.Name.StartsWith("CreationTime")
                 ? text with { Text = DateTime.Now.ToString(text.Text) }
                 : model,
-            Mapping = (page, model, top, left) =>
-            {
-                if (model is ITextModel x &&
-                    model.Element is ITextElement e &&
-                    e.Style.HasFlag(TextStyles.LineBreak) &&
-                    e.Name.StartsWith("Jp"))
-                {
-                    double posx = model.X + left;
-                    double posy = model.Y + top;
-                    return DrawString.Create(model.Cast<ITextModel>().Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], page.Document, x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB(), new JapaneseLineBreakRule());
-                }
-                else
-                {
-                    return ModelMapping.Mapping(page, model, top, left);
-                }
-            },
         };
 
         var datacache = new Dictionary<string, DataTable>();

@@ -1,6 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
+using Pdf.Documents;
 using Pdf.Documents.BreakRule;
+using Pdf.Operation;
 using System.Linq;
 
 namespace PicoPDF.Benchmark;
@@ -10,7 +12,7 @@ public class LineBreakRuleBench
     [Benchmark]
     public void GenericLineBreakRule()
     {
-        var rule = new GenericLineBreakRule();
+        var rule = DrawString.GetLineBreakRule(TextStyles.LineBreak);
         var chars = new int[] { '!', ',', 'ゝ', '｝' };
         var consumer = new Consumer();
 

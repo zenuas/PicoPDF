@@ -92,7 +92,7 @@ public class MultilineTest
     [Fact]
     public void LineBreakRuleTest()
     {
-        var linebrak_rule = new GenericLineBreakRule();
+        var linebrak_rule = DrawString.GetLineBreakRule(TextStyles.LineBreak);
 
         Assert.Equal(GetText("ab,", 1, 30, linebrak_rule), new[] { "ab," });
         Assert.Equal(GetText("abc,", 1, 30, linebrak_rule), new[] { "ab", "c," });
@@ -110,7 +110,7 @@ public class MultilineTest
     [Fact]
     public void JapaneseLineBreakRuleTest()
     {
-        var linebrak_rule = new JapaneseLineBreakRule();
+        var linebrak_rule = DrawString.GetLineBreakRule(TextStyles.LineBreakJapanese);
 
         Assert.Equal(GetText("ab,", 1, 30, linebrak_rule), new[] { "ab," });
         Assert.Equal(GetText("abc,", 1, 30, linebrak_rule), new[] { "ab", "c," });
