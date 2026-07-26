@@ -27,10 +27,10 @@ public class LineBreakRuleBench
 
     public static readonly int[] ArrayDenyStartChar =
         [
-            ..new SimplifiedChineseLineBreakRule().DenyStartChar,
-            ..new TraditionalChineseLineBreakRule().DenyStartChar,
-            ..new JapaneseLineBreakRule().DenyStartChar,
-            ..new KoreanLineBreakRule().DenyStartChar,
+            ..SimplifiedChineseLineBreakRule.StaticDenyStartChar,
+            ..TraditionalChineseLineBreakRule.StaticDenyStartChar,
+            ..JapaneseLineBreakRule.StaticDenyStartChar,
+            ..KoreanLineBreakRule.StaticDenyStartChar,
         ];
 
     [Benchmark]

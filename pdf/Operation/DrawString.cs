@@ -66,30 +66,26 @@ public class DrawString : IOperation
 
         if (style.HasFlag(TextStyles.LineBreakSimplifiedChinese))
         {
-            var rule = new SimplifiedChineseLineBreakRule();
-            rule.DenyStartChar.Each(x => deny_start_char.Add(x));
-            rule.DenyEndChar.Each(x => deny_end_char.Add(x));
+            SimplifiedChineseLineBreakRule.StaticDenyStartChar.Each(x => deny_start_char.Add(x));
+            SimplifiedChineseLineBreakRule.StaticDenyEndChar.Each(x => deny_end_char.Add(x));
         }
 
         if (style.HasFlag(TextStyles.LineBreakTraditionalChinese))
         {
-            var rule = new TraditionalChineseLineBreakRule();
-            rule.DenyStartChar.Each(x => deny_start_char.Add(x));
-            rule.DenyEndChar.Each(x => deny_end_char.Add(x));
+            TraditionalChineseLineBreakRule.StaticDenyStartChar.Each(x => deny_start_char.Add(x));
+            TraditionalChineseLineBreakRule.StaticDenyEndChar.Each(x => deny_end_char.Add(x));
         }
 
         if (style.HasFlag(TextStyles.LineBreakJapanese))
         {
-            var rule = new JapaneseLineBreakRule();
-            rule.DenyStartChar.Each(x => deny_start_char.Add(x));
-            rule.DenyEndChar.Each(x => deny_end_char.Add(x));
+            JapaneseLineBreakRule.StaticDenyStartChar.Each(x => deny_start_char.Add(x));
+            JapaneseLineBreakRule.StaticDenyEndChar.Each(x => deny_end_char.Add(x));
         }
 
         if (style.HasFlag(TextStyles.LineBreakKorean))
         {
-            var rule = new KoreanLineBreakRule();
-            rule.DenyStartChar.Each(x => deny_start_char.Add(x));
-            rule.DenyEndChar.Each(x => deny_end_char.Add(x));
+            KoreanLineBreakRule.StaticDenyStartChar.Each(x => deny_start_char.Add(x));
+            KoreanLineBreakRule.StaticDenyEndChar.Each(x => deny_end_char.Add(x));
         }
 
         return new NoneLineBreakRule()

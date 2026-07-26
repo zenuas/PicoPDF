@@ -5,7 +5,7 @@ namespace Pdf.Documents.BreakRule;
 // JIS X 4051
 public class JapaneseLineBreakRule : ILineBreakRule
 {
-    public IReadOnlySet<int> DenyStartChar { get; init; } = new HashSet<int>()
+    public static readonly IReadOnlySet<int> StaticDenyStartChar = new HashSet<int>()
     {
         ',', ')', ']', '｝', '、', '〕', '〉', '》', '」', '』', '】', '〙', '〗', '〟', '’', '”', '｠', '»',
         'ゝ', 'ゞ', 'ー',
@@ -23,8 +23,11 @@ public class JapaneseLineBreakRule : ILineBreakRule
         '。', '.',
     };
 
-    public IReadOnlySet<int> DenyEndChar { get; init; } = new HashSet<int>()
+    public static readonly IReadOnlySet<int> StaticDenyEndChar = new HashSet<int>()
     {
         '(', '[', '｛', '〔', '〈', '《', '「', '『', '【', '〘', '〖', '〝', '‘', '“', '｟', '«',
     };
+
+    public IReadOnlySet<int> DenyStartChar { get; init; } = StaticDenyStartChar;
+    public IReadOnlySet<int> DenyEndChar { get; init; } = StaticDenyEndChar;
 }
