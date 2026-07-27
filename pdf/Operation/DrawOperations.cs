@@ -33,7 +33,7 @@ public class DrawOperations : IOperation, IHaveOperations
             yield return DrawLine.Create([(left, basey + linewidth), (right, basey + linewidth)], color, linewidth);
             yield return DrawLine.Create([(left, basey + (linewidth * 3)), (right, basey + (linewidth * 3))], color, linewidth);
         }
-        if ((style & (TextStyles.Strikethrough | TextStyles.DoubleStrikethrough)) > 0)
+        if (style.HasBit(TextStyles.Strikethrough | TextStyles.DoubleStrikethrough))
         {
             var center = top + (height / 2);
             if (style.HasFlag(TextStyles.Strikethrough)) yield return DrawLine.Create([(left, center), (right, center)], color, linewidth);
@@ -55,12 +55,12 @@ public class DrawOperations : IOperation, IHaveOperations
         {
             yield return DrawRectangle.Create(left, top, width, height, color, line);
         }
-        if ((style & (TextStyles.BorderTop | TextStyles.BorderBottom)) == 0)
+        if (!style.HasBit(TextStyles.BorderTop | TextStyles.BorderBottom))
         {
             if (style.HasFlag(TextStyles.BorderLeft)) yield return DrawLine.Create([(left, top), (left, bottom)], color, line);
             if (style.HasFlag(TextStyles.BorderRight)) yield return DrawLine.Create([(right, top), (right, bottom)], color, line);
         }
-        else if ((style & (TextStyles.BorderLeft | TextStyles.BorderRight)) == 0)
+        else if (!style.HasBit(TextStyles.BorderLeft | TextStyles.BorderRight))
         {
             if (style.HasFlag(TextStyles.BorderTop)) yield return DrawLine.Create([(left, top), (right, top)], color, line);
             if (style.HasFlag(TextStyles.BorderBottom)) yield return DrawLine.Create([(left, bottom), (right, bottom)], color, line);
