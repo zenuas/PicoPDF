@@ -1,0 +1,18 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": ["Meiryo Bold", {"Path": "Segoe UI Emoji", "Embed": "Stroke"}],
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "絵文字をXObjectで参照する", "Size": 20,  "X": 10, "Y": 0},
+			{"Type": "TextElement", "Text": "🐵/🐵",                     "Size": 100, "X": 10, "Y": 20},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+	],
+}
