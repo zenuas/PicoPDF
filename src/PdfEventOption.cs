@@ -19,5 +19,5 @@ public class PdfEventOption
     public Func<IMetadata?> CreateMetadata { get; init; } = () => null;
     public Func<SectionModel, PageSection, SectionModel> BindSection { get; init; } = (section, page) => section;
     public Func<ISection, IElement, object?, IModelElement, IModelElement> BindElement { get; init; } = (_, _, _, model) => model;
-    public Func<Page, IModelElement, int, int, IOperation> Mapping { get; init; } = ModelMapping.Mapping;
+    public Func<Document, Page, IModelElement, int, int, IOperation> Mapping { get; init; } = ModelMapping.Mapping;
 }

@@ -1,18 +1,12 @@
 ﻿using Mina.Extension;
 using Pdf.Elements;
-using Pdf.ExtGState;
-using Pdf.Font;
 using Pdf.Operation;
-using Pdf.Shading;
-using Pdf.XObject;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Pdf.Documents;
 
 public class Page : PdfObject
 {
-    public required Document Document { get; init; }
     public required int Width { get; init; }
     public required int Height { get; init; }
     public Contents Contents { get; }
@@ -36,66 +30,39 @@ public class Page : PdfObject
         _ = Elements.TryAdd("Resources", dic);
         dic.Dictionary.Add("ProcSet", ProcSet);
 
-        var page_fonts = new HashSet<IFont>();
-        var page_xobjects = new HashSet<IXObject>();
-        var page_shadings = new HashSet<IShading>();
-        var page_extgstates = new HashSet<IGraphicsStateParameter>();
+        var fontdic = new ElementDictionary();
+        var xobjdic = new ElementDictionary();
+        var shdic = new ElementDictionary();
+        var gsdic = new ElementDictionary();
         foreach (var ope in Contents.EnumOperations(Contents.Operations))
         {
             switch (ope)
             {
                 case DrawString x:
-                    _ = page_fonts.Add(x.Font);
+                    _ = fontdic.Dictionary.TryAdd(x.Font.Name, new ElementIndirectObject() { References = x.Font.Cast<IPdfObject>() });
                     break;
 
                 case DrawPathXObject x:
-                    _ = page_xobjects.Add(x.XObject);
+                    _ = xobjdic.Dictionary.TryAdd(x.XObject.Name, new ElementIndirectObject() { References = x.XObject.Cast<IPdfObject>() });
                     break;
 
                 case DrawImage x:
-                    _ = page_xobjects.Add(x.Image);
+                    _ = xobjdic.Dictionary.TryAdd(x.Image.Name, new ElementIndirectObject() { References = x.Image.Cast<IPdfObject>() });
                     break;
 
                 case DrawPathShading x:
-                    _ = page_shadings.Add(x.Shading);
+                    _ = shdic.Dictionary.TryAdd(x.Shading.Name, new ElementIndirectObject() { References = x.Shading.Cast<IPdfObject>() });
                     break;
 
                 case DrawPathExtGState x:
-                    _ = page_extgstates.Add(x.ExtGState);
+                    _ = gsdic.Dictionary.TryAdd(x.ExtGState.Name, new ElementIndirectObject() { References = x.ExtGState.Cast<IPdfObject>() });
                     break;
             }
         }
 
-        var fonts = Document.Fonts.Where(page_fonts.Contains);
-        if (fonts.Any())
-        {
-            var fontdic = new ElementDictionary();
-            fonts.Each(x => fontdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
-            dic.Dictionary.Add("Font", fontdic);
-        }
-
-        var xobjs = Document.XObjects.Where(page_xobjects.Contains);
-        if (xobjs.Any())
-        {
-            var xobjdic = new ElementDictionary();
-            xobjs.Each(x => xobjdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
-            dic.Dictionary.Add("XObject", xobjdic);
-        }
-
-        var shs = Document.Shadings.Where(page_shadings.Contains);
-        if (shs.Any())
-        {
-            var shdic = new ElementDictionary();
-            shs.Each(x => shdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
-            dic.Dictionary.Add("Shading", shdic);
-        }
-
-        var gss = Document.GraphicsStateParameters.Where(page_extgstates.Contains);
-        if (gss.Any())
-        {
-            var gsdic = new ElementDictionary();
-            gss.Each(x => gsdic.Dictionary.TryAdd(x.Name, new ElementIndirectObject() { References = x.Cast<IPdfObject>() }));
-            dic.Dictionary.Add("ExtGState", gsdic);
-        }
+        if (fontdic.Dictionary.Count > 0) dic.Dictionary.Add("Font", fontdic);
+        if (xobjdic.Dictionary.Count > 0) dic.Dictionary.Add("XObject", xobjdic);
+        if (shdic.Dictionary.Count > 0) dic.Dictionary.Add("Shading", shdic);
+        if (gsdic.Dictionary.Count > 0) dic.Dictionary.Add("ExtGState", gsdic);
     }
 }

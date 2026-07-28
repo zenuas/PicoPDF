@@ -44,7 +44,7 @@ public partial class Document
 
     public Page NewPage(int width, int height)
     {
-        var page = new Page() { Document = this, Width = width, Height = height };
+        var page = new Page() { Width = width, Height = height };
         page.Elements["Parent"] = PageTree;
         Pages.Add(page);
 

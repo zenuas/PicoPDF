@@ -24,11 +24,11 @@ public static class ModelMapping
                     {
                         var without_cross_sections = section.Elements
                             .Where(x => x.Element is not ICrossSectionElement)
-                            .Select(x => option.Mapping(pdfpage, x, section.Top, section.Left));
+                            .Select(x => option.Mapping(document, pdfpage, x, section.Top, section.Left));
 
                         var cross_sections = section.Elements
                             .Where(x => x.Element is ICrossSectionElement)
-                            .Select(x => option.Mapping(pdfpage, x, section.Top, section.Left));
+                            .Select(x => option.Mapping(document, pdfpage, x, section.Top, section.Left));
 
                         return [new DrawClipping()
                             {
@@ -41,7 +41,7 @@ public static class ModelMapping
                     }
                     else
                     {
-                        return section.Elements.Select(x => option.Mapping(pdfpage, x, section.Top, section.Left));
+                        return section.Elements.Select(x => option.Mapping(document, pdfpage, x, section.Top, section.Left));
                     }
                 })
                 .Flatten()
@@ -49,17 +49,17 @@ public static class ModelMapping
         }
     }
 
-    public static IOperation Mapping(Page page, IModelElement model, int top, int left)
+    public static IOperation Mapping(Document document, Page page, IModelElement model, int top, int left)
     {
         double posx = model.X + left;
         double posy = model.Y + top;
         return model switch
         {
-            ITextModel x => DrawString.Create(x.Text, posx, posy, x.Size, [.. x.Font.Select(x => page.Document.GetFont(x.Path, x.Embed))], page.Document, x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()),
+            ITextModel x => DrawString.Create(x.Text, posx, posy, x.Size, [.. x.Font.Select(x => document.GetFont(x.Path, x.Embed))], document, x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()),
             ILineModel x => DrawLine.Create([(posx, posy), (posx + x.Width, posy + x.Height)], x.Color?.ToDeviceRGB(), x.LineWidth),
             IRectangleModel x => DrawRectangle.Create(posx, posy, x.Width, x.Height, x.Color?.ToDeviceRGB(), x.LineWidth),
             IFillRectangleModel x => DrawFillRectangle.Create(posx, posy, x.Width, x.Height, x.LineColor.ToDeviceRGB(), x.FillColor.ToDeviceRGB(), x.LineWidth),
-            ImageModel x => DrawImage.Create(posx, posy, page.Document.GetImage(x.Path), x.ZoomWidth, x.ZoomHeight),
+            ImageModel x => DrawImage.Create(posx, posy, document.GetImage(x.Path), x.ZoomWidth, x.ZoomHeight),
             _ => throw new(),
         };
     }
