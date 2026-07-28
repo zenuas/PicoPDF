@@ -35,5 +35,5 @@ public static class Format
         format == "F%" ? self.ToString("F7", CultureInfo.InvariantCulture).TrimEnd('0').TrimEnd('.') :
             self <= long.MaxValue &&
             self >= long.MinValue &&
-            self % 1d == 0d ? ((long)self).ToString() : self.ToString(format, CultureInfo.InvariantCulture);
+            self % 1d == 0d ? ((long)self).ToString(CultureInfo.InvariantCulture) : self.ToString(format, CultureInfo.InvariantCulture);
 }

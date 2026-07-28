@@ -224,7 +224,7 @@ public class BindSummaryMapper<T, TSection>
         var nobreak = allkeys.Take(allkeys.Length - hierarchy_count + 1).Join(".");
         var sumkey_via_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}." : nobreak)}";
         var sumkey_direct_prefix = $"${(nobreak.Length > 0 ? $"{nobreak}:" : nobreak)}";
-        SummaryPool.Keys.Where(x => x.StartsWith(sumkey_via_prefix) || x.StartsWith(sumkey_direct_prefix)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
+        SummaryPool.Keys.Where(x => x.StartsWith(sumkey_via_prefix, StringComparison.Ordinal) || x.StartsWith(sumkey_direct_prefix, StringComparison.Ordinal)).Each(x => SummaryPool[x].Clear(SummaryPool[x]));
     }
 
     public void LastBreak(T data, IPageSection<TSection> page)

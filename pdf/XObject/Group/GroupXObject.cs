@@ -1,4 +1,6 @@
-﻿namespace Pdf.XObject.Group;
+﻿using System.Globalization;
+
+namespace Pdf.XObject.Group;
 
 public class GroupXObject : PdfObject, IXObject
 {
@@ -10,7 +12,7 @@ public class GroupXObject : PdfObject, IXObject
     {
         _ = Elements.TryAdd("Type", "/Group");
         _ = Elements.TryAdd("S", S);
-        _ = Elements.TryAdd("I", I.ToString().ToLower());
+        _ = Elements.TryAdd("I", I.ToString().ToLower(CultureInfo.InvariantCulture));
         _ = Elements.TryAdd("CS", CS);
     }
 }

@@ -242,7 +242,7 @@ public static class JsonLoader
 
     public static PageSize LoadPageSize(JsonNode? node)
     {
-        if (node is JsonValue v) return PageSize.Parse((string)v!);
+        if (node is JsonValue v) return PageSize.Parse((string)v!, CultureInfo.InvariantCulture);
         else if (node is JsonArray xs)
         {
             switch (xs.Count)

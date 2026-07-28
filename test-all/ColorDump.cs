@@ -4,6 +4,7 @@ using OpenType;
 using OpenType.Tables;
 using OpenType.Tables.Colr;
 using System;
+using System.Globalization;
 using System.Linq;
 
 namespace PicoPDF.TestAll;
@@ -25,7 +26,7 @@ public class ColorDump : FontRegisterCommand
             var gid = font.CharToGID(cid);
             if (gid == 0) continue;
 
-            Console.WriteLine($"Char: {char.ConvertFromUtf32(cid)}  (U+{(cid <= 0xFFFF ? cid.ToString("X4") : cid.ToString("X"))})");
+            Console.WriteLine($"Char: {char.ConvertFromUtf32(cid)}  (U+{(cid <= 0xFFFF ? cid.ToString("X4", CultureInfo.InvariantCulture) : cid.ToString("X", CultureInfo.InvariantCulture))})");
             Console.WriteLine($"CID: {cid}");
             Console.WriteLine($"GID: {gid}");
             var index = 0;

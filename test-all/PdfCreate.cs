@@ -8,6 +8,7 @@ using PicoPDF.Model.Elements;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -79,8 +80,8 @@ public class PdfCreate : FontRegisterCommand
                 }
                 return section;
             },
-            BindElement = (section, element, data, model) => model is TextModel text && element.Name.StartsWith("CreationTime")
-                ? text with { Text = DateTime.Now.ToString(text.Text) }
+            BindElement = (section, element, data, model) => model is TextModel text && element.Name.StartsWith("CreationTime", StringComparison.Ordinal)
+                ? text with { Text = DateTime.Now.ToString(text.Text, CultureInfo.InvariantCulture) }
                 : model,
         };
 
@@ -89,7 +90,7 @@ public class PdfCreate : FontRegisterCommand
         foreach (var json in args.Length > 0 ? args : Directory.GetFiles(WorkDirectory, "*.json"))
         {
             var fname = Path.GetFileNameWithoutExtension(json);
-            var dataname = $"{WorkDirectory}/{(fname.Contains('-') ? fname[0..fname.LastIndexOf('-')] : fname)}.csv";
+            var dataname = $"{WorkDirectory}/{(fname.Contains('-', StringComparison.Ordinal) ? fname[0..fname.LastIndexOf('-')] : fname)}.csv";
             var pdfname = $"{WorkDirectory}/{fname}.pdf";
 
             var pdftime = File.GetLastWriteTime(pdfname);

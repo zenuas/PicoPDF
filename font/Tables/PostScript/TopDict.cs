@@ -170,8 +170,8 @@ public record class TopDict
         .To(x => double.Parse(x, CultureInfo.InvariantCulture));
 
     public static IEnumerable<byte> DoubleToPackedBCD(double d) => d.ToString(CultureInfo.InvariantCulture)
-        .Replace("E-", "e")
-        .Replace("E+", "E")
+        .Replace("E-", "e", StringComparison.OrdinalIgnoreCase)
+        .Replace("E+", "E", StringComparison.OrdinalIgnoreCase)
         .Select(x => x switch
         {
             '0' => (byte)0x00,

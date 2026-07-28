@@ -6,6 +6,7 @@ using Pdf.Function;
 using Svg.Outline;
 using System;
 using System.Drawing;
+using System.Globalization;
 
 namespace Pdf.Shading;
 
@@ -27,7 +28,7 @@ public class RadialShading : PdfObject, IShading
         _ = Elements.TryAdd("Coords", $"[{new[] { Coords.X0, Coords.Y0, Coords.R0, Coords.X1, Coords.Y1, Coords.R1 }.ToPointString(option.PointFormat)}]");
         _ = Elements.TryAdd("Domain", $"[{new[] { Domain.T0, Domain.T1 }.ToPointString(option.PointFormat)}]");
         _ = Elements.TryAdd("Function", new ElementIndirectObject { References = Function.Cast<PdfObject>() });
-        _ = Elements.TryAdd("Extend", $"[{Extend.B0.ToString().ToLower()} {Extend.B1.ToString().ToLower()}]");
+        _ = Elements.TryAdd("Extend", $"[{Extend.B0.ToString().ToLower(CultureInfo.InvariantCulture)} {Extend.B1.ToString().ToLower(CultureInfo.InvariantCulture)}]");
     }
 
     public static RadialShading Create(string name, RadialGradientLayer radial, Func<Color, float[]> f, string color_space) => new()

@@ -3,6 +3,7 @@ using Mina.Extension;
 using OpenType;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -17,7 +18,7 @@ public class FontRegister : IFontRegister
         .Where(Directory.Exists)
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
         .Flatten()
-        .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper()))
+        .Select(x => (Path: x, Extension: Path.GetExtension(x).ToUpper(CultureInfo.InvariantCulture)))
         .Where(x => x.Extension is ".TTF" or ".TTC" or ".OTF")
         .Each(x =>
         {
@@ -69,8 +70,8 @@ public class FontRegister : IFontRegister
 
     public static IFontPath GetFontFilePathValue(string name)
     {
-        var ext = Path.GetExtension(name).ToUpper();
-        return ext.StartsWith(".TTC,") && int.TryParse(ext[5..], out var index)
+        var ext = Path.GetExtension(name).ToUpper(CultureInfo.InvariantCulture);
+        return ext.StartsWith(".TTC,", StringComparison.Ordinal) && int.TryParse(ext[5..], out var index)
             ? new FontCollectionPath { Path = Path.GetFullPath(name[0..^(ext.Length - 4)]), Index = index }
             : new FontPath { Path = Path.GetFullPath(name) };
     }

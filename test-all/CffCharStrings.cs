@@ -5,6 +5,7 @@ using OpenType.Tables.PostScript;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 
 namespace PicoPDF.TestAll;
@@ -58,7 +59,7 @@ public class CffCharStrings : FontRegisterCommand
 
                     case CharstringCommandCodes.Hintmask:
                     case CharstringCommandCodes.Cntrmask:
-                        Console.WriteLine($"{ope} : 0b_{string.Join("_", stack.Select(x => ((int)x).ToString("b8")))}");
+                        Console.WriteLine($"{ope} : 0b_{string.Join("_", stack.Select(x => ((int)x).ToString("b8", CultureInfo.InvariantCulture)))}");
                         Interpreter.DefaultOperandAction(ope, stack, frame);
                         break;
 

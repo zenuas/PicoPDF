@@ -3,6 +3,7 @@ using Mina.Extension;
 using OpenType;
 using OpenType.Tables.PostScript;
 using System;
+using System.Globalization;
 using System.Linq;
 
 namespace PicoPDF.TestAll;
@@ -87,7 +88,7 @@ public class FontDump : FontRegisterCommand
             Console.WriteLine($"os2,YStrikeoutSize,{os2.YStrikeoutSize}");
             Console.WriteLine($"os2,YStrikeoutPosition,{os2.YStrikeoutPosition}");
             Console.WriteLine($"os2,SFamilyClass,{os2.SFamilyClass}");
-            Console.WriteLine($"os2,Panose,[{os2.Panose.Select(x => x.ToString()).Join(", ")}]");
+            Console.WriteLine($"os2,Panose,[{os2.Panose.Select(x => x.ToString(CultureInfo.InvariantCulture)).Join(", ")}]");
             Console.WriteLine($"os2,UlUnicodeRange1,{os2.UlUnicodeRange1}");
             Console.WriteLine($"os2,UlUnicodeRange2,{os2.UlUnicodeRange2}");
             Console.WriteLine($"os2,UlUnicodeRange3,{os2.UlUnicodeRange3}");

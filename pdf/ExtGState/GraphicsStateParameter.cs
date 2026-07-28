@@ -3,6 +3,7 @@ using Pdf.Elements;
 using Pdf.Extension;
 using Pdf.SoftMasks;
 using Pdf.XObject.Form;
+using System.Globalization;
 
 namespace Pdf.ExtGState;
 
@@ -22,7 +23,7 @@ public class GraphicsStateParameter : PdfObject, IGraphicsStateParameter
         if (SMask is { } smask) _ = Elements.TryAdd("SMask", new ElementIndirectObject { References = smask });
         if (CA is { } ca1) _ = Elements.TryAdd("CA", ca1.ToPointString(option.PointFormat));
         if (Ca is { } ca2) _ = Elements.TryAdd("ca", ca2.ToPointString(option.PointFormat));
-        if (AIS is { } ais) _ = Elements.TryAdd("AIS", ais.ToString().ToLower());
+        if (AIS is { } ais) _ = Elements.TryAdd("AIS", ais.ToString().ToLower(CultureInfo.InvariantCulture));
     }
 
     public static GraphicsStateParameter CreateTransparency(string name, FormXObject g) => new()

@@ -4,6 +4,7 @@ using Pdf.Font;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -52,7 +53,7 @@ public class SinglePageBench
 
     public static readonly int[] Line1_Data = [1];
     public static readonly int[] Line1K_Data = [.. Lists.Sequence(1).Take(1_000)];
-    public static readonly Dictionary<string, Func<int, object>> LineMapper = new() { ["Foo"] = (x) => x, ["Bar"] = (x) => (long)(x * 1000), ["Baz"] = (x) => x.ToString() };
+    public static readonly Dictionary<string, Func<int, object>> LineMapper = new() { ["Foo"] = (x) => x, ["Bar"] = (x) => (long)(x * 1000), ["Baz"] = (x) => x.ToString(CultureInfo.InvariantCulture) };
 
     [Benchmark]
     public void Line1()
@@ -71,7 +72,7 @@ public class SinglePageBench
     }
 
     public static readonly DataLine[] Mapper1_Data = [new DataLine() { Foo = 1, Bar = 1000, Baz = "1" }];
-    public static readonly DataLine[] Mapper1K_Data = [.. Lists.Sequence(1).Take(1_000).Select(x => new DataLine() { Foo = x, Bar = x * 1000, Baz = x.ToString() })];
+    public static readonly DataLine[] Mapper1K_Data = [.. Lists.Sequence(1).Take(1_000).Select(x => new DataLine() { Foo = x, Bar = x * 1000, Baz = x.ToString(CultureInfo.InvariantCulture) })];
 
     [Benchmark]
     public void Mapper1()
@@ -103,7 +104,7 @@ public class SinglePageBench
             _ = x.Columns.Add("Foo");
             _ = x.Columns.Add("Bar");
             _ = x.Columns.Add("Baz");
-            Lists.Sequence(1).Take(1_000).Each(i => x.Rows.Add(x.NewRow().Return(x => { x["Foo"] = i; x["Bar"] = (long)(i * 1000); x["Baz"] = i.ToString(); })));
+            Lists.Sequence(1).Take(1_000).Each(i => x.Rows.Add(x.NewRow().Return(x => { x["Foo"] = i; x["Bar"] = (long)(i * 1000); x["Baz"] = i.ToString(CultureInfo.InvariantCulture); })));
         });
 
     [Benchmark]

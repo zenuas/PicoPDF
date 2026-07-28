@@ -24,5 +24,5 @@ public class NameRecordList : FontRegisterCommand
         }
     }
 
-    public static string Escape(string s) => s.Replace("\"", "\"\"");
+    public static string Escape(string s) => s.Replace("\"", "\"\"", StringComparison.Ordinal);
 }

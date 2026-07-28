@@ -1,4 +1,6 @@
-﻿namespace OpenType.Extension;
+﻿using System.Globalization;
+
+namespace OpenType.Extension;
 
 public readonly struct Fixed
 {
@@ -9,5 +11,5 @@ public readonly struct Fixed
     public static implicit operator Fixed(int v) => new() { Value = v };
     public static implicit operator float(Fixed v) => v.FloatValue;
 
-    public override string ToString() => FloatValue.ToString();
+    public override string ToString() => FloatValue.ToString(CultureInfo.InvariantCulture);
 }

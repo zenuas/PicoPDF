@@ -1,4 +1,6 @@
-﻿namespace OpenType.Extension;
+﻿using System.Globalization;
+
+namespace OpenType.Extension;
 
 public readonly struct Offset24
 {
@@ -8,5 +10,5 @@ public readonly struct Offset24
 
     public static int SizeOf() => 3;
 
-    public override string ToString() => Value.ToString();
+    public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
 }

@@ -1,4 +1,6 @@
-﻿namespace OpenType.Extension;
+﻿using System.Globalization;
+
+namespace OpenType.Extension;
 
 public readonly struct F2DOT14
 {
@@ -9,5 +11,5 @@ public readonly struct F2DOT14
     public static implicit operator F2DOT14(short v) => new() { Value = v };
     public static implicit operator float(F2DOT14 v) => v.FloatValue;
 
-    public override string ToString() => FloatValue.ToString();
+    public override string ToString() => FloatValue.ToString(CultureInfo.InvariantCulture);
 }

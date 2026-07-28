@@ -6,6 +6,7 @@ using PicoPDF.Model;
 using PicoPDF.Model.Elements;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Xunit;
 
@@ -392,7 +393,7 @@ public class SectionBinderEventTest
             {
                 var key1 = section_model.Elements.OfType<ITextModel>().First(x => x.Element.Name == "Key1");
 
-                return section_model with { Height = int.Parse(key1.Text) };
+                return section_model with { Height = int.Parse(key1.Text, CultureInfo.InvariantCulture) };
             }
             return section;
         },
@@ -527,7 +528,7 @@ public class SectionBinderEventTest
             {
                 var key1 = section_model.Elements.OfType<ITextModel>().First(x => x.Element is BindElement bind && bind.Bind == "Key1");
 
-                return section_model with { Height = int.Parse(key1.Text) };
+                return section_model with { Height = int.Parse(key1.Text, CultureInfo.InvariantCulture) };
             }
             return section;
         },

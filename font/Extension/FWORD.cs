@@ -1,4 +1,6 @@
-﻿namespace OpenType.Extension;
+﻿using System.Globalization;
+
+namespace OpenType.Extension;
 
 public readonly struct FWORD
 {
@@ -9,5 +11,5 @@ public readonly struct FWORD
 
     public static int SizeOf() => sizeof(short);
 
-    public override string ToString() => Value.ToString();
+    public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
 }

@@ -2,6 +2,7 @@
 using Mina.Extension;
 using OpenType;
 using System;
+using System.Globalization;
 
 namespace PicoPDF.TestAll;
 
@@ -60,7 +61,7 @@ public class FontsAllHtml : SvgOutput
         <td>{namev}</td>
         <td>{gid}</td>
         <td style="font-family: '{namev}';">{s}</td>
-        <td>U+{(Char <= 0xFFFF ? Char.ToString("x4") : Char.ToString("x6"))}</td>
+        <td>U+{(Char <= 0xFFFF ? Char.ToString("x4", CultureInfo.InvariantCulture) : Char.ToString("x6", CultureInfo.InvariantCulture))}</td>
         <td>
 """);
             OutputSvg(font, [[(Char, font.CharToGID(Char))]], $"g{gid}");
