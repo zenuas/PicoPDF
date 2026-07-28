@@ -65,7 +65,7 @@ public partial class Document
     {
         foreach (var x in Pages) yield return x;
         foreach (var x in Fonts.OfType<PdfObject>()) yield return x;
-        foreach (var x in Images.OfType<PdfObject>()) yield return x;
+        foreach (var x in XObjects.OfType<PdfObject>()) yield return x;
         foreach (var x in Shadings.OfType<PdfObject>()) yield return x;
         foreach (var x in GraphicsStateParameters.OfType<PdfObject>()) yield return x;
 

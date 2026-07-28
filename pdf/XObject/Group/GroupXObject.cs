@@ -4,6 +4,7 @@ namespace Pdf.XObject.Group;
 
 public class GroupXObject : PdfObject, IXObject
 {
+    public string Name { get; init; } = "";
     public string S { get; init; } = "/Transparency";
     public bool I { get; init; } = false;
     public required string CS { get; init; }

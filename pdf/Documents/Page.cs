@@ -4,7 +4,7 @@ using Pdf.ExtGState;
 using Pdf.Font;
 using Pdf.Operation;
 using Pdf.Shading;
-using Pdf.XObject.Image;
+using Pdf.XObject;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,7 +37,7 @@ public class Page : PdfObject
         dic.Dictionary.Add("ProcSet", ProcSet);
 
         var page_fonts = new HashSet<IFont>();
-        var page_images = new HashSet<IImageXObject>();
+        var page_xobjects = new HashSet<IXObject>();
         var page_shadings = new HashSet<IShading>();
         var page_extgstates = new HashSet<IGraphicsStateParameter>();
         foreach (var ope in Contents.EnumOperations(Contents.Operations))
@@ -48,8 +48,12 @@ public class Page : PdfObject
                     _ = page_fonts.Add(x.Font);
                     break;
 
+                case DrawPathXObject x:
+                    _ = page_xobjects.Add(x.XObject);
+                    break;
+
                 case DrawImage x:
-                    _ = page_images.Add(x.Image);
+                    _ = page_xobjects.Add(x.Image);
                     break;
 
                 case DrawPathShading x:
@@ -70,7 +74,7 @@ public class Page : PdfObject
             dic.Dictionary.Add("Font", fontdic);
         }
 
-        var xobjs = Document.Images.Where(page_images.Contains);
+        var xobjs = Document.XObjects.Where(page_xobjects.Contains);
         if (xobjs.Any())
         {
             var xobjdic = new ElementDictionary();
