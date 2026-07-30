@@ -1,5 +1,4 @@
-﻿using Mina.Extension;
-using Pdf.Elements;
+﻿using Pdf.Elements;
 using Pdf.Extension;
 using Pdf.SoftMasks;
 using Pdf.XObject.Form;
@@ -17,8 +16,6 @@ public class GraphicsStateParameter : PdfObject, IGraphicsStateParameter
 
     public override void BeforeExport(PdfExportOption option)
     {
-        if (SMask is { }) RelatedObjects.Add(SMask.Cast<PdfObject>());
-
         _ = Elements.TryAdd("Type", "/ExtGState");
         if (SMask is { } smask) _ = Elements.TryAdd("SMask", new ElementIndirectObject { References = smask });
         if (CA is { } ca1) _ = Elements.TryAdd("CA", ca1.ToPointString(option.PointFormat));

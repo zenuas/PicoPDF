@@ -116,7 +116,6 @@ public class CIDFont : PdfObject, IFont
 
     public override void BeforeExport(PdfExportOption option)
     {
-        RelatedObjects.Add(FontDictionary);
         _ = Elements.TryAdd("Type", $"/Font %{Name}");
         _ = Elements.TryAdd("Subtype", $"/Type0");
         _ = Elements.TryAdd("BaseFont", $"/{BaseFont}");

@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using Pdf.Elements;
 using Pdf.Operation;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Pdf.Documents;
@@ -16,7 +17,6 @@ public class Page : PdfObject
     public Page()
     {
         Contents = new() { Page = this };
-        RelatedObjects.Add(Contents);
 
         _ = Elements.TryAdd("Type", "/Page");
         _ = Elements.TryAdd("Contents", Contents);
@@ -26,15 +26,18 @@ public class Page : PdfObject
     {
         _ = Elements.TryAdd("MediaBox", new long[] { 0, 0, Width, Height });
 
-        var dic = new ElementDictionary();
+        var dic = GetResources(Contents.EnumOperations(Contents.Operations)) ?? new ElementDictionary();
         _ = Elements.TryAdd("Resources", dic);
         dic.Dictionary.Add("ProcSet", ProcSet);
+    }
 
+    public static ElementDictionary? GetResources(IEnumerable<IOperation> operations)
+    {
         var fontdic = new ElementDictionary();
         var xobjdic = new ElementDictionary();
         var shdic = new ElementDictionary();
         var gsdic = new ElementDictionary();
-        foreach (var ope in Contents.EnumOperations(Contents.Operations))
+        foreach (var ope in Contents.EnumOperations(operations))
         {
             switch (ope)
             {
@@ -60,9 +63,12 @@ public class Page : PdfObject
             }
         }
 
+        var dic = new ElementDictionary();
         if (fontdic.Dictionary.Count > 0) dic.Dictionary.Add("Font", fontdic);
         if (xobjdic.Dictionary.Count > 0) dic.Dictionary.Add("XObject", xobjdic);
         if (shdic.Dictionary.Count > 0) dic.Dictionary.Add("Shading", shdic);
         if (gsdic.Dictionary.Count > 0) dic.Dictionary.Add("ExtGState", gsdic);
+
+        return dic.Dictionary.Count == 0 ? null : dic;
     }
 }

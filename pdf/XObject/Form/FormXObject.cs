@@ -20,9 +20,6 @@ public class FormXObject : PdfObject, IXObject
 
     public override void BeforeExport(PdfExportOption option)
     {
-        ResourcesShading.OfType<PdfObject>().Each(RelatedObjects.Add);
-        if (Group is { }) RelatedObjects.Add(Group);
-
         _ = Elements.TryAdd("Type", "/XObject");
         _ = Elements.TryAdd("Subtype", "/Form");
         _ = Elements.TryAdd("BBox", $"[{new[] { BBox.Left, BBox.Bottom, BBox.Right, BBox.Top }.ToPointString(option.PointFormat)}]");

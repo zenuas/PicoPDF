@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
 namespace Pdf;
 
@@ -10,10 +11,17 @@ public class PdfObject : IPdfObject
     public int IndirectIndex { get; set; }
     public Dictionary<string, ElementValue> Elements { get; init; } = [];
     public MemoryStream? Stream { get; set; }
-    public List<PdfObject> RelatedObjects { get; init; } = [];
 
     public virtual void BeforeExport(PdfExportOption option)
     {
+    }
+
+    public virtual IEnumerable<IHaveReferences> GetReferences()
+    {
+        foreach (var v in Elements.Values.OfType<IHaveReferences>())
+        {
+            yield return v;
+        }
     }
 
     public Stream GetWriteStream(bool deflate = true)

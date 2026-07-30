@@ -1,6 +1,7 @@
 ﻿using Mina.Extension;
 using Pdf.Operation;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Pdf.Documents;
 
@@ -31,6 +32,18 @@ public partial class Contents : PdfObject
                     foreach (var x in EnumOperations(xs.Operations)) yield return x;
                     break;
             }
+        }
+    }
+
+    public override IEnumerable<IHaveReferences> GetReferences()
+    {
+        foreach (var v in base.GetReferences())
+        {
+            yield return v;
+        }
+        foreach (var v in EnumOperations(Operations).OfType<IHaveReferences>())
+        {
+            yield return v;
         }
     }
 }

@@ -22,7 +22,6 @@ public class Type0Font : PdfObject, IFont, IFontChars
 
     public override void BeforeExport(PdfExportOption option)
     {
-        RelatedObjects.Add(FontDictionary);
         _ = Elements.TryAdd("Type", "/Font");
         _ = Elements.TryAdd("Subtype", "/Type0");
         _ = Elements.TryAdd("Encoding", $"/{Encoding}");
@@ -30,14 +29,12 @@ public class Type0Font : PdfObject, IFont, IFontChars
         if (option.AppendCIDToUnicode)
         {
             var cmap = new CIDToUnicode { Font = EmbeddedFont ?? Font, Chars = Chars };
-            RelatedObjects.Add(cmap);
             _ = Elements.TryAdd("ToUnicode", cmap);
         }
         if (EmbeddedFont is { } && FontDictionary.FontDescriptor is { } descriptor)
         {
             _ = Elements.TryAdd("BaseFont", $"/ABCDEF+{EmbeddedFont.PostScriptName}");
             var fontfile = new PdfObject();
-            RelatedObjects.Add(fontfile);
             var writer = fontfile.GetWriteStream(option.FontStreamDeflate);
             if ((FontEmbed & FontEmbeds.ConvertMask) == FontEmbeds.ConvertToTrueType ||
                 ((FontEmbed & FontEmbeds.ConvertMask) == FontEmbeds.ConvertNone && Font.Offset.ContainTrueType()))

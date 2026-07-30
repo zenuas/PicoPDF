@@ -18,7 +18,6 @@ public class StitchingFunction : PdfObject, IFunction
 
     public override void BeforeExport(PdfExportOption option)
     {
-        Functions.OfType<PdfObject>().Each(RelatedObjects.Add);
         _ = Elements.TryAdd("FunctionType", (int)FunctionType);
         _ = Elements.TryAdd("Domain", $"[{Domain.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]");
         _ = Elements.TryAdd("Functions", new ElementArray<ElementIndirectObject>(Functions.OfType<PdfObject>().Select(x => new ElementIndirectObject { References = x })));

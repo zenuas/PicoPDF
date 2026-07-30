@@ -40,7 +40,6 @@ public static class PdfFactory
         };
         if (meta is XmpMetadata xmp)
         {
-            document.Catalog.RelatedObjects.Add(xmp);
             document.Catalog.Elements.Add("Metadata", xmp);
         }
         return document;

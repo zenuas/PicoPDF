@@ -10,7 +10,6 @@ public class SoftMask : PdfObject
 
     public override void BeforeExport(PdfExportOption option)
     {
-        RelatedObjects.Add(G);
         _ = Elements.TryAdd("Type", "/Mask");
         _ = Elements.TryAdd("S", $"/{S}");
         _ = Elements.TryAdd("G", new ElementIndirectObject() { References = G });

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Pdf.Elements;
 
-public class ElementArray<T> : ElementValue where T : ElementValue
+public class ElementArray<T> : ElementValue, IHaveReferences where T : ElementValue
 {
     public List<T> Array { get; init; } = [];
 
@@ -14,4 +14,12 @@ public class ElementArray<T> : ElementValue where T : ElementValue
     public ElementArray(IEnumerable<T> xs) => Array.AddRange(xs);
 
     public override string ToElementString(IConverter? converter) => $"[ {Array.Select(x => x.ToElementString(converter)).Join(" ")} ]";
+
+    public IEnumerable<IHaveReferences> GetReferences()
+    {
+        foreach (var v in Array.OfType<IHaveReferences>())
+        {
+            yield return v;
+        }
+    }
 }

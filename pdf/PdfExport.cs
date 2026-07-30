@@ -31,7 +31,7 @@ public static class PdfExport
         var all_refs = GetAllReferencesExport(document, option);
         var noglyphfont_refs = all_refs
             .Where(x => x is Type0Font font && font.Chars.Count == 0)
-            .Select(TraverseReferences)
+            .Select(x => TraverseReferences([], x, option))
             .Flatten()
             .ToHashSet();
         var export_refs = all_refs
@@ -125,18 +125,27 @@ public static class PdfExport
         return writer;
     }
 
-    public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option) => [.. document.GetPdfObjects()
-        .Select(TraverseReferences)
-        .Flatten()
-        .DoEach(x => x.BeforeExport(option))];
-
-    public static IEnumerable<PdfObject> TraverseReferences(PdfObject pdfobj)
+    public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option)
     {
-        yield return pdfobj;
+        var cache = new HashSet<IHaveReferences>();
 
-        foreach (var x in pdfobj.RelatedObjects)
+        return [.. document.GetReferences()
+            .Select(x => TraverseReferences(cache, x, option))
+            .Flatten()];
+    }
+
+    public static IEnumerable<PdfObject> TraverseReferences(HashSet<IHaveReferences> cache, IHaveReferences reference, PdfExportOption option)
+    {
+        if (!cache.Add(reference)) yield break;
+        if (reference is PdfObject pdfobj)
         {
-            foreach (var y in TraverseReferences(x))
+            pdfobj.BeforeExport(option);
+            yield return pdfobj;
+        }
+
+        foreach (var x in reference.GetReferences())
+        {
+            foreach (var y in TraverseReferences(cache, x, option))
             {
                 yield return y;
             }

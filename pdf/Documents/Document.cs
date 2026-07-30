@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Pdf.Documents;
 
-public partial class Document
+public partial class Document : IHaveReferences
 {
     public int Version { get; init; } = 17;
     public PdfObject Catalog { get; init; } = new()
@@ -61,7 +61,7 @@ public partial class Document
 
     public void Save(Stream stream, PdfExportOption? option = null) => PdfExport.Export(this, stream, option ?? new());
 
-    public IEnumerable<PdfObject> GetPdfObjects()
+    public virtual IEnumerable<IHaveReferences> GetReferences()
     {
         foreach (var x in Pages) yield return x;
         foreach (var x in Fonts.OfType<PdfObject>()) yield return x;

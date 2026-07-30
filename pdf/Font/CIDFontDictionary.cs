@@ -19,7 +19,6 @@ public class CIDFontDictionary : PdfObject
         _ = Elements.TryAdd("CIDSystemInfo", CIDSystemInfo);
         if (FontDescriptor is { } descriptor)
         {
-            RelatedObjects.Add(descriptor);
             _ = Elements.TryAdd("FontDescriptor", descriptor);
         }
         if (DW is { } dw)

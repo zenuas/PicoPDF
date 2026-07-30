@@ -22,7 +22,6 @@ public class AxialShading : PdfObject, IShading
 
     public override void BeforeExport(PdfExportOption option)
     {
-        RelatedObjects.Add(Function.Cast<PdfObject>());
         _ = Elements.TryAdd("ShadingType", (int)ShadingType);
         _ = Elements.TryAdd("ColorSpace", ColorSpace);
         _ = Elements.TryAdd("Coords", $"[{(new[] { Coords.X0, Coords.Y0, Coords.X1, Coords.Y1 }).ToPointString(option.PointFormat)}]");

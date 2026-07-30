@@ -16,7 +16,6 @@ public class Type1Font : PdfObject, IFont
 
     public override void BeforeExport(PdfExportOption option)
     {
-        RelatedObjects.Add(FontDescriptor);
         _ = Elements.TryAdd("Type", $"/Font %{Name}");
         _ = Elements.TryAdd("Subtype", "/Type1");
         _ = Elements.TryAdd("BaseFont", $"/{BaseFont}");
