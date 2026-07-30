@@ -28,15 +28,7 @@ public static class PdfExport
                 ((font.FontEmbed & FontEmbeds.EmbedsMask) == FontEmbeds.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
         }
 
-        var all_refs = GetAllReferencesExport(document, option);
-        var noglyphfont_refs = all_refs
-            .Where(x => x is Type0Font font && font.Chars.Count == 0)
-            .Select(x => TraverseReferences([], x, option))
-            .Flatten()
-            .ToHashSet();
-        var export_refs = all_refs
-            .Where(x => !noglyphfont_refs.Contains(x))
-            .ToArray();
+        var export_refs = GetAllReferencesExport(document, option, [.. document.Fonts.OfType<Type0Font>().Where(x => x is Type0Font font && font.Chars.Count == 0)]);
         export_refs.Each((x, i) => x.IndirectIndex = i + 1);
 
         var xref = new List<long>();
@@ -125,9 +117,9 @@ public static class PdfExport
         return writer;
     }
 
-    public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option)
+    public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option, HashSet<IHaveReferences>? excludes = null)
     {
-        var cache = new HashSet<IHaveReferences>();
+        var cache = excludes ?? [];
 
         return [.. document.GetReferences()
             .Select(x => TraverseReferences(cache, x, option))
