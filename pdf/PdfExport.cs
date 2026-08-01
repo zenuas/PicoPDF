@@ -2,13 +2,10 @@
 using Pdf.Documents;
 using Pdf.Extension;
 using Pdf.Font;
-using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Pipelines;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Pdf;
 
@@ -35,25 +32,7 @@ public static class PdfExport
         export_refs.Each(pdfobj =>
         {
             xref.Add(stream.Position);
-            stream.Write($"{pdfobj.IndirectIndex} 0 obj\n");
-            stream.Write("<<\n");
-            var input = pdfobj.Stream;
-            if (input is { })
-            {
-                var stream_pipe = (pdfobj is not IMetadata || (document.Encrypt?.MetadataEncrypted ?? false) ? document.Encrypt?.StreamHandler : null)?.CreateEncrypterPipe(pdfobj.IndirectIndex, 0);
-                if (stream_pipe is { } p) input = EncryptStream(input, p.Input, p.Output).GetAwaiter().GetResult();
-                pdfobj.Elements["Length"] = input.Length;
-            }
-            using var converter = document.Encrypt?.StringHandler?.CreateEncrypterConverter(pdfobj.IndirectIndex, 0);
-            pdfobj.Elements.Each(x => stream.Write($"  /{x.Key} {x.Value.ToElementString(converter)}\n"));
-            stream.Write(">>\n");
-            if (input is { })
-            {
-                stream.Write("stream\n");
-                stream.Write(input.ToArray());
-                stream.Write("\nendstream\n");
-            }
-            stream.Write("endobj\n\n");
+            pdfobj.Export(document, stream, option);
         });
 
         var startxref = stream.Position;
@@ -91,33 +70,7 @@ public static class PdfExport
         stream.Write("%%EOF\n");
     }
 
-    public static async Task<MemoryStream> EncryptStream(MemoryStream stream, PipeWriter input, PipeReader output)
-    {
-        stream.Position = 0;
-
-        Span<byte> buffer = stackalloc byte[4096];
-        var writer = new MemoryStream();
-        while (true)
-        {
-            var readed = stream.Read(buffer);
-            if (readed == 0) break;
-
-            input.Write(buffer[..readed]);
-        }
-        input.Complete();
-        while (true)
-        {
-            var result = await output.ReadAsync();
-            if (result.IsCanceled) throw new OperationCanceledException();
-            if (result.Buffer.IsEmpty) break;
-
-            writer.Write(result.Buffer.ToArray());
-            output.AdvanceTo(result.Buffer.End);
-        }
-        return writer;
-    }
-
-    public static PdfObject[] GetAllReferencesExport(Document document, PdfExportOption option, HashSet<IHaveReferences>? excludes = null)
+    public static IPdfObject[] GetAllReferencesExport(Document document, PdfExportOption option, HashSet<IHaveReferences>? excludes = null)
     {
         var cache = excludes ?? [];
 
@@ -126,10 +79,10 @@ public static class PdfExport
             .Flatten()];
     }
 
-    public static IEnumerable<PdfObject> TraverseReferences(HashSet<IHaveReferences> cache, IHaveReferences reference, PdfExportOption option)
+    public static IEnumerable<IPdfObject> TraverseReferences(HashSet<IHaveReferences> cache, IHaveReferences reference, PdfExportOption option)
     {
         if (!cache.Add(reference)) yield break;
-        if (reference is PdfObject pdfobj)
+        if (reference is IPdfObject pdfobj)
         {
             pdfobj.BeforeExport(option);
             yield return pdfobj;
