@@ -224,10 +224,10 @@ public class PngImage : IImageCanvas
                     break;
 
                 case 2:
-                    yield return [(byte)((b & 0xC0) >> 6)];
-                    yield return [(byte)((b & 0x30) >> 4)];
-                    yield return [(byte)((b & 0x0C) >> 2)];
-                    yield return [(byte)(b & 0x03)];
+                    yield return [(byte)((b & 0b1100_0000) >> 6)];
+                    yield return [(byte)((b & 0b0011_0000) >> 4)];
+                    yield return [(byte)((b & 0b0000_1100) >> 2)];
+                    yield return [(byte)(b & 0b0000_0011)];
                     break;
 
                 case 4:
