@@ -27,12 +27,8 @@ public class CffCharStrings : FontRegisterCommand
         {
             var c = char.ConvertFromUtf32(arg);
             var gid = font.CharToGID(arg);
-
-            var private_dict = cff.TopDict.IsCIDFont ?
-                cff.TopDict.FontDictArray[gid >= cff.TopDict.FontDictSelect.Length ? (byte)0 : cff.TopDict.FontDictSelect[gid]].PrivateDict :
-                cff.TopDict.PrivateDict;
+            var private_dict = cff.TopDict.GetPrivateDict(gid);
             var local_subr = private_dict?.LocalSubroutines ?? [];
-
             var local_bias = Interpreter.GetSubroutineBias(local_subr.Length);
 
             void OperandAction(CharstringCommandCodes ope, List<float> stack, CharstringFrame frame)

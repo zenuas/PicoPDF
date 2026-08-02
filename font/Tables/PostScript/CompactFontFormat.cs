@@ -128,9 +128,7 @@ public record class CompactFontFormat : IExportable
 
     public Surface[] ToOutline(uint gid)
     {
-        var private_dict = TopDict.IsCIDFont ?
-            TopDict.FontDictArray[gid >= TopDict.FontDictSelect.Length ? (byte)0 : TopDict.FontDictSelect[gid]].PrivateDict :
-            TopDict.PrivateDict;
+        var private_dict = TopDict.GetPrivateDict(gid);
         var local_subr = private_dict?.LocalSubroutines ?? [];
         var surfaces = new List<IEdge[]>();
         var edges = new List<IEdge>();

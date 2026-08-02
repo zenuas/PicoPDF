@@ -341,4 +341,8 @@ public record class TopDict
         stream.WriteByte(0);
         stream.Write(fdselect);
     }
+
+    public PrivateDict? GetPrivateDict(uint gid) => IsCIDFont ?
+        FontDictArray[gid >= FontDictSelect.Length ? 0 : FontDictSelect[gid]].PrivateDict :
+        PrivateDict;
 }
