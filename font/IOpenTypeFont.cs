@@ -25,7 +25,7 @@ public interface IOpenTypeFont : IOpenTypeHeader
     public StandardBitmapGraphicsTable? StandardBitmapGraphics { get; init; }
     public ScalableVectorGraphicsTable? ScalableVectorGraphics { get; init; }
 
-    public double MeasureString(string s) => s.ToUtf32CharArray().Select(x => MeasureChar(x)).Sum();
+    public double MeasureString(string s) => s.ToUtf32CharArray().Select(MeasureChar).Sum();
 
     public double MeasureChar(int c) => MeasureGID(CharToGID(c));
 

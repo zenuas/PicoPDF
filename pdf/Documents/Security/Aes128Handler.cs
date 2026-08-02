@@ -127,7 +127,7 @@ public class Aes128Handler : ISecurityHandler
                     aes.GenerateIV();
                     return [.. aes.IV, .. aes.EncryptCbc(bytes, aes.IV)];
                 },
-                Dispose = () => aes.Dispose(),
+                Dispose = aes.Dispose,
             };
         }
         catch
@@ -146,7 +146,7 @@ public class Aes128Handler : ISecurityHandler
             return new ConverterBinder()
             {
                 Convert = bytes => aes.DecryptCbc(bytes[16..], bytes[0..16]),
-                Dispose = () => aes.Dispose(),
+                Dispose = aes.Dispose,
             };
         }
         catch

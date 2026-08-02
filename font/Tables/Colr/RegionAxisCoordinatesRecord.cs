@@ -10,7 +10,7 @@ public class RegionAxisCoordinatesRecord : IExportable
 
     public static RegionAxisCoordinatesRecord ReadFrom(Stream stream, int axisCount) => new()
     {
-        RegionAxes = [.. Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(axisCount)],
+        RegionAxes = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take(axisCount)],
     };
 
     public void WriteTo(Stream stream)
