@@ -20,7 +20,7 @@ public class StitchingFunction : PdfObject, IFunction
     {
         _ = Elements.TryAdd("FunctionType", (int)FunctionType);
         _ = Elements.TryAdd("Domain", $"[{Domain.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]");
-        _ = Elements.TryAdd("Functions", new ElementArray<ElementIndirectObject>(Functions.OfType<PdfObject>().Select(x => new ElementIndirectObject { References = x })));
+        _ = Elements.TryAdd("Functions", new ElementArray<ElementIndirectObject>(Functions.OfType<IPdfObject>().Select(x => new ElementIndirectObject { References = x })));
         _ = Elements.TryAdd("Bounds", $"[{Bounds.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]");
         _ = Elements.TryAdd("Encode", $"[{Encode.Select(x => x.ToPointString(option.PointFormat)).Join(" ")}]");
     }

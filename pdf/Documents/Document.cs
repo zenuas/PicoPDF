@@ -64,15 +64,15 @@ public partial class Document : IHaveReferences
     public virtual IEnumerable<IHaveReferences> GetReferences()
     {
         foreach (var x in Pages) yield return x;
-        foreach (var x in Fonts.OfType<PdfObject>()) yield return x;
-        foreach (var x in XObjects.OfType<PdfObject>()) yield return x;
-        foreach (var x in Shadings.OfType<PdfObject>()) yield return x;
-        foreach (var x in GraphicsStateParameters.OfType<PdfObject>()) yield return x;
+        foreach (var x in Fonts.OfType<IPdfObject>()) yield return x;
+        foreach (var x in XObjects.OfType<IPdfObject>()) yield return x;
+        foreach (var x in Shadings.OfType<IPdfObject>()) yield return x;
+        foreach (var x in GraphicsStateParameters.OfType<IPdfObject>()) yield return x;
 
         yield return PageTree;
         yield return Catalog;
 
         if (Info is { }) yield return Info;
-        if (Encrypt is PdfObject encrypt) yield return encrypt;
+        if (Encrypt is IPdfObject encrypt) yield return encrypt;
     }
 }
