@@ -47,6 +47,9 @@ public class PdfCreate : FontRegisterCommand
     [CommandOption("work-directory")]
     public string WorkDirectory { get; init; } = "test-case";
 
+    [CommandOption("output-directory")]
+    public string OutputDirectory { get; init; } = "test-case";
+
     public override void Run(string[] args)
     {
         var export_opt = new PdfExportOption
@@ -91,7 +94,7 @@ public class PdfCreate : FontRegisterCommand
         {
             var fname = Path.GetFileNameWithoutExtension(json);
             var dataname = $"{WorkDirectory}/{(fname.Contains('-', StringComparison.Ordinal) ? fname[0..fname.LastIndexOf('-')] : fname)}.csv";
-            var pdfname = $"{WorkDirectory}/{fname}.pdf";
+            var pdfname = $"{OutputDirectory}/{fname}.pdf";
 
             var pdftime = File.GetLastWriteTime(pdfname);
             if (!AlwaysUpdate && pdftime > File.GetLastWriteTime(json) && pdftime > File.GetLastWriteTime(dataname)) continue;
