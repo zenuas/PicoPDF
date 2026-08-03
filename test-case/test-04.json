@@ -1,7 +1,7 @@
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
-	"DefaultFont": "test-case/NotoSansCJK-Regular.ttc,0",
+	"DefaultFont": ["Noto Sans CJK JP"],
 	"Padding": [15, 10, 15],
 	
 	"Header": "PageHeader",

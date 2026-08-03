@@ -1,7 +1,7 @@
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
-	"DefaultFont": ["Meiryo Bold", "Segoe UI Emoji"],
+	"DefaultFont": ["Noto Sans JP Regular", "Noto Emoji Regular"],
 	"Padding": [15, 10, 15],
 	
 	"Header": "PageHeader",

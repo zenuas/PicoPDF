@@ -1,7 +1,7 @@
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
-	"DefaultFont": "Meiryo Bold",
+	"DefaultFont": ["Noto Sans JP Regular"],
 	"Padding": [15, 10, 15],
 	
 	"Header": "PageHeader",
@@ -18,7 +18,7 @@
 			{"Type": "BindElement", "Bind": "Number",  "Size": 10, "X": 10, "Y": 0},
 		]},
 		{"Type": "FooterSection", "Name": "PageFooter", "Height": 30, "Elements": [
-			{"Type": "TextElement", "Text": "PageFooter", "Size": 20, "X": 10,  "Y": 0, "Font": "HGMinchoB"},
+			{"Type": "TextElement", "Text": "PageFooter", "Size": 20, "X": 10,  "Y": 0, "Font": "Noto Sans JP Regular"},
 			{"Type": "SummaryElement",           "Size": 10, "X": 300, "Y": 0, "Format": "#,0", "SummaryType": "PageCount", "Alignment": "End",   "Width": 50},
 			{"Type": "TextElement", "Text": "/", "Size": 10, "X": 352, "Y": 0},
 			{"Type": "SummaryElement",           "Size": 10, "X": 360, "Y": 0, "Format": "#,0", "SummaryType": "PageCount", "Alignment": "Start", "Width": 50, "SummaryMethod": "All"},
