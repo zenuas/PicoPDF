@@ -13,6 +13,7 @@ public interface ISectionModel<TSection>
     public bool IsPageBreak { get; init; }
     public bool IsEmpty { get; init; }
     public bool IsVisible { get; init; }
+    public ViewModes ViewMode { get; init; }
 
     public void UpdatePosition();
     public static abstract TSection CreateSectionModel<T>(IPageSection<TSection> page, ISection section, T data, BindSummaryMapper<T, TSection> bind, int break_count, int? depth);

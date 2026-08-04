@@ -4,6 +4,7 @@ public enum ViewModes
 {
     Every,
     PageFirst,
+    PageLast,
     First,
     Last,
 }

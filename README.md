@@ -46,6 +46,9 @@ json定義ファイルには以下の4つのセクションとブレークキー
 * PageFirst  
   初回とページ後に表示される。  
   HeaderSection専用。  
+* PageLast  
+  ページの最後だけ表示される。  
+  TotalSectionとFooterSection専用。  
 * First  
   初回だけ表示される。  
   HeaderSection専用。  

@@ -24,6 +24,7 @@ public record class SectionModel : ISectionModel<SectionModel>
     public required int PageCount { get; init; }
     public required bool IsEmpty { get; init; }
     public required bool IsVisible { get; init; }
+    public required ViewModes ViewMode { get; init; }
     public required bool IsHeightAdjusting { get; init; }
 
     public void UpdatePosition() => Elements
@@ -50,6 +51,7 @@ public record class SectionModel : ISectionModel<SectionModel>
             PageCount = bind.GetPageCount(),
             IsEmpty = bind.IsEmpty,
             IsVisible = style is not { } || !style.Style.HasFlag(SectionStyles.Hidden),
+            ViewMode = section.ViewMode,
             IsHeightAdjusting = style?.Style.HasFlag(SectionStyles.HeightAdjusting) ?? false,
         }, page_section);
     }
