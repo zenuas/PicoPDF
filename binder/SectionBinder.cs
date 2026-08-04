@@ -110,7 +110,7 @@ public static class SectionBinder
         var page_count = 0;
         var everyfooter = page.Footer is { } footer && footer.IsFooter && footer.ViewMode == ViewModes.Every ? footer : null;
         var pageheight_minus_everypagefooter = page.Height - page.Padding.Top - page.Padding.Bottom - (everyfooter?.Height ?? 0);
-        var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => false).Select(x => x.Section.Height).Sum();
+        var minimum_breakfooter_height = footers.SkipWhileOrEveryPage(_ => true).Select(x => x.Section.Height).Sum();
         T lastdata = default!;
         while (!datas.IsLast)
         {
@@ -119,7 +119,7 @@ public static class SectionBinder
             _ = datas.Next(0, out var firstdata);
             if (page_count == 1) lastdata = firstdata;
             headers
-                .SkipWhileOrPageFirst(x => page_count == 1 || (x.BreakKey != "" && !CompareBreakKey(bind, x.BreakKey, lastdata, firstdata)))
+                .SkipWhileOrPageFirst(x => page_count > 1 && (x.BreakKey == "" || CompareBreakKey(bind, x.BreakKey, lastdata, firstdata)))
                 .Select(x => TSection.CreateSectionModel(page, x.Section, firstdata, bind, x.BreakCount, x.Depth))
                 .Where(x => x.IsVisible)
                 .Each(models.Add);
@@ -131,7 +131,7 @@ public static class SectionBinder
                 _ = datas.Next(0, out var current);
                 var breakheader_section = page_first ?
                     null :
-                    headers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !CompareBreakKey(bind, x.BreakKey, lastdata, current))
+                    headers.SkipWhileOrEveryPage(x => x.BreakKey == "" || CompareBreakKey(bind, x.BreakKey, lastdata, current))
                         ?.Select(x => TSection.CreateSectionModel(page, x.Section, current, bind, x.BreakCount, x.Depth))
                         .Where(x => x.IsVisible)
                         .ToArray();
@@ -150,7 +150,7 @@ public static class SectionBinder
 
                 var existnext = datas.Next(0, out var next);
                 var breakcount = keys.Length - (existnext ? keys.TakeWhile(x => CompareBreakKey(bind, x, current, next)).Count() : 0);
-                var breakfooter = existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey != "" && !CompareBreakKey(bind, x.BreakKey, current, next))] : footers;
+                var breakfooter = existnext ? [.. footers.SkipWhileOrEveryPage(x => x.BreakKey == "" || CompareBreakKey(bind, x.BreakKey, current, next))] : footers;
                 if (height + pagelast_breakfooter_height < details.Select(x => x.Section.Height).Sum() + breakfooter.Select(x => x.Section.Height).Sum())
                 {
                     var last = details[^1].Data;
@@ -163,7 +163,7 @@ public static class SectionBinder
                         break;
                     }
                     breakcount = 0;
-                    breakfooter = [.. footers.SkipWhileOrEveryPage(_ => false)];
+                    breakfooter = [.. footers.SkipWhileOrEveryPage(_ => true)];
                 }
 
                 _ = models.RemoveAll(x => x.ViewMode == ViewModes.PageLast);
@@ -263,7 +263,7 @@ public static class SectionBinder
         var found = false;
         foreach (var x in self)
         {
-            if (!found && f(x)) found = true;
+            if (!found && !f(x)) found = true;
             if (found || x.Section.ViewMode is ViewModes.Every or ViewModes.PageFirst)
             {
                 yield return x;
@@ -276,7 +276,7 @@ public static class SectionBinder
         var found = false;
         foreach (var x in self)
         {
-            if (!found && f(x)) found = true;
+            if (!found && !f(x)) found = true;
             if (found || x.Section.ViewMode is ViewModes.Every or ViewModes.PageLast)
             {
                 yield return x;
