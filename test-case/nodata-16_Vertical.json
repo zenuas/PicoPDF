@@ -1,0 +1,17 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": [{"Path": "Noto Sans JP Regular", "Embed": "AlignVertical"}],
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "縦書き⇒「ijABCあ亜。」", "Size": 20,  "X": 10, "Y": 0},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+	],
+}

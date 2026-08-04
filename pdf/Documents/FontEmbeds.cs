@@ -13,10 +13,14 @@ public enum FontEmbeds
     NotEmbed = 2,
     Stroke = 3,
 
-    ConvertNone = 0 << 8,
-    ConvertToTrueType = 1 << 8,
-    ConvertToPostScript = 2 << 8,
+    ConvertNone = 0 << 4,
+    ConvertToTrueType = 1 << 4,
+    ConvertToPostScript = 2 << 4,
 
-    EmbedsMask = 0x00FF,
-    ConvertMask = 0xFF00,
+    AlignHorizontal = 0 << 8,
+    AlignVertical = 1 << 8,
+
+    EmbedsMask = 0x000F,
+    ConvertMask = 0x00F0,
+    AlignMask = 0x0F00,
 }

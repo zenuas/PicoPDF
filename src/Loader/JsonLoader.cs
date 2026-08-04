@@ -237,7 +237,7 @@ public static class JsonLoader
         new()
         {
             Path = node.GetStringValue("Path"),
-            Embed = node.GetEnumOrDefaultWithoutNullValue<FontEmbeds>("Embed") ?? (FontEmbeds.PossibleEmbed | FontEmbeds.ConvertNone),
+            Embed = node.GetEnumOrDefaultWithoutNullValue<FontEmbeds>("Embed") ?? (FontEmbeds.PossibleEmbed | FontEmbeds.ConvertNone | FontEmbeds.AlignHorizontal),
         };
 
     public static PageSize LoadPageSize(JsonNode? node)

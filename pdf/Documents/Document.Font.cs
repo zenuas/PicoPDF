@@ -14,6 +14,7 @@ public partial class Document
         var fontcache = Fonts.OfType<Type0Font>().ToDictionary(x => x.Name, x => x);
         return (name, embed) =>
         {
+            var key_embed = embed & (FontEmbeds.EmbedsMask | FontEmbeds.ConvertMask);
             var namekey = $"{name};{embed}";
             if (fontcache.TryGetValue(namekey, out var value)) return value;
             var x = Type0Font.Create($"F{fontcache.Count}", FontRegister.LoadFont(name), embed);
