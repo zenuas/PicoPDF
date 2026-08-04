@@ -277,7 +277,7 @@ public static class SectionBinder
         foreach (var x in self)
         {
             if (!found && f(x)) found = true;
-            if (found || x.Section.ViewMode == ViewModes.Every || x.Section.ViewMode == ViewModes.PageLast)
+            if (found || x.Section.ViewMode is ViewModes.Every or ViewModes.PageLast)
             {
                 yield return x;
             }
