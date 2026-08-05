@@ -70,15 +70,22 @@ public static class FontLoader
             TableRecords = tables,
             Offset = offset,
             Name = name,
+            LoadOption = opt,
         };
     }
 
-    public static IOpenTypeFont LoadFont(IOpenTypeHeader font) => font is IOpenTypeFont opentype ? opentype :
-        font.Offset.ContainCFF() ? LoadPostScriptFont(font) :
-        font.TableRecords.ContainsKey("loca") && font.TableRecords.ContainsKey("glyf") ? LoadTrueTypeFont(font) :
-        LoadNoOutlineFont(font);
+    public static IOpenTypeFont LoadFont(IOpenTypeHeader font)
+    {
+        if (font is IOpenTypeFont opentype) return opentype;
 
-    public static TrueTypeFont LoadTrueTypeFont(IOpenTypeHeader font)
+        var table = font.Cast<FontTableRecords>();
+        return
+            font.Offset.ContainCFF() ? LoadPostScriptFont(font, table.LoadOption) :
+            font.TableRecords.ContainsKey("loca") && font.TableRecords.ContainsKey("glyf") ? LoadTrueTypeFont(font, table.LoadOption) :
+            LoadNoOutlineFont(font, table.LoadOption);
+    }
+
+    public static TrueTypeFont LoadTrueTypeFont(IOpenTypeHeader font, LoadOption opt)
     {
         var stream = font.Path.Open();
 
@@ -136,7 +143,7 @@ public static class FontLoader
         return newfont;
     }
 
-    public static PostScriptFont LoadPostScriptFont(IOpenTypeHeader font)
+    public static PostScriptFont LoadPostScriptFont(IOpenTypeHeader font, LoadOption opt)
     {
         using var stream = font.Path.Open();
 
@@ -186,7 +193,7 @@ public static class FontLoader
         return newfont;
     }
 
-    public static GenericFont LoadNoOutlineFont(IOpenTypeHeader font)
+    public static GenericFont LoadNoOutlineFont(IOpenTypeHeader font, LoadOption opt)
     {
         using var stream = font.Path.Open();
 

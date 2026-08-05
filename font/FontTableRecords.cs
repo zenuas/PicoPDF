@@ -11,4 +11,5 @@ public class FontTableRecords : IOpenTypeHeader
     public required IReadOnlyDictionary<string, TableRecord> TableRecords { get; init; }
     public required OffsetTable Offset { get; init; }
     public required NameTable Name { get; init; }
+    public required LoadOption LoadOption { get; init; }
 }
