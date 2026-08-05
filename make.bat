@@ -34,7 +34,7 @@
 	@call :setenv VERSION_FILE "powershell -Command Get-Date -Format yyyyMMdd"
 	git archive HEAD --output=%PROJ%-%VERSION_FILE%.zip
 	
-	dotnet publish src --nologo -v q --clp:NoSummary -c Release -o .tmp %PROJ%.slnx
+	dotnet publish src --nologo -v q --clp:NoSummary -c Release -o .tmp
 	powershell -NoProfile $ProgressPreference = 'SilentlyContinue' ; Compress-Archive -Force -Path .tmp\*, README.md, LICENSE -DestinationPath %PROJ%-lib-%VERSION_FILE%.zip
 	rmdir /S /Q .tmp 2>nul
 	
