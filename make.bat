@@ -5,19 +5,21 @@
 @set PROJ=PicoPDF
 @echo on
 
-@if "%1" == "" (set TARGET=build
+@if "%~1" == "" (set TARGET=build
 ) else (set TARGET=%1 && shift)
+:__ARGS_APPEND
+@if "%~1" neq "" (set "ARGS=%ARGS% %1" && shift && goto :__ARGS_APPEND)
 
-@call :%TARGET% %1 %2 %3 %4 %5 %6 %7 %8 %9
+@call :%TARGET% %ARGS%
 @prompt %PREVPROMPT%
 @exit /b %ERRORLEVEL%
 
 :build
-	dotnet build --nologo -v q --clp:NoSummary %PROJ%.slnx
+	dotnet build --nologo -v q --clp:NoSummary %PROJ%.slnx %*
 	@exit /b %ERRORLEVEL%
 
 :clean
-	dotnet clean --nologo -v q %PROJ%.slnx
+	dotnet clean --nologo -v q %PROJ%.slnx %*
 	@exit /b %ERRORLEVEL%
 
 :distclean
@@ -34,7 +36,7 @@
 	@call :setenv VERSION_FILE "powershell -Command Get-Date -Format yyyyMMdd"
 	git archive HEAD --output=%PROJ%-%VERSION_FILE%.zip
 	
-	dotnet publish src --nologo -v q --clp:NoSummary -c Release -o .tmp
+	dotnet publish src --nologo -v q --clp:NoSummary -c Release -o .tmp %*
 	powershell -NoProfile $ProgressPreference = 'SilentlyContinue' ; Compress-Archive -Force -Path .tmp\*, README.md, LICENSE -DestinationPath %PROJ%-lib-%VERSION_FILE%.zip
 	rmdir /S /Q .tmp 2>nul
 	
