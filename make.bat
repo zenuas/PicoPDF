@@ -13,11 +13,11 @@
 @exit /b %ERRORLEVEL%
 
 :build
-	dotnet build --nologo -v q --clp:NoSummary
+	dotnet build --nologo -v q --clp:NoSummary %PROJ%.slnx
 	@exit /b %ERRORLEVEL%
 
 :clean
-	dotnet clean --nologo -v q
+	dotnet clean --nologo -v q %PROJ%.slnx
 	@exit /b %ERRORLEVEL%
 
 :distclean
@@ -34,31 +34,36 @@
 	@call :setenv VERSION_FILE "powershell -Command Get-Date -Format yyyyMMdd"
 	git archive HEAD --output=%PROJ%-%VERSION_FILE%.zip
 	
-	dotnet publish src --nologo -v q --clp:NoSummary -c Release -o .tmp
+	dotnet publish src --nologo -v q --clp:NoSummary -c Release -o .tmp %PROJ%.slnx
 	powershell -NoProfile $ProgressPreference = 'SilentlyContinue' ; Compress-Archive -Force -Path .tmp\*, README.md, LICENSE -DestinationPath %PROJ%-lib-%VERSION_FILE%.zip
 	rmdir /S /Q .tmp 2>nul
 	
 	@exit /b %ERRORLEVEL%
 
 :test
-	dotnet test --nologo -v q %*
+	dotnet test --nologo -v q -c Release %PROJ%.slnx %*
 	@exit /b %ERRORLEVEL%
 
 :test-all
-	dotnet run --project test-all --no-launch-profile -- %*
+	mkdir test-case\out 2> nul
+	dotnet run --project test-all --no-launch-profile -c Release -- create ^
+		--output-directory test-case/out ^
+		--register-system-font false ^
+		--register-user-font test-case/font ^
+		%*
 	@exit /b %ERRORLEVEL%
 
 :run
-	dotnet run --project test-all --no-launch-profile --no-build -- %*
+	dotnet run --project test-all --no-launch-profile -c Release --no-build -- %*
 	@exit /b %ERRORLEVEL%
 
 :sample
-	dotnet run --project test-all --no-launch-profile            -- create --work-directory docs/sample --register-user-font docs/sample --debug false --contents-deflate true --cmap-deflate true
-	dotnet run --project test-all --no-launch-profile --no-build -- font-export --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.ttf abc
-	dotnet run --project test-all --no-launch-profile --no-build -- font-export --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.otf abc
-	dotnet run --project test-all --no-launch-profile --no-build -- manual-args --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.pdf TTF-subset
-	dotnet run --project test-all --no-launch-profile --no-build -- manual-args --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.pdf CFF-subset
-	dotnet run --project test-all --no-launch-profile --no-build -- encrypt --work-directory docs/sample
+	dotnet run --project test-all --no-launch-profile -c Release            -- create --work-directory docs/sample --register-user-font docs/sample --debug false --contents-deflate true --cmap-deflate true
+	dotnet run --project test-all --no-launch-profile -c Release --no-build -- font-export --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.ttf abc
+	dotnet run --project test-all --no-launch-profile -c Release --no-build -- font-export --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.otf abc
+	dotnet run --project test-all --no-launch-profile -c Release --no-build -- manual-args --font docs/sample/NotoSansJP-Regular.ttf    -o docs/sample/subset-ttf.pdf TTF-subset
+	dotnet run --project test-all --no-launch-profile -c Release --no-build -- manual-args --font docs/sample/NotoSansCJK-Regular.ttc,0 -o docs/sample/subset-cff.pdf CFF-subset
+	dotnet run --project test-all --no-launch-profile -c Release --no-build -- encrypt --work-directory docs/sample
 	@exit /b %ERRORLEVEL%
 
 :bench
