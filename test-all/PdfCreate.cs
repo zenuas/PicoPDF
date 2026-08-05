@@ -77,7 +77,7 @@ public class PdfCreate : FontRegisterCommand
                         .OfType<TextModel>()
                         .Where(x => x.Style.HasFlag(TextStyles.MultiLine) && !x.Style.HasFlag(TextStyles.Clipping));
                     var maxheight = multilines
-                        .Select(x => x.Y + DrawString.Create(x.Text, x.X, x.Y, x.Size, [.. x.Font.Select(f => dummy_document.GetFont(f.Path, f.Embed))], dummy_document, x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()).Cast<DrawOperations>().Height.ToPoint())
+                        .Select(x => x.Y + DrawString.Create(x.Text, x.X, x.Y, x.Size, [.. x.Font.Select(f => dummy_document.Resources.GetFont(f.Path, f.Embed))], dummy_document, x.Width, x.Height, x.Style, x.Alignment, x.Color?.ToDeviceRGB()).Cast<DrawOperations>().Height.ToPoint())
                         .Max();
                     if (maxheight > section.Height) return section with { Height = (int)maxheight };
                 }

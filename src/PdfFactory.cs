@@ -33,9 +33,9 @@ public static class PdfFactory
         var document = new Document
         {
             Version = opt.PDFVersion ?? (encrypt is StandardEncryption6 ? 20 : 17),
-            FontRegister = opt.CreateFontRegister(),
-            Encrypt = encrypt,
+            Resources = new() { FontRegister = opt.CreateFontRegister() },
             Info = meta is TrailerInfo info ? info : null,
+            Encrypt = encrypt,
             DocumentID = encrypt is StandardEncryption4 stden4 ? (stden4.DocumentID, stden4.DocumentID) : null,
         };
         if (meta is XmpMetadata xmp)

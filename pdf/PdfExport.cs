@@ -18,14 +18,14 @@ public static class PdfExport
         // This ensures proper behavior of file transfer applications that inspect data near the beginning of a file to determine whether to treat the file's contents as text or as binary.
         stream.Write("%\U0001F363\n\n"u8);
 
-        foreach (var font in document.Fonts.OfType<Type0Font>())
+        foreach (var font in document.Resources.Fonts.OfType<Type0Font>())
         {
             if (font.Chars.Count > 0 &&
                 ((font.FontEmbed & FontEmbeds.EmbedsMask) == FontEmbeds.ForceEmbed ||
                 ((font.FontEmbed & FontEmbeds.EmbedsMask) == FontEmbeds.PossibleEmbed && ((font.Font.OS2?.FsType ?? 0) & 0x2) == 0))) font.CreateEmbeddedFont();
         }
 
-        var export_refs = GetAllReferencesExport(document, option, [.. document.Fonts.OfType<Type0Font>().Where(x => x is Type0Font font && font.Chars.Count == 0)]);
+        var export_refs = GetAllReferencesExport(document, option, [.. document.Resources.Fonts.OfType<Type0Font>().Where(x => x is Type0Font font && font.Chars.Count == 0)]);
         export_refs.Each((x, i) => x.IndirectIndex = i + 1);
 
         var xref = new List<long>();
