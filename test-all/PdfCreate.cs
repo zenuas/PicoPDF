@@ -84,7 +84,7 @@ public class PdfCreate : FontRegisterCommand
                 return section;
             },
             BindElement = (section, element, data, model) => model is TextModel text && element.Name.StartsWith("CreationTime", StringComparison.Ordinal)
-                ? text with { Text = DateTime.Now.ToString(text.Text, CultureInfo.InvariantCulture) }
+                ? text with { Text = new DateTime(2000, 1, 2, 3, 45, 6, 789).ToString(text.Text, CultureInfo.InvariantCulture) }
                 : model,
         };
 
