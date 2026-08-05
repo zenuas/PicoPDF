@@ -13,35 +13,35 @@ namespace OpenType;
 
 public static class FontLoader
 {
-    public static FontTableRecords LoadTableRecords(string path, LoadOption? opt = null)
+    public static FontTableRecords LoadTableRecords(string path, LoadOption? option = null)
     {
         using var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        return LoadTableRecords(new FontPath { Path = path }, stream, opt ?? new());
+        return LoadTableRecords(new FontPath { Path = path }, stream, option ?? new());
     }
 
-    public static FontTableRecords[] LoadTableRecordsCollection(string path, LoadOption? opt = null)
+    public static FontTableRecords[] LoadTableRecordsCollection(string path, LoadOption? option = null)
     {
         using var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        return LoadTableRecordsCollection(path, stream, opt ?? new());
+        return LoadTableRecordsCollection(path, stream, option ?? new());
     }
 
-    public static FontTableRecords LoadTableRecords(Stream stream, LoadOption? opt = null)
+    public static FontTableRecords LoadTableRecords(Stream stream, LoadOption? option = null)
     {
-        return LoadTableRecords(new FontStream { Stream = stream }, stream, opt ?? new());
+        return LoadTableRecords(new FontStream { Stream = stream }, stream, option ?? new());
     }
 
-    public static FontTableRecords[] LoadTableRecordsCollection(string path, Stream stream, LoadOption opt)
+    public static FontTableRecords[] LoadTableRecordsCollection(string path, Stream stream, LoadOption option)
     {
         var header = TrueTypeCollectionHeader.ReadFrom(stream);
 
         return header.TTCTag != "ttcf"
             ? throw new InvalidDataException()
             : [.. header.TableDirectoryOffsets
-                .Select((x, i) => Objects.Catch(() => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream.SeekTo(x.Value), opt), out var r) is null ? r : null)
+                .Select((x, i) => Objects.Catch(() => LoadTableRecords(new FontCollectionPath { Path = path, Index = i }, stream.SeekTo(x.Value), option), out var r) is null ? r : null)
                 .OfType<FontTableRecords>()];
     }
 
-    public static FontTableRecords LoadTableRecords(IFontPath path, Stream stream, LoadOption opt)
+    public static FontTableRecords LoadTableRecords(IFontPath path, Stream stream, LoadOption option)
     {
         var position = stream.Position;
         var offset = OffsetTable.ReadFrom(stream);
@@ -54,7 +54,7 @@ public static class FontLoader
         var name = ReadTableRecord(tables, "name", stream, NameTable.ReadFrom).Try();
         string namev(NameIDs nameid)
         {
-            var names = opt.PlatformIDOrder
+            var names = option.PlatformIDOrder
                 .Select(platform => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == platform && y.NameRecord.NameID == nameid)?.Name)
                 .Where(x => x is { });
 
@@ -70,22 +70,22 @@ public static class FontLoader
             TableRecords = tables,
             Offset = offset,
             Name = name,
-            LoadOption = opt,
+            LoadOption = option,
         };
     }
 
-    public static IOpenTypeFont LoadFont(IOpenTypeHeader font)
+    public static IOpenTypeFont LoadFont(IOpenTypeHeader font, LoadOption? option = null)
     {
         if (font is IOpenTypeFont opentype) return opentype;
 
-        var table = font.Cast<FontTableRecords>();
+        var opt = option ?? font.Cast<FontTableRecords>().LoadOption;
         return
-            font.Offset.ContainCFF() ? LoadPostScriptFont(font, table.LoadOption) :
-            font.TableRecords.ContainsKey("loca") && font.TableRecords.ContainsKey("glyf") ? LoadTrueTypeFont(font, table.LoadOption) :
-            LoadNoOutlineFont(font, table.LoadOption);
+            font.Offset.ContainCFF() ? LoadPostScriptFont(font, opt) :
+            font.TableRecords.ContainsKey("loca") && font.TableRecords.ContainsKey("glyf") ? LoadTrueTypeFont(font, opt) :
+            LoadNoOutlineFont(font, opt);
     }
 
-    public static TrueTypeFont LoadTrueTypeFont(IOpenTypeHeader font, LoadOption opt)
+    public static TrueTypeFont LoadTrueTypeFont(IOpenTypeHeader font, LoadOption option)
     {
         var stream = font.Path.Open();
 
@@ -143,7 +143,7 @@ public static class FontLoader
         return newfont;
     }
 
-    public static PostScriptFont LoadPostScriptFont(IOpenTypeHeader font, LoadOption opt)
+    public static PostScriptFont LoadPostScriptFont(IOpenTypeHeader font, LoadOption option)
     {
         using var stream = font.Path.Open();
 
@@ -193,7 +193,7 @@ public static class FontLoader
         return newfont;
     }
 
-    public static GenericFont LoadNoOutlineFont(IOpenTypeHeader font, LoadOption opt)
+    public static GenericFont LoadNoOutlineFont(IOpenTypeHeader font, LoadOption option)
     {
         using var stream = font.Path.Open();
 

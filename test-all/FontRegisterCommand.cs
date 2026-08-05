@@ -19,7 +19,7 @@ public abstract class FontRegisterCommand : ICommand
         var fontreg = islock ? (IFontRegister)new FontRegisterLock() : new FontRegister();
         if (RegisterSystemFont) fontreg.RegisterDirectory([.. FontRegister.GetFontDirectories()]);
         if (RegisterUserFont != "" && !Directory.Exists(RegisterUserFont)) _ = fontreg.LoadFont(RegisterUserFont);
-        if (RegisterUserFont != "" && Directory.Exists(RegisterUserFont)) fontreg.RegisterDirectory(new OpenType.LoadOption() { ForceEmbedded = true }, RegisterUserFont);
+        if (RegisterUserFont != "" && Directory.Exists(RegisterUserFont)) fontreg.RegisterDirectory(new OpenType.LoadOption(), RegisterUserFont);
         return fontreg;
     }
 }
