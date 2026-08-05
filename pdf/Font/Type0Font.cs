@@ -84,7 +84,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
 
     public static Type0Font Create(string name, IOpenTypeFont font, FontDescriptorFlags flags, FontEmbeds embed)
     {
-        var cmap = (embed & FontEmbeds.AlignMask) == FontEmbeds.NotEmbed ? CMaps.Identity_H : CMaps.Identity_V;
+        var cmap = (embed & FontEmbeds.AlignMask) == FontEmbeds.AlignHorizontal ? CMaps.Identity_H : CMaps.Identity_V;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary()
         {
