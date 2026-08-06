@@ -12,7 +12,7 @@ public class ManualArgsCreate : FontRegisterCommand
     public string Output { get; init; } = "a.pdf";
 
     [CommandOption("font")]
-    public string Font { get; init; } = "Meiryo Bold";
+    public string Font { get; init; } = "Noto Sans JP Regular";
 
     [CommandOption("point"), CommandOption('p')]
     public float Point { get; init; } = 100.0F;

@@ -8,7 +8,7 @@ namespace PicoPDF.TestAll;
 public class FontExport : FontRegisterCommand
 {
     [CommandOption("font")]
-    public string Font { get; init; } = "Meiryo Bold";
+    public string Font { get; init; } = "Noto Sans JP Regular";
 
     [CommandOption("type")]
     public FontTypes FontType { get; init; } = FontTypes.TrueType;

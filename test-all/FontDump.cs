@@ -11,7 +11,7 @@ namespace PicoPDF.TestAll;
 public class FontDump : FontRegisterCommand
 {
     [CommandOption("font")]
-    public string Font { get; init; } = "Meiryo Bold";
+    public string Font { get; init; } = "Noto Sans JP Regular";
 
     public override void Run(string[] args)
     {

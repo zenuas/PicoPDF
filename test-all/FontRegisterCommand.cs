@@ -7,10 +7,10 @@ namespace PicoPDF.TestAll;
 public abstract class FontRegisterCommand : ICommand
 {
     [CommandOption("register-system-font")]
-    public bool RegisterSystemFont { get; init; } = true;
+    public bool RegisterSystemFont { get; init; } = false;
 
     [CommandOption("register-user-font")]
-    public string RegisterUserFont { get; init; } = "";
+    public string RegisterUserFont { get; init; } = "test-case/font";
 
     public abstract void Run(string[] args);
 

@@ -19,7 +19,7 @@ public class SectionBinderCultureTest
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
-	"DefaultFont": "Meiryo-Bold",
+	"DefaultFont": "Noto Sans JP Regular",
 	"Padding": [15, 10, 15],
 	
 	"Header": "PageHeader",

@@ -33,7 +33,7 @@ public class ManualCreate : FontRegisterCommand
         document.Resources.Fonts.Add(post);
         page.Contents.Operations.Add(DrawString.Create("PostScript Font! あア亜 𠮷野家", 100, 160, 12, [post], document));
 
-        var ttf = Type0Font.Create("true1", fontreg.LoadFont("Meiryo Bold"));
+        var ttf = Type0Font.Create("true1", fontreg.LoadFont("Noto Sans JP Regular"));
         document.Resources.Fonts.Add(ttf);
         page.Contents.Operations.Add(DrawString.Create("TrueType Font! あア亜 𠮷野家", 100, 180, 12, [ttf], document));
 

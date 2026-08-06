@@ -26,7 +26,7 @@ public class SvgOutput : FontRegisterCommand
     public Color Fill { get; init; } = Color.Transparent;
 
     [CommandOption("font")]
-    public string Font { get; init; } = "Meiryo Bold";
+    public string Font { get; init; } = "Noto Sans JP Regular";
 
     [CommandOption("point"), CommandOption('p')]
     public float Point { get; init; } = 100.0F;

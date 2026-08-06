@@ -19,7 +19,7 @@ public class SectionBinderEventTest
 {
 	"Size": [100, 50],
 	"Orientation": "Vertical",
-	"DefaultFont": "Meiryo-Bold",
+	"DefaultFont": "Noto Sans JP Regular",
 	"Padding": [0, 10, 0],
 	
 	"Header": "PageHeader",
@@ -357,7 +357,7 @@ public class SectionBinderEventTest
 {
 	"Size": [100, 80],
 	"Orientation": "Vertical",
-	"DefaultFont": "Meiryo-Bold",
+	"DefaultFont": "Noto Sans JP Regular",
 	"Padding": [0, 10, 0],
 	
 	"Header": "PageHeader",
@@ -492,7 +492,7 @@ public class SectionBinderEventTest
 {
 	"Size": [100, 80],
 	"Orientation": "Vertical",
-	"DefaultFont": "Meiryo-Bold",
+	"DefaultFont": "Noto Sans JP Regular",
 	"Padding": [0, 10, 0],
 	
 	"Header": "PageHeader",
