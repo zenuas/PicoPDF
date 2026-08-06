@@ -97,6 +97,8 @@ public static class FontLoader
         var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
+        var gsub = ReadTableRecord(font, "GSUB", stream, GlyphSubstitutionTable.ReadFrom);
+
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
         var cblc = ReadTableRecord(font, "CBLC", stream, ColorBitmapLocationTable.ReadFrom);
         var colr = ReadTableRecord(font, "COLR", stream, ColorTable.ReadFrom);
