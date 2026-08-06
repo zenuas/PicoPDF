@@ -82,8 +82,14 @@
 	git tag %VERSION%
 	git push origin %VERSION%
 	gh release create %VERSION% %PROJ%-lib-%VERSION_FILE%.zip -t %VERSION% > nul
+	call :trash %PROJ%-%VERSION_FILE%.zip
+	call :trash %PROJ%-lib-%VERSION_FILE%.zip
 	@exit /b %ERRORLEVEL%
 
 :setenv
 	@for /f "usebackq delims=" %%x in (`%~2`) do @set %1=%%x
+	@exit /b %ERRORLEVEL%
+
+:trash
+	@powershell -NoProfile -Command "(New-Object -ComObject Shell.Application).NameSpace(10).MoveHere('%~f1')"
 	@exit /b %ERRORLEVEL%
