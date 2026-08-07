@@ -20,7 +20,7 @@ public class LookupTableRecord
         var lookup_type = stream.ReadUShortByBigEndian();
         var lookup_flag = stream.ReadUShortByBigEndian();
         var subtable_count = stream.ReadUShortByBigEndian();
-        var subtable_offsets = Lists.Repeat(() => stream.ReadOffset16()).Take(subtable_count).ToArray();
+        var subtable_offsets = Lists.Repeat(stream.ReadOffset16).Take(subtable_count).ToArray();
         var mark_filtering_set = stream.ReadUShortByBigEndian();
 
         return new()

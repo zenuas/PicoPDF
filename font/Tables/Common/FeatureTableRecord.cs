@@ -22,7 +22,7 @@ public class FeatureTableRecord
         {
             FeatureParamsOffset = feature_params_offset,
             LookupIndexCount = lookup_index_count,
-            LookupListIndices = [.. Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(lookup_index_count)]
+            LookupListIndices = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take(lookup_index_count)]
         };
     }
 

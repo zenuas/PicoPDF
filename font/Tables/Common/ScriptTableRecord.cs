@@ -24,7 +24,7 @@ public class ScriptTableRecord
         {
             DefaultLangSysOffset = default_lang_sys_offset,
             LangSysCount = lang_sys_count,
-            LangSysRecords = [.. lang_sys_records.Select(r => (r.LangSysTag, r.LangSysOffset, LanguageSystemTableRecord.ReadFrom(stream.SeekTo(position + r.LangSysOffset.Value))))],
+            LangSysRecords = [.. lang_sys_records.Select(x => (x.LangSysTag, x.LangSysOffset, LanguageSystemTableRecord.ReadFrom(stream.SeekTo(position + x.LangSysOffset.Value))))],
         };
     }
 

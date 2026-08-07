@@ -15,7 +15,7 @@ public class LookupListRecord
         var position = stream.Position;
 
         var lookup_count = stream.ReadUShortByBigEndian();
-        var lookup_records = Lists.Repeat(() => stream.ReadOffset16()).Take(lookup_count).ToArray();
+        var lookup_records = Lists.Repeat(stream.ReadOffset16).Take(lookup_count).ToArray();
 
         return new()
         {

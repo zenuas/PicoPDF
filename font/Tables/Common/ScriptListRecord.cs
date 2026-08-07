@@ -21,7 +21,7 @@ public class ScriptListRecord
         return new()
         {
             ScriptCount = script_count,
-            ScriptRecords = [.. script_records.Select(r => (r.ScriptTag, r.ScriptOffset, ScriptTableRecord.ReadFrom(stream.SeekTo(position + r.ScriptOffset.Value))))],
+            ScriptRecords = [.. script_records.Select(x => (x.ScriptTag, x.ScriptOffset, ScriptTableRecord.ReadFrom(stream.SeekTo(position + x.ScriptOffset.Value))))],
         };
     }
 

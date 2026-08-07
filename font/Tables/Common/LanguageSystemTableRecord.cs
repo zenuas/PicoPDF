@@ -23,7 +23,7 @@ public class LanguageSystemTableRecord
             LookupOrderOffset = lookup_order_offset,
             RequiredFeatureIndex = required_feature_index,
             FeatureIndexCount = feature_index_count,
-            FeatureIndices = [.. Lists.Repeat(() => stream.ReadUShortByBigEndian()).Take(feature_index_count)],
+            FeatureIndices = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take(feature_index_count)],
         };
     }
 
