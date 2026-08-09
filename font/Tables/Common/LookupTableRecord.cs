@@ -1,5 +1,6 @@
 ﻿using Mina.Extension;
 using OpenType.Extension;
+using OpenType.Tables.GlyphSubstitution;
 using System.IO;
 using System.Linq;
 
@@ -12,6 +13,7 @@ public class LookupTableRecord
     public required ushort SubTableCount { get; init; }
     public required Offset16[] SubtableOffsets { get; init; }
     public required ushort MarkFilteringSet { get; init; }
+    public required ISubtable[] Subtables { get; init; }
 
     public static LookupTableRecord ReadFrom(Stream stream)
     {
@@ -30,6 +32,28 @@ public class LookupTableRecord
             SubTableCount = subtable_count,
             SubtableOffsets = subtable_offsets,
             MarkFilteringSet = mark_filtering_set,
+            Subtables = [.. subtable_offsets.Select<Offset16, ISubtable>(offset =>
+            {
+                _ = stream.Seek(position + offset.Value, SeekOrigin.Begin);
+                var format = stream.ReadUShortByBigEndian();
+                return ((lookup_type * 10) + format) switch
+                {
+                    1_1 => SingleSubstFormat1.ReadFrom(stream),
+                    1_2 => SingleSubstFormat2.ReadFrom(stream),
+                    2_1 => MultipleSubstFormat1.ReadFrom(stream),
+                    3_1 => AlternateSubstFormat1.ReadFrom(stream),
+                    4_1 => LigatureSubstFormat1.ReadFrom(stream),
+                    5_1 => SequenceContextFormat1.ReadFrom(stream),
+                    5_2 => SequenceContextFormat2.ReadFrom(stream),
+                    5_3 => SequenceContextFormat3.ReadFrom(stream),
+                    6_1 => ChainedSequenceContextFormat1.ReadFrom(stream),
+                    6_2 => ChainedSequenceContextFormat2.ReadFrom(stream),
+                    6_3 => ChainedSequenceContextFormat3.ReadFrom(stream),
+                    7_1 => SubstExtensionFormat1.ReadFrom(stream),
+                    8_1 => ReverseChainSingleSubstFormat1.ReadFrom(stream),
+                    _ => throw new(),
+                };
+            })],
         };
     }
 

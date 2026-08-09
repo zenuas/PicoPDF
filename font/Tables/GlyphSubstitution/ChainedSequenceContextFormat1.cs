@@ -2,11 +2,11 @@
 
 namespace OpenType.Tables.GlyphSubstitution;
 
-public class SingleSubstFormat1 : ISubtable
+public class ChainedSequenceContextFormat1 : ISubtable
 {
     public required ushort Format { get; init; }
 
-    public static SingleSubstFormat1 ReadFrom(Stream stream)
+    public static ChainedSequenceContextFormat1 ReadFrom(Stream stream)
     {
         var position = stream.Position - sizeof(ushort);
 

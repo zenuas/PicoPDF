@@ -2,17 +2,17 @@
 
 namespace OpenType.Tables.GlyphSubstitution;
 
-public class SingleSubstFormat1 : ISubtable
+public class ChainedSequenceContextFormat3 : ISubtable
 {
     public required ushort Format { get; init; }
 
-    public static SingleSubstFormat1 ReadFrom(Stream stream)
+    public static ChainedSequenceContextFormat3 ReadFrom(Stream stream)
     {
         var position = stream.Position - sizeof(ushort);
 
         return new()
         {
-            Format = 1,
+            Format = 3,
         };
     }
 }
