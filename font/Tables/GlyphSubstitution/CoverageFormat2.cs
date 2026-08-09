@@ -1,5 +1,5 @@
-﻿namespace OpenType.Tables.Common;
+﻿namespace OpenType.Tables.GlyphSubstitution;
 
-public class CoverageFormat1
+public class CoverageFormat2
 {
 }
