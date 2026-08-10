@@ -2,6 +2,7 @@
 using OpenType.Extension;
 using OpenType.Tables;
 using OpenType.Tables.CMap;
+using OpenType.Tables.Common;
 using OpenType.Tables.GlyphSubstitution;
 using OpenType.Tables.PostScript;
 using OpenType.Tables.TrueType;
@@ -86,17 +87,11 @@ public static class FontLoader
             LoadNoOutlineFont(font, opt);
     }
 
-    public static uint ConvertVertical(GlyphSubstitutionTable gsub, uint gid, LoadOption option)
+    public static uint ConvertVertical(FeatureTableRecord vert, LookupListRecord lookup, uint gid, LoadOption option)
     {
-        var vert = gsub.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable;
-        if (vert is null) return gid;
-
         foreach (var index in vert.LookupListIndices)
         {
-            var lookup = gsub.LookupList?.LookupRecords[index].LookupTable;
-            if (lookup is null) continue;
-
-            foreach (var subtable in lookup.Subtables)
+            foreach (var subtable in lookup.LookupRecords[index].LookupTable.Subtables)
             {
                 switch (subtable)
                 {
@@ -150,6 +145,7 @@ public static class FontLoader
         };
 
         var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
+        var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable : null;
         TrueTypeFont newfont = null!;
         newfont = new()
         {
@@ -166,11 +162,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = (c) =>
-            {
-                var gid = char_to_gid(c);
-                return option.UseVertical && gsub is { } ? ConvertVertical(gsub, gid, option) : gid;
-            },
+            CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c), option) : char_to_gid(c),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyf[(int)gid].ToOutline(glyf),
             Glyphs = glyf,
             GlyphSubstitution = gsub,
@@ -209,6 +201,7 @@ public static class FontLoader
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
         var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
+        var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable : null;
         PostScriptFont newfont = null!;
         newfont = new()
         {
@@ -225,11 +218,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = (c) =>
-            {
-                var gid = char_to_gid(c);
-                return option.UseVertical && gsub is { } ? ConvertVertical(gsub, gid, option) : gid;
-            },
+            CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c), option) : char_to_gid(c),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
             GlyphSubstitution = gsub,
@@ -265,6 +254,7 @@ public static class FontLoader
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
         var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
+        var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable : null;
         return new()
         {
             PostScriptName = font.PostScriptName,
@@ -280,11 +270,7 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = (c) =>
-            {
-                var gid = char_to_gid(c);
-                return option.UseVertical && gsub is { } ? ConvertVertical(gsub, gid, option) : gid;
-            },
+            CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c), option) : char_to_gid(c),
             GIDToOutline = (_, _) => [],
             GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,
