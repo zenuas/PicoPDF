@@ -14,7 +14,7 @@ public class FontRegister : IFontRegister
 {
     public Dictionary<string, PropertyGetSet<IOpenTypeHeader>> Fonts { get; init; } = [];
 
-    public void RegisterDirectory(LoadOption? opt = null, params string[] paths) => paths
+    public void RegisterDirectory(LoadOption? option = null, params string[] paths) => paths
         .Where(Directory.Exists)
         .Select(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories))
         .Flatten()
@@ -26,11 +26,11 @@ public class FontRegister : IFontRegister
             {
                 if (x.Extension == ".TTC")
                 {
-                    AddFontCollection(x.Path, opt);
+                    AddFontCollection(x.Path, option);
                 }
                 else
                 {
-                    AddFont(x.Path, opt);
+                    AddFont(x.Path, option);
                 }
             }
             catch
@@ -41,26 +41,28 @@ public class FontRegister : IFontRegister
 
     public void RegisterDirectory(params string[] paths) => RegisterDirectory(null, paths);
 
-    public IOpenTypeFont LoadFont(string name)
+    public IOpenTypeFont LoadFont(string name, LoadOption? option = null)
     {
-        if (Fonts.TryGetValue(name, out var fontdata) && fontdata.Value is IOpenTypeFont x) return x;
+        var opt = option ?? new();
+        var keyname = $"{name};vert={opt.UseVertical}";
+        if (Fonts.TryGetValue(keyname, out var x)) return x.Value.Cast<IOpenTypeFont>();
 
-        if (fontdata is null)
+        if (!Fonts.TryGetValue(name, out var fontdata))
         {
             var path = GetFontFilePathValue(name);
             if (path is FontCollectionPath ttc)
             {
-                AddFontCollection(ttc.Path);
+                AddFontCollection(ttc.Path, opt);
             }
             else
             {
-                AddFont(name);
+                AddFont(name, opt);
             }
             name = path.GetPath();
+            fontdata = Fonts[name];
         }
-        var prop = Fonts[name];
-        var font = FontLoader.LoadFont(prop.Value);
-        prop.Value = font;
+        var font = FontLoader.LoadFont(fontdata.Value, opt);
+        Fonts.Add(keyname, new() { Value = font });
         return font;
     }
 
@@ -89,9 +91,9 @@ public class FontRegister : IFontRegister
         return true;
     }
 
-    public void AddFont(string path, LoadOption? opt = null) => Add(FontLoader.LoadTableRecords(path, opt));
+    public void AddFont(string path, LoadOption? option = null) => Add(FontLoader.LoadTableRecords(path, option));
 
-    public void AddFontCollection(string path, LoadOption? opt = null) => FontLoader.LoadTableRecordsCollection(path, opt).Each(x => Add(x));
+    public void AddFontCollection(string path, LoadOption? option = null) => FontLoader.LoadTableRecordsCollection(path, option).Each(x => Add(x));
 
     public static IEnumerable<string> GetFontDirectories() => [.. GetSystemFontDirectories(), .. GetUserFontDirectories()];
 

@@ -6,6 +6,7 @@ using Pdf.XObject;
 using Pdf.XObject.Image;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace Pdf.Documents;
@@ -42,7 +43,11 @@ public class Resources : IHaveReferences
             var key_embed = embed & (FontEmbeds.EmbedsMask | FontEmbeds.ConvertMask);
             var namekey = $"{name};{embed}";
             if (fontcache.TryGetValue(namekey, out var value)) return value;
-            var x = Type0Font.Create($"F{fontcache.Count}", FontRegister.LoadFont(name), embed);
+            var opt = new OpenType.LoadOption
+            {
+                UseVertical = embed.HasFlag(FontEmbeds.AlignVertical),
+            };
+            var x = Type0Font.Create($"F{fontcache.Count}", FontRegister.LoadFont(name, opt), embed);
             Fonts.Add(x);
             fontcache.Add(namekey, x);
             return x;

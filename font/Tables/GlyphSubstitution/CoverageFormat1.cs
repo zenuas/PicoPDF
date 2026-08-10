@@ -1,4 +1,5 @@
 ﻿using Mina.Extension;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -20,5 +21,11 @@ public class CoverageFormat1 : ISubtable, ICoverageFormat
             GlyphCount = glyph_count,
             GlyphArray = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take(glyph_count)],
         };
+    }
+
+    public int? FindOrNull(uint gid)
+    {
+        var index = GlyphArray.BinarySearch((ushort)gid);
+        return index < 0 ? null : index;
     }
 }

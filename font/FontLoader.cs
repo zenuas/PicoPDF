@@ -2,6 +2,7 @@
 using OpenType.Extension;
 using OpenType.Tables;
 using OpenType.Tables.CMap;
+using OpenType.Tables.GlyphSubstitution;
 using OpenType.Tables.PostScript;
 using OpenType.Tables.TrueType;
 using System;
@@ -85,6 +86,39 @@ public static class FontLoader
             LoadNoOutlineFont(font, opt);
     }
 
+    public static uint ConvertVertical(GlyphSubstitutionTable gsub, uint gid, LoadOption option)
+    {
+        var vert = gsub.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable;
+        if (vert is null) return gid;
+
+        foreach (var index in vert.LookupListIndices)
+        {
+            var lookup = gsub.LookupList?.LookupRecords[index].LookupTable;
+            if (lookup is null) continue;
+
+            foreach (var subtable in lookup.Subtables)
+            {
+                switch (subtable)
+                {
+                    case SingleSubstFormat1 x:
+                        {
+                            var coverage = x.Coverage.FindOrNull(gid);
+                            if (coverage is { }) return (uint)((gid + x.DeltaGlyphID) & 0xFFFF);
+                            break;
+                        }
+
+                    case SingleSubstFormat2 x:
+                        {
+                            var coverage = x.Coverage.FindOrNull(gid);
+                            if (coverage is { }) return x.SubstituteGlyphIDs[coverage.Value];
+                            break;
+                        }
+                }
+            }
+        }
+        return gid;
+    }
+
     public static TrueTypeFont LoadTrueTypeFont(IOpenTypeHeader font, LoadOption option)
     {
         var stream = font.Path.Open();
@@ -115,6 +149,7 @@ public static class FontLoader
             IndexToLocFormat = head.IndexToLocFormat,
         };
 
+        var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
         TrueTypeFont newfont = null!;
         newfont = new()
         {
@@ -131,7 +166,11 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = GetCurrentCharToGID(cmap).CreateCharToGID(),
+            CharToGID = (c) =>
+            {
+                var gid = char_to_gid(c);
+                return option.UseVertical && gsub is { } ? ConvertVertical(gsub, gid, option) : gid;
+            },
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyf[(int)gid].ToOutline(glyf),
             Glyphs = glyf,
             GlyphSubstitution = gsub,
@@ -169,6 +208,7 @@ public static class FontLoader
         var svg = ReadTableRecord(font, "SVG ", stream, ScalableVectorGraphicsTable.ReadFrom);
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
+        var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
         PostScriptFont newfont = null!;
         newfont = new()
         {
@@ -185,7 +225,11 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = GetCurrentCharToGID(cmap).CreateCharToGID(),
+            CharToGID = (c) =>
+            {
+                var gid = char_to_gid(c);
+                return option.UseVertical && gsub is { } ? ConvertVertical(gsub, gid, option) : gid;
+            },
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
             GlyphSubstitution = gsub,
@@ -220,6 +264,7 @@ public static class FontLoader
         var svg = ReadTableRecord(font, "SVG ", stream, ScalableVectorGraphicsTable.ReadFrom);
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
+        var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
         return new()
         {
             PostScriptName = font.PostScriptName,
@@ -235,7 +280,11 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = GetCurrentCharToGID(cmap).CreateCharToGID(),
+            CharToGID = (c) =>
+            {
+                var gid = char_to_gid(c);
+                return option.UseVertical && gsub is { } ? ConvertVertical(gsub, gid, option) : gid;
+            },
             GIDToOutline = (_, _) => [],
             GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,

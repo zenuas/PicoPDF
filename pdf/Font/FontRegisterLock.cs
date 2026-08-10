@@ -24,11 +24,11 @@ public class FontRegisterLock : IFontRegister
         }
     }
 
-    public IOpenTypeFont LoadFont(string name)
+    public IOpenTypeFont LoadFont(string name, LoadOption? option = null)
     {
         lock (LockObject)
         {
-            return FontRegister.LoadFont(name);
+            return FontRegister.LoadFont(name, option);
         }
     }
 
