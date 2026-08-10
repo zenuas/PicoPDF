@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace OpenType.Tables.GlyphSubstitution;
 
-public class SingleSubstFormat2 : ISubtable
+public class SingleSubstFormat2 : ISubtable, ISingleConvert
 {
     public required ushort Format { get; init; }
     public required Offset16 CoverageOffset { get; init; }
@@ -38,4 +38,6 @@ public class SingleSubstFormat2 : ISubtable
             },
         };
     }
+
+    public uint? Convert(uint gid) => Coverage.FindOrNull(gid) is { } index ? SubstituteGlyphIDs[index] : null;
 }

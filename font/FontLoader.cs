@@ -91,22 +91,9 @@ public static class FontLoader
     {
         foreach (var index in vert.LookupListIndices)
         {
-            foreach (var subtable in lookup.LookupRecords[index].LookupTable.Subtables)
+            foreach (var subtable in lookup.LookupRecords[index].LookupTable.Subtables.OfType<ISingleConvert>())
             {
-                switch (subtable)
-                {
-                    case SingleSubstFormat1 x:
-                        {
-                            if (x.Coverage.FindOrNull(gid) is { }) return (uint)((gid + x.DeltaGlyphID) & 0xFFFF);
-                            break;
-                        }
-
-                    case SingleSubstFormat2 x:
-                        {
-                            if (x.Coverage.FindOrNull(gid) is { } coverage) return x.SubstituteGlyphIDs[coverage];
-                            break;
-                        }
-                }
+                if (subtable.Convert(gid) is { } x) return x;
             }
         }
         return gid;
