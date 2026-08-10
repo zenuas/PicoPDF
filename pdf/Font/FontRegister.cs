@@ -50,6 +50,9 @@ public class FontRegister : IFontRegister
         if (!Fonts.TryGetValue(name, out var fontdata))
         {
             var path = GetFontFilePathValue(name);
+            var fullpath = path.GetPath();
+            if (Fonts.TryGetValue($"{fullpath};vert={opt.UseVertical}", out var x2)) return x2.Value.Cast<IOpenTypeFont>();
+
             if (path is FontCollectionPath ttc)
             {
                 AddFontCollection(ttc.Path, opt);
@@ -58,11 +61,14 @@ public class FontRegister : IFontRegister
             {
                 AddFont(name, opt);
             }
-            name = path.GetPath();
             fontdata = Fonts[name];
         }
         var font = FontLoader.LoadFont(fontdata.Value, opt);
-        Fonts.Add(keyname, new() { Value = font });
+        var prop = new PropertyGetSet<IOpenTypeHeader>() { Value = font };
+        Fonts.Add($"{fontdata.Value.Path.GetPath()};vert={opt.UseVertical}", prop);
+        font.Name.NameRecords
+            .Where(x => x.NameRecord.NameID == NameIDs.FullFontName)
+            .Each(x => Fonts.TryAdd($"{x.Name};vert={opt.UseVertical}", prop));
         return font;
     }
 

@@ -1,0 +1,20 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": [{"Path": "Noto Sans JP Regular"}],
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "PostScript名",  "Size": 30, "X": 10, "Y": 0},
+			{"Type": "TextElement", "Text": "PostScript名2", "Size": 30, "X": 10, "Y": 30},
+			{"Type": "TextElement", "Text": "パス指定",  "Size": 30, "X": 10, "Y": 60, "Font": "test-case/font/Noto_Sans_JP/NotoSansJP-Regular.ttf"},
+			{"Type": "TextElement", "Text": "パス指定2", "Size": 30, "X": 10, "Y": 90, "Font": "test-case/font/Noto_Sans_JP/NotoSansJP-Regular.ttf"},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+	],
+}
