@@ -97,15 +97,13 @@ public static class FontLoader
                 {
                     case SingleSubstFormat1 x:
                         {
-                            var coverage = x.Coverage.FindOrNull(gid);
-                            if (coverage is { }) return (uint)((gid + x.DeltaGlyphID) & 0xFFFF);
+                            if (x.Coverage.FindOrNull(gid) is { }) return (uint)((gid + x.DeltaGlyphID) & 0xFFFF);
                             break;
                         }
 
                     case SingleSubstFormat2 x:
                         {
-                            var coverage = x.Coverage.FindOrNull(gid);
-                            if (coverage is { }) return x.SubstituteGlyphIDs[coverage.Value];
+                            if (x.Coverage.FindOrNull(gid) is { } coverage) return x.SubstituteGlyphIDs[coverage];
                             break;
                         }
                 }
