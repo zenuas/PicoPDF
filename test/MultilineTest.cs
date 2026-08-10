@@ -35,6 +35,8 @@ public class MultilineTest
         public Func<int, uint> CharToGID { get; init; } = (_) => 0;
         public Func<uint, bool, IOutline[]> GIDToOutline { get; init; } = null!;
 
+        public GlyphSubstitutionTable? GlyphSubstitution { get; init; } = null;
+
         public ColorBitmapDataTable? ColorBitmapData { get; init; }
         public ColorBitmapLocationTable? ColorBitmapLocation { get; init; }
         public ColorTable? Color { get; init; }
@@ -56,7 +58,7 @@ public class MultilineTest
         {
             Name = "Type0FontMock",
             Font = new OpenTypeFontMock(),
-            FontEmbed = FontEmbeds.PossibleEmbed,
+            FontLoadOption = FontLoadOptions.PossibleEmbed,
             Encoding = "",
             FontDictionary = null!,
         };

@@ -3,7 +3,7 @@
 namespace Pdf.Documents;
 
 [Flags]
-public enum FontEmbeds
+public enum FontLoadOptions
 {
     /// <summary>
     /// font emmed, but Restricted License font is not embed.

@@ -1,7 +1,7 @@
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
-	"DefaultFont": ["Noto Sans JP Regular", {"Path": "Noto Color Emoji", "Embed": "Stroke"}],
+	"DefaultFont": ["Noto Sans JP Regular", {"Path": "Noto Color Emoji", "Option": "Stroke"}],
 	"Padding": [15, 10, 15],
 	
 	"Header": "PageHeader",

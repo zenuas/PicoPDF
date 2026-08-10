@@ -5,5 +5,5 @@ namespace PicoPDF.Loader.Sections;
 public class FontPath
 {
     public required string Path { get; init; }
-    public FontEmbeds Embed { get; init; } = FontEmbeds.PossibleEmbed | FontEmbeds.ConvertNone | FontEmbeds.AlignHorizontal;
+    public FontLoadOptions Option { get; init; } = FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.AlignHorizontal;
 }

@@ -17,8 +17,8 @@ public class ManualArgsCreate : FontRegisterCommand
     [CommandOption("point"), CommandOption('p')]
     public float Point { get; init; } = 100.0F;
 
-    [CommandOption("embed")]
-    public FontEmbeds FontEmbed { get; init; } = FontEmbeds.PossibleEmbed;
+    [CommandOption("font-option")]
+    public FontLoadOptions FontOption { get; init; } = FontLoadOptions.PossibleEmbed;
 
     [CommandOption("top")]
     public int Top { get; init; } = 100;
@@ -32,7 +32,7 @@ public class ManualArgsCreate : FontRegisterCommand
 
         var document = PdfFactory.Create(new() { CreateFontRegister = () => fontreg });
         var (width, height) = PageSize.GetPageSize(PageSizes.A4, Orientations.Horizontal);
-        var font = Type0Font.Create("fo", fontreg.LoadFont(Font), FontEmbed);
+        var font = Type0Font.Create("fo", fontreg.LoadFont(Font), FontOption);
         document.Resources.Fonts.Add(font);
         foreach (var arg in args)
         {

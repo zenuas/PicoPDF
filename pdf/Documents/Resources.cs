@@ -14,7 +14,7 @@ namespace Pdf.Documents;
 public class Resources : IHaveReferences
 {
     public required IFontRegister FontRegister { get; init; }
-    public Func<string, FontEmbeds, Type0Font> GetFont { get; init; }
+    public Func<string, FontLoadOptions, Type0Font> GetFont { get; init; }
     public Func<string, IImageXObject> GetImage { get; init; }
     public List<IFont> Fonts { get; init; } = [];
     public List<IXObject> XObjects { get; init; } = [];
@@ -35,20 +35,20 @@ public class Resources : IHaveReferences
         foreach (var x in GraphicsStateParameters.OfType<IPdfObject>()) yield return x;
     }
 
-    public Func<string, FontEmbeds, Type0Font> CreateFontCache()
+    public Func<string, FontLoadOptions, Type0Font> CreateFontCache()
     {
         var fontcache = Fonts.OfType<Type0Font>().ToDictionary(x => x.Name, x => x);
         return (name, embed) =>
         {
-            var key_embed = embed & FontEmbeds.AlignMask;
-            var namekey = $"{name};{key_embed}";
+            var key_align = embed & FontLoadOptions.AlignMask;
+            var namekey = $"{name};{key_align}";
             if (fontcache.TryGetValue(namekey, out var value)) return value;
             var opt = new OpenType.LoadOption
             {
-                UseVertical = embed.HasFlag(FontEmbeds.AlignVertical),
+                UseVertical = embed.HasFlag(FontLoadOptions.AlignVertical),
             };
             var font = FontRegister.LoadFont(name, opt);
-            var namekey2 = $"{font.Path.GetPath()};{key_embed}";
+            var namekey2 = $"{font.Path.GetPath()};{key_align}";
             if (fontcache.TryGetValue(namekey2, out var value2)) return value2;
             var x = Type0Font.Create($"F{fontcache.Count}", font, embed);
             Fonts.Add(x);
