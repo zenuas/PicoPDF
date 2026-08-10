@@ -88,6 +88,7 @@ public static class FontExtract
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? gid_glyph[gid].Outline,
+            GlyphSubstitution = null,
             ColorBitmapData = font.ColorBitmapData,
             ColorBitmapLocation = font.ColorBitmapLocation,
             Color = colr,

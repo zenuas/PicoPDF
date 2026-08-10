@@ -25,6 +25,8 @@ public record class TrueTypeFont : IOpenTypeFont, IDisposable
     public required Func<uint, bool, IOutline[]> GIDToOutline { get; init; }
     public required IReadOnlyList<IGlyph> Glyphs { get; init; }
 
+    public required GlyphSubstitutionTable? GlyphSubstitution { get; init; }
+
     public required ColorBitmapDataTable? ColorBitmapData { get; init; }
     public required ColorBitmapLocationTable? ColorBitmapLocation { get; init; }
     public required ColorTable? Color { get; init; }

@@ -23,6 +23,8 @@ public record class GenericFont : IOpenTypeFont
     public required Func<int, uint> CharToGID { get; init; }
     public required Func<uint, bool, IOutline[]> GIDToOutline { get; init; }
 
+    public required GlyphSubstitutionTable? GlyphSubstitution { get; init; }
+
     public required ColorBitmapDataTable? ColorBitmapData { get; init; }
     public required ColorBitmapLocationTable? ColorBitmapLocation { get; init; }
     public required ColorTable? Color { get; init; }

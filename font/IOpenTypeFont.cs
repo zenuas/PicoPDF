@@ -18,6 +18,8 @@ public interface IOpenTypeFont : IOpenTypeHeader
     public Func<int, uint> CharToGID { get; init; }
     public Func<uint, bool, IOutline[]> GIDToOutline { get; init; }
 
+    public GlyphSubstitutionTable? GlyphSubstitution { get; init; }
+
     public ColorBitmapDataTable? ColorBitmapData { get; init; }
     public ColorBitmapLocationTable? ColorBitmapLocation { get; init; }
     public ColorTable? Color { get; init; }

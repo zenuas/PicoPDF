@@ -134,6 +134,7 @@ public static class FontLoader
             CharToGID = GetCurrentCharToGID(cmap).CreateCharToGID(),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyf[(int)gid].ToOutline(glyf),
             Glyphs = glyf,
+            GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,
@@ -158,6 +159,8 @@ public static class FontLoader
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
         var cff = ReadTableRecord(font, "CFF ", stream, CompactFontFormat.ReadFrom).Try();
+
+        var gsub = ReadTableRecord(font, "GSUB", stream, GlyphSubstitutionTable.ReadFrom);
 
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
         var cblc = ReadTableRecord(font, "CBLC", stream, ColorBitmapLocationTable.ReadFrom);
@@ -185,6 +188,7 @@ public static class FontLoader
             CharToGID = GetCurrentCharToGID(cmap).CreateCharToGID(),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
+            GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,
@@ -206,6 +210,8 @@ public static class FontLoader
         var maxp = ReadTableRecord(font, "maxp", stream, MaximumProfileTable.ReadFrom).Try();
         var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
+
+        var gsub = ReadTableRecord(font, "GSUB", stream, GlyphSubstitutionTable.ReadFrom);
 
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
         var cblc = ReadTableRecord(font, "CBLC", stream, ColorBitmapLocationTable.ReadFrom);
@@ -231,6 +237,7 @@ public static class FontLoader
             CMap = cmap,
             CharToGID = GetCurrentCharToGID(cmap).CreateCharToGID(),
             GIDToOutline = (_, _) => [],
+            GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,
