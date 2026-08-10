@@ -1,6 +1,7 @@
 ﻿using Mina.Command;
 using Mina.Extension;
 using OpenType;
+using OpenType.Tables.GlyphSubstitution;
 using OpenType.Tables.PostScript;
 using System;
 using System.Globalization;
@@ -177,6 +178,120 @@ public class FontDump : FontRegisterCommand
             {
                 Console.WriteLine($"cff,Strings[{i}],{cff.Strings[i]}");
             }
+        }
+
+        if (font.GlyphSubstitution is { } gsub)
+        {
+            Console.WriteLine($"gsub,MajorVersion,{gsub.MajorVersion}");
+            Console.WriteLine($"gsub,MinorVersion,{gsub.MinorVersion}");
+            Console.WriteLine($"gsub,ScriptListOffset,{gsub.ScriptListOffset}");
+            Console.WriteLine($"gsub,FeatureListOffset,{gsub.FeatureListOffset}");
+            Console.WriteLine($"gsub,LookupListOffset,{gsub.LookupListOffset}");
+            Console.WriteLine($"gsub,FeatureVariationsOffset,{gsub.FeatureVariationsOffset}");
+
+            if (gsub.ScriptList is { } scripts)
+            {
+                Console.WriteLine($"gsub,ScriptList.Count,{scripts.ScriptCount}");
+                for (var i = 0; i < scripts.ScriptRecords.Length; i++)
+                {
+                    Console.WriteLine($"gsub,ScriptList.ScriptRecords[{i}].ScriptTag,{scripts.ScriptRecords[i].ScriptTag}");
+                    Console.WriteLine($"gsub,ScriptList.ScriptRecords[{i}].ScriptOffset,{scripts.ScriptRecords[i].ScriptOffset}");
+                    Console.WriteLine($"gsub,ScriptList.ScriptRecords[{i}].ScriptTable.DefaultLangSysOffset,{scripts.ScriptRecords[i].ScriptTable.DefaultLangSysOffset}");
+                    Console.WriteLine($"gsub,ScriptList.ScriptRecords[{i}].ScriptTable.LangSysCount,{scripts.ScriptRecords[i].ScriptTable.LangSysCount}");
+                    for (var j = 0; j < scripts.ScriptRecords[i].ScriptTable.LangSysRecords.Length; j++)
+                    {
+                        Console.WriteLine($"gsub,ScriptList.ScriptRecords[{i}].ScriptTable.LangSysRecords[{j}].LangSysTag,{scripts.ScriptRecords[i].ScriptTable.LangSysRecords[j].LangSysTag}");
+                        Console.WriteLine($"gsub,ScriptList.ScriptRecords[{i}].ScriptTable.LangSysRecords[{j}].LangSysOffset,{scripts.ScriptRecords[i].ScriptTable.LangSysRecords[j].LangSysOffset}");
+                        Console.WriteLine($"gsub,ScriptList.ScriptRecords[{i}].ScriptTable.LangSysRecords[{j}].LanguageSystemTable.LookupOrderOffset,{scripts.ScriptRecords[i].ScriptTable.LangSysRecords[j].LanguageSystemTable.LookupOrderOffset}");
+                        Console.WriteLine($"gsub,ScriptList.ScriptRecords[{i}].ScriptTable.LangSysRecords[{j}].LanguageSystemTable.RequiredFeatureIndex,{scripts.ScriptRecords[i].ScriptTable.LangSysRecords[j].LanguageSystemTable.RequiredFeatureIndex}");
+                        Console.WriteLine($"gsub,ScriptList.ScriptRecords[{i}].ScriptTable.LangSysRecords[{j}].LanguageSystemTable.FeatureIndexCount,{scripts.ScriptRecords[i].ScriptTable.LangSysRecords[j].LanguageSystemTable.FeatureIndexCount}");
+                        for (var k = 0; k < scripts.ScriptRecords[i].ScriptTable.LangSysRecords[j].LanguageSystemTable.FeatureIndices.Length; k++)
+                        {
+                            Console.WriteLine($"gsub,ScriptList.ScriptRecords[{i}].ScriptTable.LangSysRecords[{j}].LanguageSystemTable.FeatureIndices[{k}],{scripts.ScriptRecords[i].ScriptTable.LangSysRecords[j].LanguageSystemTable.FeatureIndices[k]}");
+                        }
+                    }
+                }
+            }
+
+            if (gsub.FeatureList is { } features)
+            {
+                Console.WriteLine($"gsub,FeatureList.FeatureCount,{features.FeatureCount}");
+                for (var i = 0; i < features.FeatureRecords.Length; i++)
+                {
+                    Console.WriteLine($"gsub,FeatureList.FeatureRecords[{i}].FeatureTag,{features.FeatureRecords[i].FeatureTag}");
+                    Console.WriteLine($"gsub,FeatureList.FeatureRecords[{i}].FeatureOffset,{features.FeatureRecords[i].FeatureOffset}");
+                    Console.WriteLine($"gsub,FeatureList.FeatureRecords[{i}].FeatureTable.FeatureParamsOffset,{features.FeatureRecords[i].FeatureTable.FeatureParamsOffset}");
+                    Console.WriteLine($"gsub,FeatureList.FeatureRecords[{i}].FeatureTable.LookupIndexCount,{features.FeatureRecords[i].FeatureTable.LookupIndexCount}");
+                    for (var j = 0; j < features.FeatureRecords[i].FeatureTable.LookupListIndices.Length; j++)
+                    {
+                        Console.WriteLine($"gsub,FeatureList.FeatureRecords[{i}].FeatureTable.LookupListIndices[{j}],{features.FeatureRecords[i].FeatureTable.LookupListIndices[j]}");
+                    }
+                }
+            }
+
+            if (gsub.LookupList is { } lookups)
+            {
+                Console.WriteLine($"gsub,LookupList.LookupCount,{lookups.LookupCount}");
+                for (var i = 0; i < lookups.LookupRecords.Length; i++)
+                {
+                    Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupOffset,{lookups.LookupRecords[i].LookupOffset}");
+                    Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.LookupType,{lookups.LookupRecords[i].LookupTable.LookupType}");
+                    Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.LookupFlag,{lookups.LookupRecords[i].LookupTable.LookupFlag}");
+                    Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.SubTableCount,{lookups.LookupRecords[i].LookupTable.SubTableCount}");
+                    Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.SubtableOffsets,{lookups.LookupRecords[i].LookupTable.SubtableOffsets}");
+                    Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.MarkFilteringSet,{lookups.LookupRecords[i].LookupTable.MarkFilteringSet}");
+                    for (var j = 0; j < lookups.LookupRecords[i].LookupTable.Subtables.Length; j++)
+                    {
+                        var subtable = lookups.LookupRecords[i].LookupTable.Subtables[j];
+                        switch (subtable)
+                        {
+                            case SingleSubstFormat1 x:
+                                Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.Subtables[{j}].Format,{x.Format}");
+                                Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.Subtables[{j}].CoverageOffset,{x.CoverageOffset}");
+                                Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.Subtables[{j}].DeltaGlyphID,{x.DeltaGlyphID}");
+                                DumpCoverage($"gsub,LookupList.LookupRecords[{i}].LookupTable.Subtables[{j}].Coverage", x.Coverage);
+                                break;
+
+                            case SingleSubstFormat2 x:
+                                Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.Subtables[{j}].Format,{x.Format}");
+                                Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.Subtables[{j}].CoverageOffset,{x.CoverageOffset}");
+                                Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.Subtables[{j}].GlyphCount,{x.GlyphCount}");
+                                for (var k = 0; k < x.GlyphCount; k++)
+                                {
+                                    Console.WriteLine($"gsub,LookupList.LookupRecords[{i}].LookupTable.Subtables[{j}].SubstituteGlyphIDs[{k}],{x.SubstituteGlyphIDs[k]}");
+                                }
+                                DumpCoverage($"gsub,LookupList.LookupRecords[{i}].LookupTable.Subtables[{j}].Coverage", x.Coverage);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void DumpCoverage(string prefix, ICoverageFormat coverage)
+    {
+        switch (coverage)
+        {
+            case CoverageFormat1 x:
+                Console.WriteLine($"{prefix},Format,{x.Format}");
+                Console.WriteLine($"{prefix},GlyphCount,{x.GlyphCount}");
+                for (var i = 0; i < x.GlyphArray.Length; i++)
+                {
+                    Console.WriteLine($"{prefix},GlyphArray[{i}],{x.GlyphArray[i]}");
+                }
+                break;
+
+            case CoverageFormat2 x:
+                Console.WriteLine($"{prefix},Format,{x.Format}");
+                Console.WriteLine($"{prefix},RangeCount,{x.RangeCount}");
+                for (var i = 0; i < x.RangeRecords.Length; i++)
+                {
+                    Console.WriteLine($"{prefix},RangeRecords[{i}].StartGlyphID,{x.RangeRecords[i].StartGlyphID}");
+                    Console.WriteLine($"{prefix},RangeRecords[{i}].EndGlyphID,{x.RangeRecords[i].EndGlyphID}");
+                    Console.WriteLine($"{prefix},RangeRecords[{i}].CoverageIndex,{x.RangeRecords[i].StartCoverageIndex}");
+                }
+                break;
         }
     }
 
