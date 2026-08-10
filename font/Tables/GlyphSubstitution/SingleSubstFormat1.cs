@@ -35,5 +35,7 @@ public class SingleSubstFormat1 : ISubtable, ISingleConvert
         };
     }
 
+    // Addition of deltaGlyphID is modulo 65536. 
+    // If the result after adding deltaGlyphID to the input glyph index is less than zero, add 65536 to obtain a valid glyph ID.
     public uint? Convert(uint gid) => Coverage.FindOrNull(gid) is { } ? (uint)((gid + DeltaGlyphID) & 0xFFFF) : null;
 }
