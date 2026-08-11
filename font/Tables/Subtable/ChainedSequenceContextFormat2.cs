@@ -1,18 +1,18 @@
 ﻿using System.IO;
 
-namespace OpenType.Tables.GlyphSubstitution;
+namespace OpenType.Tables.Subtable;
 
-public class SubstExtensionFormat1 : ISubtable
+public class ChainedSequenceContextFormat2 : ISubtable
 {
     public required ushort Format { get; init; }
 
-    public static SubstExtensionFormat1 ReadFrom(Stream stream)
+    public static ChainedSequenceContextFormat2 ReadFrom(Stream stream)
     {
         var position = stream.Position - sizeof(ushort);
 
         return new()
         {
-            Format = 1,
+            Format = 2,
         };
     }
 }

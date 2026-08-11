@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace OpenType.Tables.GlyphSubstitution;
+namespace OpenType.Tables.Subtable;
 
 public class CoverageFormat2 : ISubtable, ICoverageFormat
 {

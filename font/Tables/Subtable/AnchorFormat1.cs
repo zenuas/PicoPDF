@@ -1,12 +1,12 @@
 ﻿using System.IO;
 
-namespace OpenType.Tables.GlyphSubstitution;
+namespace OpenType.Tables.Subtable;
 
-public class LigatureSubstFormat1 : ISubtable
+public class AnchorFormat1 : ISubtable
 {
     public required ushort Format { get; init; }
 
-    public static LigatureSubstFormat1 ReadFrom(Stream stream)
+    public static AnchorFormat1 ReadFrom(Stream stream)
     {
         var position = stream.Position - sizeof(ushort);
 

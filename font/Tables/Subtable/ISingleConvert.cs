@@ -1,4 +1,4 @@
-﻿namespace OpenType.Tables.GlyphSubstitution;
+﻿namespace OpenType.Tables.Subtable;
 
 public interface ISingleConvert
 {

@@ -1,12 +1,12 @@
 ﻿using System.IO;
 
-namespace OpenType.Tables.GlyphSubstitution;
+namespace OpenType.Tables.Subtable;
 
-public class MultipleSubstFormat1 : ISubtable
+public class CursivePosFormat1 : ISubtable
 {
     public required ushort Format { get; init; }
 
-    public static MultipleSubstFormat1 ReadFrom(Stream stream)
+    public static CursivePosFormat1 ReadFrom(Stream stream)
     {
         var position = stream.Position - sizeof(ushort);
 

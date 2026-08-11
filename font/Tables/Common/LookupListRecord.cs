@@ -10,7 +10,7 @@ public class LookupListRecord
     public required ushort LookupCount { get; init; }
     public required (Offset16 LookupOffset, LookupTableRecord LookupTable)[] LookupRecords { get; init; }
 
-    public static LookupListRecord ReadFrom(Stream stream)
+    public static LookupListRecord ReadFrom(Stream stream, TableTypes table_type)
     {
         var position = stream.Position;
 
@@ -20,7 +20,7 @@ public class LookupListRecord
         return new()
         {
             LookupCount = lookup_count,
-            LookupRecords = [.. lookup_records.Select(x => (x, LookupTableRecord.ReadFrom(stream.SeekTo(position + x.Value))))],
+            LookupRecords = [.. lookup_records.Select(x => (x, LookupTableRecord.ReadFrom(stream.SeekTo(position + x.Value), table_type)))],
         };
     }
 

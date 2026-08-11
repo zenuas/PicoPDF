@@ -1,8 +1,8 @@
 ﻿using Mina.Command;
 using Mina.Extension;
 using OpenType;
-using OpenType.Tables.GlyphSubstitution;
 using OpenType.Tables.PostScript;
+using OpenType.Tables.Subtable;
 using System;
 using System.Globalization;
 using System.Linq;

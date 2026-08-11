@@ -1,12 +1,12 @@
 ﻿using System.IO;
 
-namespace OpenType.Tables.GlyphSubstitution;
+namespace OpenType.Tables.Subtable;
 
-public class SequenceContextFormat3 : ISubtable
+public class AnchorFormat3 : ISubtable
 {
     public required ushort Format { get; init; }
 
-    public static SequenceContextFormat3 ReadFrom(Stream stream)
+    public static AnchorFormat3 ReadFrom(Stream stream)
     {
         var position = stream.Position - sizeof(ushort);
 

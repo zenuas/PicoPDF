@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace OpenType.Tables.GlyphSubstitution;
+namespace OpenType.Tables.Subtable;
 
 public class ChainedSequenceContextFormat3 : ISubtable
 {

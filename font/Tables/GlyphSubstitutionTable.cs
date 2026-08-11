@@ -38,7 +38,7 @@ public record class GlyphSubstitutionTable : IExportable
             FeatureVariationsOffset = feature_variations_offset,
             ScriptList = script_list_offset.Value == 0 ? null : ScriptListRecord.ReadFrom(stream.SeekTo(position + script_list_offset.Value)),
             FeatureList = feature_list_offset.Value == 0 ? null : FeatureListRecord.ReadFrom(stream.SeekTo(position + feature_list_offset.Value)),
-            LookupList = lookup_list_offset.Value == 0 ? null : LookupListRecord.ReadFrom(stream.SeekTo(position + lookup_list_offset.Value))
+            LookupList = lookup_list_offset.Value == 0 ? null : LookupListRecord.ReadFrom(stream.SeekTo(position + lookup_list_offset.Value), TableTypes.GSUB)
         };
     }
 
