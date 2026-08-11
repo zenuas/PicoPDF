@@ -111,6 +111,8 @@ public static class FontLoader
         var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
+        var vhea = ReadTableRecord(font, "vhea", stream, VerticalHeaderTable.ReadFrom);
+        var vmtx = ReadTableRecord(font, "vmtx", stream, x => VerticalMetricsTable.ReadFrom(x, vhea?.NumberOfLongVerMetrics ?? 0, maxp.NumberOfGlyphs));
         var gsub = ReadTableRecord(font, "GSUB", stream, GlyphSubstitutionTable.ReadFrom);
 
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
@@ -150,6 +152,8 @@ public static class FontLoader
             CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c), option) : char_to_gid(c),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyf[(int)gid].ToOutline(glyf),
             Glyphs = glyf,
+            VerticalHeader = vhea,
+            VerticalMetrics = vmtx,
             GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
@@ -176,6 +180,8 @@ public static class FontLoader
 
         var cff = ReadTableRecord(font, "CFF ", stream, CompactFontFormat.ReadFrom).Try();
 
+        var vhea = ReadTableRecord(font, "vhea", stream, VerticalHeaderTable.ReadFrom);
+        var vmtx = ReadTableRecord(font, "vmtx", stream, x => VerticalMetricsTable.ReadFrom(x, vhea?.NumberOfLongVerMetrics ?? 0, maxp.NumberOfGlyphs));
         var gsub = ReadTableRecord(font, "GSUB", stream, GlyphSubstitutionTable.ReadFrom);
 
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
@@ -206,6 +212,8 @@ public static class FontLoader
             CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c), option) : char_to_gid(c),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
+            VerticalHeader = vhea,
+            VerticalMetrics = vmtx,
             GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
@@ -229,6 +237,8 @@ public static class FontLoader
         var post = ReadTableRecord(font, "post", stream, PostScriptTable.ReadFrom).Try();
         var hmtx = ReadTableRecord(font, "hmtx", stream, x => HorizontalMetricsTable.ReadFrom(x, hhea.NumberOfHMetrics, maxp.NumberOfGlyphs)).Try();
 
+        var vhea = ReadTableRecord(font, "vhea", stream, VerticalHeaderTable.ReadFrom);
+        var vmtx = ReadTableRecord(font, "vmtx", stream, x => VerticalMetricsTable.ReadFrom(x, vhea?.NumberOfLongVerMetrics ?? 0, maxp.NumberOfGlyphs));
         var gsub = ReadTableRecord(font, "GSUB", stream, GlyphSubstitutionTable.ReadFrom);
 
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
@@ -257,6 +267,8 @@ public static class FontLoader
             CMap = cmap,
             CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c), option) : char_to_gid(c),
             GIDToOutline = (_, _) => [],
+            VerticalHeader = vhea,
+            VerticalMetrics = vmtx,
             GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,

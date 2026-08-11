@@ -23,16 +23,19 @@ public static class FontExtract
             return (
                 Outline: outline,
                 x.HorizontalMetrics,
+                VerticalMetrics: font.GetAdvanceHeight(x.OldGID),
                 NoOutline: points.Length == 0,
                 Notdef: false,
                 Ascender: points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
                 Descender: points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
                 XMin: points.Length > 0 ? points.Select(x => x.X).Min() : 0f,
                 XMax: points.Length > 0 ? points.Select(x => x.X).Max() : 0f,
+                YMin: points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
+                YMax: points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
                 x.Char
             );
         });
-        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], true, true, 0f, 0f, 0f, 0f, 0));
+        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], null, true, true, 0f, 0f, 0f, 0f, 0f, 0f, 0));
         var num_of_glyph_include_notdef = (int)gid_glyph.Keys.Max() + 1;
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
@@ -70,6 +73,23 @@ public static class FontExtract
             UsWinDescent = head.YMin,
         };
 
+        var vhea = font.VerticalHeader is null ? null : font.VerticalHeader with
+        {
+            AdvanceHeightMax = (ushort)gid_glyph.Values.Select(x => x.VerticalMetrics?.Height ?? 0).Max(),
+            MinTopSideBearing = (ushort)gid_glyph.Values.Where(x => !x.Notdef).Select(x => x.VerticalMetrics?.TopSideBearing ?? 0).Min(),
+            MinBottomSideBearing = (ushort)gid_glyph.Values.Where(x => !x.Notdef).Select(x => x.VerticalMetrics is null ? 0 : x.VerticalMetrics.Value.Height - x.VerticalMetrics.Value.TopSideBearing - (x.Ascender - x.Descender)).Min(),
+            YMaxExtent = (ushort)gid_glyph.Values.Select(x => x.VerticalMetrics is null ? 0 : x.VerticalMetrics.Value.TopSideBearing + (x.YMax - x.YMin)).Max(),
+            NumberOfLongVerMetrics = (ushort)num_of_glyph_include_notdef,
+        };
+
+        var vmtx = font.VerticalMetrics is null ? null : new VerticalMetricsTable()
+        {
+            Metrics = [.. Lists.RangeTo(1, num_of_glyph_include_notdef - 1)
+                .Select(x => gid_glyph.TryGetValue((uint)x, out var v) ? v.VerticalMetrics ?? (0, 0) : (Height: 0, TopSideBearing: 0))
+                .Select(x => new VerticalMetrics { AdvanceHeight = x.Height, TopSideBearing = x.TopSideBearing })],
+            TopSideBearing = [],
+        };
+
         GenericFont newfont = null!;
         return newfont = new()
         {
@@ -88,6 +108,8 @@ public static class FontExtract
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? gid_glyph[gid].Outline,
+            VerticalHeader = vhea,
+            VerticalMetrics = vmtx,
             GlyphSubstitution = null,
             ColorBitmapData = font.ColorBitmapData,
             ColorBitmapLocation = font.ColorBitmapLocation,

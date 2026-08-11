@@ -35,6 +35,8 @@ public class MultilineTest
         public Func<int, uint> CharToGID { get; init; } = (_) => 0;
         public Func<uint, bool, IOutline[]> GIDToOutline { get; init; } = null!;
 
+        public VerticalHeaderTable? VerticalHeader { get; init; } = null;
+        public VerticalMetricsTable? VerticalMetrics { get; init; } = null;
         public GlyphSubstitutionTable? GlyphSubstitution { get; init; } = null;
 
         public ColorBitmapDataTable? ColorBitmapData { get; init; }
