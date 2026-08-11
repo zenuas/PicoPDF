@@ -2,7 +2,7 @@
 using OpenType;
 using Pdf.Documents;
 using Pdf.Elements;
-using Pdf.Extension;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -59,12 +59,14 @@ public class Type0Font : PdfObject, IFont, IFontChars
         }
 
         var font = EmbeddedFont ?? Font;
-        FontDictionary.W = new(Chars
-                .Order()
-                .Select(x => (Char: x, GID: font.CharToGID(x), Width: font.MeasureGID(font.CharToGID(x)) * 1000))
-                .Where(x => x.GID != 0 && (FontDictionary.DW is not { } dw || x.Width != dw))
-                .Select(x => new ElementLiteral { Value = $"{x.GID}[{x.Width.ToPointString(option.PointFormat)}]{(option.Debug ? $" %{char.ConvertFromUtf32(x.Char)}" : "")}\n" })
-            );
+        if (FontDictionary.W is { } w)
+        {
+            foreach (var c in Chars)
+            {
+                var gid = font.CharToGID(c);
+                _ = w.TryAdd(gid, (Width: font.MeasureGID(gid) * 1000, Char: char.ConvertFromUtf32(c)));
+            }
+        }
     }
 
     public string CreateTextShowingOperator(string s) => $"<{s.ToUtf32CharArray().Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";
@@ -100,6 +102,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
                 }
             },
             DW = font.FontHeader.UnitsPerEm,
+            W = [],
             FontDescriptor = new() { FontName = font.PostScriptName, Flags = flags },
         };
         return new()
