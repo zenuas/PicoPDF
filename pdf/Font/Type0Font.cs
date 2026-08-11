@@ -67,6 +67,16 @@ public class Type0Font : PdfObject, IFont, IFontChars
                 _ = w.TryAdd(gid, (Width: font.MeasureGID(gid) * 1000, Char: char.ConvertFromUtf32(c)));
             }
         }
+        if (FontDictionary.W2 is { } w2)
+        {
+            foreach (var c in Chars)
+            {
+                var gid = font.CharToGID(c);
+                var metric = font.GetAdvanceHeight(gid);
+                if (metric is null) continue;
+                _ = w2.TryAdd(gid, (-metric.Value.Height, Right: font.MeasureGID(gid) * 1000 / 2, Top: metric.Value.TopSideBearing, Char: char.ConvertFromUtf32(c)));
+            }
+        }
     }
 
     public string CreateTextShowingOperator(string s) => $"<{s.ToUtf32CharArray().Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";
@@ -103,6 +113,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
             },
             DW = font.FontHeader.UnitsPerEm,
             W = [],
+            W2 = (option & FontLoadOptions.AlignMask) == FontLoadOptions.AlignHorizontal ? null : [],
             FontDescriptor = new() { FontName = font.PostScriptName, Flags = flags },
         };
         return new()
