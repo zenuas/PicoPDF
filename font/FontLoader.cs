@@ -113,6 +113,7 @@ public static class FontLoader
 
         var vhea = ReadTableRecord(font, "vhea", stream, VerticalHeaderTable.ReadFrom);
         var vmtx = ReadTableRecord(font, "vmtx", stream, x => VerticalMetricsTable.ReadFrom(x, vhea?.NumberOfLongVerMetrics ?? 0, maxp.NumberOfGlyphs));
+        var gpos = ReadTableRecord(font, "GPOS", stream, GlyphPositioningTable.ReadFrom);
         var gsub = ReadTableRecord(font, "GSUB", stream, GlyphSubstitutionTable.ReadFrom);
 
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
@@ -154,6 +155,7 @@ public static class FontLoader
             Glyphs = glyf,
             VerticalHeader = vhea,
             VerticalMetrics = vmtx,
+            GlyphPositioning = gpos,
             GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
@@ -182,6 +184,7 @@ public static class FontLoader
 
         var vhea = ReadTableRecord(font, "vhea", stream, VerticalHeaderTable.ReadFrom);
         var vmtx = ReadTableRecord(font, "vmtx", stream, x => VerticalMetricsTable.ReadFrom(x, vhea?.NumberOfLongVerMetrics ?? 0, maxp.NumberOfGlyphs));
+        var gpos = ReadTableRecord(font, "GPOS", stream, GlyphPositioningTable.ReadFrom);
         var gsub = ReadTableRecord(font, "GSUB", stream, GlyphSubstitutionTable.ReadFrom);
 
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
@@ -214,6 +217,7 @@ public static class FontLoader
             CompactFontFormat = cff,
             VerticalHeader = vhea,
             VerticalMetrics = vmtx,
+            GlyphPositioning = gpos,
             GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
@@ -239,6 +243,7 @@ public static class FontLoader
 
         var vhea = ReadTableRecord(font, "vhea", stream, VerticalHeaderTable.ReadFrom);
         var vmtx = ReadTableRecord(font, "vmtx", stream, x => VerticalMetricsTable.ReadFrom(x, vhea?.NumberOfLongVerMetrics ?? 0, maxp.NumberOfGlyphs));
+        var gpos = ReadTableRecord(font, "GPOS", stream, GlyphPositioningTable.ReadFrom);
         var gsub = ReadTableRecord(font, "GSUB", stream, GlyphSubstitutionTable.ReadFrom);
 
         var cbdt = ReadTableRecord(font, "CBDT", stream, ColorBitmapDataTable.ReadFrom);
@@ -269,6 +274,7 @@ public static class FontLoader
             GIDToOutline = (_, _) => [],
             VerticalHeader = vhea,
             VerticalMetrics = vmtx,
+            GlyphPositioning = gpos,
             GlyphSubstitution = gsub,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,

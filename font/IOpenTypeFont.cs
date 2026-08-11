@@ -20,6 +20,7 @@ public interface IOpenTypeFont : IOpenTypeHeader
 
     public VerticalHeaderTable? VerticalHeader { get; init; }
     public VerticalMetricsTable? VerticalMetrics { get; init; }
+    public GlyphPositioningTable? GlyphPositioning { get; init; }
     public GlyphSubstitutionTable? GlyphSubstitution { get; init; }
 
     public ColorBitmapDataTable? ColorBitmapData { get; init; }

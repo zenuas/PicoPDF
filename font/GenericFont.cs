@@ -25,6 +25,7 @@ public record class GenericFont : IOpenTypeFont
 
     public required VerticalHeaderTable? VerticalHeader { get; init; }
     public required VerticalMetricsTable? VerticalMetrics { get; init; }
+    public required GlyphPositioningTable? GlyphPositioning { get; init; }
     public required GlyphSubstitutionTable? GlyphSubstitution { get; init; }
 
     public required ColorBitmapDataTable? ColorBitmapData { get; init; }

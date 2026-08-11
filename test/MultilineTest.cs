@@ -37,6 +37,7 @@ public class MultilineTest
 
         public VerticalHeaderTable? VerticalHeader { get; init; } = null;
         public VerticalMetricsTable? VerticalMetrics { get; init; } = null;
+        public GlyphPositioningTable? GlyphPositioning { get; init; } = null;
         public GlyphSubstitutionTable? GlyphSubstitution { get; init; } = null;
 
         public ColorBitmapDataTable? ColorBitmapData { get; init; }

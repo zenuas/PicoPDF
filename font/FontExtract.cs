@@ -110,6 +110,7 @@ public static class FontExtract
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? gid_glyph[gid].Outline,
             VerticalHeader = vhea,
             VerticalMetrics = vmtx,
+            GlyphPositioning = null,
             GlyphSubstitution = null,
             ColorBitmapData = font.ColorBitmapData,
             ColorBitmapLocation = font.ColorBitmapLocation,
