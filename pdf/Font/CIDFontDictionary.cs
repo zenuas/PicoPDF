@@ -10,6 +10,8 @@ public class CIDFontDictionary : PdfObject
     public required FontDescriptor? FontDescriptor { get; init; }
     public int? DW { get; init; }
     public ElementArray<ElementLiteral>? W { get; set; }
+    public (int Margin, int Height)? DW2 { get; init; }
+    public ElementArray<ElementLiteral>? W2 { get; set; }
 
     public override void BeforeExport(PdfExportOption option)
     {
@@ -28,6 +30,14 @@ public class CIDFontDictionary : PdfObject
         if (W is { } w)
         {
             _ = Elements.TryAdd("W", w);
+        }
+        if (DW2 is { } dw2)
+        {
+            _ = Elements.TryAdd("DW2", new int[] { dw2.Margin, dw2.Height });
+        }
+        if (W2 is { } w2)
+        {
+            _ = Elements.TryAdd("W2", w2);
         }
     }
 }
