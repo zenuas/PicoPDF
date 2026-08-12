@@ -19,7 +19,7 @@ public class FontHtml : SvgOutput
 
         OutputHtml(font,
             args.Length == 0 ?
-                Lists.RangeTo(0, font.MaximumProfile.NumberOfGlyphs).Select(x => (uint)x) :
+                Lists.RangeTo(0, font.MaximumProfile.NumberOfGlyphs - 1).Select(x => (uint)x) :
                 [.. args.Select(x => x.ToUtf32CharArray()).Flatten().Select(x => font.CharToGID(x))]);
     }
 
