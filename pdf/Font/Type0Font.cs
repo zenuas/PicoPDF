@@ -113,7 +113,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
             },
             DW = font.FontHeader.UnitsPerEm,
             W = [],
-            W2 = (option & FontLoadOptions.AlignMask) == FontLoadOptions.AlignHorizontal ? null : [],
+            W2 = cmap == CMaps.Identity_H ? null : [],
             FontDescriptor = new() { FontName = font.PostScriptName, Flags = flags },
         };
         return new()
