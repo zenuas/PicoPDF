@@ -1,5 +1,8 @@
-﻿namespace OpenType.Tables.Subtable;
+﻿using System;
 
+namespace OpenType.Tables.Subtable;
+
+[Flags]
 public enum ValueFormatFlags : ushort
 {
     X_PLACEMENT = 0x0001,
