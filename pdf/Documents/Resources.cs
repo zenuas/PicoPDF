@@ -38,10 +38,11 @@ public class Resources : IHaveReferences
     public Func<string, FontLoadOptions, Type0Font> CreateFontCache()
     {
         var fontcache = Fonts.OfType<Type0Font>().ToDictionary(x => x.Name, x => x);
-        return (name, embed) =>
+        var count = 0;
+        return (name, option) =>
         {
-            var vert = embed.HasBit(FontLoadOptions.AlignVertical);
-            var palt = embed.HasBit(FontLoadOptions.Proportional);
+            var vert = option.HasBit(FontLoadOptions.AlignVertical);
+            var palt = option.HasBit(FontLoadOptions.Proportional);
             var namekey = $"{name};vert={vert};palt={palt}";
             if (fontcache.TryGetValue(namekey, out var value)) return value;
             var opt = new OpenType.LoadOption
@@ -52,7 +53,7 @@ public class Resources : IHaveReferences
             var font = FontRegister.LoadFont(name, opt);
             var namekey2 = $"{font.Path.GetPath()};vert={vert};palt={palt}";
             if (fontcache.TryGetValue(namekey2, out var value2)) return value2;
-            var x = Type0Font.Create($"F{fontcache.Count}", font, embed);
+            var x = Type0Font.Create($"F{count++}", font, option);
             Fonts.Add(x);
             fontcache.Add(namekey2, x);
             fontcache.Add(namekey, x);
