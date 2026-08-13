@@ -44,14 +44,14 @@ public class FontRegister : IFontRegister
     public IOpenTypeFont LoadFont(string name, LoadOption? option = null)
     {
         var opt = option ?? new();
-        var keyname = $"{name};vert={opt.UseVertical}";
+        var keyname = $"{name};vert={opt.UseVertical};palt={opt.UseProportional}";
         if (Fonts.TryGetValue(keyname, out var x)) return x.Value.Cast<IOpenTypeFont>();
 
         if (!Fonts.TryGetValue(name, out var fontdata))
         {
             var path = GetFontFilePathValue(name);
             var fullpath = path.GetPath();
-            if (Fonts.TryGetValue($"{fullpath};vert={opt.UseVertical}", out var x2)) return x2.Value.Cast<IOpenTypeFont>();
+            if (Fonts.TryGetValue($"{fullpath};vert={opt.UseVertical};palt={opt.UseProportional}", out var x2)) return x2.Value.Cast<IOpenTypeFont>();
 
             if (path is FontCollectionPath ttc)
             {
@@ -65,10 +65,10 @@ public class FontRegister : IFontRegister
         }
         var font = FontLoader.LoadFont(fontdata.Value, opt);
         var prop = new PropertyGetSet<IOpenTypeHeader>() { Value = font };
-        Fonts.Add($"{fontdata.Value.Path.GetPath()};vert={opt.UseVertical}", prop);
+        Fonts.Add($"{fontdata.Value.Path.GetPath()};vert={opt.UseVertical};palt={opt.UseProportional}", prop);
         font.Name.NameRecords
             .Where(x => x.NameRecord.NameID == NameIDs.FullFontName)
-            .Each(x => Fonts.TryAdd($"{x.Name};vert={opt.UseVertical}", prop));
+            .Each(x => Fonts.TryAdd($"{x.Name};vert={opt.UseVertical};palt={opt.UseProportional}", prop));
         return font;
     }
 

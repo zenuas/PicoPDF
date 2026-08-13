@@ -6,10 +6,10 @@ namespace OpenType.Tables.Subtable;
 
 public class ValueRecord
 {
-    public required short XPlacement { get; init; }
-    public required short YPlacement { get; init; }
-    public required short XAdvance { get; init; }
-    public required short YAdvance { get; init; }
+    public required short? XPlacement { get; init; }
+    public required short? YPlacement { get; init; }
+    public required short? XAdvance { get; init; }
+    public required short? YAdvance { get; init; }
     public required Offset16 XPlaDeviceOffset { get; init; }
     public required Offset16 YPlaDeviceOffset { get; init; }
     public required Offset16 XAdvDeviceOffset { get; init; }
@@ -23,10 +23,10 @@ public class ValueRecord
     {
         var position = stream.Position;
 
-        var xplacement = value_format.HasBit(ValueFormatFlags.X_PLACEMENT) ? stream.ReadShortByBigEndian() : (short)0;
-        var yplacement = value_format.HasBit(ValueFormatFlags.Y_PLACEMENT) ? stream.ReadShortByBigEndian() : (short)0;
-        var xadvance = value_format.HasBit(ValueFormatFlags.X_ADVANCE) ? stream.ReadShortByBigEndian() : (short)0;
-        var yadvance = value_format.HasBit(ValueFormatFlags.Y_ADVANCE) ? stream.ReadShortByBigEndian() : (short)0;
+        var xplacement = value_format.HasBit(ValueFormatFlags.X_PLACEMENT) ? (short?)stream.ReadShortByBigEndian() : null;
+        var yplacement = value_format.HasBit(ValueFormatFlags.Y_PLACEMENT) ? (short?)stream.ReadShortByBigEndian() : null;
+        var xadvance = value_format.HasBit(ValueFormatFlags.X_ADVANCE) ? (short?)stream.ReadShortByBigEndian() : null;
+        var yadvance = value_format.HasBit(ValueFormatFlags.Y_ADVANCE) ? (short?)stream.ReadShortByBigEndian() : null;
         var xpladevice_offset = value_format.HasBit(ValueFormatFlags.X_PLACEMENT_DEVICE) ? stream.ReadOffset16() : 0;
         var ypladevice_offset = value_format.HasBit(ValueFormatFlags.Y_PLACEMENT_DEVICE) ? stream.ReadOffset16() : 0;
         var xadvdevice_offset = value_format.HasBit(ValueFormatFlags.X_ADVANCE_DEVICE) ? stream.ReadOffset16() : 0;
@@ -48,4 +48,6 @@ public class ValueRecord
             YAdvDevice = yadvdevice_offset.Value == 0 ? null : DeviceTable.ReadFrom(stream.SeekTo(position + yadvdevice_offset.Value)),
         };
     }
+
+    public override string ToString() => $"XPlacement: {XPlacement}, YPlacement: {YPlacement}, XAdvance: {XAdvance}, YAdvance: {YAdvance}";
 }

@@ -1,0 +1,20 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": [{"Path": "Noto Sans JP Regular"}],
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "横書き⇒「ijABCあ亜。」（Monospace）",    "Size": 20,  "X": 10, "Y":  0, "Font": {"Path": "Noto Sans JP Regular", "Option": "AlignHorizontal"} },
+			{"Type": "TextElement", "Text": "横書き⇒「ijABCあ亜。」（Proportional）", "Size": 20,  "X": 10, "Y": 20, "Font": {"Path": "Noto Sans JP Regular", "Option": "AlignHorizontal, Proportional"} },
+			{"Type": "TextElement", "Text": "縦書き⇒「ijABCあ亜。」（Monospace）",    "Size": 20,  "X": 50, "Y": 40, "Font": {"Path": "Noto Sans JP Regular", "Option": "AlignVertical"} },
+			{"Type": "TextElement", "Text": "縦書き⇒「ijABCあ亜。」（Proportional）", "Size": 20,  "X": 80, "Y": 40, "Font": {"Path": "Noto Sans JP Regular", "Option": "AlignVertical, Proportional"} },
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+	],
+}

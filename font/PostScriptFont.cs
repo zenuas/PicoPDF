@@ -1,5 +1,6 @@
 ﻿using OpenType.Tables;
 using OpenType.Tables.PostScript;
+using OpenType.Tables.Subtable;
 using Svg.Outline;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ public record class PostScriptFont : IOpenTypeFont
     public required IReadOnlyDictionary<string, TableRecord> TableRecords { get; init; }
     public required OffsetTable Offset { get; init; }
     public required NameTable Name { get; init; }
+    public required LoadOption LoadOption { get; init; }
     public required FontHeaderTable FontHeader { get; init; }
     public required MaximumProfileTable MaximumProfile { get; init; }
     public required PostScriptTable PostScript { get; init; }
@@ -29,6 +31,7 @@ public record class PostScriptFont : IOpenTypeFont
     public required VerticalMetricsTable? VerticalMetrics { get; init; }
     public required GlyphPositioningTable? GlyphPositioning { get; init; }
     public required GlyphSubstitutionTable? GlyphSubstitution { get; init; }
+    public required Func<uint, ValueRecord?> GetPositionPlacement { get; init; }
 
     public required ColorBitmapDataTable? ColorBitmapData { get; init; }
     public required ColorBitmapLocationTable? ColorBitmapLocation { get; init; }

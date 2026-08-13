@@ -1,4 +1,5 @@
 ﻿using OpenType.Tables;
+using OpenType.Tables.Subtable;
 using OpenType.Tables.TrueType;
 using Svg.Outline;
 using System;
@@ -14,6 +15,7 @@ public record class TrueTypeFont : IOpenTypeFont, IDisposable
     public required IReadOnlyDictionary<string, TableRecord> TableRecords { get; init; }
     public required OffsetTable Offset { get; init; }
     public required NameTable Name { get; init; }
+    public required LoadOption LoadOption { get; init; }
     public required FontHeaderTable FontHeader { get; init; }
     public required MaximumProfileTable MaximumProfile { get; init; }
     public required PostScriptTable PostScript { get; init; }
@@ -29,6 +31,7 @@ public record class TrueTypeFont : IOpenTypeFont, IDisposable
     public required VerticalMetricsTable? VerticalMetrics { get; init; }
     public required GlyphPositioningTable? GlyphPositioning { get; init; }
     public required GlyphSubstitutionTable? GlyphSubstitution { get; init; }
+    public required Func<uint, ValueRecord?> GetPositionPlacement { get; init; }
 
     public required ColorBitmapDataTable? ColorBitmapData { get; init; }
     public required ColorBitmapLocationTable? ColorBitmapLocation { get; init; }

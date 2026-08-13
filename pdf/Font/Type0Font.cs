@@ -59,6 +59,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
         }
 
         var font = EmbeddedFont ?? Font;
+        var xxxs = Chars.Select(x => (x, char.ConvertFromUtf32(x), font.CharToGID(x), font.GetAdvanceHeight(font.CharToGID(x)), font.GetPositionPlacement(font.CharToGID(x)))).ToArray();
         if (FontDictionary.W is { } w)
         {
             foreach (var c in Chars)
@@ -79,9 +80,22 @@ public class Type0Font : PdfObject, IFont, IFontChars
         }
     }
 
-    public string CreateTextShowingOperator(string s) => $"<{s.ToUtf32CharArray().Select(x => $"{(EmbeddedFont ?? Font).CharToGID(x):x4}").Join()}> Tj";
+    public string CreateTextShowingOperator(string s)
+    {
+        var font = EmbeddedFont ?? Font;
+        if (font.LoadOption.UseProportional && !font.LoadOption.UseVertical)
+        {
+            return $"[{s.ToUtf32CharArray().Select(x =>
+            {
+                var gid = font.CharToGID(x);
+                var palt = font.GetPositionPlacement(gid);
+                return $"{-palt?.XPlacement}<{gid:x4}>";
+            }).Join()}] TJ";
+        }
+        return $"<{s.ToUtf32CharArray().Select(x => $"{font.CharToGID(x):x4}").Join()}> Tj";
+    }
 
-    public static Type0Font Create(string name, IOpenTypeFont font, FontLoadOptions embed = FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.AlignHorizontal)
+    public static Type0Font Create(string name, IOpenTypeFont font, FontLoadOptions embed = FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.AlignHorizontal | FontLoadOptions.Monospace)
     {
         var flag =
             (font.CMap.EncodingRecords.Contains(x => x.Key.PlatformID == (ushort)Platforms.Windows && x.Key.EncodingID == (ushort)Encodings.Windows_Symbol) ?
@@ -96,7 +110,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
 
     public static Type0Font Create(string name, IOpenTypeFont font, FontDescriptorFlags flags, FontLoadOptions option)
     {
-        var cmap = (option & FontLoadOptions.AlignMask) == FontLoadOptions.AlignHorizontal ? CMaps.Identity_H : CMaps.Identity_V;
+        var cmap = option.HasBit(FontLoadOptions.AlignVertical) ? CMaps.Identity_V : CMaps.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary()
         {

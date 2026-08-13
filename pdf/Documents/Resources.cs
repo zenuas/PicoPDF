@@ -40,19 +40,22 @@ public class Resources : IHaveReferences
         var fontcache = Fonts.OfType<Type0Font>().ToDictionary(x => x.Name, x => x);
         return (name, embed) =>
         {
-            var key_align = embed & FontLoadOptions.AlignMask;
-            var namekey = $"{name};{key_align}";
+            var vert = embed.HasBit(FontLoadOptions.AlignVertical);
+            var palt = embed.HasBit(FontLoadOptions.Proportional);
+            var namekey = $"{name};vert={vert};palt={palt}";
             if (fontcache.TryGetValue(namekey, out var value)) return value;
             var opt = new OpenType.LoadOption
             {
-                UseVertical = embed.HasFlag(FontLoadOptions.AlignVertical),
+                UseVertical = vert,
+                UseProportional = palt,
             };
             var font = FontRegister.LoadFont(name, opt);
-            var namekey2 = $"{font.Path.GetPath()};{key_align}";
+            var namekey2 = $"{font.Path.GetPath()};vert={vert};palt={palt}";
             if (fontcache.TryGetValue(namekey2, out var value2)) return value2;
             var x = Type0Font.Create($"F{fontcache.Count}", font, embed);
             Fonts.Add(x);
             fontcache.Add(namekey2, x);
+            fontcache.Add(namekey, x);
             return x;
         };
     }

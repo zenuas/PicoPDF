@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables.Subtable;
 
-public class SinglePosFormat1 : ISubtable
+public class SinglePosFormat1 : ISubtable, ISinglePosition
 {
     public required ushort Format { get; init; }
     public required Offset16 CoverageOffset { get; init; }
@@ -37,4 +37,6 @@ public class SinglePosFormat1 : ISubtable
             },
         };
     }
+
+    public ValueRecord? GetPosition(uint gid) => Coverage.FindOrNull(gid) is { } ? ValueRecord : null;
 }

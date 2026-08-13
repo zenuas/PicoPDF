@@ -2,6 +2,7 @@
 using Mina.Reflection;
 using OpenType;
 using OpenType.Tables;
+using OpenType.Tables.Subtable;
 using Pdf.Documents;
 using Pdf.Documents.BreakRule;
 using Pdf.Font;
@@ -24,6 +25,7 @@ public class MultilineTest
         public IReadOnlyDictionary<string, TableRecord> TableRecords { get; init; } = null!;
         public OffsetTable Offset { get; init; } = null!;
         public NameTable Name { get; init; } = null!;
+        public LoadOption LoadOption { get; init; } = null!;
 
         public FontHeaderTable FontHeader { get; init; } = Expressions.GetNew<FontHeaderTable>()();
         public MaximumProfileTable MaximumProfile { get; init; } = null!;
@@ -39,6 +41,7 @@ public class MultilineTest
         public VerticalMetricsTable? VerticalMetrics { get; init; } = null;
         public GlyphPositioningTable? GlyphPositioning { get; init; } = null;
         public GlyphSubstitutionTable? GlyphSubstitution { get; init; } = null;
+        public Func<uint, ValueRecord?> GetPositionPlacement { get; init; } = _ => null;
 
         public ColorBitmapDataTable? ColorBitmapData { get; init; }
         public ColorBitmapLocationTable? ColorBitmapLocation { get; init; }

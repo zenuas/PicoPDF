@@ -11,4 +11,5 @@ public interface IOpenTypeHeader
     public IReadOnlyDictionary<string, TableRecord> TableRecords { get; init; }
     public OffsetTable Offset { get; init; }
     public NameTable Name { get; init; }
+    public LoadOption LoadOption { get; init; }
 }

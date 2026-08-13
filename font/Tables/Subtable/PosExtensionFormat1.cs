@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenType.Tables.Subtable;
 
-public class PosExtensionFormat1 : ISubtable
+public class PosExtensionFormat1 : ISubtable, ISinglePosition
 {
     public required ushort Format { get; init; }
     public required ushort ExtensionLookupType { get; init; }
@@ -49,4 +49,6 @@ public class PosExtensionFormat1 : ISubtable
             },
         };
     }
+
+    public ValueRecord? GetPosition(uint gid) => Extension is ISinglePosition singlepos ? singlepos.GetPosition(gid) : null;
 }

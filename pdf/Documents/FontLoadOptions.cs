@@ -19,8 +19,10 @@ public enum FontLoadOptions
 
     AlignHorizontal = 0 << 8,
     AlignVertical = 1 << 8,
+    Monospace = 0 << 8,
+    Proportional = 2 << 8,
 
     EmbedsMask = 0x000F,
     ConvertMask = 0x00F0,
-    AlignMask = 0x0F00,
+    OptionMask = 0x0F00,
 }

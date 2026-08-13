@@ -99,6 +99,18 @@ public static class FontLoader
         return gid;
     }
 
+    public static ValueRecord? GetPositionPlacement(FeatureTableRecord palt, LookupListRecord lookup, uint gid, LoadOption option)
+    {
+        foreach (var index in palt.LookupListIndices)
+        {
+            foreach (var subtable in lookup.LookupRecords[index].LookupTable.Subtables.OfType<ISinglePosition>())
+            {
+                if (subtable.GetPosition(gid) is { } x) return x;
+            }
+        }
+        return null;
+    }
+
     public static TrueTypeFont LoadTrueTypeFont(IOpenTypeHeader font, LoadOption option)
     {
         var stream = font.Path.Open();
@@ -134,6 +146,8 @@ public static class FontLoader
 
         var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
         var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable : null;
+        var palt_name = vert is null ? "palt" : "vpal";
+        var palt = option.UseProportional && gpos is { } && gpos.LookupList is { } ? gpos?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == palt_name)?.FeatureTable : null;
         TrueTypeFont newfont = null!;
         newfont = new()
         {
@@ -143,6 +157,7 @@ public static class FontLoader
             TableRecords = font.TableRecords,
             Offset = font.Offset,
             Name = font.Name,
+            LoadOption = option,
             FontHeader = head,
             MaximumProfile = maxp,
             PostScript = post,
@@ -157,6 +172,7 @@ public static class FontLoader
             VerticalMetrics = vmtx,
             GlyphPositioning = gpos,
             GlyphSubstitution = gsub,
+            GetPositionPlacement = gid => palt is { } ? GetPositionPlacement(palt, gpos!.LookupList!, gid, option) : null,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,
@@ -196,6 +212,8 @@ public static class FontLoader
 
         var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
         var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable : null;
+        var palt_name = vert is null ? "palt" : "vpal";
+        var palt = option.UseProportional && gpos is { } && gpos.LookupList is { } ? gpos?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == palt_name)?.FeatureTable : null;
         PostScriptFont newfont = null!;
         newfont = new()
         {
@@ -205,6 +223,7 @@ public static class FontLoader
             TableRecords = font.TableRecords,
             Offset = font.Offset,
             Name = font.Name,
+            LoadOption = option,
             FontHeader = head,
             MaximumProfile = maxp,
             PostScript = post,
@@ -219,6 +238,7 @@ public static class FontLoader
             VerticalMetrics = vmtx,
             GlyphPositioning = gpos,
             GlyphSubstitution = gsub,
+            GetPositionPlacement = gid => palt is { } ? GetPositionPlacement(palt, gpos!.LookupList!, gid, option) : null,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,
@@ -255,6 +275,8 @@ public static class FontLoader
 
         var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
         var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable : null;
+        var palt_name = vert is null ? "palt" : "vpal";
+        var palt = option.UseProportional && gpos is { } && gpos.LookupList is { } ? gpos?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == palt_name)?.FeatureTable : null;
         return new()
         {
             PostScriptName = font.PostScriptName,
@@ -263,6 +285,7 @@ public static class FontLoader
             TableRecords = font.TableRecords,
             Offset = font.Offset,
             Name = font.Name,
+            LoadOption = option,
             FontHeader = head,
             MaximumProfile = maxp,
             PostScript = post,
@@ -276,6 +299,7 @@ public static class FontLoader
             VerticalMetrics = vmtx,
             GlyphPositioning = gpos,
             GlyphSubstitution = gsub,
+            GetPositionPlacement = gid => palt is { } ? GetPositionPlacement(palt, gpos!.LookupList!, gid, option) : null,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,

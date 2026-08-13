@@ -2,6 +2,8 @@
 using OpenType.Tables;
 using OpenType.Tables.CMap;
 using OpenType.Tables.Colr;
+using OpenType.Tables.Common;
+using OpenType.Tables.Subtable;
 using Svg.Outline;
 using System;
 using System.Collections.Generic;
@@ -24,6 +26,7 @@ public static class FontExtract
                 Outline: outline,
                 x.HorizontalMetrics,
                 VerticalMetrics: font.GetAdvanceHeight(x.OldGID),
+                Position: font.GetPositionPlacement(x.OldGID),
                 NoOutline: points.Length == 0,
                 Notdef: false,
                 Ascender: points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
@@ -35,7 +38,7 @@ public static class FontExtract
                 x.Char
             );
         });
-        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], null, true, true, 0f, 0f, 0f, 0f, 0f, 0f, 0));
+        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], null, null, true, true, 0f, 0f, 0f, 0f, 0f, 0f, 0));
         var num_of_glyph_include_notdef = (int)gid_glyph.Keys.Max() + 1;
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
@@ -90,6 +93,44 @@ public static class FontExtract
             TopSideBearing = [],
         };
 
+        var single_pos_subtables = gid_glyph
+            .Where(x => x.Value.Position is not null)
+            .Select(x => new SinglePosFormat1
+            {
+                Format = 1,
+                CoverageOffset = 0,
+                ValueFormat = 0,
+                ValueRecord = x.Value.Position!,
+                Coverage = new CoverageFormat1
+                {
+                    Format = 1,
+                    GlyphCount = 1,
+                    GlyphArray = [(ushort)x.Key],
+                },
+            })
+            .ToArray();
+        var palt = font.LoadOption.UseProportional && font.GlyphPositioning is { } && font.GlyphPositioning.LookupList is { } ? new FeatureTableRecord { FeatureParamsOffset = 0, LookupIndexCount = 1, LookupListIndices = [0] } : null;
+        var gpos = palt is null ? null : new GlyphPositioningTable()
+        {
+            MajorVersion = font.GlyphPositioning!.MajorVersion,
+            MinorVersion = font.GlyphPositioning.MinorVersion,
+            ScriptListOffset = 0,
+            FeatureListOffset = 0,
+            LookupListOffset = 0,
+            FeatureVariationsOffset = 0,
+            ScriptList = null,
+            FeatureList = new()
+            {
+                FeatureCount = 1,
+                FeatureRecords = [(font.LoadOption.UseVertical ? "vpal" : "palt", 0, palt)]
+            },
+            LookupList = new()
+            {
+                LookupCount = 1,
+                LookupRecords = [(0, new() { LookupType = 1, LookupFlag = 0, SubTableCount = (ushort)single_pos_subtables.Length, SubtableOffsets = [], MarkFilteringSet = 0, Subtables = single_pos_subtables })]
+            },
+        };
+
         GenericFont newfont = null!;
         return newfont = new()
         {
@@ -99,6 +140,7 @@ public static class FontExtract
             TableRecords = font.TableRecords,
             Offset = font.Offset,
             Name = ExtractNameTable(font.Name, opt),
+            LoadOption = font.LoadOption,
             FontHeader = head,
             MaximumProfile = font.MaximumProfile with { NumberOfGlyphs = (ushort)num_of_glyph_include_notdef },
             PostScript = font.PostScript,
@@ -110,8 +152,9 @@ public static class FontExtract
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? gid_glyph[gid].Outline,
             VerticalHeader = vhea,
             VerticalMetrics = vmtx,
-            GlyphPositioning = null,
+            GlyphPositioning = gpos,
             GlyphSubstitution = null,
+            GetPositionPlacement = gid => palt is null ? null : FontLoader.GetPositionPlacement(palt, gpos!.LookupList!, gid, font.LoadOption),
             ColorBitmapData = font.ColorBitmapData,
             ColorBitmapLocation = font.ColorBitmapLocation,
             Color = colr,
