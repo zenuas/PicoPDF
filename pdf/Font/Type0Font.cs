@@ -112,8 +112,8 @@ public class Type0Font : PdfObject, IFont, IFontChars
                 }
             },
             DW = font.FontHeader.UnitsPerEm,
-            W = [],
-            W2 = cmap == CMaps.Identity_H ? null : [],
+            W = cmap == CMaps.Identity_H ? [] : null,
+            W2 = cmap == CMaps.Identity_V ? [] : null,
             FontDescriptor = new() { FontName = font.PostScriptName, Flags = flags },
         };
         return new()
