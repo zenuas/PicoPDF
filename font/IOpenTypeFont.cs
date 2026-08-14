@@ -32,11 +32,17 @@ public interface IOpenTypeFont : IOpenTypeHeader
     public StandardBitmapGraphicsTable? StandardBitmapGraphics { get; init; }
     public ScalableVectorGraphicsTable? ScalableVectorGraphics { get; init; }
 
-    public double MeasureString(string s) => s.ToUtf32CharArray().Select(MeasureChar).Sum();
+    public double HorizontalMeasureString(string s) => s.ToUtf32CharArray().Select(HorizontalMeasureChar).Sum();
 
-    public double MeasureChar(int c) => MeasureGID(CharToGID(c));
+    public double HorizontalMeasureChar(int c) => HorizontalMeasureGID(CharToGID(c));
 
-    public double MeasureGID(uint gid) => (double)GetAdvanceWidth(gid) / FontHeader.UnitsPerEm;
+    public double HorizontalMeasureGID(uint gid) => (double)GetAdvanceWidth(gid) / FontHeader.UnitsPerEm;
+
+    public double VerticalMeasureString(string s) => s.ToUtf32CharArray().Select(VerticalMeasureChar).Sum();
+
+    public double VerticalMeasureChar(int c) => VerticalMeasureGID(CharToGID(c));
+
+    public double VerticalMeasureGID(uint gid) => (double)(GetAdvanceHeight(gid)?.Height ?? 0) / FontHeader.UnitsPerEm;
 
     // If numberOfHMetrics is less than the total number of glyphs,
     // then the hMetrics array is followed by an array for the left side bearing values of the remaining glyphs.

@@ -1,0 +1,20 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": [{"Path": "Noto Sans JP Regular", "Option": "VerticalLeftToRight"}, {"Path": "Noto Emoji Regular", "Option": "VerticalLeftToRight"}],
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "一行目🍣あいう\n二行目🍣あいう\n最終行🍣あいう", "Size": 20,  "X": 10, "Y": 10},
+			
+			{"Type": "LineElement", "X": 10, "Y": 10, "Width": 20, "Height":  0, "Color": "red"},
+			{"Type": "LineElement", "X": 10, "Y": 10, "Width":  0, "Height": 20, "Color": "red"},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+	],
+}
