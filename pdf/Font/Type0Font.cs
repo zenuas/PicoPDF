@@ -74,7 +74,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
                 var gid = font.CharToGID(c);
                 var metric = font.GetAdvanceHeight(gid);
                 if (metric is null) continue;
-                _ = w2.TryAdd(gid, (-metric.Value.Height / font.FontHeader.UnitsPerEm * 1000, Right: font.MeasureGID(gid) * 1000 / 2, Top: metric.Value.TopSideBearing / font.FontHeader.UnitsPerEm * 1000, Char: char.ConvertFromUtf32(c)));
+                _ = w2.TryAdd(gid, (-(double)metric.Value.Height / font.FontHeader.UnitsPerEm * 1000, Right: font.MeasureGID(gid) * 1000 / 2, Top: (double)metric.Value.TopSideBearing / font.FontHeader.UnitsPerEm * 1000, Char: char.ConvertFromUtf32(c)));
             }
         }
     }
