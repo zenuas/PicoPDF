@@ -20,13 +20,13 @@ public enum TextStyles
     Stroke = 1 << 11,
     Border = BorderTop | BorderLeft | BorderRight | BorderBottom,
 
-    LineBreakSimplifiedChinese = 1 << 16,
-    LineBreakTraditionalChinese = 2 << 16,
-    LineBreakJapanese = 4 << 16,
-    LineBreakKorean = 8 << 16,
+    LineBreakSimplifiedChinese = 1 << 12,
+    LineBreakTraditionalChinese = 1 << 13,
+    LineBreakJapanese = 1 << 14,
+    LineBreakKorean = 1 << 15,
     LineBreak = LineBreakSimplifiedChinese | LineBreakTraditionalChinese | LineBreakJapanese | LineBreakKorean,
 
     TextStyleMask = Underline | DoubleUnderline | Strikethrough | DoubleStrikethrough,
     BorderStyleMask = Border,
-    BreakMask = 0x000F_0000,
+    BreakMask = LineBreak,
 }
