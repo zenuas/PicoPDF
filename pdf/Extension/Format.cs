@@ -31,7 +31,7 @@ public static class Format
     public static string ToPointString(this IEnumerable<double> self, string format) => self.Select(x => x.ToPointString(format)).Join(" ");
     public static string ToPointString(this IPoint self, string format) => ToPointString(self.ToPoint(), format);
     public static string ToPointString(this float self, string format) => ToPointString((double)self, format);
-    public static string ToPointString(this double self, string format) =>
+    public static string ToPointString(this double self, string format) => self == -0d ? "0" :
         format == "F%" ? self.ToString("F7", CultureInfo.InvariantCulture).TrimEnd('0').TrimEnd('.') :
             self <= long.MaxValue &&
             self >= long.MinValue &&
