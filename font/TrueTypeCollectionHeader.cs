@@ -19,32 +19,32 @@ public class TrueTypeCollectionHeader
 
     public static TrueTypeCollectionHeader ReadFrom(Stream stream)
     {
-        var ttcTag = Encoding.ASCII.GetString(stream.ReadExactly(4));
-        var majorVersion = stream.ReadUShortByBigEndian();
-        var minorVersion = stream.ReadUShortByBigEndian();
-        var numFonts = stream.ReadUIntByBigEndian();
-        var tableDirectoryOffsets = Lists.Repeat(stream.ReadOffset32).Take((int)numFonts).ToArray();
+        var ttc_tag = Encoding.ASCII.GetString(stream.ReadExactly(4));
+        var major_version = stream.ReadUShortByBigEndian();
+        var minor_version = stream.ReadUShortByBigEndian();
+        var num_fonts = stream.ReadUIntByBigEndian();
+        var table_directory_offsets = Lists.Repeat(stream.ReadOffset32).Take((int)num_fonts).ToArray();
 
-        var dsigTag = 0u;
-        var dsigLength = 0u;
-        var dsigOffset = 0u;
-        if (majorVersion >= 2)
+        var dsig_tag = 0u;
+        var dsig_length = 0u;
+        var dsig_offset = 0u;
+        if (major_version >= 2)
         {
-            dsigTag = stream.ReadUIntByBigEndian();
-            dsigLength = stream.ReadUIntByBigEndian();
-            dsigOffset = stream.ReadUIntByBigEndian();
+            dsig_tag = stream.ReadUIntByBigEndian();
+            dsig_length = stream.ReadUIntByBigEndian();
+            dsig_offset = stream.ReadUIntByBigEndian();
         }
 
         return new()
         {
-            TTCTag = ttcTag,
-            MajorVersion = majorVersion,
-            MinorVersion = minorVersion,
-            NumberOfFonts = numFonts,
-            TableDirectoryOffsets = tableDirectoryOffsets,
-            DsigTag = dsigTag,
-            DsigLength = dsigLength,
-            DsigOffset = dsigOffset,
+            TTCTag = ttc_tag,
+            MajorVersion = major_version,
+            MinorVersion = minor_version,
+            NumberOfFonts = num_fonts,
+            TableDirectoryOffsets = table_directory_offsets,
+            DsigTag = dsig_tag,
+            DsigLength = dsig_length,
+            DsigOffset = dsig_offset,
         };
     }
 
