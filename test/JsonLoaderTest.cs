@@ -207,23 +207,23 @@ public class JsonLoaderTest
     {
         var f1 = JsonLoader.ToFontPath(JsonNode.Parse(""" "Arial" """, null, Option)!);
         Assert.Equal(f1.Path, "Arial");
-        Assert.Equal(f1.Option, FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.AlignHorizontal | FontLoadOptions.Monospace);
+        Assert.Equal(f1.Option, FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace);
 
         var f2 = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Times New Roman"}""", null, Option)!);
         Assert.Equal(f2.Path, "Times New Roman");
-        Assert.Equal(f2.Option, FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.AlignHorizontal | FontLoadOptions.Monospace);
+        Assert.Equal(f2.Option, FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace);
 
         var f3 = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Courier New", "Option": "NotEmbed"}""", null, Option)!);
         Assert.Equal(f3.Path, "Courier New");
-        Assert.Equal(f3.Option, FontLoadOptions.NotEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.AlignHorizontal | FontLoadOptions.Monospace);
+        Assert.Equal(f3.Option, FontLoadOptions.NotEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace);
 
         var f4 = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Courier New", "Option": "ConvertToTrueType"}""", null, Option)!);
         Assert.Equal(f4.Path, "Courier New");
-        Assert.Equal(f4.Option, FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertToTrueType | FontLoadOptions.AlignHorizontal | FontLoadOptions.Monospace);
+        Assert.Equal(f4.Option, FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertToTrueType | FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace);
 
         var f5 = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Courier New", "Option": "NotEmbed, ConvertToTrueType"}""", null, Option)!);
         Assert.Equal(f5.Path, "Courier New");
-        Assert.Equal(f5.Option, FontLoadOptions.NotEmbed | FontLoadOptions.ConvertToTrueType | FontLoadOptions.AlignHorizontal | FontLoadOptions.Monospace);
+        Assert.Equal(f5.Option, FontLoadOptions.NotEmbed | FontLoadOptions.ConvertToTrueType | FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace);
 
         _ = Assert.Throws<ArgumentException>(() => _ = JsonLoader.ToFontPath(JsonNode.Parse("""{"Path": "Arial", "Option": "None"}""", null, Option)!));
         Assert.Equal(Assert.Throws<NullReferenceException>(() => _ = JsonLoader.ToFontPath(JsonNode.Parse("""{"Option": "NotEmbed"}""", null, Option)!)).Message, "Element 'Path' was not found.");
@@ -238,19 +238,19 @@ public class JsonLoaderTest
         var f1 = JsonLoader.ToFontPathArray(JsonNode.Parse(""" "Arial" """, null, Option)!);
         Assert.Equal(f1.Length, 1);
         Assert.Equal(f1[0].Path, "Arial");
-        Assert.Equal(f1[0].Option, FontLoadOptions.PossibleEmbed);
+        Assert.Equal(f1[0].Option, FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace);
 
         var f2 = JsonLoader.ToFontPathArray(JsonNode.Parse("""[{"Path": "Times New Roman"}]""", null, Option)!);
         Assert.Equal(f2.Length, 1);
         Assert.Equal(f2[0].Path, "Times New Roman");
-        Assert.Equal(f2[0].Option, FontLoadOptions.PossibleEmbed);
+        Assert.Equal(f2[0].Option, FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace);
 
         var f3 = JsonLoader.ToFontPathArray(JsonNode.Parse("""[{"Path": "Courier New", "Option": "NotEmbed"}, {"Path": "Arial"}]""", null, Option)!);
         Assert.Equal(f3.Length, 2);
         Assert.Equal(f3[0].Path, "Courier New");
-        Assert.Equal(f3[0].Option, FontLoadOptions.NotEmbed);
+        Assert.Equal(f3[0].Option, FontLoadOptions.NotEmbed | FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace);
         Assert.Equal(f3[1].Path, "Arial");
-        Assert.Equal(f3[1].Option, FontLoadOptions.PossibleEmbed);
+        Assert.Equal(f3[1].Option, FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace);
     }
 
     [Fact]
@@ -343,12 +343,12 @@ public class JsonLoaderTest
         var e2 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!2", "Size": 31, "Font": ["Arial"]}""", null, Option)!);
         Assert.Equal("Hello, World!2", e2.Text);
         Assert.Equal(e2.Size, 31);
-        Assert.Equivalent(e2.Font, new XFontPath[] { new() { Path = "Arial", Option = FontLoadOptions.PossibleEmbed } });
+        Assert.Equivalent(e2.Font, new XFontPath[] { new() { Path = "Arial", Option = FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace } });
 
         var e3 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!3", "Size": 32, "Font": ["Arial", { "Path": "Times New Roman", "Option": "NotEmbed" }]}""", null, Option)!);
         Assert.Equal("Hello, World!3", e3.Text);
         Assert.Equal(e3.Size, 32);
-        Assert.Equivalent(e3.Font, new XFontPath[] { new() { Path = "Arial", Option = FontLoadOptions.PossibleEmbed }, new() { Path = "Times New Roman", Option = FontLoadOptions.NotEmbed } });
+        Assert.Equivalent(e3.Font, new XFontPath[] { new() { Path = "Arial", Option = FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace }, new() { Path = "Times New Roman", Option = FontLoadOptions.NotEmbed | FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace } });
 
         var e4 = JsonLoader.LoadTextElement(10, 20, "name", JsonNode.Parse("""{"Type": "TextElement", "Text": "Hello, World!4", "Size": 33, "Alignment": "End"}""", null, Option)!);
         Assert.Equal("Hello, World!4", e4.Text);

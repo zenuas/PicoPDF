@@ -95,7 +95,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
         return $"<{s.ToUtf32CharArray().Select(x => $"{font.CharToGID(x):x4}").Join()}> Tj";
     }
 
-    public static Type0Font Create(string name, IOpenTypeFont font, FontLoadOptions embed = FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.AlignHorizontal | FontLoadOptions.Monospace)
+    public static Type0Font Create(string name, IOpenTypeFont font, FontLoadOptions embed = FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace)
     {
         var flag =
             (font.CMap.EncodingRecords.Contains(x => x.Key.PlatformID == (ushort)Platforms.Windows && x.Key.EncodingID == (ushort)Encodings.Windows_Symbol) ?
@@ -110,7 +110,7 @@ public class Type0Font : PdfObject, IFont, IFontChars
 
     public static Type0Font Create(string name, IOpenTypeFont font, FontDescriptorFlags flags, FontLoadOptions option)
     {
-        var cmap = option.HasBit(FontLoadOptions.AlignVertical) ? CMaps.Identity_V : CMaps.Identity_H;
+        var cmap = option.HasBit(FontLoadOptions.VerticalMask) ? CMaps.Identity_V : CMaps.Identity_H;
         var cidsysinfo = cmap.GetAttributeOrDefault<CIDSystemInfoAttribute>()!;
         var fontdict = new CIDFontDictionary()
         {

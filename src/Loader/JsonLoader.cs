@@ -232,13 +232,24 @@ public static class JsonLoader
         node is { } ? [ToFontPath(node)] :
         [];
 
-    public static FontPath ToFontPath(JsonNode node) =>
-        node is JsonValue v ? new() { Path = (string)v! } :
-        new()
+    public static FontPath ToFontPath(JsonNode node)
+    {
+        if (node is JsonValue v)
         {
-            Path = node.GetStringValue("Path"),
-            Option = node.GetEnumOrDefaultWithoutNullValue<FontLoadOptions>("Option") ?? (FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.AlignHorizontal | FontLoadOptions.Monospace),
-        };
+            return new() { Path = (string)v! };
+        }
+        else
+        {
+            var opt = node.GetEnumOrDefaultWithoutNullValue<FontLoadOptions>("Option") ?? (FontLoadOptions.PossibleEmbed | FontLoadOptions.ConvertNone | FontLoadOptions.HorizontalLeftToRight | FontLoadOptions.Monospace);
+            return new()
+            {
+                Path = node.GetStringValue("Path"),
+                Option = opt |
+                    ((opt & FontLoadOptions.AlignMask) == 0 ? FontLoadOptions.HorizontalLeftToRight : 0) |
+                    ((opt & FontLoadOptions.SpacingMask) == 0 ? FontLoadOptions.Monospace : 0),
+            };
+        }
+    }
 
     public static PageSize LoadPageSize(JsonNode? node)
     {

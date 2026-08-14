@@ -41,8 +41,8 @@ public class Resources : IHaveReferences
         var count = 0;
         return (name, option) =>
         {
-            var vert = option.HasBit(FontLoadOptions.AlignVertical);
-            var palt = option.HasBit(FontLoadOptions.Proportional);
+            var vert = option.HasBit(FontLoadOptions.VerticalMask);
+            var palt = option.HasFlag(FontLoadOptions.Proportional);
             var namekey = $"{name};vert={vert};palt={palt}";
             if (fontcache.TryGetValue(namekey, out var value)) return value;
             var opt = new OpenType.LoadOption

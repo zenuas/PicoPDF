@@ -17,12 +17,18 @@ public enum FontLoadOptions
     ConvertToTrueType = 1 << 4,
     ConvertToPostScript = 2 << 4,
 
-    AlignHorizontal = 0 << 8,
-    AlignVertical = 1 << 8,
-    Monospace = 0 << 8,
-    Proportional = 2 << 8,
+    HorizontalLeftToRight = 1 << 8,
+    HorizontalRightToLeft = 2 << 8,
+    VerticalLeftToRight = 4 << 8,
+    VerticalRightToLeft = 8 << 8,
+
+    Monospace = 1 << 12,
+    Proportional = 2 << 12,
 
     EmbedsMask = 0x000F,
     ConvertMask = 0x00F0,
-    OptionMask = 0x0F00,
+    AlignMask = 0x0F00,
+    HorizontalMask = HorizontalLeftToRight | HorizontalRightToLeft,
+    VerticalMask = VerticalLeftToRight | VerticalRightToLeft,
+    SpacingMask = 0xF000,
 }

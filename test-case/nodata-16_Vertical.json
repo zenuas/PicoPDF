@@ -1,7 +1,7 @@
 {
 	"Size": "A4",
 	"Orientation": "Vertical",
-	"DefaultFont": [{"Path": "Noto Sans JP Regular", "Option": "AlignVertical"}],
+	"DefaultFont": [{"Path": "Noto Sans JP Regular", "Option": "VerticalRightToLeft"}],
 	"Padding": [15, 10, 15],
 	
 	"Header": "PageHeader",
@@ -9,7 +9,7 @@
 	
 	"Sections": [
 		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
-			{"Type": "TextElement", "Text": "横書き⇒「ijABCあ亜。」", "Size": 20,  "X": 10, "Y": 0, "Font": {"Path": "Noto Sans JP Regular", "Option": "AlignHorizontal"} },
+			{"Type": "TextElement", "Text": "横書き⇒「ijABCあ亜。」", "Size": 20,  "X": 10, "Y": 0, "Font": {"Path": "Noto Sans JP Regular", "Option": "HorizontalLeftToRight"} },
 			{"Type": "TextElement", "Text": "縦書き⇒「ijABCあ亜。」", "Size": 20,  "X": 10, "Y": 20},
 		]},
 		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
