@@ -63,7 +63,7 @@ public interface IOpenTypeFont : IOpenTypeHeader
             var metric = vmtx.Metrics[index];
             return (metric.AdvanceHeight.Value + (pos?.YAdvance ?? 0), -(pos?.YPlacement ?? metric.TopSideBearing.Value));
         }
-        else if (VerticalHeader is { } vhea)
+        else
         {
             // This array contains the top sidebearings of glyphs not represented in the first array, and all the glyphs in this array must have the same advance height as the last entry in the vMetrics array.
             // All entries in this array are therefore monospaced.
@@ -71,6 +71,5 @@ public interface IOpenTypeFont : IOpenTypeHeader
             // The sum of glyphs represented in the first array plus the glyphs represented in the second array therefore equals the number of glyphs in the font.
             return (vmtx.Metrics[^1].AdvanceHeight.Value + (pos?.YAdvance ?? 0), -(pos?.YPlacement ?? vmtx.TopSideBearing[index - vmtx.Metrics.Length].Value));
         }
-        return null;
     }
 }
