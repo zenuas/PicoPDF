@@ -10,7 +10,7 @@
 	"Sections": [
 		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
 			{"Type": "TextElement", "Text": "横書き⇒「ijABCあ亜。」", "Size": 20,  "X": 10, "Y": 0, "Font": {"Path": "Noto Sans JP Regular", "Option": "HorizontalLeftToRight"} },
-			{"Type": "TextElement", "Text": "縦書き⇒「ijABCあ亜。」", "Size": 20,  "X": 10, "Y": 20},
+			{"Type": "TextElement", "Text": "縦書き⇒「ijABCあ亜。」", "Size": 20,  "X": 20, "Y": 20},
 		]},
 		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
 		]},

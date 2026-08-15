@@ -42,7 +42,7 @@ public interface IOpenTypeFont : IOpenTypeHeader
 
     public double VerticalMeasureChar(int c) => VerticalMeasureGID(CharToGID(c));
 
-    public double VerticalMeasureGID(uint gid) => (double)(GetAdvanceHeight(gid)?.Height ?? 0) / FontHeader.UnitsPerEm;
+    public double VerticalMeasureGID(uint gid) => (double)(GetAdvanceHeight(gid) is { } ah ? (ah.Height - ah.TopSideBearing) : 0) / FontHeader.UnitsPerEm;
 
     // If numberOfHMetrics is less than the total number of glyphs,
     // then the hMetrics array is followed by an array for the left side bearing values of the remaining glyphs.

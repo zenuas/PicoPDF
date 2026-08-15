@@ -134,15 +134,17 @@ public class DrawString : IOperation
             max_width = Math.Max(max_width, text_width);
             max_height = Math.Max(max_height, text_height);
         }
-        if (style.HasBit(TextStyles.BorderStyleMask)) opes.AddRange(DrawOperations.CreateBorderStyle(style, top, left, width > 0 ? width : max_width, height > 0 ? height : linetop - top, max_height / 20, color));
+        var view_width = width > 0 ? width : max_width;
+        var view_height = height > 0 ? height : linetop - top;
+        if (style.HasBit(TextStyles.BorderStyleMask)) opes.AddRange(DrawOperations.CreateBorderStyle(style, top, left, view_width, view_height, max_height / 20, color));
 
         return !style.HasFlag(TextStyles.Clipping) ?
             new DrawOperations
             {
                 X = new PointValue(left),
                 Y = new PointValue(top),
-                Width = new PointValue(width > 0 ? width : max_width),
-                Height = new PointValue(height > 0 ? height : linetop - top),
+                Width = new PointValue(view_width),
+                Height = new PointValue(view_height),
                 Operations = [.. opes]
             } :
             new DrawClipping
@@ -150,7 +152,7 @@ public class DrawString : IOperation
                 X = new PointValue(left),
                 Y = new PointValue(top),
                 Width = new PointValue(width),
-                Height = new PointValue(height > 0 ? height : linetop - top),
+                Height = new PointValue(view_height),
                 Operations = [.. opes],
             };
     }
@@ -186,30 +188,82 @@ public class DrawString : IOperation
             max_width = Math.Max(max_width, text_width);
             max_height = Math.Max(max_height, text_height);
         }
-        if (style.HasBit(TextStyles.BorderStyleMask)) opes.AddRange(DrawOperations.CreateBorderStyle(style, top, left, width > 0 ? width : lineleft, height > 0 ? height : max_height, max_width / 20, color));
+        var view_width = width > 0 ? width : lineleft - left;
+        var view_height = height > 0 ? height : max_height;
+        if (style.HasBit(TextStyles.BorderStyleMask)) opes.AddRange(DrawOperations.CreateBorderStyle(style, top, left, view_width, view_height, max_width / 20, color));
 
         return !style.HasFlag(TextStyles.Clipping) ?
             new DrawOperations
             {
                 X = new PointValue(left),
                 Y = new PointValue(top),
-                Width = new PointValue(width > 0 ? width : lineleft),
-                Height = new PointValue(height > 0 ? height : max_height),
+                Width = new PointValue(view_width),
+                Height = new PointValue(view_height),
                 Operations = [.. opes]
             } :
             new DrawClipping
             {
                 X = new PointValue(left),
                 Y = new PointValue(top),
-                Width = new PointValue(width),
-                Height = new PointValue(height > 0 ? height : max_height),
+                Width = new PointValue(view_width),
+                Height = new PointValue(height),
                 Operations = [.. opes],
             };
     }
 
     public static IOperation CreateVerticalRightToLeft(string text, double left, double top, double size, Type0Font[] fonts, Document document, double width = 0, double height = 0, TextStyles style = TextStyles.None, TextAlignments alignment = TextAlignments.Start, IColor? color = null, ILineBreakRule? linebreak_rule = null)
     {
-        throw new();
+        var lineleft = left;
+        double? prev_linegap = null;
+        var max_width = 0.0;
+        var max_height = 0.0;
+        var opes = new List<IOperation>();
+        foreach (var textfonts in GetMultilineTextFont(text, fonts, size, style.HasFlag(TextStyles.MultiLine) ? width : 0, linebreak_rule ?? GetLineBreakRule(style)))
+        {
+            if (prev_linegap is { } gap) lineleft += gap;
+
+            var allbox = MeasureTextFontBox(textfonts, MeasureVerticalStringBox);
+            var firstchar = MeasureVerticalStringBox(textfonts[0].Font.Font, textfonts[0].Text.ToUtf32CharArray().First());
+            var text_size = style.HasFlag(TextStyles.ShrinkToFit) && height < (allbox.Width * size) ? height / allbox.Width : size;
+            var text_width = allbox.Height * text_size;
+            var text_height = allbox.Width * text_size;
+            var text_center = lineleft - (text_width / 2);
+            var text_top = (firstchar.Width * text_size) + alignment switch
+            {
+                TextAlignments.Center => top + ((height - text_height) / 2),
+                TextAlignments.End => top + height - text_height,
+                _ => top,
+            };
+
+            opes.AddRange(CreateVerticalMultilineText(textfonts, text_top, text_center, text_size, style.HasFlag(TextStyles.Stroke), document, color));
+            if (style.HasBit(TextStyles.TextStyleMask)) opes.AddRange(DrawOperations.CreateTextStyle(style, text_top, text_center, text_top, text_width, text_height, color));
+            lineleft -= text_width;
+            prev_linegap = allbox.LineGap * text_size;
+            max_width = Math.Max(max_width, text_width);
+            max_height = Math.Max(max_height, text_height);
+        }
+        var view_left = width > 0 ? left : lineleft;
+        var view_width = width > 0 ? width : left - lineleft;
+        var view_height = height > 0 ? height : max_height;
+        if (style.HasBit(TextStyles.BorderStyleMask)) opes.AddRange(DrawOperations.CreateBorderStyle(style, top, view_left, view_width, view_height, max_width / 20, color));
+
+        return !style.HasFlag(TextStyles.Clipping) ?
+            new DrawOperations
+            {
+                X = new PointValue(view_left),
+                Y = new PointValue(top),
+                Width = new PointValue(view_width),
+                Height = new PointValue(view_height),
+                Operations = [.. opes]
+            } :
+            new DrawClipping
+            {
+                X = new PointValue(view_left),
+                Y = new PointValue(top),
+                Width = new PointValue(view_width),
+                Height = new PointValue(height),
+                Operations = [.. opes],
+            };
     }
 
     public static IEnumerable<IOperation> CreateHorizontalMultilineText((string Text, Type0Font Font)[] textfonts, double basey, double left, double size, bool stroke, Document document, IColor? color = null)
