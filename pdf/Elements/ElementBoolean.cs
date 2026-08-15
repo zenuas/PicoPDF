@@ -4,7 +4,7 @@ namespace Pdf.Elements;
 
 public class ElementBoolean : ElementValue
 {
-    public required bool Value { get; set; }
+    public required bool Value { get; init; }
 
     public override string ToElementString(IConverter? _) => Value ? "true" : "false";
 

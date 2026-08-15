@@ -4,7 +4,7 @@ namespace Pdf.Elements;
 
 public class ElementInteger : ElementValue
 {
-    public required long Value { get; set; }
+    public required long Value { get; init; }
 
     public override string ToElementString(IConverter? _) => $"{Value}";
 

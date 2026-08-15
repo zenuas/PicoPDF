@@ -7,7 +7,7 @@ namespace Pdf.Elements;
 
 public class ElementDate : ElementValue
 {
-    public required DateTime Value { get; set; }
+    public required DateTime Value { get; init; }
 
     public override string ToElementString(IConverter? converter)
     {

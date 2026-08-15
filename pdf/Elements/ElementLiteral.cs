@@ -4,7 +4,7 @@ namespace Pdf.Elements;
 
 public class ElementLiteral : ElementValue
 {
-    public required string Value { get; set; }
+    public required string Value { get; init; }
 
     public override string ToElementString(IConverter? _) => Value;
 

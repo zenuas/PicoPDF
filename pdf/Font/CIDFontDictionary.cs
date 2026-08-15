@@ -14,7 +14,7 @@ public class CIDFontDictionary : PdfObject
     public double? DW { get; init; }
     public Dictionary<uint, (double Width, string Char)>? W { get; init; }
     public (double Top, double Height)? DW2 { get; init; }
-    public Dictionary<uint, (double Height, double Right, double Top, string Char)>? W2 { get; set; }
+    public Dictionary<uint, (double Height, double Right, double Top, string Char)>? W2 { get; init; }
 
     public override void BeforeExport(PdfExportOption option)
     {

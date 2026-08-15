@@ -45,7 +45,7 @@ public class Document : IHaveReferences
         page.Elements["Parent"] = PageTree;
         Pages.Add(page);
 
-        PageTree.Elements["Count"].Cast<ElementInteger>().Value += 1;
+        PageTree.Elements["Count"] = PageTree.Elements["Count"].Cast<ElementInteger>().Value + 1;
         PageTree.Elements["Kids"].Cast<ElementArray<ElementIndirectObject>>().Array.Add(page);
         return page;
     }

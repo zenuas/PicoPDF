@@ -7,7 +7,7 @@ namespace Pdf.Elements;
 
 public class ElementString : ElementValue
 {
-    public required string Value { get; set; }
+    public required string Value { get; init; }
     // For text strings encoded in Unicode, the first two bytes must be 254 followed by 255.
     // These two bytes represent the Unicode byte order marker, U+FEFF, indicating that the string is encoded in the UTF-16BE (big-endian) encoding scheme specified in the Unicode standard.
     public Encoding Encoding { get; init; } = UTF16WithBOM.UTF16_BEWithBOM;
