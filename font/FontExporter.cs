@@ -257,14 +257,18 @@ public static class FontExporter
         dict[TopDictOperators.FDArray] = [0];
         dict[TopDictOperators.CIDCount] = [font.MaximumProfile.NumberOfGlyphs];
 
-        var fd = new Dictionary<TopDictOperators, IntOrDouble[]>();
-        fd[TopDictOperators.FontMatrix] = [1f / font.FontHeader.UnitsPerEm, 0, 0, 1f / font.FontHeader.UnitsPerEm, 0, 0];
-        fd[TopDictOperators.FontBBox] = [font.FontHeader.XMin, font.FontHeader.YMin, font.FontHeader.XMax, font.FontHeader.YMax];
-        fd[TopDictOperators.Private] = [0];
+        var fd = new Dictionary<TopDictOperators, IntOrDouble[]>
+        {
+            [TopDictOperators.FontMatrix] = [1f / font.FontHeader.UnitsPerEm, 0, 0, 1f / font.FontHeader.UnitsPerEm, 0, 0],
+            [TopDictOperators.FontBBox] = [font.FontHeader.XMin, font.FontHeader.YMin, font.FontHeader.XMax, font.FontHeader.YMax],
+            [TopDictOperators.Private] = [0]
+        };
 
-        var fd_private = new Dictionary<PrivateDictOperators, IntOrDouble[]>();
-        fd_private[PrivateDictOperators.DefaultWidthX] = [font.HorizontalHeader.AdvanceWidthMax.Value];
-        fd_private[PrivateDictOperators.NominalWidthX] = [0];
+        var fd_private = new Dictionary<PrivateDictOperators, IntOrDouble[]>
+        {
+            [PrivateDictOperators.DefaultWidthX] = [font.HorizontalHeader.AdvanceWidthMax.Value],
+            [PrivateDictOperators.NominalWidthX] = [0]
+        };
 
         var top_dict = new TopDict
         {
