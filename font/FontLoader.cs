@@ -57,7 +57,7 @@ public static class FontLoader
         string namev(NameIDs nameid)
         {
             var names = option.PlatformIDOrder
-                .Select(platform => name.NameRecords.FindFirstOrNullValue(y => y.NameRecord.PlatformID == platform && y.NameRecord.NameID == nameid)?.Name)
+                .Select(platform => name.NameRecords.FindFirstOrNullValue(x => x.NameRecord.PlatformID == platform && x.NameRecord.NameID == nameid)?.Name)
                 .Where(x => x is { });
 
             if (names.Any()) return names.First()!;
