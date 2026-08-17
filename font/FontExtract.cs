@@ -154,7 +154,7 @@ public static class FontExtract
             VerticalMetrics = vmtx,
             GlyphPositioning = gpos,
             GlyphSubstitution = null,
-            GetPositionPlacement = gid => palt is null ? null : FontLoader.GetPositionPlacement(palt, gpos!.LookupList!, gid, font.LoadOption),
+            GetPositionPlacement = gid => palt is null ? null : FontLoader.GetPositionPlacement(palt, gpos!.LookupList!, gid),
             ColorBitmapData = font.ColorBitmapData,
             ColorBitmapLocation = font.ColorBitmapLocation,
             Color = colr,

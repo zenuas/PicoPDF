@@ -87,7 +87,7 @@ public static class FontLoader
             LoadNoOutlineFont(font, opt);
     }
 
-    public static uint ConvertVertical(FeatureTableRecord vert, LookupListRecord lookup, uint gid, LoadOption option)
+    public static uint ConvertVertical(FeatureTableRecord vert, LookupListRecord lookup, uint gid)
     {
         foreach (var index in vert.LookupListIndices)
         {
@@ -99,7 +99,7 @@ public static class FontLoader
         return gid;
     }
 
-    public static ValueRecord? GetPositionPlacement(FeatureTableRecord palt, LookupListRecord lookup, uint gid, LoadOption option)
+    public static ValueRecord? GetPositionPlacement(FeatureTableRecord palt, LookupListRecord lookup, uint gid)
     {
         foreach (var index in palt.LookupListIndices)
         {
@@ -166,14 +166,14 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c), option) : char_to_gid(c),
+            CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c)) : char_to_gid(c),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? glyf[(int)gid].ToOutline(glyf),
             Glyphs = glyf,
             VerticalHeader = vhea,
             VerticalMetrics = vmtx,
             GlyphPositioning = gpos,
             GlyphSubstitution = gsub,
-            GetPositionPlacement = gid => palt is { } ? GetPositionPlacement(palt, gpos!.LookupList!, gid, option) : null,
+            GetPositionPlacement = gid => palt is { } ? GetPositionPlacement(palt, gpos!.LookupList!, gid) : null,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,
@@ -233,14 +233,14 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c), option) : char_to_gid(c),
+            CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c)) : char_to_gid(c),
             GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? cff.ToOutline(gid),
             CompactFontFormat = cff,
             VerticalHeader = vhea,
             VerticalMetrics = vmtx,
             GlyphPositioning = gpos,
             GlyphSubstitution = gsub,
-            GetPositionPlacement = gid => palt is { } ? GetPositionPlacement(palt, gpos!.LookupList!, gid, option) : null,
+            GetPositionPlacement = gid => palt is { } ? GetPositionPlacement(palt, gpos!.LookupList!, gid) : null,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,
@@ -296,13 +296,13 @@ public static class FontLoader
             HorizontalHeader = hhea,
             HorizontalMetrics = hmtx,
             CMap = cmap,
-            CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c), option) : char_to_gid(c),
+            CharToGID = c => vert is { } ? ConvertVertical(vert, gsub!.LookupList!, char_to_gid(c)) : char_to_gid(c),
             GIDToOutline = (_, _) => [],
             VerticalHeader = vhea,
             VerticalMetrics = vmtx,
             GlyphPositioning = gpos,
             GlyphSubstitution = gsub,
-            GetPositionPlacement = gid => palt is { } ? GetPositionPlacement(palt, gpos!.LookupList!, gid, option) : null,
+            GetPositionPlacement = gid => palt is { } ? GetPositionPlacement(palt, gpos!.LookupList!, gid) : null,
             ColorBitmapData = cbdt,
             ColorBitmapLocation = cblc,
             Color = colr,
