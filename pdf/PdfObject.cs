@@ -16,7 +16,7 @@ public class PdfObject : IPdfObject
 {
     public int IndirectIndex { get; set; }
     public Dictionary<string, ElementValue> Elements { get; init; } = [];
-    public MemoryStream? Stream { get; set; }
+    public MemoryStream? Stream { get; protected set; }
 
     public virtual void BeforeExport(PdfExportOption option)
     {
