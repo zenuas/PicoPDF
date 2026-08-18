@@ -1,4 +1,6 @@
-﻿namespace OpenType;
+﻿using OpenType.Tables.CMap;
+
+namespace OpenType;
 
 public class FontExtractOption
 {

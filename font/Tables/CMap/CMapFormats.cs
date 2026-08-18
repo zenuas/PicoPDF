@@ -1,4 +1,4 @@
-﻿namespace OpenType;
+﻿namespace OpenType.Tables.CMap;
 
 public enum CMapFormats
 {
