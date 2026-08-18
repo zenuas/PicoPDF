@@ -218,9 +218,10 @@ public class Aes256Handler : ISecurityHandler
         // The second 8 bytes are the User Key Salt.
         // Compute the 32-byte hash using algorithm 2.B with an input string consisting of the UTF-8 password concatenated with the User Validation Salt.
         // The 48- byte string consisting of the 32-byte hash followed by the User Validation Salt followed by the User Key Salt is stored as the U key.
-        var user_validation_salt_and_key_salt = RandomNumberGenerator.GetBytes(16);
+        Span<byte> user_validation_salt_and_key_salt = stackalloc byte[16];
+        RandomNumberGenerator.Fill(user_validation_salt_and_key_salt);
         Span<byte> user_validation_salt_hash = stackalloc byte[32];
-        ComputingHash_Algorithm2B(user_password, user_validation_salt_and_key_salt.AsSpan(0, 8), [], user_validation_salt_hash);
+        ComputingHash_Algorithm2B(user_password, user_validation_salt_and_key_salt[0..8], [], user_validation_salt_hash);
         user_validation_salt_hash.CopyTo(u_key);
         user_validation_salt_and_key_salt.CopyTo(u_key[32..]);
 
@@ -229,7 +230,7 @@ public class Aes256Handler : ISecurityHandler
         using var aes = Aes.Create();
 
         Span<byte> user_key_salt_hash = stackalloc byte[32];
-        ComputingHash_Algorithm2B(user_password, user_validation_salt_and_key_salt.AsSpan(8), [], user_key_salt_hash);
+        ComputingHash_Algorithm2B(user_password, user_validation_salt_and_key_salt[8..], [], user_key_salt_hash);
         aes.SetKey(user_key_salt_hash);
 
         _ = aes.EncryptCbc(file_encryption_key, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], ue_key, PaddingMode.None);
@@ -242,9 +243,10 @@ public class Aes256Handler : ISecurityHandler
         // The second 8 bytes are the Owner Key Salt.
         // Compute the 32-byte hash using algorithm 2.B with an input string consisting of the UTF-8 password concatenated with the Owner Validation Salt and then concatenated with the 48-byte U string as generated in Algorithm 8.
         // The 48-byte string consisting of the 32-byte hash followed by the Owner Validation Salt followed by the Owner Key Salt is stored as the O key.
-        var owner_validation_salt_and_key_salt = RandomNumberGenerator.GetBytes(16);
+        Span<byte> owner_validation_salt_and_key_salt = stackalloc byte[16];
+        RandomNumberGenerator.Fill(owner_validation_salt_and_key_salt);
         Span<byte> owner_validation_salt_hash = stackalloc byte[32];
-        ComputingHash_Algorithm2B(owner_password, owner_validation_salt_and_key_salt.AsSpan(0, 8), u_key, owner_validation_salt_hash);
+        ComputingHash_Algorithm2B(owner_password, owner_validation_salt_and_key_salt[0..8], u_key, owner_validation_salt_hash);
         owner_validation_salt_hash.CopyTo(o_key);
         owner_validation_salt_and_key_salt.CopyTo(o_key[32..]);
 
@@ -254,7 +256,7 @@ public class Aes256Handler : ISecurityHandler
         using var aes = Aes.Create();
 
         Span<byte> owner_key_salt_hash = stackalloc byte[32];
-        ComputingHash_Algorithm2B(owner_password, owner_validation_salt_and_key_salt.AsSpan(8), u_key, owner_key_salt_hash);
+        ComputingHash_Algorithm2B(owner_password, owner_validation_salt_and_key_salt[8..], u_key, owner_key_salt_hash);
         aes.SetKey(owner_key_salt_hash);
 
         _ = aes.EncryptCbc(file_encryption_key, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], oe_key, PaddingMode.None);
@@ -284,7 +286,7 @@ public class Aes256Handler : ISecurityHandler
         text[11] = (byte)'b';
 
         // Set bytes 12-15 to 4 bytes of random data, which will be ignored.
-        RandomNumberGenerator.GetBytes(4).CopyTo(text[12..]);
+        RandomNumberGenerator.Fill(text[12..]);
 
         // Encrypt the 16-byte block using AES-256 in ECB mode, using the file encryption key as the key.
         // The result (16 bytes) is stored as the Perms string, and checked for validity when the file is opened.
