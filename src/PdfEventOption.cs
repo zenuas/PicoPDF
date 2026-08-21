@@ -11,7 +11,7 @@ using System;
 
 namespace PicoPDF;
 
-public class PdfEventOption
+public record class PdfEventOption
 {
     public int? PDFVersion { get; init; } = null;
     public Func<IFontRegister> CreateFontRegister { get; init; } = () => new FontRegister().Return(x => x.RegisterDirectory([.. FontRegister.GetFontDirectories()]));

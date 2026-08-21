@@ -1,0 +1,17 @@
+{
+	"Size": "A4",
+	"Orientation": "Vertical",
+	"DefaultFont": "Noto Sans JP Regular",
+	"Padding": [15, 10, 15],
+	
+	"Header": "PageHeader",
+	"Detail": "Detail",
+	
+	"Sections": [
+		{"Type": "HeaderSection", "Name": "PageHeader", "Height": 50, "ViewMode": "PageFirst", "Elements": [
+			{"Type": "TextElement", "Text": "EncryptTest", "Size": 30, "X": 10, "Y": 0},
+		]},
+		{"Type": "DetailSection", "Name": "Detail", "Height": 20, "Elements": [
+		]},
+	],
+}

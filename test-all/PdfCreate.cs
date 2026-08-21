@@ -2,6 +2,7 @@
 using Mina.Extension;
 using Pdf;
 using Pdf.Documents;
+using Pdf.Documents.Security;
 using Pdf.Extension;
 using Pdf.Operation;
 using PicoPDF.Model.Elements;
@@ -116,7 +117,11 @@ public class PdfCreate : FontRegisterCommand
 
             tasks.Add(Task.Run(() =>
             {
-                var document = PdfFactory.CreateBind(json, table, event_opt);
+                var opt =
+                    json.Contains("AesV2", StringComparison.Ordinal) ? event_opt with { CreateStandardEncryption = () => StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, FixedNewBytes(16), ivgen: FixedNewBytes) } :
+                    json.Contains("AesV3", StringComparison.Ordinal) ? event_opt with { CreateStandardEncryption = () => StandardEncryption6.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default, ivgen: FixedNewBytes) } :
+                    event_opt;
+                var document = PdfFactory.CreateBind(json, table, opt);
                 document.Save(pdfname, export_opt);
             }));
         }
@@ -128,4 +133,6 @@ public class PdfCreate : FontRegisterCommand
         DateTime.TryParse(s, out var d) ? d :
         double.TryParse(s, out var f) ? f :
         s;
+
+    public static byte[] FixedNewBytes(int length) => new byte[length];
 }

@@ -9,6 +9,7 @@ namespace Pdf.Documents.Security;
 public class Aes256Handler : ISecurityHandler
 {
     public required byte[] Key { get; init; }
+    public Func<int, byte[]>? IVGenerator { get; init; } = null;
 
     public (PipeWriter Input, PipeReader Output) CreateEncrypterPipe(int object_number, int generation_number)
     {
@@ -18,8 +19,15 @@ public class Aes256Handler : ISecurityHandler
         _ = Task.Run(async () =>
         {
             using var aes = Aes.Create();
-            aes.GenerateIV();
             SetEncryptionKey_Algorithm1A(Key, aes);
+            if (IVGenerator is { })
+            {
+                aes.IV = IVGenerator(16);
+            }
+            else
+            {
+                aes.GenerateIV();
+            }
 
             var iv_buffer = output.Writer.GetMemory(16);
             aes.IV.CopyTo(iv_buffer);
@@ -113,7 +121,14 @@ public class Aes256Handler : ISecurityHandler
             {
                 Convert = bytes =>
                 {
-                    aes.GenerateIV();
+                    if (IVGenerator is { })
+                    {
+                        aes.IV = IVGenerator(16);
+                    }
+                    else
+                    {
+                        aes.GenerateIV();
+                    }
                     return [.. aes.IV, .. aes.EncryptCbc(bytes, aes.IV)];
                 },
                 Dispose = aes.Dispose,
