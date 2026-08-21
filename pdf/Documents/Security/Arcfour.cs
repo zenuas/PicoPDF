@@ -4,13 +4,6 @@ namespace Pdf.Documents.Security;
 
 public static class Arcfour
 {
-    public static Span<byte> InitializeKey(Span<byte> key)
-    {
-        var state = new byte[256];
-        InitializeKey(key, state);
-        return state;
-    }
-
     public static void InitializeKey(Span<byte> key, Span<byte> state)
     {
         for (var i = 0; i < state.Length; i++) state[i] = (byte)i;
