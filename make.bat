@@ -15,7 +15,7 @@
 @exit /b %ERRORLEVEL%
 
 :build
-	dotnet build --nologo -v q --clp:NoSummary %PROJ%.slnx %*
+	dotnet build --nologo -v q --clp:NoSummary -c Release %PROJ%.slnx %*
 	@exit /b %ERRORLEVEL%
 
 :clean
