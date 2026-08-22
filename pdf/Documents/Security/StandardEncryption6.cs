@@ -21,14 +21,14 @@ public class StandardEncryption6 : PdfObject, IStandardEncryption
         var file_encryption_key = ivgen is { } ? ivgen(32) : Aes256Handler.CreateFileEncryptionKey();
         Span<byte> u_key = stackalloc byte[48];
         Span<byte> ue_key = stackalloc byte[32];
-        Aes256Handler.ComputeUserPassword_Algorithm8(user_password_bytes.Length > 127 ? user_password_bytes[..127] : user_password_bytes, file_encryption_key, u_key, ue_key);
+        Aes256Handler.ComputeUserPassword_Algorithm8(user_password_bytes.Length > 127 ? user_password_bytes[..127] : user_password_bytes, file_encryption_key, u_key, ue_key, ivgen);
 
         Span<byte> o_key = stackalloc byte[48];
         Span<byte> oe_key = stackalloc byte[32];
-        Aes256Handler.ComputeOwnerPassword_Algorithm9(owner_password_bytes.Length > 127 ? owner_password_bytes[..127] : owner_password_bytes, file_encryption_key, u_key, o_key, oe_key);
+        Aes256Handler.ComputeOwnerPassword_Algorithm9(owner_password_bytes.Length > 127 ? owner_password_bytes[..127] : owner_password_bytes, file_encryption_key, u_key, o_key, oe_key, ivgen);
 
         Span<byte> perms = stackalloc byte[16];
-        Aes256Handler.ComputePerms_Algorithm10(permissions, metadata_encrypted, file_encryption_key, perms);
+        Aes256Handler.ComputePerms_Algorithm10(permissions, metadata_encrypted, file_encryption_key, perms, ivgen);
 
         var handler = cfm == CFM.None ? (ISecurityHandler)new IdentityHandler() : new Aes256Handler() { Key = file_encryption_key, IVGenerator = ivgen };
         return new()
