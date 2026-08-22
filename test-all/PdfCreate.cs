@@ -118,8 +118,8 @@ public class PdfCreate : FontRegisterCommand
             tasks.Add(Task.Run(() =>
             {
                 var opt =
-                    json.Contains("AesV2", StringComparison.Ordinal) ? event_opt with { CreateStandardEncryption = () => StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, FixedNewBytes(16), ivgen: FixedNewBytes) } :
-                    json.Contains("AesV3", StringComparison.Ordinal) ? event_opt with { CreateStandardEncryption = () => StandardEncryption6.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default, ivgen: FixedNewBytes) } :
+                    json.Contains("AesV2", StringComparison.Ordinal) ? event_opt with { CreateStandardEncryption = () => StandardEncryption4.Create(CFM.AESV2, "xyz987", "abc123", UserAccessPermissions.Default, new byte[16].Return(x => FixedIVSetup(x)), ivgen: FixedIVSetup) } :
+                    json.Contains("AesV3", StringComparison.Ordinal) ? event_opt with { CreateStandardEncryption = () => StandardEncryption6.Create(CFM.AESV3, "xyz987", "abc123", UserAccessPermissions.Default, ivgen: FixedIVSetup) } :
                     event_opt;
                 var document = PdfFactory.CreateBind(json, table, opt);
                 document.Save(pdfname, export_opt);
@@ -134,5 +134,5 @@ public class PdfCreate : FontRegisterCommand
         double.TryParse(s, out var f) ? f :
         s;
 
-    public static byte[] FixedNewBytes(int length) => new byte[length];
+    public static void FixedIVSetup(Span<byte> bytes) => bytes.Clear();
 }

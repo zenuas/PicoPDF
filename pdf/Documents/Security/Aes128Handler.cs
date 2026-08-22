@@ -11,7 +11,7 @@ namespace Pdf.Documents.Security;
 public class Aes128Handler : ISecurityHandler
 {
     public required byte[] Key { get; init; }
-    public Func<int, byte[]>? IVGenerator { get; init; } = null;
+    public Action<Span<byte>>? IVGenerator { get; init; } = null;
 
     public static readonly byte[] PasswordPaddingBytes = [
         0x28, 0xBF, 0x4E, 0x5E, 0x4E, 0x75, 0x8A, 0x41, 0x64, 0x00, 0x4E, 0x56, 0xFF, 0xFA, 0x01, 0x08,
@@ -33,7 +33,9 @@ public class Aes128Handler : ISecurityHandler
             SetEncryptionKey_Algorithm1(Key, object_number, generation_number, aes);
             if (IVGenerator is { })
             {
-                aes.IV = IVGenerator(16);
+                var iv = new byte[16];
+                IVGenerator(iv);
+                aes.IV = iv;
             }
             else
             {
@@ -134,7 +136,9 @@ public class Aes128Handler : ISecurityHandler
                 {
                     if (IVGenerator is { })
                     {
-                        aes.IV = IVGenerator(16);
+                        var iv = new byte[16];
+                        IVGenerator(iv);
+                        aes.IV = iv;
                     }
                     else
                     {

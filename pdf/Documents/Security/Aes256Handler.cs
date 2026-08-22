@@ -9,7 +9,7 @@ namespace Pdf.Documents.Security;
 public class Aes256Handler : ISecurityHandler
 {
     public required byte[] Key { get; init; }
-    public Func<int, byte[]>? IVGenerator { get; init; } = null;
+    public Action<Span<byte>>? IVGenerator { get; init; } = null;
 
     public (PipeWriter Input, PipeReader Output) CreateEncrypterPipe(int object_number, int generation_number)
     {
@@ -22,7 +22,9 @@ public class Aes256Handler : ISecurityHandler
             SetEncryptionKey_Algorithm1A(Key, aes);
             if (IVGenerator is { })
             {
-                aes.IV = IVGenerator(16);
+                var iv = new byte[16];
+                IVGenerator(iv);
+                aes.IV = iv;
             }
             else
             {
@@ -123,7 +125,9 @@ public class Aes256Handler : ISecurityHandler
                 {
                     if (IVGenerator is { })
                     {
-                        aes.IV = IVGenerator(16);
+                        var iv = new byte[16];
+                        IVGenerator(iv);
+                        aes.IV = iv;
                     }
                     else
                     {
@@ -226,7 +230,7 @@ public class Aes256Handler : ISecurityHandler
         k[..32].CopyTo(desitination);
     }
 
-    public static void ComputeUserPassword_Algorithm8(ReadOnlySpan<byte> user_password, ReadOnlySpan<byte> file_encryption_key, Span<byte> u_key, Span<byte> ue_key, Func<int, byte[]>? ivgen = null)
+    public static void ComputeUserPassword_Algorithm8(ReadOnlySpan<byte> user_password, ReadOnlySpan<byte> file_encryption_key, Span<byte> u_key, Span<byte> ue_key, Action<Span<byte>>? ivgen = null)
     {
         // Generate 16 random bytes of data using a strong random number generator.
         // The first 8 bytes are the User Validation Salt.
@@ -234,14 +238,7 @@ public class Aes256Handler : ISecurityHandler
         // Compute the 32-byte hash using algorithm 2.B with an input string consisting of the UTF-8 password concatenated with the User Validation Salt.
         // The 48- byte string consisting of the 32-byte hash followed by the User Validation Salt followed by the User Key Salt is stored as the U key.
         Span<byte> user_validation_salt_and_key_salt = stackalloc byte[16];
-        if (ivgen is { })
-        {
-            ivgen(16).CopyTo(user_validation_salt_and_key_salt);
-        }
-        else
-        {
-            RandomNumberGenerator.Fill(user_validation_salt_and_key_salt);
-        }
+        (ivgen ?? RandomNumberGenerator.Fill)(user_validation_salt_and_key_salt);
         Span<byte> user_validation_salt_hash = stackalloc byte[32];
         ComputingHash_Algorithm2B(user_password, user_validation_salt_and_key_salt[0..8], [], user_validation_salt_hash);
         user_validation_salt_hash.CopyTo(u_key);
@@ -258,7 +255,7 @@ public class Aes256Handler : ISecurityHandler
         _ = aes.EncryptCbc(file_encryption_key, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], ue_key, PaddingMode.None);
     }
 
-    public static void ComputeOwnerPassword_Algorithm9(ReadOnlySpan<byte> owner_password, ReadOnlySpan<byte> file_encryption_key, ReadOnlySpan<byte> u_key, Span<byte> o_key, Span<byte> oe_key, Func<int, byte[]>? ivgen = null)
+    public static void ComputeOwnerPassword_Algorithm9(ReadOnlySpan<byte> owner_password, ReadOnlySpan<byte> file_encryption_key, ReadOnlySpan<byte> u_key, Span<byte> o_key, Span<byte> oe_key, Action<Span<byte>>? ivgen = null)
     {
         // Generate 16 random bytes of data using a strong random number generator.
         // The first 8 bytes are the Owner Validation Salt.
@@ -266,14 +263,7 @@ public class Aes256Handler : ISecurityHandler
         // Compute the 32-byte hash using algorithm 2.B with an input string consisting of the UTF-8 password concatenated with the Owner Validation Salt and then concatenated with the 48-byte U string as generated in Algorithm 8.
         // The 48-byte string consisting of the 32-byte hash followed by the Owner Validation Salt followed by the Owner Key Salt is stored as the O key.
         Span<byte> owner_validation_salt_and_key_salt = stackalloc byte[16];
-        if (ivgen is { })
-        {
-            ivgen(16).CopyTo(owner_validation_salt_and_key_salt);
-        }
-        else
-        {
-            RandomNumberGenerator.Fill(owner_validation_salt_and_key_salt);
-        }
+        (ivgen ?? RandomNumberGenerator.Fill)(owner_validation_salt_and_key_salt);
         Span<byte> owner_validation_salt_hash = stackalloc byte[32];
         ComputingHash_Algorithm2B(owner_password, owner_validation_salt_and_key_salt[0..8], u_key, owner_validation_salt_hash);
         owner_validation_salt_hash.CopyTo(o_key);
@@ -291,7 +281,7 @@ public class Aes256Handler : ISecurityHandler
         _ = aes.EncryptCbc(file_encryption_key, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], oe_key, PaddingMode.None);
     }
 
-    public static void ComputePerms_Algorithm10(UserAccessPermissions permissions, bool metadata_encrypted, ReadOnlySpan<byte> file_encryption_key, Span<byte> perms, Func<int, byte[]>? ivgen = null)
+    public static void ComputePerms_Algorithm10(UserAccessPermissions permissions, bool metadata_encrypted, ReadOnlySpan<byte> file_encryption_key, Span<byte> perms, Action<Span<byte>>? ivgen = null)
     {
         // Extend the permissions (contents of the P integer) to 64 bits by setting the upper 32 bits to all 1’s.
         Span<byte> text = stackalloc byte[16];
@@ -315,14 +305,7 @@ public class Aes256Handler : ISecurityHandler
         text[11] = (byte)'b';
 
         // Set bytes 12-15 to 4 bytes of random data, which will be ignored.
-        if (ivgen is { })
-        {
-            ivgen(4).CopyTo(text[12..]);
-        }
-        else
-        {
-            RandomNumberGenerator.Fill(text[12..]);
-        }
+        (ivgen ?? RandomNumberGenerator.Fill)(text[12..]);
 
         // Encrypt the 16-byte block using AES-256 in ECB mode, using the file encryption key as the key.
         // The result (16 bytes) is stored as the Perms string, and checked for validity when the file is opened.

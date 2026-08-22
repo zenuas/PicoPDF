@@ -13,7 +13,7 @@ public class StandardEncryption4 : PdfObject, IStandardEncryption
     public ISecurityHandler? StringHandler { get; init; } = null;
     public ISecurityHandler? EmbeddedFileStreamsHandler { get; init; } = null;
 
-    public static StandardEncryption4 Create(CFM cfm, string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id, bool metadata_encrypted = true, Func<int, byte[]>? ivgen = null)
+    public static StandardEncryption4 Create(CFM cfm, string user_password, string owner_password, UserAccessPermissions permissions, byte[] document_id, bool metadata_encrypted = true, Action<Span<byte>>? ivgen = null)
     {
         var user_password_bytes = Encoding.UTF8.GetBytes(user_password);
         var owner_password_bytes = Encoding.UTF8.GetBytes(owner_password);
