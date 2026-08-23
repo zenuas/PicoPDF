@@ -1,6 +1,6 @@
 ﻿namespace Pdf;
 
-public class PdfExportOption
+public record class PdfExportOption
 {
     public bool Debug { get; init; } = false;
     public bool AppendCIDToUnicode { get; init; } = true;
