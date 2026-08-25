@@ -1,5 +1,4 @@
-﻿using Mina.Extension;
-using Pdf.Documents.Security;
+﻿using Pdf.Documents.Security;
 using Pdf.Elements;
 using System;
 using System.Collections.Generic;
@@ -24,8 +23,6 @@ public class Document : IHaveReferences
         Elements = new()
         {
             { "Type", "/Pages" },
-            { "Count", 0 },
-            { "Kids", new ElementArray<ElementIndirectObject>() },
         }
     };
     public List<Page> Pages { get; init; } = [];
@@ -45,8 +42,6 @@ public class Document : IHaveReferences
         page.Elements["Parent"] = PageTree;
         Pages.Add(page);
 
-        PageTree.Elements["Count"] = PageTree.Elements["Count"].Cast<ElementInteger>().Value + 1;
-        PageTree.Elements["Kids"].Cast<ElementArray<ElementIndirectObject>>().Array.Add(page);
         return page;
     }
 
@@ -65,6 +60,8 @@ public class Document : IHaveReferences
             yield return r;
         }
 
+        PageTree.Elements["Count"] = Pages.Count;
+        PageTree.Elements["Kids"] = Pages.Select(x => new ElementIndirectObject() { References = x }).ToArray();
         yield return PageTree;
         yield return Catalog;
 
