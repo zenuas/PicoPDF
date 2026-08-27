@@ -36,17 +36,17 @@ public record class CMapTable : IExportable
     public static ICMapFormat ReadCMapFormat(Stream stream)
     {
         var format = stream.ReadUShortByBigEndian();
-        return format switch
+        return (CMapFormats)format switch
         {
-            (ushort)CMapFormats.Format0 => CMapFormat0.ReadFrom(stream),
-            (ushort)CMapFormats.Format2 => CMapFormat2.ReadFrom(stream),
-            (ushort)CMapFormats.Format4 => CMapFormat4.ReadFrom(stream),
-            (ushort)CMapFormats.Format6 => CMapFormat6.ReadFrom(stream),
-            (ushort)CMapFormats.Format8 => CMapFormat8.ReadFrom(stream),
-            (ushort)CMapFormats.Format10 => CMapFormat10.ReadFrom(stream),
-            (ushort)CMapFormats.Format12 => CMapFormat12.ReadFrom(stream),
-            (ushort)CMapFormats.Format13 => CMapFormat13.ReadFrom(stream),
-            (ushort)CMapFormats.Format14 => CMapFormat14.ReadFrom(stream),
+            CMapFormats.Format0 => CMapFormat0.ReadFrom(stream),
+            CMapFormats.Format2 => CMapFormat2.ReadFrom(stream),
+            CMapFormats.Format4 => CMapFormat4.ReadFrom(stream),
+            CMapFormats.Format6 => CMapFormat6.ReadFrom(stream),
+            CMapFormats.Format8 => CMapFormat8.ReadFrom(stream),
+            CMapFormats.Format10 => CMapFormat10.ReadFrom(stream),
+            CMapFormats.Format12 => CMapFormat12.ReadFrom(stream),
+            CMapFormats.Format13 => CMapFormat13.ReadFrom(stream),
+            CMapFormats.Format14 => CMapFormat14.ReadFrom(stream),
             _ => new CMapFormatN { Format = format },
         };
     }
