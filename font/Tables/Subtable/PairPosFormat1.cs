@@ -26,9 +26,6 @@ public class PairPosFormat1 : ISubtable
         var pair_set_count = stream.ReadUShortByBigEndian();
         var pair_set_offsets = Lists.Repeat(stream.ReadOffset16).Take(pair_set_count).ToArray();
 
-        _ = stream.Seek(position + coverage_offset.Value, SeekOrigin.Begin);
-        var pair_sets = pair_set_offsets.Select(x => PairSetTable.ReadFrom(stream.SeekTo(position + x.Value), value_format1, value_format2));
-
         return new()
         {
             Format = 1,
