@@ -50,4 +50,24 @@ public class ValueRecord
     }
 
     public override string ToString() => $"XPlacement: {XPlacement}, YPlacement: {YPlacement}, XAdvance: {XAdvance}, YAdvance: {YAdvance}";
+
+    public int SizeOf() =>
+        (XPlacement is { } ? sizeof(short) : 0) +
+        (YPlacement is { } ? sizeof(short) : 0) +
+        (XAdvance is { } ? sizeof(short) : 0) +
+        (YAdvance is { } ? sizeof(short) : 0) +
+        (XPlaDevice is { } ? Offset16.SizeOf() : 0) +
+        (YPlaDevice is { } ? Offset16.SizeOf() : 0) +
+        (XAdvDevice is { } ? Offset16.SizeOf() : 0) +
+        (YAdvDevice is { } ? Offset16.SizeOf() : 0);
+
+    public static int LoadSize(ValueFormatFlags value_format) =>
+        (value_format.HasBit(ValueFormatFlags.X_PLACEMENT) ? sizeof(short) : 0) +
+        (value_format.HasBit(ValueFormatFlags.Y_PLACEMENT) ? sizeof(short) : 0) +
+        (value_format.HasBit(ValueFormatFlags.X_ADVANCE) ? sizeof(short) : 0) +
+        (value_format.HasBit(ValueFormatFlags.Y_ADVANCE) ? sizeof(short) : 0) +
+        (value_format.HasBit(ValueFormatFlags.X_PLACEMENT_DEVICE) ? Offset16.SizeOf() : 0) +
+        (value_format.HasBit(ValueFormatFlags.Y_PLACEMENT_DEVICE) ? Offset16.SizeOf() : 0) +
+        (value_format.HasBit(ValueFormatFlags.X_ADVANCE_DEVICE) ? Offset16.SizeOf() : 0) +
+        (value_format.HasBit(ValueFormatFlags.Y_ADVANCE_DEVICE) ? Offset16.SizeOf() : 0);
 }

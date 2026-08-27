@@ -316,6 +316,23 @@ public class FontDump : FontRegisterCommand
                 DumpCoverage($"{prefix}.Coverage", x.Coverage);
                 break;
 
+            case PairPosFormat1 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.CoverageOffset,{x.CoverageOffset}");
+                Console.WriteLine($"{prefix}.ValueFormat1,{x.ValueFormat1}");
+                Console.WriteLine($"{prefix}.ValueFormat2,{x.ValueFormat2}");
+                Console.WriteLine($"{prefix}.PairSetCount,{x.PairSetCount}");
+                for (var i = 0; i < x.PairSetOffsets.Length; i++)
+                {
+                    Console.WriteLine($"{prefix}.PairSetOffsets[{i}],{x.PairSetOffsets[i]}");
+                }
+                DumpCoverage($"{prefix}.Coverage", x.Coverage);
+                for (var i = 0; i < x.PairSets.Length; i++)
+                {
+                    DumpPairSetTable($"{prefix}.PairSets[{i}]", x.PairSets[i]);
+                }
+                break;
+
             case PosExtensionFormat1 x:
                 Console.WriteLine($"{prefix}.Format,{x.Format}");
                 Console.WriteLine($"{prefix}.ExtensionLookupType,{x.ExtensionLookupType}");
@@ -373,15 +390,31 @@ public class FontDump : FontRegisterCommand
         if (value.YAdvDevice is { }) DumpDeviceTable($"{prefix}.YAdvDevice", value.YAdvDevice);
     }
 
-    public static void DumpDeviceTable(string prefix, DeviceTable device)
+    public static void DumpDeviceTable(string prefix, DeviceTable value)
     {
-        Console.WriteLine($"{prefix}.StartSize,{device.StartSize}");
-        Console.WriteLine($"{prefix}.EndSize,{device.EndSize}");
-        Console.WriteLine($"{prefix}.DeltaFormat,{device.DeltaFormat}");
-        for (var i = 0; i < device.DeltaValue.Length; i++)
+        Console.WriteLine($"{prefix}.StartSize,{value.StartSize}");
+        Console.WriteLine($"{prefix}.EndSize,{value.EndSize}");
+        Console.WriteLine($"{prefix}.DeltaFormat,{value.DeltaFormat}");
+        for (var i = 0; i < value.DeltaValue.Length; i++)
         {
-            Console.WriteLine($"{prefix}.DeltaValue[{i}],{device.DeltaValue[i]}");
+            Console.WriteLine($"{prefix}.DeltaValue[{i}],{value.DeltaValue[i]}");
         }
+    }
+
+    public static void DumpPairSetTable(string prefix, PairSetTable value)
+    {
+        Console.WriteLine($"{prefix}.PairValueCount,{value.PairValueCount}");
+        for (var i = 0; i < value.PairValueRecords.Length; i++)
+        {
+            DumpPairValue($"{prefix}.PairValueRecords[{i}]", value.PairValueRecords[i]);
+        }
+    }
+
+    public static void DumpPairValue(string prefix, PairValue value)
+    {
+        Console.WriteLine($"{prefix}.SecondGlyph,{value.SecondGlyph}");
+        DumpValueRecord($"{prefix}.ValueRecord1", value.ValueRecord1);
+        DumpValueRecord($"{prefix}.ValueRecord2", value.ValueRecord2);
     }
 
     public static void DumpTopDict(string prefix, TopDict top_dict)

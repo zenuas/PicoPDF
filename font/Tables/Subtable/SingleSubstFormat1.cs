@@ -18,20 +18,12 @@ public class SingleSubstFormat1 : ISubtable, ISingleConvert
         var coverage_offset = stream.ReadOffset16();
         var delta_glyph_id = stream.ReadShortByBigEndian();
 
-        _ = stream.Seek(position + coverage_offset.Value, SeekOrigin.Begin);
-        var coverage_format = stream.ReadUShortByBigEndian();
-
         return new()
         {
             Format = 1,
             CoverageOffset = coverage_offset,
             DeltaGlyphID = delta_glyph_id,
-            Coverage = coverage_format switch
-            {
-                1 => CoverageFormat1.ReadFrom(stream),
-                2 => CoverageFormat2.ReadFrom(stream),
-                _ => throw new(),
-            },
+            Coverage = ICoverageFormat.ReadFrom(stream.SeekTo(position + coverage_offset.Value)),
         };
     }
 

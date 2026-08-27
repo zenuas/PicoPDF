@@ -23,9 +23,6 @@ public class SinglePosFormat2 : ISubtable, ISinglePosition
         var value_count = stream.ReadUShortByBigEndian();
         var value_record = Lists.Repeat(() => ValueRecord.ReadFrom(stream, value_format)).Take(value_count).ToArray();
 
-        _ = stream.Seek(position + coverage_offset.Value, SeekOrigin.Begin);
-        var coverage_format = stream.ReadUShortByBigEndian();
-
         return new()
         {
             Format = 2,
@@ -33,12 +30,7 @@ public class SinglePosFormat2 : ISubtable, ISinglePosition
             ValueFormat = value_format,
             ValueCount = value_count,
             ValueRecords = value_record,
-            Coverage = coverage_format switch
-            {
-                1 => CoverageFormat1.ReadFrom(stream),
-                2 => CoverageFormat2.ReadFrom(stream),
-                _ => throw new(),
-            },
+            Coverage = ICoverageFormat.ReadFrom(stream.SeekTo(position + coverage_offset.Value)),
         };
     }
 
