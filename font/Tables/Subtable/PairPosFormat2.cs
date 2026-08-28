@@ -1,18 +1,48 @@
-﻿using System.IO;
+﻿using Mina.Extension;
+using OpenType.Extension;
+using System.IO;
 
 namespace OpenType.Tables.Subtable;
 
 public class PairPosFormat2 : ISubtable
 {
     public required ushort Format { get; init; }
+    public required Offset16 CoverageOffset { get; init; }
+    public required ValueFormatFlags ValueFormat1 { get; init; }
+    public required ValueFormatFlags ValueFormat2 { get; init; }
+    public required Offset16 ClassDef1Offset { get; init; }
+    public required Offset16 ClassDef2Offset { get; init; }
+    public required ushort Class1Count { get; init; }
+    public required ushort Class2Count { get; init; }
+    public required ICoverageFormat Coverage { get; init; }
+    public required IClassDefFormat ClassDef1 { get; init; }
+    public required IClassDefFormat ClassDef2 { get; init; }
 
     public static PairPosFormat2 ReadFrom(Stream stream)
     {
         var position = stream.Position - sizeof(ushort);
 
+        var coverage_offset = stream.ReadOffset16();
+        var value_format1 = (ValueFormatFlags)stream.ReadUShortByBigEndian();
+        var value_format2 = (ValueFormatFlags)stream.ReadUShortByBigEndian();
+        var class_def1_offset = stream.ReadOffset16();
+        var class_def2_offset = stream.ReadOffset16();
+        var class1_count = stream.ReadUShortByBigEndian();
+        var class2_count = stream.ReadUShortByBigEndian();
+
         return new()
         {
             Format = 2,
+            CoverageOffset = coverage_offset,
+            ValueFormat1 = value_format1,
+            ValueFormat2 = value_format2,
+            ClassDef1Offset = class_def1_offset,
+            ClassDef2Offset = class_def2_offset,
+            Class1Count = class1_count,
+            Class2Count = class2_count,
+            Coverage = ICoverageFormat.ReadFrom(stream.SeekTo(position + coverage_offset.Value)),
+            ClassDef1 = IClassDefFormat.ReadFrom(stream.SeekTo(position + class_def1_offset.Value)),
+            ClassDef2 = IClassDefFormat.ReadFrom(stream.SeekTo(position + class_def2_offset.Value)),
         };
     }
 }
