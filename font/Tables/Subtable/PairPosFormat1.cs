@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace OpenType.Tables.Subtable;
 
-public class PairPosFormat1 : ISubtable
+public class PairPosFormat1 : ISubtable, IPairPosition
 {
     public required ushort Format { get; init; }
     public required Offset16 CoverageOffset { get; init; }
@@ -37,5 +37,16 @@ public class PairPosFormat1 : ISubtable
             Coverage = ICoverageFormat.ReadFrom(stream.SeekTo(position + coverage_offset.Value)),
             PairSets = [.. pair_set_offsets.Select(x => PairSetTable.ReadFrom(stream.SeekTo(position + x.Value), value_format1, value_format2))],
         };
+    }
+
+    public (ValueRecord First, ValueRecord Second)? GetPosition(uint first_gid, uint second_gid)
+    {
+        if (Coverage.FindOrNull(first_gid) is null) return null;
+
+        return PairSets
+            .Select(x => x.PairValueRecords)
+            .Flatten()
+            .FirstOrDefault(x => x.SecondGlyph == second_gid)
+            ?.To(x => (x.ValueRecord1, x.ValueRecord2));
     }
 }
