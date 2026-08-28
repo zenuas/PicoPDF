@@ -14,6 +14,7 @@ public class PairPosFormat2 : ISubtable
     public required Offset16 ClassDef2Offset { get; init; }
     public required ushort Class1Count { get; init; }
     public required ushort Class2Count { get; init; }
+    public required (ValueRecord ValueRecord1, ValueRecord ValueRecord2)[][] ClassRecords { get; init; }
     public required ICoverageFormat Coverage { get; init; }
     public required IClassDefFormat ClassDef1 { get; init; }
     public required IClassDefFormat ClassDef2 { get; init; }
@@ -30,6 +31,17 @@ public class PairPosFormat2 : ISubtable
         var class1_count = stream.ReadUShortByBigEndian();
         var class2_count = stream.ReadUShortByBigEndian();
 
+        var class1_records = new (ValueRecord, ValueRecord)[class1_count][];
+        for (var c1 = 0; c1 < class1_count; c1++)
+        {
+            var class2_records = new (ValueRecord, ValueRecord)[class2_count];
+            for (var c2 = 0; c2 < class2_count; c2++)
+            {
+                class2_records[c2] = (ValueRecord.ReadFrom(stream, value_format1), ValueRecord.ReadFrom(stream, value_format2));
+            }
+            class1_records[c1] = class2_records;
+        }
+
         return new()
         {
             Format = 2,
@@ -40,6 +52,7 @@ public class PairPosFormat2 : ISubtable
             ClassDef2Offset = class_def2_offset,
             Class1Count = class1_count,
             Class2Count = class2_count,
+            ClassRecords = class1_records,
             Coverage = ICoverageFormat.ReadFrom(stream.SeekTo(position + coverage_offset.Value)),
             ClassDef1 = IClassDefFormat.ReadFrom(stream.SeekTo(position + class_def1_offset.Value)),
             ClassDef2 = IClassDefFormat.ReadFrom(stream.SeekTo(position + class_def2_offset.Value)),
