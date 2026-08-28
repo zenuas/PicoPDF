@@ -63,8 +63,8 @@ public class PairPosFormat2 : ISubtable, IPairPosition
     {
         if (Coverage.FindOrNull(first_gid) is null) return null;
 
-        if (ClassDef1.GetClassValue(first_gid) is { } c1 &&
-            ClassDef2.GetClassValue(second_gid) is { } c2) return ClassRecords[c1][c2];
-        return null;
+        var c1 = ClassDef1.GetClassValue(first_gid);
+        var c2 = ClassDef2.GetClassValue(second_gid);
+        return ClassRecords[c1][c2];
     }
 }

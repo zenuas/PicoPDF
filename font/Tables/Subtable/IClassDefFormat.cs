@@ -5,7 +5,7 @@ namespace OpenType.Tables.Subtable;
 
 public interface IClassDefFormat
 {
-    public ushort? GetClassValue(uint gid);
+    public ushort GetClassValue(uint gid);
 
     public static IClassDefFormat ReadFrom(Stream stream)
     {

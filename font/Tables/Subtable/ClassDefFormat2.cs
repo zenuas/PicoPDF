@@ -22,5 +22,5 @@ public class ClassDefFormat2 : ISubtable, IClassDefFormat
         };
     }
 
-    public ushort? GetClassValue(uint gid) => ClassRangeRecords.FirstOrDefault(x => x.StartGlyphID <= gid && gid <= x.EndGlyphID)?.Class;
+    public ushort GetClassValue(uint gid) => ClassRangeRecords.FirstOrDefault(x => x.StartGlyphID <= gid && gid <= x.EndGlyphID)?.Class ?? 0;
 }

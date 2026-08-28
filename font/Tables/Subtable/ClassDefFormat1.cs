@@ -25,5 +25,5 @@ public class ClassDefFormat1 : ISubtable, IClassDefFormat
         };
     }
 
-    public ushort? GetClassValue(uint gid) => StartGlyphID <= gid && gid < StartGlyphID + GlyphCount ? ClassValues[gid - StartGlyphID] : null;
+    public ushort GetClassValue(uint gid) => StartGlyphID <= gid && gid < StartGlyphID + GlyphCount ? ClassValues[gid - StartGlyphID] : (ushort)0;
 }
