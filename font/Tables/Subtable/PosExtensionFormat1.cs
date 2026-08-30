@@ -50,7 +50,7 @@ public class PosExtensionFormat1 : ISubtable, ISinglePosition, IPairPosition
         };
     }
 
-    public ValueRecord? GetPosition(uint gid) => Extension is ISinglePosition singlepos ? singlepos.GetPosition(gid) : null;
+    public ValueRecord? GetPosition(uint gid) => (Extension as ISinglePosition)?.GetPosition(gid);
 
-    public (ValueRecord First, ValueRecord Second)? GetPosition(uint first_gid, uint second_gid) => Extension is IPairPosition pairpos ? pairpos.GetPosition(first_gid, second_gid) : null;
+    public (ValueRecord First, ValueRecord Second)? GetPosition(uint first_gid, uint second_gid) => (Extension as IPairPosition)?.GetPosition(first_gid, second_gid);
 }
