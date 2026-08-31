@@ -25,5 +25,6 @@ public class ClassDefFormat1 : ISubtable, IClassDefFormat
         };
     }
 
+    // Any glyph not included in the range of covered glyph IDs is assigned to Class 0.
     public ushort GetClassValue(uint gid) => StartGlyphID <= gid && gid < StartGlyphID + GlyphCount ? ClassValues[gid - StartGlyphID] : (ushort)0;
 }

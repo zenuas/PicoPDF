@@ -22,5 +22,6 @@ public class ClassDefFormat2 : ISubtable, IClassDefFormat
         };
     }
 
+    // Any glyph not covered by a ClassRange record is assigned to Class 0.
     public ushort GetClassValue(uint gid) => ClassRangeRecords.FirstOrDefault(x => x.StartGlyphID <= gid && gid <= x.EndGlyphID)?.Class ?? 0;
 }
