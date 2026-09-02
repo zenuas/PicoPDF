@@ -67,14 +67,8 @@ public static class ColorFont
         switch (paint)
         {
             case PaintColrLayers p:
-                {
-                    var layers = new List<Layer>();
-                    foreach (var layer in colr.LayerListRecord!.Paints[(int)p.FirstLayerIndex..((int)p.FirstLayerIndex + p.NumberOfLayers)])
-                    {
-                        layers.Add(new() { Surfaces = ToOutline(font, surfaces, layer, colr, cpal, transform) });
-                    }
-                    return [.. layers];
-                }
+                return [.. colr.LayerListRecord!.Paints[(int)p.FirstLayerIndex..((int)p.FirstLayerIndex + p.NumberOfLayers)]
+                    .Select(x => new Layer { Surfaces = ToOutline(font, surfaces, x, colr, cpal, transform) })];
 
             case PaintSolid p:
                 return [new SolidColorLayer { Color = GetColor(cpal, p.PaletteIndex, p.Alpha.FloatValue) }];
