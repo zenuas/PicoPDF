@@ -9,8 +9,8 @@ public interface IClassDefFormat
 
     public static IClassDefFormat ReadFrom(Stream stream)
     {
-        var coverage_format = stream.ReadUShortByBigEndian();
-        return coverage_format switch
+        var classdef_format = stream.ReadUShortByBigEndian();
+        return classdef_format switch
         {
             1 => ClassDefFormat1.ReadFrom(stream),
             2 => ClassDefFormat2.ReadFrom(stream),
