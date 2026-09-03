@@ -333,6 +333,27 @@ public class FontDump : FontRegisterCommand
                 }
                 break;
 
+            case PairPosFormat2 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.CoverageOffset,{x.CoverageOffset}");
+                Console.WriteLine($"{prefix}.ValueFormat1,{x.ValueFormat1}");
+                Console.WriteLine($"{prefix}.ValueFormat2,{x.ValueFormat2}");
+                Console.WriteLine($"{prefix}.ClassDef1Offset,{x.ClassDef1Offset}");
+                Console.WriteLine($"{prefix}.ClassDef2Offset,{x.ClassDef2Offset}");
+                Console.WriteLine($"{prefix}.Class1Count,{x.Class1Count}");
+                Console.WriteLine($"{prefix}.Class2Count,{x.Class2Count}");
+                for (var c1 = 0; c1 < x.ClassRecords.Length; c1++)
+                {
+                    for (var c2 = 0; c2 < x.ClassRecords[c1].Length; c2++)
+                    {
+                        Console.WriteLine($"{prefix}.ClassRecords[{c1}][{c2}],{x.ClassRecords[c1][c2]}");
+                    }
+                }
+                DumpCoverage($"{prefix}.Coverage", x.Coverage);
+                DumpClassDef($"{prefix}.ClassDef1", x.ClassDef1);
+                DumpClassDef($"{prefix}.ClassDef2", x.ClassDef2);
+                break;
+
             case PosExtensionFormat1 x:
                 Console.WriteLine($"{prefix}.Format,{x.Format}");
                 Console.WriteLine($"{prefix}.ExtensionLookupType,{x.ExtensionLookupType}");
@@ -368,6 +389,33 @@ public class FontDump : FontRegisterCommand
                     Console.WriteLine($"{prefix}.RangeRecords[{i}].StartGlyphID,{x.RangeRecords[i].StartGlyphID}");
                     Console.WriteLine($"{prefix}.RangeRecords[{i}].EndGlyphID,{x.RangeRecords[i].EndGlyphID}");
                     Console.WriteLine($"{prefix}.RangeRecords[{i}].CoverageIndex,{x.RangeRecords[i].StartCoverageIndex}");
+                }
+                break;
+        }
+    }
+
+    public static void DumpClassDef(string prefix, IClassDefFormat classdef)
+    {
+        switch (classdef)
+        {
+            case ClassDefFormat1 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.StartGlyphID,{x.StartGlyphID}");
+                Console.WriteLine($"{prefix}.GlyphCount,{x.GlyphCount}");
+                for (var i = 0; i < x.ClassValues.Length; i++)
+                {
+                    Console.WriteLine($"{prefix}.ClassValues[{i}],{x.ClassValues[i]}");
+                }
+                break;
+
+            case ClassDefFormat2 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.ClassRangeCount,{x.ClassRangeCount}");
+                for (var i = 0; i < x.ClassRangeRecords.Length; i++)
+                {
+                    Console.WriteLine($"{prefix}.ClassRangeRecords[{i}].StartGlyphID,{x.ClassRangeRecords[i].StartGlyphID}");
+                    Console.WriteLine($"{prefix}.ClassRangeRecords[{i}].EndGlyphID,{x.ClassRangeRecords[i].EndGlyphID}");
+                    Console.WriteLine($"{prefix}.ClassRangeRecords[{i}].CoverageIndex,{x.ClassRangeRecords[i].Class}");
                 }
                 break;
         }
