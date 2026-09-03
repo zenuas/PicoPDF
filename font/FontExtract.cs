@@ -22,6 +22,8 @@ public static class FontExtract
         {
             var outline = font.GIDToOutline(x.OldGID, false);
             var points = EnumAllPoints(outline).ToArray();
+            var ymax = points.Length > 0 ? points.Select(x => x.Y).Max() : 0f;
+            var ymin = points.Length > 0 ? points.Select(x => x.Y).Min() : 0f;
             return new Glyph(
                 outline,
                 x.HorizontalMetrics,
@@ -29,12 +31,12 @@ public static class FontExtract
                 font.GetPositionPlacement(x.OldGID),
                 points.Length == 0,
                 false,
-                points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
-                points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
+                ymax,
+                ymin,
                 points.Length > 0 ? points.Select(x => x.X).Min() : 0f,
                 points.Length > 0 ? points.Select(x => x.X).Max() : 0f,
-                points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
-                points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
+                ymin,
+                ymax,
                 x.Char,
                 x.OldGID
             );
