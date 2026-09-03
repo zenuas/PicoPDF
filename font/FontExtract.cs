@@ -22,23 +22,24 @@ public static class FontExtract
         {
             var outline = font.GIDToOutline(x.OldGID, false);
             var points = EnumAllPoints(outline).ToArray();
-            return (
-                Outline: outline,
+            return new Glyph(
+                outline,
                 x.HorizontalMetrics,
-                VerticalMetrics: font.GetAdvanceHeight(x.OldGID),
-                Position: font.GetPositionPlacement(x.OldGID),
-                NoOutline: points.Length == 0,
-                Notdef: false,
-                Ascender: points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
-                Descender: points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
-                XMin: points.Length > 0 ? points.Select(x => x.X).Min() : 0f,
-                XMax: points.Length > 0 ? points.Select(x => x.X).Max() : 0f,
-                YMin: points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
-                YMax: points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
-                x.Char
+                font.GetAdvanceHeight(x.OldGID),
+                font.GetPositionPlacement(x.OldGID),
+                points.Length == 0,
+                false,
+                points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
+                points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
+                points.Length > 0 ? points.Select(x => x.X).Min() : 0f,
+                points.Length > 0 ? points.Select(x => x.X).Max() : 0f,
+                points.Length > 0 ? points.Select(x => x.Y).Min() : 0f,
+                points.Length > 0 ? points.Select(x => x.Y).Max() : 0f,
+                x.Char,
+                x.OldGID
             );
         });
-        gid_glyph.Add(0, (Outline: font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], null, null, true, true, 0f, 0f, 0f, 0f, 0f, 0f, 0));
+        gid_glyph.Add(0, new(font.GIDToOutline(0, false), font.HorizontalMetrics.Metrics[0], null, null, true, true, 0f, 0f, 0f, 0f, 0f, 0f, 0, 0));
         var num_of_glyph_include_notdef = (int)gid_glyph.Keys.Max() + 1;
         var (colr, cpal) = !opt.IsColorSupport || font.Color is null || font.ColorPalette is null ? (null, null) : ExtractColorTable(font.Color, font.ColorPalette, outputs.ToDictionary(x => x.OldGID, x => x.NewGID));
 
@@ -149,7 +150,7 @@ public static class FontExtract
             HorizontalMetrics = new() { Metrics = hmetrics, LeftSideBearing = [] },
             CMap = CreateCMapTable(opt, char_gids),
             CharToGID = CreateCharToGID(char_gids),
-            GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? gid_glyph[gid].Outline,
+            GIDToOutline = (gid, iscolor) => (iscolor && colr is { } && cpal is { } ? ColorFont.ToOutline(newfont, gid, colr, cpal) : null) ?? gid_glyph[gid].Outlines,
             VerticalHeader = vhea,
             VerticalMetrics = vmtx,
             GlyphPositioning = gpos,
