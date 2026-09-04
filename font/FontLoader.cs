@@ -138,7 +138,7 @@ public static class FontLoader
         var glyf = new LazyGlyph()
         {
             Stream = stream,
-            Count = maxp.NumberOfGlyphs + 1,
+            Count = maxp.NumberOfGlyphs,
             IndexToLocationTableOffset = font.TableRecords["loca"].Offset,
             GlyphTableOffset = font.TableRecords["glyf"].Offset,
             IndexToLocFormat = head.IndexToLocFormat,
