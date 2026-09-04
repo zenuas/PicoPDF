@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Order;
 using BenchmarkDotNet.Running;
@@ -12,14 +13,16 @@ public class Program
     {
 #if DEBUG
         var config = new ManualConfig()
+            .AddJob(Job.Default.WithArguments([new MsBuildArgument("/p:IsBenchmark=true")]))
+            .AddLogger(NullLogger.Instance)
+            .AddExporter(new MarkdownConsoleExporter())
+            .AddColumnProvider(DefaultColumnProviders.Instance)
+            .WithOption(ConfigOptions.DisableOptimizationsValidator, true)
             .WithOrderer(new DefaultOrderer(SummaryOrderPolicy.Declared));
-        config.AddLogger(NullLogger.Instance);
-        config.AddExporter(new MarkdownConsoleExporter());
-        config.AddColumnProvider(DefaultColumnProviders.Instance);
-        config.WithOption(ConfigOptions.DisableOptimizationsValidator, true);
         BenchmarkRunner.Run(typeof(Program).Assembly, config, args);
 #else
         var config = DefaultConfig.Instance
+            .AddJob(Job.Default.WithArguments([new MsBuildArgument("/p:IsBenchmark=true")]))
             .WithOrderer(new DefaultOrderer(SummaryOrderPolicy.Declared));
         BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, config);
 #endif
