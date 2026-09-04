@@ -182,6 +182,13 @@ public class FontLoadBench
     }
 
     [Benchmark]
+    public void TFF_preload()
+    {
+        var x = FontLoader.LoadTrueTypeFont(Ttf, new());
+        _consumer.Consume(x);
+    }
+
+    [Benchmark]
     public void CFF_sfnt_name()
     {
         var x = FontLoader.LoadTableRecords(CffFontPath);
@@ -301,5 +308,12 @@ public class FontLoadBench
         {
             _consumer.Consume(x.ToOutline(i));
         }
+    }
+
+    [Benchmark]
+    public void CFF_preload()
+    {
+        var x = FontLoader.LoadPostScriptFont(Cff, new());
+        _consumer.Consume(x);
     }
 }
