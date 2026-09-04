@@ -4,6 +4,9 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Order;
 using BenchmarkDotNet.Running;
+using System;
+using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace PicoPDF.Benchmark;
 
@@ -27,4 +30,11 @@ public class Program
         BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, config);
 #endif
     }
+
+    public static string GetProjectDirectory([CallerFilePath] string path = "")
+    {
+        return Path.GetDirectoryName(path) ?? AppContext.BaseDirectory;
+    }
+
+    public static string GetSolutionDirectory() => Directory.GetParent(GetProjectDirectory())?.FullName ?? ".";
 }
