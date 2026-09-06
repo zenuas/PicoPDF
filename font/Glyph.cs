@@ -4,7 +4,7 @@ using Svg.Outline;
 
 namespace OpenType;
 
-public readonly record struct Glyph(
+public record class Glyph(
         IOutline[] Outlines,
         HorizontalMetrics HorizontalMetrics,
         (int Height, int TopSideBearing)? VerticalMetrics,
