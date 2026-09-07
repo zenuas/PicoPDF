@@ -182,7 +182,7 @@ public class FontLoadBench
     }
 
     [Benchmark]
-    public void TFF_preload()
+    public void TTF_preload()
     {
         var x = FontLoader.LoadTrueTypeFont(Ttf, new());
         _consumer.Consume(x);
