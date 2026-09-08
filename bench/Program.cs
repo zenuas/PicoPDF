@@ -31,10 +31,9 @@ public class Program
 #endif
     }
 
-    public static string GetProjectDirectory([CallerFilePath] string path = "")
-    {
-        return Path.GetDirectoryName(path) ?? AppContext.BaseDirectory;
-    }
+    public static string GetCallerFilePath([CallerFilePath] string path = "") => Path.GetDirectoryName(path) ?? AppContext.BaseDirectory;
+
+    public static string GetProjectDirectory() => GetCallerFilePath();
 
     public static string GetSolutionDirectory() => Directory.GetParent(GetProjectDirectory())?.FullName ?? ".";
 }
