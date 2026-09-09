@@ -290,11 +290,26 @@ public class FontDump : FontRegisterCommand
                 Console.WriteLine($"{prefix}.Format,{x.Format}");
                 Console.WriteLine($"{prefix}.CoverageOffset,{x.CoverageOffset}");
                 Console.WriteLine($"{prefix}.GlyphCount,{x.GlyphCount}");
-                for (var i = 0; i < x.GlyphCount; i++)
+                for (var i = 0; i < x.SubstituteGlyphIDs.Length; i++)
                 {
                     Console.WriteLine($"{prefix}.SubstituteGlyphIDs[{i}],{x.SubstituteGlyphIDs[i]}");
                 }
                 DumpCoverage($"{prefix}.Coverage", x.Coverage);
+                break;
+
+            case LigatureSubstFormat1 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.CoverageOffset,{x.CoverageOffset}");
+                Console.WriteLine($"{prefix}.LigSetCount,{x.LigSetCount}");
+                for (var i = 0; i < x.LigatureSetOffsets.Length; i++)
+                {
+                    Console.WriteLine($"{prefix}.LigatureSetOffsets[{i}],{x.LigatureSetOffsets[i]}");
+                }
+                DumpCoverage($"{prefix}.Coverage", x.Coverage);
+                for (var i = 0; i < x.LigatureSet.Length; i++)
+                {
+                    DumpLigatureSet($"{prefix}.LigatureSet[{i}]", x.LigatureSet[i]);
+                }
                 break;
 
             case SinglePosFormat1 x:
@@ -391,6 +406,29 @@ public class FontDump : FontRegisterCommand
                     Console.WriteLine($"{prefix}.RangeRecords[{i}].CoverageIndex,{x.RangeRecords[i].StartCoverageIndex}");
                 }
                 break;
+        }
+    }
+
+    public static void DumpLigatureSet(string prefix, LigatureSetTable ligset)
+    {
+        Console.WriteLine($"{prefix}.LigatureCount,{ligset.LigatureCount}");
+        for (var i = 0; i < ligset.LigatureOffsets.Length; i++)
+        {
+            Console.WriteLine($"{prefix}.LigatureOffsets[{i}],{ligset.LigatureOffsets[i]}");
+        }
+        for (var i = 0; i < ligset.Ligature.Length; i++)
+        {
+            DumpLigature($"{prefix}.Ligature[{i}]", ligset.Ligature[i]);
+        }
+    }
+
+    public static void DumpLigature(string prefix, LigatureTable lig)
+    {
+        Console.WriteLine($"{prefix}.LigGlyph,{lig.LigGlyph}");
+        Console.WriteLine($"{prefix}.CompCount,{lig.CompCount}");
+        for (var i = 0; i < lig.Component.Length; i++)
+        {
+            Console.WriteLine($"{prefix}.Component[{i}],{lig.Component[i]}");
         }
     }
 
