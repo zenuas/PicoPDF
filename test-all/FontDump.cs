@@ -297,6 +297,46 @@ public class FontDump : FontRegisterCommand
                 DumpCoverage($"{prefix}.Coverage", x.Coverage);
                 break;
 
+            case MultipleSubstFormat1 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.CoverageOffset,{x.CoverageOffset}");
+                Console.WriteLine($"{prefix}.SequenceCount,{x.SequenceCount}");
+                for (var i = 0; i < x.SequenceOffsets.Length; i++)
+                {
+                    Console.WriteLine($"{prefix}.SequenceOffsets[{i}],{x.SequenceOffsets[i]}");
+                }
+                DumpCoverage($"{prefix}.Coverage", x.Coverage);
+                for (var i = 0; i < x.Sequences.Length; i++)
+                {
+                    var seq = x.Sequences[i];
+                    Console.WriteLine($"{prefix}.Sequences[{i}].GlyphCount,{seq.GlyphCount}");
+                    for (var j = 0; j < seq.SubstituteGlyphIDs.Length; j++)
+                    {
+                        Console.WriteLine($"{prefix}.Sequences[{i}].SubstituteGlyphIDs[{j}],{seq.SubstituteGlyphIDs[j]}");
+                    }
+                }
+                break;
+
+            case AlternateSubstFormat1 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.CoverageOffset,{x.CoverageOffset}");
+                Console.WriteLine($"{prefix}.AlternateSetCount,{x.AlternateSetCount}");
+                for (var i = 0; i < x.AlternateSetOffsets.Length; i++)
+                {
+                    Console.WriteLine($"{prefix}.AlternateSetOffsets[{i}],{x.AlternateSetOffsets[i]}");
+                }
+                DumpCoverage($"{prefix}.Coverage", x.Coverage);
+                for (var i = 0; i < x.AlternateSets.Length; i++)
+                {
+                    var alt = x.AlternateSets[i];
+                    Console.WriteLine($"{prefix}.AlternateSets[{i}].GlyphCount,{alt.GlyphCount}");
+                    for (var j = 0; j < alt.AlternateGlyphIDs.Length; j++)
+                    {
+                        Console.WriteLine($"{prefix}.AlternateSets[{i}].AlternateGlyphIDs[{j}],{alt.AlternateGlyphIDs[j]}");
+                    }
+                }
+                break;
+
             case LigatureSubstFormat1 x:
                 Console.WriteLine($"{prefix}.Format,{x.Format}");
                 Console.WriteLine($"{prefix}.CoverageOffset,{x.CoverageOffset}");
