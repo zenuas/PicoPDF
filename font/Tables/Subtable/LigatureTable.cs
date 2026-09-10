@@ -19,7 +19,8 @@ public class LigatureTable
         {
             LigGlyph = lig_glyph,
             CompCount = comp_count,
-            Component = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take(comp_count)],
+            // The array starts with the second component glyph (array index = 1) in the ligature because the first component glyph is specified in the Coverage table.
+            Component = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take(comp_count - 1)],
         };
     }
 }
