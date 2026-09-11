@@ -424,6 +424,19 @@ public class FontDump : FontRegisterCommand
                 }
                 break;
 
+            case MarkBasePosFormat1 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.MarkCoverageOffset,{x.MarkCoverageOffset}");
+                Console.WriteLine($"{prefix}.BaseCoverageOffset,{x.BaseCoverageOffset}");
+                Console.WriteLine($"{prefix}.MarkClassCount,{x.MarkClassCount}");
+                Console.WriteLine($"{prefix}.MarkArrayOffset,{x.MarkArrayOffset}");
+                Console.WriteLine($"{prefix}.BaseArrayOffset,{x.BaseArrayOffset}");
+                if (x.MarkCoverage is { }) DumpCoverage($"{prefix}.MarkCoverage", x.MarkCoverage);
+                if (x.BaseCoverage is { }) DumpCoverage($"{prefix}.BaseCoverage", x.BaseCoverage);
+                DumpMarkArrayTable($"{prefix}.MarkArray", x.MarkArray);
+                DumpBaseArrayTable($"{prefix}.BaseArray", x.BaseArray);
+                break;
+
             case PosExtensionFormat1 x:
                 Console.WriteLine($"{prefix}.Format,{x.Format}");
                 Console.WriteLine($"{prefix}.ExtensionLookupType,{x.ExtensionLookupType}");
@@ -584,6 +597,35 @@ public class FontDump : FontRegisterCommand
                 if (x.XDevice is { }) DumpDeviceTable($"{prefix}.XDevice", x.XDevice);
                 if (x.YDevice is { }) DumpDeviceTable($"{prefix}.YDevice", x.YDevice);
                 break;
+        }
+    }
+
+    public static void DumpMarkArrayTable(string prefix, MarkArrayTable make_array)
+    {
+        Console.WriteLine($"{prefix}.MarkCount,{make_array.MarkCount}");
+        for (var i = 0; i < make_array.MarkRecords.Length; i++)
+        {
+            var v = make_array.MarkRecords[i];
+            Console.WriteLine($"{prefix}.MarkRecords[{i}].MarkClass,{v.MarkClass}");
+            Console.WriteLine($"{prefix}.MarkRecords[{i}].MarkAnchorOffset,{v.MarkClass}");
+            DumpAnchorFormat($"{prefix}.MarkRecords[{i}].MarkAnchor", v.MarkAnchor);
+        }
+    }
+
+    public static void DumpBaseArrayTable(string prefix, BaseArrayTable base_array)
+    {
+        Console.WriteLine($"{prefix}.BaseCount,{base_array.BaseCount}");
+        for (var i = 0; i < base_array.BaseRecords.Length; i++)
+        {
+            var v = base_array.BaseRecords[i];
+            for (var j = 0; j < v.BaseAnchorOffsets.Length; j++)
+            {
+                Console.WriteLine($"{prefix}.BaseRecords[{i}].BaseAnchorOffsets[{j}],{v.BaseAnchorOffsets[j]}");
+            }
+            for (var j = 0; j < v.BaseAnchors.Length; j++)
+            {
+                if (v.BaseAnchors[j] is { } x) DumpAnchorFormat($"{prefix}.BaseRecords[{i}].BaseAnchors[{j}]", x);
+            }
         }
     }
 
