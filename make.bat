@@ -75,9 +75,8 @@
 :publish
 	@call :release
 	
-	@call :setenv VERSION_FILE "powershell -Command Get-Date -Format yyyyMMdd"
-	@call :setenv VERSION_NAME "powershell -Command Get-Date -Format yyyy.M.d"
-	@call :setenv BUILD_NAME   "powershell -Command Get-Date -Format HHmm"
+	@call :setenv VERSION_FILE "powershell -Command Get-Date -Format yyyyMMdd_HHmm"
+	@call :setenv VERSION_NAME "powershell -Command $d = Get-Date; '{0}.{1}.{2}.{3}' -f $d.Year, $d.Month, $d.Day, ($d.Hour * 100 + $d.Minute)"
 	@set VERSION=%VERSION_NAME%
 	git tag %VERSION%
 	git push origin %VERSION%
@@ -87,7 +86,14 @@
 	@exit /b %ERRORLEVEL%
 
 :setenv
-	@for /f "usebackq delims=" %%x in (`%~2`) do @set %1=%%x
+	@setlocal
+	@set "CMD=%~2"
+	@for /f "usebackq delims=" %%x in (`cmd /c "!CMD!"`) do @(
+		@endlocal
+		@set %1=%%x
+		@exit /b %ERRORLEVEL%
+	)
+	@endlocal
 	@exit /b %ERRORLEVEL%
 
 :trash
