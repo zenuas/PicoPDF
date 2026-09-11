@@ -19,6 +19,7 @@ public class MarkRecord
         {
             MarkClass = mark_class,
             MarkAnchorOffset = mark_anchor_offset,
+            // Offset to Anchor table, from beginning of MarkArray table.
             MarkAnchor = IAnchorFormat.ReadFrom(stream.SeekTo(mark_array_table_offset + mark_anchor_offset.Value)),
         };
     }

@@ -17,6 +17,7 @@ public class BaseRecord
         return new()
         {
             BaseAnchorOffsets = base_anchor_offsets,
+            // Array of offsets (one per mark class) to Anchor tables. Offsets are from beginning of BaseArray table, ordered by class (offsets may be NULL).
             BaseAnchors = [.. base_anchor_offsets.Select(x => x.Value == 0 ? null : IAnchorFormat.ReadFrom(stream.SeekTo(base_array_table_offset + x.Value)))],
         };
     }
