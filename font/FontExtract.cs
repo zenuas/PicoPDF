@@ -130,7 +130,8 @@ public static class FontExtract
             LookupList = new()
             {
                 LookupCount = 1,
-                LookupRecords = [(0, new() { LookupType = 1, LookupFlag = 0, SubTableCount = (ushort)single_pos_subtables.Length, SubtableOffsets = [], MarkFilteringSet = 0, Subtables = single_pos_subtables })]
+                LookupOffsets = [0],
+                Lookups = [new() { LookupType = 1, LookupFlag = 0, SubTableCount = (ushort)single_pos_subtables.Length, SubtableOffsets = [], MarkFilteringSet = 0, Subtables = single_pos_subtables }],
             },
         };
 

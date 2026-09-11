@@ -15,7 +15,7 @@ public record class GlyphSubstitutionTable : IExportable
     public required Offset32 FeatureVariationsOffset { get; init; }
     public required ScriptListRecord? ScriptList { get; init; }
     public required FeatureListRecord? FeatureList { get; init; }
-    public required LookupListRecord? LookupList { get; init; }
+    public required LookupListTable? LookupList { get; init; }
 
     public static GlyphSubstitutionTable ReadFrom(Stream stream)
     {
@@ -38,7 +38,7 @@ public record class GlyphSubstitutionTable : IExportable
             FeatureVariationsOffset = feature_variations_offset,
             ScriptList = script_list_offset.Value == 0 ? null : ScriptListRecord.ReadFrom(stream.SeekTo(position + script_list_offset.Value)),
             FeatureList = feature_list_offset.Value == 0 ? null : FeatureListRecord.ReadFrom(stream.SeekTo(position + feature_list_offset.Value)),
-            LookupList = lookup_list_offset.Value == 0 ? null : LookupListRecord.ReadFrom(stream.SeekTo(position + lookup_list_offset.Value), TableTypes.GSUB)
+            LookupList = lookup_list_offset.Value == 0 ? null : LookupListTable.ReadFrom(stream.SeekTo(position + lookup_list_offset.Value), TableTypes.GSUB)
         };
     }
 

@@ -192,7 +192,7 @@ public class FontDump : FontRegisterCommand
 
             if (gsub.ScriptList is { } scripts) DumpScriptListRecord("gsub", scripts);
             if (gsub.FeatureList is { } features) DumpFeatureListRecord("gsub", features);
-            if (gsub.LookupList is { } lookups) DumpLookupListRecord("gsub", lookups);
+            if (gsub.LookupList is { } lookups) DumpLookupListTable("gsub", lookups);
         }
 
         if (font.GlyphPositioning is { } gpos)
@@ -206,7 +206,7 @@ public class FontDump : FontRegisterCommand
 
             if (gpos.ScriptList is { } scripts) DumpScriptListRecord("gpos", scripts);
             if (gpos.FeatureList is { } features) DumpFeatureListRecord("gpos", features);
-            if (gpos.LookupList is { } lookups) DumpLookupListRecord("gpos", lookups);
+            if (gpos.LookupList is { } lookups) DumpLookupListTable("gpos", lookups);
         }
     }
 
@@ -253,24 +253,27 @@ public class FontDump : FontRegisterCommand
         }
     }
 
-    public static void DumpLookupListRecord(string prefix, LookupListRecord lookups)
+    public static void DumpLookupListTable(string prefix, LookupListTable lookups)
     {
         Console.WriteLine($"{prefix},LookupList.LookupCount,{lookups.LookupCount}");
-        for (var i = 0; i < lookups.LookupRecords.Length; i++)
+        for (var i = 0; i < lookups.LookupOffsets.Length; i++)
         {
-            var lookup = lookups.LookupRecords[i];
-            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].LookupOffset,{lookup.LookupOffset}");
-            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].LookupTable.LookupType,{lookup.LookupTable.LookupType}");
-            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].LookupTable.LookupFlag,{lookup.LookupTable.LookupFlag}");
-            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].LookupTable.SubTableCount,{lookup.LookupTable.SubTableCount}");
-            for (var j = 0; j < lookup.LookupTable.SubtableOffsets.Length; j++)
+            Console.WriteLine($"{prefix},LookupList.LookupOffsets[{i}],{lookups.LookupOffsets[i]}");
+        }
+        for (var i = 0; i < lookups.Lookups.Length; i++)
+        {
+            var lookup = lookups.Lookups[i];
+            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].LookupType,{lookup.LookupType}");
+            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].LookupFlag,{lookup.LookupFlag}");
+            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].SubTableCount,{lookup.SubTableCount}");
+            for (var j = 0; j < lookup.SubtableOffsets.Length; j++)
             {
-                Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].LookupTable.SubtableOffsets[{j}],{lookup.LookupTable.SubtableOffsets[j]}");
+                Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].SubtableOffsets[{j}],{lookup.SubtableOffsets[j]}");
             }
-            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].LookupTable.MarkFilteringSet,{lookup.LookupTable.MarkFilteringSet}");
-            for (var j = 0; j < lookup.LookupTable.Subtables.Length; j++)
+            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].MarkFilteringSet,{lookup.MarkFilteringSet}");
+            for (var j = 0; j < lookup.Subtables.Length; j++)
             {
-                DumpSubtable($"{prefix},LookupList.LookupRecords[{i}].LookupTable.Subtables[{j}]", lookup.LookupTable.Subtables[j]);
+                DumpSubtable($"{prefix},LookupList.LookupRecords[{i}].Subtables[{j}]", lookup.Subtables[j]);
             }
         }
     }

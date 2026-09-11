@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace OpenType.Tables.Common;
 
-public class LookupTableRecord
+public class LookupTable
 {
     public required ushort LookupType { get; init; }
     public required ushort LookupFlag { get; init; }
@@ -15,7 +15,7 @@ public class LookupTableRecord
     public required ushort MarkFilteringSet { get; init; }
     public required ISubtable[] Subtables { get; init; }
 
-    public static LookupTableRecord ReadFrom(Stream stream, TableTypes table_type)
+    public static LookupTable ReadFrom(Stream stream, TableTypes table_type)
     {
         var position = stream.Position;
 

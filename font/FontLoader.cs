@@ -87,11 +87,11 @@ public static class FontLoader
             LoadNoOutlineFont(font, opt);
     }
 
-    public static uint ConvertVertical(FeatureTableRecord vert, LookupListRecord lookup, uint gid)
+    public static uint ConvertVertical(FeatureTableRecord vert, LookupListTable lookup, uint gid)
     {
         foreach (var index in vert.LookupListIndices)
         {
-            foreach (var subtable in lookup.LookupRecords[index].LookupTable.Subtables.OfType<ISingleConvert>())
+            foreach (var subtable in lookup.Lookups[index].Subtables.OfType<ISingleConvert>())
             {
                 if (subtable.Convert(gid) is { } x) return x;
             }
@@ -99,11 +99,11 @@ public static class FontLoader
         return gid;
     }
 
-    public static ValueRecord? GetPositionPlacement(FeatureTableRecord palt, LookupListRecord lookup, uint gid)
+    public static ValueRecord? GetPositionPlacement(FeatureTableRecord palt, LookupListTable lookup, uint gid)
     {
         foreach (var index in palt.LookupListIndices)
         {
-            foreach (var subtable in lookup.LookupRecords[index].LookupTable.Subtables.OfType<ISinglePosition>())
+            foreach (var subtable in lookup.Lookups[index].Subtables.OfType<ISinglePosition>())
             {
                 if (subtable.GetPosition(gid) is { } x) return x;
             }
