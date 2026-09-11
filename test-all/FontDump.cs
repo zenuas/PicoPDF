@@ -409,6 +409,21 @@ public class FontDump : FontRegisterCommand
                 DumpClassDef($"{prefix}.ClassDef2", x.ClassDef2);
                 break;
 
+            case CursivePosFormat1 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.CoverageOffset,{x.CoverageOffset}");
+                Console.WriteLine($"{prefix}.EntryExitCount,{x.EntryExitCount}");
+                DumpCoverage($"{prefix}.Coverage", x.Coverage);
+                for (var i = 0; i < x.EntryExitRecords.Length; i++)
+                {
+                    var entry = x.EntryExitRecords[i];
+                    Console.WriteLine($"{prefix}.EntryExitRecords[{i}].EntryAnchorOffset,{entry.EntryAnchorOffset}");
+                    Console.WriteLine($"{prefix}.EntryExitRecords[{i}].EntryAnchorOffset,{entry.ExitAnchorOffset}");
+                    if (entry.EntryAnchor is { }) DumpAnchorFormat($"{prefix}.EntryExitRecords[{i}].EntryAnchor", entry.EntryAnchor);
+                    if (entry.ExitAnchor is { }) DumpAnchorFormat($"{prefix}.EntryExitRecords[{i}].ExitAnchor", entry.ExitAnchor);
+                }
+                break;
+
             case PosExtensionFormat1 x:
                 Console.WriteLine($"{prefix}.Format,{x.Format}");
                 Console.WriteLine($"{prefix}.ExtensionLookupType,{x.ExtensionLookupType}");
@@ -541,6 +556,35 @@ public class FontDump : FontRegisterCommand
         Console.WriteLine($"{prefix}.SecondGlyph,{value.SecondGlyph}");
         DumpValueRecord($"{prefix}.ValueRecord1", value.ValueRecord1);
         DumpValueRecord($"{prefix}.ValueRecord2", value.ValueRecord2);
+    }
+
+    public static void DumpAnchorFormat(string prefix, IAnchorFormat anchor)
+    {
+        switch (anchor)
+        {
+            case AnchorFormat1 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.XCoordinate,{x.XCoordinate}");
+                Console.WriteLine($"{prefix}.YCoordinate,{x.YCoordinate}");
+                break;
+
+            case AnchorFormat2 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.XCoordinate,{x.XCoordinate}");
+                Console.WriteLine($"{prefix}.YCoordinate,{x.YCoordinate}");
+                Console.WriteLine($"{prefix}.AnchorPoint,{x.AnchorPoint}");
+                break;
+
+            case AnchorFormat3 x:
+                Console.WriteLine($"{prefix}.Format,{x.Format}");
+                Console.WriteLine($"{prefix}.XCoordinate,{x.XCoordinate}");
+                Console.WriteLine($"{prefix}.YCoordinate,{x.YCoordinate}");
+                Console.WriteLine($"{prefix}.XDeviceOffset,{x.XDeviceOffset}");
+                Console.WriteLine($"{prefix}.YDeviceOffset,{x.YDeviceOffset}");
+                if (x.XDevice is { }) DumpDeviceTable($"{prefix}.XDevice", x.XDevice);
+                if (x.YDevice is { }) DumpDeviceTable($"{prefix}.YDevice", x.YDevice);
+                break;
+        }
     }
 
     public static void DumpTopDict(string prefix, TopDict top_dict)
