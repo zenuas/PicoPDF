@@ -145,9 +145,9 @@ public static class FontLoader
         };
 
         var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
-        var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable : null;
+        var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FirstOrDefault(x => x.FeatureTag == "vert")?.FeatureTable : null;
         var palt_name = vert is null ? "palt" : "vpal";
-        var palt = option.UseProportional && gpos is { } && gpos.LookupList is { } ? gpos?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == palt_name)?.FeatureTable : null;
+        var palt = option.UseProportional && gpos is { } && gpos.LookupList is { } ? gpos?.FeatureList?.FeatureRecords.FirstOrDefault(x => x.FeatureTag == palt_name)?.FeatureTable : null;
 
         TrueTypeFont newfont = null!;
         newfont = new()
@@ -212,9 +212,9 @@ public static class FontLoader
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
         var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
-        var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable : null;
+        var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FirstOrDefault(x => x.FeatureTag == "vert")?.FeatureTable : null;
         var palt_name = vert is null ? "palt" : "vpal";
-        var palt = option.UseProportional && gpos is { } && gpos.LookupList is { } ? gpos?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == palt_name)?.FeatureTable : null;
+        var palt = option.UseProportional && gpos is { } && gpos.LookupList is { } ? gpos?.FeatureList?.FeatureRecords.FirstOrDefault(x => x.FeatureTag == palt_name)?.FeatureTable : null;
 
         PostScriptFont newfont = null!;
         newfont = new()
@@ -276,9 +276,9 @@ public static class FontLoader
         var sbix = ReadTableRecord(font, "sbix", stream, StandardBitmapGraphicsTable.ReadFrom);
 
         var char_to_gid = GetCurrentCharToGID(cmap).CreateCharToGID();
-        var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == "vert")?.FeatureTable : null;
+        var vert = option.UseVertical && gsub is { } && gsub.LookupList is { } ? gsub?.FeatureList?.FeatureRecords.FirstOrDefault(x => x.FeatureTag == "vert")?.FeatureTable : null;
         var palt_name = vert is null ? "palt" : "vpal";
-        var palt = option.UseProportional && gpos is { } && gpos.LookupList is { } ? gpos?.FeatureList?.FeatureRecords.FindFirstOrNullValue(x => x.FeatureTag == palt_name)?.FeatureTable : null;
+        var palt = option.UseProportional && gpos is { } && gpos.LookupList is { } ? gpos?.FeatureList?.FeatureRecords.FirstOrDefault(x => x.FeatureTag == palt_name)?.FeatureTable : null;
 
         return new()
         {

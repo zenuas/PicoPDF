@@ -125,7 +125,7 @@ public static class FontExtract
             FeatureList = new()
             {
                 FeatureCount = 1,
-                FeatureRecords = [(font.LoadOption.UseVertical ? "vpal" : "palt", 0, palt)]
+                FeatureRecords = [new() { FeatureTag = font.LoadOption.UseVertical ? "vpal" : "palt", FeatureOffset = 0, FeatureTable = palt }],
             },
             LookupList = new()
             {
