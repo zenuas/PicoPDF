@@ -17,7 +17,7 @@ public class BaseGlyphListRecord : IExportable
         var position = stream.Position;
 
         var numBaseGlyphPaintRecords = stream.ReadUIntByBigEndian();
-        var baseGlyphPaintRecord = Lists.Repeat(() => (GlyphID: stream.ReadUShortByBigEndian(), PaintOffset: stream.ReadOffset32())).Take((int)numBaseGlyphPaintRecords).ToArray();
+        var baseGlyphPaintRecord = Lists.Repeat(() => (GlyphID: stream.ReadUShortByBigEndian(), PaintOffset: stream.ReadOffset32())).Take(numBaseGlyphPaintRecords).ToArray();
 
         return new()
         {

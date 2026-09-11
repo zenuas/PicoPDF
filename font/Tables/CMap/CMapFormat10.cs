@@ -31,7 +31,7 @@ public class CMapFormat10 : ICMapFormat, ICharToGID
             Language = language,
             StartCharCode = startcharcode,
             NumberOfChars = num_of_chars,
-            GlyphIdArray = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take((int)num_of_chars)],
+            GlyphIdArray = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take(num_of_chars)],
         };
     }
 

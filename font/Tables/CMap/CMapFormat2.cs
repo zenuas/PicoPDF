@@ -30,7 +30,7 @@ public class CMapFormat2 : ICMapFormat, ICharToGID
             Language = language,
             SubHeaderKeys = subheader_keys,
             SubHeaders = subheaders,
-            GlyphIdArray = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take((int)((length - (stream.Position - position - /* sizeof(Format) */2)) / 2))],
+            GlyphIdArray = [.. Lists.Repeat(stream.ReadUShortByBigEndian).Take((length - (stream.Position - position - /* sizeof(Format) */2)) / 2)],
         };
     }
 

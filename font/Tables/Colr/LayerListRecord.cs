@@ -17,7 +17,7 @@ public class LayerListRecord : IExportable
         var position = stream.Position;
 
         var numLayers = stream.ReadUIntByBigEndian();
-        var paintOffsets = Lists.Repeat(stream.ReadOffset32).Take((int)numLayers).ToArray();
+        var paintOffsets = Lists.Repeat(stream.ReadOffset32).Take(numLayers).ToArray();
 
         return new()
         {

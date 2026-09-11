@@ -18,7 +18,7 @@ public class ClipListRecord : IExportable
 
         var format = stream.ReadUByte();
         var numClips = stream.ReadUIntByBigEndian();
-        var clips = Lists.Repeat(() => (stream.ReadUShortByBigEndian(), stream.ReadUShortByBigEndian(), ClipBoxOffset: stream.ReadOffset24())).Take((int)numClips).ToArray();
+        var clips = Lists.Repeat(() => (stream.ReadUShortByBigEndian(), stream.ReadUShortByBigEndian(), ClipBoxOffset: stream.ReadOffset24())).Take(numClips).ToArray();
         var clipBoxFormats = clips.Select(x => stream.SeekTo(position + x.ClipBoxOffset.Value).To(ClipBoxFormat.ReadFrom)).ToArray();
 
         return new()

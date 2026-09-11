@@ -29,7 +29,7 @@ public class CMapFormat12 : ICMapFormat, ICharToGID, IExportable
             Length = length,
             Language = language,
             NumberOfGroups = num_of_groups,
-            Groups = [.. Lists.Repeat(() => (stream.ReadUIntByBigEndian(), stream.ReadUIntByBigEndian(), stream.ReadUIntByBigEndian())).Take((int)num_of_groups)],
+            Groups = [.. Lists.Repeat(() => (stream.ReadUIntByBigEndian(), stream.ReadUIntByBigEndian(), stream.ReadUIntByBigEndian())).Take(num_of_groups)],
         };
     }
 

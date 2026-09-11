@@ -22,7 +22,7 @@ public class CMapFormat14 : ICMapFormat, IExportable
             Format = 14,
             Length = length,
             NumberOfVariationSelectorRecords = numVarSelectorRecords,
-            VariationSelector = [.. Lists.Repeat(() => (stream.Read3BytesByBigEndian(), stream.ReadOffset32(), stream.ReadOffset32())).Take((int)numVarSelectorRecords)],
+            VariationSelector = [.. Lists.Repeat(() => (stream.Read3BytesByBigEndian(), stream.ReadOffset32(), stream.ReadOffset32())).Take(numVarSelectorRecords)],
         };
     }
 

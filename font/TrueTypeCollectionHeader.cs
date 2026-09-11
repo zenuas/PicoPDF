@@ -23,7 +23,7 @@ public class TrueTypeCollectionHeader
         var major_version = stream.ReadUShortByBigEndian();
         var minor_version = stream.ReadUShortByBigEndian();
         var num_fonts = stream.ReadUIntByBigEndian();
-        var table_directory_offsets = Lists.Repeat(stream.ReadOffset32).Take((int)num_fonts).ToArray();
+        var table_directory_offsets = Lists.Repeat(stream.ReadOffset32).Take(num_fonts).ToArray();
 
         var dsig_tag = 0u;
         var dsig_length = 0u;
