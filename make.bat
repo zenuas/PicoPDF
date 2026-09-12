@@ -56,7 +56,7 @@
 	@exit /b %ERRORLEVEL%
 
 :run
-	dotnet run --project test-all --no-launch-profile -c Release --no-build -- %*
+	dotnet run --project test-all --no-launch-profile -c Release -- %*
 	@exit /b %ERRORLEVEL%
 
 :sample
