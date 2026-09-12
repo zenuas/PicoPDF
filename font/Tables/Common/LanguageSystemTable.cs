@@ -5,14 +5,14 @@ using System.Linq;
 
 namespace OpenType.Tables.Common;
 
-public class LanguageSystemTableRecord
+public class LanguageSystemTable
 {
     public required Offset16 LookupOrderOffset { get; init; }
     public required ushort RequiredFeatureIndex { get; init; }
     public required ushort FeatureIndexCount { get; init; }
     public required ushort[] FeatureIndices { get; init; }
 
-    public static LanguageSystemTableRecord ReadFrom(Stream stream)
+    public static LanguageSystemTable ReadFrom(Stream stream)
     {
         var lookup_order_offset = stream.ReadOffset16();
         var required_feature_index = stream.ReadUShortByBigEndian();

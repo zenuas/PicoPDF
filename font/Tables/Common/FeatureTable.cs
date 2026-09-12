@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace OpenType.Tables.Common;
 
-public class FeatureTableRecord
+public class FeatureTable
 {
     public required Offset16 FeatureParamsOffset { get; init; }
     public required ushort LookupIndexCount { get; init; }
     public required ushort[] LookupListIndices { get; init; }
 
-    public static FeatureTableRecord ReadFrom(Stream stream)
+    public static FeatureTable ReadFrom(Stream stream)
     {
         var position = stream.Position;
 

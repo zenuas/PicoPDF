@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace OpenType.Tables.Common;
 
-public class FeatureListRecord
+public class FeatureListTable
 {
     public required ushort FeatureCount { get; init; }
     public required FeatureRecord[] FeatureRecords { get; init; }
 
-    public static FeatureListRecord ReadFrom(Stream stream)
+    public static FeatureListTable ReadFrom(Stream stream)
     {
         var position = stream.Position;
 

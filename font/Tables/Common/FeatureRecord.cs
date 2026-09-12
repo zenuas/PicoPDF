@@ -9,7 +9,7 @@ public class FeatureRecord
 {
     public required string FeatureTag { get; init; }
     public required Offset16 FeatureOffset { get; init; }
-    public required FeatureTableRecord FeatureTable { get; init; }
+    public required FeatureTable FeatureTable { get; init; }
 
     public static FeatureRecord ReadFrom(Stream stream, long feature_list_offset)
     {
@@ -21,7 +21,7 @@ public class FeatureRecord
             FeatureTag = feature_tag,
             FeatureOffset = feature_offset,
             // Offset to Feature table, from beginning of FeatureList.
-            FeatureTable = FeatureTableRecord.ReadFrom(stream.SeekTo(feature_list_offset + feature_offset.Value)),
+            FeatureTable = FeatureTable.ReadFrom(stream.SeekTo(feature_list_offset + feature_offset.Value)),
         };
     }
 

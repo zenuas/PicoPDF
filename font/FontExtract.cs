@@ -112,7 +112,7 @@ public static class FontExtract
                 },
             })
             .ToArray();
-        var palt = font.LoadOption.UseProportional && font.GlyphPositioning is { } && font.GlyphPositioning.LookupList is { } ? new FeatureTableRecord { FeatureParamsOffset = 0, LookupIndexCount = 1, LookupListIndices = [0] } : null;
+        var palt = font.LoadOption.UseProportional && font.GlyphPositioning is { } && font.GlyphPositioning.LookupList is { } ? new FeatureTable { FeatureParamsOffset = 0, LookupIndexCount = 1, LookupListIndices = [0] } : null;
         var gpos = palt is null ? null : new GlyphPositioningTable()
         {
             MajorVersion = font.GlyphPositioning!.MajorVersion,

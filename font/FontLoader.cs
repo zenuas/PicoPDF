@@ -87,7 +87,7 @@ public static class FontLoader
             LoadNoOutlineFont(font, opt);
     }
 
-    public static uint ConvertVertical(FeatureTableRecord vert, LookupListTable lookup, uint gid)
+    public static uint ConvertVertical(FeatureTable vert, LookupListTable lookup, uint gid)
     {
         foreach (var index in vert.LookupListIndices)
         {
@@ -99,7 +99,7 @@ public static class FontLoader
         return gid;
     }
 
-    public static ValueRecord? GetPositionPlacement(FeatureTableRecord palt, LookupListTable lookup, uint gid)
+    public static ValueRecord? GetPositionPlacement(FeatureTable palt, LookupListTable lookup, uint gid)
     {
         foreach (var index in palt.LookupListIndices)
         {

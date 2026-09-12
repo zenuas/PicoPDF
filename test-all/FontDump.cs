@@ -190,8 +190,8 @@ public class FontDump : FontRegisterCommand
             Console.WriteLine($"gsub,LookupListOffset,{gsub.LookupListOffset}");
             Console.WriteLine($"gsub,FeatureVariationsOffset,{gsub.FeatureVariationsOffset}");
 
-            if (gsub.ScriptList is { } scripts) DumpScriptListRecord("gsub", scripts);
-            if (gsub.FeatureList is { } features) DumpFeatureListRecord("gsub", features);
+            if (gsub.ScriptList is { } scripts) DumpScriptListTable("gsub", scripts);
+            if (gsub.FeatureList is { } features) DumpFeatureListTable("gsub", features);
             if (gsub.LookupList is { } lookups) DumpLookupListTable("gsub", lookups);
         }
 
@@ -204,13 +204,13 @@ public class FontDump : FontRegisterCommand
             Console.WriteLine($"gpos,LookupListOffset,{gpos.LookupListOffset}");
             Console.WriteLine($"gpos,FeatureVariationsOffset,{gpos.FeatureVariationsOffset}");
 
-            if (gpos.ScriptList is { } scripts) DumpScriptListRecord("gpos", scripts);
-            if (gpos.FeatureList is { } features) DumpFeatureListRecord("gpos", features);
+            if (gpos.ScriptList is { } scripts) DumpScriptListTable("gpos", scripts);
+            if (gpos.FeatureList is { } features) DumpFeatureListTable("gpos", features);
             if (gpos.LookupList is { } lookups) DumpLookupListTable("gpos", lookups);
         }
     }
 
-    public static void DumpScriptListRecord(string prefix, ScriptListRecord scripts)
+    public static void DumpScriptListTable(string prefix, ScriptListTable scripts)
     {
         Console.WriteLine($"{prefix},ScriptCount,{scripts.ScriptCount}");
         for (var i = 0; i < scripts.ScriptRecords.Length; i++)
@@ -236,7 +236,7 @@ public class FontDump : FontRegisterCommand
         }
     }
 
-    public static void DumpFeatureListRecord(string prefix, FeatureListRecord features)
+    public static void DumpFeatureListTable(string prefix, FeatureListTable features)
     {
         Console.WriteLine($"{prefix},FeatureCount,{features.FeatureCount}");
         for (var i = 0; i < features.FeatureRecords.Length; i++)
@@ -263,17 +263,17 @@ public class FontDump : FontRegisterCommand
         for (var i = 0; i < lookups.Lookups.Length; i++)
         {
             var lookup = lookups.Lookups[i];
-            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].LookupType,{lookup.LookupType}");
-            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].LookupFlag,{lookup.LookupFlag}");
-            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].SubTableCount,{lookup.SubTableCount}");
+            Console.WriteLine($"{prefix},LookupList.Lookups[{i}].LookupType,{lookup.LookupType}");
+            Console.WriteLine($"{prefix},LookupList.Lookups[{i}].LookupFlag,{lookup.LookupFlag}");
+            Console.WriteLine($"{prefix},LookupList.Lookups[{i}].SubTableCount,{lookup.SubTableCount}");
             for (var j = 0; j < lookup.SubtableOffsets.Length; j++)
             {
-                Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].SubtableOffsets[{j}],{lookup.SubtableOffsets[j]}");
+                Console.WriteLine($"{prefix},LookupList.Lookups[{i}].SubtableOffsets[{j}],{lookup.SubtableOffsets[j]}");
             }
-            Console.WriteLine($"{prefix},LookupList.LookupRecords[{i}].MarkFilteringSet,{lookup.MarkFilteringSet}");
+            Console.WriteLine($"{prefix},LookupList.Lookups[{i}].MarkFilteringSet,{lookup.MarkFilteringSet}");
             for (var j = 0; j < lookup.Subtables.Length; j++)
             {
-                DumpSubtable($"{prefix},LookupList.LookupRecords[{i}].Subtables[{j}]", lookup.Subtables[j]);
+                DumpSubtable($"{prefix},LookupList.Lookups[{i}].Subtables[{j}]", lookup.Subtables[j]);
             }
         }
     }

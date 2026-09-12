@@ -6,13 +6,13 @@ using System.Text;
 
 namespace OpenType.Tables.Common;
 
-public class ScriptTableRecord
+public class ScriptTable
 {
     public required Offset16 DefaultLangSysOffset { get; init; }
     public required ushort LangSysCount { get; init; }
-    public required (string LangSysTag, Offset16 LangSysOffset, LanguageSystemTableRecord LanguageSystemTable)[] LangSysRecords { get; init; }
+    public required (string LangSysTag, Offset16 LangSysOffset, LanguageSystemTable LanguageSystemTable)[] LangSysRecords { get; init; }
 
-    public static ScriptTableRecord ReadFrom(Stream stream)
+    public static ScriptTable ReadFrom(Stream stream)
     {
         var position = stream.Position;
 
@@ -24,7 +24,7 @@ public class ScriptTableRecord
         {
             DefaultLangSysOffset = default_lang_sys_offset,
             LangSysCount = lang_sys_count,
-            LangSysRecords = [.. lang_sys_records.Select(x => (x.LangSysTag, x.LangSysOffset, LanguageSystemTableRecord.ReadFrom(stream.SeekTo(position + x.LangSysOffset.Value))))],
+            LangSysRecords = [.. lang_sys_records.Select(x => (x.LangSysTag, x.LangSysOffset, LanguageSystemTable.ReadFrom(stream.SeekTo(position + x.LangSysOffset.Value))))],
         };
     }
 

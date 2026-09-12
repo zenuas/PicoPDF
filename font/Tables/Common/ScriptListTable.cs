@@ -6,12 +6,12 @@ using System.Text;
 
 namespace OpenType.Tables.Common;
 
-public class ScriptListRecord
+public class ScriptListTable
 {
     public required ushort ScriptCount { get; init; }
-    public required (string ScriptTag, Offset16 ScriptOffset, ScriptTableRecord ScriptTable)[] ScriptRecords { get; init; }
+    public required (string ScriptTag, Offset16 ScriptOffset, ScriptTable ScriptTable)[] ScriptRecords { get; init; }
 
-    public static ScriptListRecord ReadFrom(Stream stream)
+    public static ScriptListTable ReadFrom(Stream stream)
     {
         var position = stream.Position;
 
@@ -21,7 +21,7 @@ public class ScriptListRecord
         return new()
         {
             ScriptCount = script_count,
-            ScriptRecords = [.. script_records.Select(x => (x.ScriptTag, x.ScriptOffset, ScriptTableRecord.ReadFrom(stream.SeekTo(position + x.ScriptOffset.Value))))],
+            ScriptRecords = [.. script_records.Select(x => (x.ScriptTag, x.ScriptOffset, ScriptTable.ReadFrom(stream.SeekTo(position + x.ScriptOffset.Value))))],
         };
     }
 
